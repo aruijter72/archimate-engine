@@ -71,6 +71,18 @@
       position: absolute; bottom: 14px; right: 14px;
       display: flex; flex-direction: column; gap: 4px;
     }
+    #layout-toggle {
+      position: absolute; top: 10px; right: 14px;
+      display: flex; gap: 0; border-radius: 5px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+    .lt-btn {
+      padding: 5px 12px; font-size: 11px; font-weight: 600;
+      cursor: pointer; border: none; background: #fff; color: #555;
+      border-right: 1px solid #ddd;
+    }
+    .lt-btn:last-child { border-right: none; }
+    .lt-btn.active { background: #2F5496; color: #fff; }
     .zoom-btn {
       width: 30px; height: 30px; background: #fff; border: 1px solid #ccc;
       border-radius: 4px; cursor: pointer; font-size: 16px; line-height: 28px;
@@ -144,6 +156,11 @@
   <!-- Network Canvas -->
   <div id="canvas">
     <div id="network"></div>
+    <div id="layout-toggle">
+      <div class="lt-btn active" id="lt-grid" title="Fixed grid layout from model">Grid</div>
+      <div class="lt-btn" id="lt-flow" title="Hierarchical flow layout following relationships">Flow &#8594;</div>
+      <div class="lt-btn" id="lt-force" title="Force-directed auto layout">Auto</div>
+    </div>
     <div id="zoom-btns">
       <div class="zoom-btn" id="btn-fit" title="Fit view">&#8596;</div>
       <div class="zoom-btn" id="btn-zin" title="Zoom in">+</div>
@@ -553,7 +570,7 @@ const MODEL = {
   ],
   "relationships": [
     {
-      "id": "id-eba0ceeb448c",
+      "id": "id-7152273003b7",
       "type": "AssignmentRelationship",
       "source": "b001",
       "target": "b004",
@@ -561,7 +578,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-aef0ce8526e9",
+      "id": "id-dc9a29aeb0a3",
       "type": "AssignmentRelationship",
       "source": "b001",
       "target": "b005",
@@ -569,7 +586,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-10278133bd63",
+      "id": "id-e13fe0e61b27",
       "type": "AssignmentRelationship",
       "source": "b001",
       "target": "b006",
@@ -577,7 +594,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-d6933c049b08",
+      "id": "id-5f5598683336",
       "type": "AggregationRelationship",
       "source": "b003",
       "target": "b004",
@@ -585,7 +602,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-e099e972f4c5",
+      "id": "id-571b2eae9835",
       "type": "AggregationRelationship",
       "source": "b003",
       "target": "b005",
@@ -593,7 +610,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-70eaa18fbf4d",
+      "id": "id-397be443518d",
       "type": "TriggeringRelationship",
       "source": "b007",
       "target": "b008",
@@ -601,7 +618,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-14a25c25b626",
+      "id": "id-7de3edef8086",
       "type": "TriggeringRelationship",
       "source": "b008",
       "target": "b009",
@@ -609,7 +626,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-47fd47d5b6ee",
+      "id": "id-cdbe71f08213",
       "type": "TriggeringRelationship",
       "source": "b009",
       "target": "b010",
@@ -617,7 +634,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-34f0bea9198a",
+      "id": "id-64cc603987d0",
       "type": "TriggeringRelationship",
       "source": "b010",
       "target": "b011",
@@ -625,7 +642,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-b4d56b75b2c2",
+      "id": "id-734e487b1172",
       "type": "TriggeringRelationship",
       "source": "b011",
       "target": "b012",
@@ -633,7 +650,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-a75942730ddc",
+      "id": "id-7cbe544747bc",
       "type": "TriggeringRelationship",
       "source": "b012",
       "target": "b013",
@@ -641,7 +658,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-8c588f99dd1e",
+      "id": "id-edc756103a8f",
       "type": "TriggeringRelationship",
       "source": "b013",
       "target": "b014",
@@ -649,7 +666,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-c50e341a3086",
+      "id": "id-ab16b9c03238",
       "type": "TriggeringRelationship",
       "source": "b014",
       "target": "b015",
@@ -657,7 +674,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-e76ecdceb7c5",
+      "id": "id-394d79bc2430",
       "type": "AssignmentRelationship",
       "source": "b004",
       "target": "b010",
@@ -665,7 +682,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-e6fd1efbd0d5",
+      "id": "id-b00ca3c23094",
       "type": "AssignmentRelationship",
       "source": "b004",
       "target": "b013",
@@ -673,7 +690,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-31781f39365b",
+      "id": "id-42b4666dee41",
       "type": "AssignmentRelationship",
       "source": "b005",
       "target": "b007",
@@ -681,7 +698,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-3b7536461b78",
+      "id": "id-bb927316e247",
       "type": "AssignmentRelationship",
       "source": "b005",
       "target": "b009",
@@ -689,7 +706,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-a4df3cc9ecf7",
+      "id": "id-5b47a09d7c64",
       "type": "AssignmentRelationship",
       "source": "b006",
       "target": "b009",
@@ -697,7 +714,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-76a4afaa7833",
+      "id": "id-e21ffcdba917",
       "type": "AssignmentRelationship",
       "source": "b006",
       "target": "b012",
@@ -705,7 +722,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-c7fe507d7593",
+      "id": "id-8457159376d6",
       "type": "AccessRelationship",
       "source": "b009",
       "target": "b017",
@@ -713,7 +730,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-10a7716a5a53",
+      "id": "id-23999d856d29",
       "type": "AccessRelationship",
       "source": "b012",
       "target": "b017",
@@ -721,7 +738,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-42b2bf6d2424",
+      "id": "id-ab2c12b78004",
       "type": "AccessRelationship",
       "source": "b002",
       "target": "b018",
@@ -729,7 +746,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-e48294919a20",
+      "id": "id-cdf0cc76e031",
       "type": "AccessRelationship",
       "source": "b012",
       "target": "b018",
@@ -737,7 +754,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-50c662288ec9",
+      "id": "id-fae154df4d92",
       "type": "AccessRelationship",
       "source": "b013",
       "target": "b019",
@@ -745,7 +762,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-249b63970de9",
+      "id": "id-0824efaf8009",
       "type": "AccessRelationship",
       "source": "b013",
       "target": "b020",
@@ -753,7 +770,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-ed6e4bdce68c",
+      "id": "id-d7a666ee9335",
       "type": "RealizationRelationship",
       "source": "b014",
       "target": "a001",
@@ -761,7 +778,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-996c9644a710",
+      "id": "id-8e60cccbb30c",
       "type": "ServingRelationship",
       "source": "b016",
       "target": "b001",
@@ -769,7 +786,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-9f34481bade8",
+      "id": "id-925a10291f6b",
       "type": "RealizationRelationship",
       "source": "a001",
       "target": "a007",
@@ -777,7 +794,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-df51c700be9e",
+      "id": "id-868f82605c7f",
       "type": "RealizationRelationship",
       "source": "a001",
       "target": "a008",
@@ -785,7 +802,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-6855449850ed",
+      "id": "id-4bfce8b710c0",
       "type": "RealizationRelationship",
       "source": "a001",
       "target": "a009",
@@ -793,7 +810,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-78b7776b2339",
+      "id": "id-6785f81d2f64",
       "type": "RealizationRelationship",
       "source": "a001",
       "target": "a010",
@@ -801,7 +818,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-6849f5972965",
+      "id": "id-bda95718e55e",
       "type": "ServingRelationship",
       "source": "a002",
       "target": "a001",
@@ -809,7 +826,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-2bdca5ca2071",
+      "id": "id-ebc66979cbc5",
       "type": "ServingRelationship",
       "source": "a003",
       "target": "a001",
@@ -817,7 +834,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-9e50e15bfe4d",
+      "id": "id-af9dff04dda6",
       "type": "ServingRelationship",
       "source": "a004",
       "target": "a001",
@@ -825,7 +842,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-b2a361655827",
+      "id": "id-09199a1f78ae",
       "type": "ServingRelationship",
       "source": "a006",
       "target": "a001",
@@ -833,7 +850,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-7b0258e80797",
+      "id": "id-9c8c2b95a220",
       "type": "ServingRelationship",
       "source": "a006",
       "target": "a002",
@@ -841,7 +858,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-c34f6c1d51dc",
+      "id": "id-b199baba4943",
       "type": "AssociationRelationship",
       "source": "a005",
       "target": "a001",
@@ -849,7 +866,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-ce5fdf056505",
+      "id": "id-acbf99663667",
       "type": "AssociationRelationship",
       "source": "a011",
       "target": "a007",
@@ -857,7 +874,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-59b5fdf2c7fd",
+      "id": "id-d827d5016189",
       "type": "AssociationRelationship",
       "source": "a012",
       "target": "a002",
@@ -865,7 +882,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-7c17e01bfc81",
+      "id": "id-4471b778cf6d",
       "type": "AssociationRelationship",
       "source": "a013",
       "target": "a005",
@@ -873,7 +890,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-94c4671dab4a",
+      "id": "id-a405cfb29e48",
       "type": "AssignmentRelationship",
       "source": "t001",
       "target": "a001",
@@ -881,7 +898,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-15bec4dbceff",
+      "id": "id-fede9927c67e",
       "type": "AssignmentRelationship",
       "source": "t002",
       "target": "a003",
@@ -889,7 +906,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-48d0b6b79b61",
+      "id": "id-75f798b66e77",
       "type": "AssignmentRelationship",
       "source": "t003",
       "target": "a002",
@@ -897,7 +914,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-979adac79493",
+      "id": "id-f745fe86c295",
       "type": "RealizationRelationship",
       "source": "t004",
       "target": "a001",
@@ -905,7 +922,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-9ffa082dc9c6",
+      "id": "id-417c0abd6b7f",
       "type": "AssignmentRelationship",
       "source": "t005",
       "target": "a001",
@@ -913,7 +930,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-b11ea0dbc2b9",
+      "id": "id-7888a0b777c2",
       "type": "AssignmentRelationship",
       "source": "t006",
       "target": "t001",
@@ -921,7 +938,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-9d8c66753745",
+      "id": "id-1f5b67c33ea1",
       "type": "AssignmentRelationship",
       "source": "t006",
       "target": "t002",
@@ -929,7 +946,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-0e40cada8089",
+      "id": "id-a51d9c7fd214",
       "type": "ServingRelationship",
       "source": "t007",
       "target": "t001",
@@ -937,7 +954,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-37b3f975b16b",
+      "id": "id-a3b9f848a143",
       "type": "ServingRelationship",
       "source": "t007",
       "target": "t002",
@@ -945,7 +962,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-19138579874e",
+      "id": "id-672d3582c308",
       "type": "ServingRelationship",
       "source": "t008",
       "target": "t003",
@@ -953,7 +970,7 @@ const MODEL = {
       "accessType": ""
     },
     {
-      "id": "id-fe55a267444b",
+      "id": "id-b50bbc71e724",
       "type": "AssociationRelationship",
       "source": "t009",
       "target": "a001",
@@ -963,12 +980,12 @@ const MODEL = {
   ],
   "views": [
     {
-      "id": "id-bce8ce1bcb24",
+      "id": "id-b4622bf75669",
       "name": "Full Architecture View",
       "description": "Complete layered overview of the municipal ESB tender — Business, Application and Technology",
       "nodes": [
         {
-          "id": "id-0084a4fa4807",
+          "id": "id-afa1f802a283",
           "elementId": "b001",
           "label": "Municipality",
           "type": "BusinessActor",
@@ -982,7 +999,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-9297b1bcf159",
+          "id": "id-7d2ae0a92567",
           "elementId": "b002",
           "label": "ESB Vendor",
           "type": "BusinessActor",
@@ -996,7 +1013,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-b670e4d15325",
+          "id": "id-2801fac65fd4",
           "elementId": "b003",
           "label": "Evaluation Committee",
           "type": "BusinessCollaboration",
@@ -1010,7 +1027,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-4dd773ac55c8",
+          "id": "id-4eb00c2b632b",
           "elementId": "b004",
           "label": "Contracting Officer",
           "type": "BusinessRole",
@@ -1024,7 +1041,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-37468e992f2f",
+          "id": "id-199fe2d2eb05",
           "elementId": "b005",
           "label": "IT Architect",
           "type": "BusinessRole",
@@ -1038,7 +1055,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-74e30b35d7dc",
+          "id": "id-5e7cde85eaa4",
           "elementId": "b006",
           "label": "Legal Advisor",
           "type": "BusinessRole",
@@ -1052,7 +1069,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-404b923ac864",
+          "id": "id-776bc33653dc",
           "elementId": "b007",
           "label": "Needs Assessment",
           "type": "BusinessProcess",
@@ -1066,7 +1083,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-a4ede9397e32",
+          "id": "id-bf35f89bb7cb",
           "elementId": "b008",
           "label": "Market Consultation",
           "type": "BusinessProcess",
@@ -1080,7 +1097,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-0dd11a7e10cf",
+          "id": "id-54ece57df53c",
           "elementId": "b009",
           "label": "Tender Preparation",
           "type": "BusinessProcess",
@@ -1094,7 +1111,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-362a8675d2f5",
+          "id": "id-c61af3b98c01",
           "elementId": "b010",
           "label": "Tender Publication",
           "type": "BusinessProcess",
@@ -1108,7 +1125,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-4f3bf13838e0",
+          "id": "id-d88cb3f546cc",
           "elementId": "b011",
           "label": "Tender Reception",
           "type": "BusinessProcess",
@@ -1122,7 +1139,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-9ac5e17a4502",
+          "id": "id-a1843a6f53a1",
           "elementId": "b012",
           "label": "Tender Evaluation",
           "type": "BusinessProcess",
@@ -1136,7 +1153,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-a78dd98b604a",
+          "id": "id-8828fac467f8",
           "elementId": "b013",
           "label": "Contract Award",
           "type": "BusinessProcess",
@@ -1150,7 +1167,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-20256520bf56",
+          "id": "id-29c6c0666553",
           "elementId": "b014",
           "label": "ESB Implementation",
           "type": "BusinessProcess",
@@ -1164,7 +1181,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-f2bb0560e375",
+          "id": "id-85e7e294939f",
           "elementId": "b015",
           "label": "Acceptance Testing",
           "type": "BusinessProcess",
@@ -1178,7 +1195,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-dc00a0724e6c",
+          "id": "id-f0e565351316",
           "elementId": "b016",
           "label": "Procurement Service",
           "type": "BusinessService",
@@ -1192,7 +1209,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-ebf930393657",
+          "id": "id-2cd420aa9cb9",
           "elementId": "b017",
           "label": "Technical Spec",
           "type": "BusinessObject",
@@ -1206,7 +1223,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-3fe951b93a06",
+          "id": "id-9640c33a0cce",
           "elementId": "b018",
           "label": "Tender Offer",
           "type": "BusinessObject",
@@ -1220,7 +1237,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-27734152322d",
+          "id": "id-5ca4eb03abba",
           "elementId": "b019",
           "label": "Award Notice",
           "type": "BusinessObject",
@@ -1234,7 +1251,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-e58a08a675fc",
+          "id": "id-86e44f8ac5e3",
           "elementId": "b020",
           "label": "ESB Contract",
           "type": "Contract",
@@ -1248,7 +1265,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-e3ae628919d6",
+          "id": "id-486b5a99e63c",
           "elementId": "a001",
           "label": "ESB Platform",
           "type": "ApplicationComponent",
@@ -1262,7 +1279,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-ad14c8a45595",
+          "id": "id-750fb4da77d2",
           "elementId": "a002",
           "label": "API Gateway",
           "type": "ApplicationComponent",
@@ -1276,7 +1293,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-ef7e2f92c9db",
+          "id": "id-67861dc3ca9d",
           "elementId": "a003",
           "label": "Message Broker",
           "type": "ApplicationComponent",
@@ -1290,7 +1307,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-e489533bd418",
+          "id": "id-527a2459dc90",
           "elementId": "a004",
           "label": "Service Registry",
           "type": "ApplicationComponent",
@@ -1304,7 +1321,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-9ed00c2e64bc",
+          "id": "id-1289aa131fe0",
           "elementId": "a005",
           "label": "Monitoring Console",
           "type": "ApplicationComponent",
@@ -1318,7 +1335,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-9a48a622a1f9",
+          "id": "id-d180e07fe755",
           "elementId": "a006",
           "label": "Identity & Access Mgmt",
           "type": "ApplicationComponent",
@@ -1332,7 +1349,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-d6af8efafffd",
+          "id": "id-c464da6ada93",
           "elementId": "a007",
           "label": "Message Routing Service",
           "type": "ApplicationService",
@@ -1346,7 +1363,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-591502dfc313",
+          "id": "id-c7c1cbe096a2",
           "elementId": "a008",
           "label": "Data Transformation Svc",
           "type": "ApplicationService",
@@ -1360,7 +1377,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-570b6dca635e",
+          "id": "id-8a00e6c39664",
           "elementId": "a009",
           "label": "Protocol Mediation Svc",
           "type": "ApplicationService",
@@ -1374,7 +1391,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-fe23da8baa05",
+          "id": "id-dda36303d89c",
           "elementId": "a010",
           "label": "Service Orchestration",
           "type": "ApplicationService",
@@ -1388,7 +1405,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-4f40c520864b",
+          "id": "id-230fd4089c5d",
           "elementId": "a011",
           "label": "Integration Schema",
           "type": "DataObject",
@@ -1402,7 +1419,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-de9dd92a61f5",
+          "id": "id-48306095e5d7",
           "elementId": "a012",
           "label": "API Specification",
           "type": "DataObject",
@@ -1416,7 +1433,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-6ccb173f4107",
+          "id": "id-2047722f3413",
           "elementId": "a013",
           "label": "SLA Definition",
           "type": "DataObject",
@@ -1430,7 +1447,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-bd0df08780a7",
+          "id": "id-ffeb467fd81f",
           "elementId": "t001",
           "label": "Integration Server",
           "type": "Node",
@@ -1444,7 +1461,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-1b07b66d37c4",
+          "id": "id-66d49fe363b6",
           "elementId": "t002",
           "label": "Message Queue Server",
           "type": "Node",
@@ -1458,7 +1475,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-ae585cd60285",
+          "id": "id-13423bbfa725",
           "elementId": "t003",
           "label": "API Gateway Server",
           "type": "Node",
@@ -1472,7 +1489,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-8428d0ba9764",
+          "id": "id-7593d3eee148",
           "elementId": "t004",
           "label": "ESB Software Package",
           "type": "SystemSoftware",
@@ -1486,7 +1503,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-2a5c5a9f3383",
+          "id": "id-63a12c474be6",
           "elementId": "t005",
           "label": "Container Platform",
           "type": "SystemSoftware",
@@ -1500,7 +1517,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-3873883810c6",
+          "id": "id-74925579a1d2",
           "elementId": "t006",
           "label": "Operating System",
           "type": "SystemSoftware",
@@ -1514,7 +1531,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-5d059d578384",
+          "id": "id-bc8e1d3a8756",
           "elementId": "t007",
           "label": "Municipal Network",
           "type": "CommunicationNetwork",
@@ -1528,7 +1545,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-b4f6518ce379",
+          "id": "id-5d2de10792c4",
           "elementId": "t008",
           "label": "DMZ",
           "type": "CommunicationNetwork",
@@ -1542,7 +1559,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-1ad9187a24ee",
+          "id": "id-09a90ac0c391",
           "elementId": "t009",
           "label": "Deployment Package",
           "type": "Artifact",
@@ -1558,422 +1575,422 @@ const MODEL = {
       ],
       "edges": [
         {
-          "id": "id-3061daac7a3f",
-          "from": "id-0084a4fa4807",
-          "to": "id-4dd773ac55c8",
-          "relationshipId": "id-eba0ceeb448c",
+          "id": "id-4ead28385a35",
+          "from": "id-afa1f802a283",
+          "to": "id-4eb00c2b632b",
+          "relationshipId": "id-7152273003b7",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-76d40cec1730",
-          "from": "id-0084a4fa4807",
-          "to": "id-37468e992f2f",
-          "relationshipId": "id-aef0ce8526e9",
+          "id": "id-e623aa643778",
+          "from": "id-afa1f802a283",
+          "to": "id-199fe2d2eb05",
+          "relationshipId": "id-dc9a29aeb0a3",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-2d456e36d788",
-          "from": "id-0084a4fa4807",
-          "to": "id-74e30b35d7dc",
-          "relationshipId": "id-10278133bd63",
+          "id": "id-99b6ddec7bf7",
+          "from": "id-afa1f802a283",
+          "to": "id-5e7cde85eaa4",
+          "relationshipId": "id-e13fe0e61b27",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-d3fa86f5407d",
-          "from": "id-b670e4d15325",
-          "to": "id-4dd773ac55c8",
-          "relationshipId": "id-d6933c049b08",
+          "id": "id-c9c011159a60",
+          "from": "id-2801fac65fd4",
+          "to": "id-4eb00c2b632b",
+          "relationshipId": "id-5f5598683336",
           "type": "AggregationRelationship",
           "label": ""
         },
         {
-          "id": "id-912305de9a62",
-          "from": "id-b670e4d15325",
-          "to": "id-37468e992f2f",
-          "relationshipId": "id-e099e972f4c5",
+          "id": "id-ce5016f6c75f",
+          "from": "id-2801fac65fd4",
+          "to": "id-199fe2d2eb05",
+          "relationshipId": "id-571b2eae9835",
           "type": "AggregationRelationship",
           "label": ""
         },
         {
-          "id": "id-62da26e36758",
-          "from": "id-404b923ac864",
-          "to": "id-a4ede9397e32",
-          "relationshipId": "id-70eaa18fbf4d",
+          "id": "id-43aaa900f190",
+          "from": "id-776bc33653dc",
+          "to": "id-bf35f89bb7cb",
+          "relationshipId": "id-397be443518d",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-b3449aa0eb35",
-          "from": "id-a4ede9397e32",
-          "to": "id-0dd11a7e10cf",
-          "relationshipId": "id-14a25c25b626",
+          "id": "id-431f247b30b2",
+          "from": "id-bf35f89bb7cb",
+          "to": "id-54ece57df53c",
+          "relationshipId": "id-7de3edef8086",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-3502b0a5ada1",
-          "from": "id-0dd11a7e10cf",
-          "to": "id-362a8675d2f5",
-          "relationshipId": "id-47fd47d5b6ee",
+          "id": "id-c0a21044ee3e",
+          "from": "id-54ece57df53c",
+          "to": "id-c61af3b98c01",
+          "relationshipId": "id-cdbe71f08213",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-6736ab839697",
-          "from": "id-362a8675d2f5",
-          "to": "id-4f3bf13838e0",
-          "relationshipId": "id-34f0bea9198a",
+          "id": "id-e38e1b843657",
+          "from": "id-c61af3b98c01",
+          "to": "id-d88cb3f546cc",
+          "relationshipId": "id-64cc603987d0",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-8cb33a99b8c3",
-          "from": "id-4f3bf13838e0",
-          "to": "id-9ac5e17a4502",
-          "relationshipId": "id-b4d56b75b2c2",
+          "id": "id-3d8df9d01079",
+          "from": "id-d88cb3f546cc",
+          "to": "id-a1843a6f53a1",
+          "relationshipId": "id-734e487b1172",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-23c54573e4a2",
-          "from": "id-9ac5e17a4502",
-          "to": "id-a78dd98b604a",
-          "relationshipId": "id-a75942730ddc",
+          "id": "id-c8382243a2a7",
+          "from": "id-a1843a6f53a1",
+          "to": "id-8828fac467f8",
+          "relationshipId": "id-7cbe544747bc",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-b3eeeb7807ce",
-          "from": "id-a78dd98b604a",
-          "to": "id-20256520bf56",
-          "relationshipId": "id-8c588f99dd1e",
+          "id": "id-8dab3f53db14",
+          "from": "id-8828fac467f8",
+          "to": "id-29c6c0666553",
+          "relationshipId": "id-edc756103a8f",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-84bbeae5e0f9",
-          "from": "id-20256520bf56",
-          "to": "id-f2bb0560e375",
-          "relationshipId": "id-c50e341a3086",
+          "id": "id-f63d54daa9c3",
+          "from": "id-29c6c0666553",
+          "to": "id-85e7e294939f",
+          "relationshipId": "id-ab16b9c03238",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-3ffae8521b32",
-          "from": "id-4dd773ac55c8",
-          "to": "id-362a8675d2f5",
-          "relationshipId": "id-e76ecdceb7c5",
+          "id": "id-e83a2c051af5",
+          "from": "id-4eb00c2b632b",
+          "to": "id-c61af3b98c01",
+          "relationshipId": "id-394d79bc2430",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-86efc47cf33d",
-          "from": "id-4dd773ac55c8",
-          "to": "id-a78dd98b604a",
-          "relationshipId": "id-e6fd1efbd0d5",
+          "id": "id-54211f907c4e",
+          "from": "id-4eb00c2b632b",
+          "to": "id-8828fac467f8",
+          "relationshipId": "id-b00ca3c23094",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-5efc9906debc",
-          "from": "id-37468e992f2f",
-          "to": "id-404b923ac864",
-          "relationshipId": "id-31781f39365b",
+          "id": "id-c5048ea11f34",
+          "from": "id-199fe2d2eb05",
+          "to": "id-776bc33653dc",
+          "relationshipId": "id-42b4666dee41",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-b715c788f051",
-          "from": "id-37468e992f2f",
-          "to": "id-0dd11a7e10cf",
-          "relationshipId": "id-3b7536461b78",
+          "id": "id-38442dd81388",
+          "from": "id-199fe2d2eb05",
+          "to": "id-54ece57df53c",
+          "relationshipId": "id-bb927316e247",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-ff26d4e83bd1",
-          "from": "id-74e30b35d7dc",
-          "to": "id-0dd11a7e10cf",
-          "relationshipId": "id-a4df3cc9ecf7",
+          "id": "id-0f84432d6b9d",
+          "from": "id-5e7cde85eaa4",
+          "to": "id-54ece57df53c",
+          "relationshipId": "id-5b47a09d7c64",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-547c0a4da1a5",
-          "from": "id-74e30b35d7dc",
-          "to": "id-9ac5e17a4502",
-          "relationshipId": "id-76a4afaa7833",
+          "id": "id-5c44b6a0d29b",
+          "from": "id-5e7cde85eaa4",
+          "to": "id-a1843a6f53a1",
+          "relationshipId": "id-e21ffcdba917",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-e51c4494a686",
-          "from": "id-0dd11a7e10cf",
-          "to": "id-ebf930393657",
-          "relationshipId": "id-c7fe507d7593",
+          "id": "id-4c8555a8fe4f",
+          "from": "id-54ece57df53c",
+          "to": "id-2cd420aa9cb9",
+          "relationshipId": "id-8457159376d6",
           "type": "AccessRelationship",
           "label": "write"
         },
         {
-          "id": "id-2379d10227ef",
-          "from": "id-9ac5e17a4502",
-          "to": "id-ebf930393657",
-          "relationshipId": "id-10a7716a5a53",
+          "id": "id-17ee68b7d16d",
+          "from": "id-a1843a6f53a1",
+          "to": "id-2cd420aa9cb9",
+          "relationshipId": "id-23999d856d29",
           "type": "AccessRelationship",
           "label": "read"
         },
         {
-          "id": "id-9d964f5bb0ae",
-          "from": "id-9297b1bcf159",
-          "to": "id-3fe951b93a06",
-          "relationshipId": "id-42b2bf6d2424",
+          "id": "id-d9766626e6e6",
+          "from": "id-7d2ae0a92567",
+          "to": "id-9640c33a0cce",
+          "relationshipId": "id-ab2c12b78004",
           "type": "AccessRelationship",
           "label": "write"
         },
         {
-          "id": "id-a0a825adfa8b",
-          "from": "id-9ac5e17a4502",
-          "to": "id-3fe951b93a06",
-          "relationshipId": "id-e48294919a20",
+          "id": "id-b4c118ea9bff",
+          "from": "id-a1843a6f53a1",
+          "to": "id-9640c33a0cce",
+          "relationshipId": "id-cdf0cc76e031",
           "type": "AccessRelationship",
           "label": "read"
         },
         {
-          "id": "id-e4ea27911f21",
-          "from": "id-a78dd98b604a",
-          "to": "id-27734152322d",
-          "relationshipId": "id-50c662288ec9",
+          "id": "id-5ed2be6173b9",
+          "from": "id-8828fac467f8",
+          "to": "id-5ca4eb03abba",
+          "relationshipId": "id-fae154df4d92",
           "type": "AccessRelationship",
           "label": "write"
         },
         {
-          "id": "id-0d64aee350b3",
-          "from": "id-a78dd98b604a",
-          "to": "id-e58a08a675fc",
-          "relationshipId": "id-249b63970de9",
+          "id": "id-047224a578c5",
+          "from": "id-8828fac467f8",
+          "to": "id-86e44f8ac5e3",
+          "relationshipId": "id-0824efaf8009",
           "type": "AccessRelationship",
           "label": "write"
         },
         {
-          "id": "id-1bb2baa9a109",
-          "from": "id-20256520bf56",
-          "to": "id-e3ae628919d6",
-          "relationshipId": "id-ed6e4bdce68c",
+          "id": "id-7aa50ca002d5",
+          "from": "id-29c6c0666553",
+          "to": "id-486b5a99e63c",
+          "relationshipId": "id-d7a666ee9335",
           "type": "RealizationRelationship",
           "label": ""
         },
         {
-          "id": "id-488ae9ee275e",
-          "from": "id-dc00a0724e6c",
-          "to": "id-0084a4fa4807",
-          "relationshipId": "id-996c9644a710",
+          "id": "id-2047c46f58f6",
+          "from": "id-f0e565351316",
+          "to": "id-afa1f802a283",
+          "relationshipId": "id-8e60cccbb30c",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-2c1761aeeb06",
-          "from": "id-e3ae628919d6",
-          "to": "id-d6af8efafffd",
-          "relationshipId": "id-9f34481bade8",
+          "id": "id-d038ed7225da",
+          "from": "id-486b5a99e63c",
+          "to": "id-c464da6ada93",
+          "relationshipId": "id-925a10291f6b",
           "type": "RealizationRelationship",
           "label": ""
         },
         {
-          "id": "id-87fd34a98fb5",
-          "from": "id-e3ae628919d6",
-          "to": "id-591502dfc313",
-          "relationshipId": "id-df51c700be9e",
+          "id": "id-6fa6c4694ece",
+          "from": "id-486b5a99e63c",
+          "to": "id-c7c1cbe096a2",
+          "relationshipId": "id-868f82605c7f",
           "type": "RealizationRelationship",
           "label": ""
         },
         {
-          "id": "id-01f07614beb7",
-          "from": "id-e3ae628919d6",
-          "to": "id-570b6dca635e",
-          "relationshipId": "id-6855449850ed",
+          "id": "id-37cf144ad1af",
+          "from": "id-486b5a99e63c",
+          "to": "id-8a00e6c39664",
+          "relationshipId": "id-4bfce8b710c0",
           "type": "RealizationRelationship",
           "label": ""
         },
         {
-          "id": "id-a51a7bbe735f",
-          "from": "id-e3ae628919d6",
-          "to": "id-fe23da8baa05",
-          "relationshipId": "id-78b7776b2339",
+          "id": "id-25f9cf3f2426",
+          "from": "id-486b5a99e63c",
+          "to": "id-dda36303d89c",
+          "relationshipId": "id-6785f81d2f64",
           "type": "RealizationRelationship",
           "label": ""
         },
         {
-          "id": "id-57a0f76b47e1",
-          "from": "id-ad14c8a45595",
-          "to": "id-e3ae628919d6",
-          "relationshipId": "id-6849f5972965",
+          "id": "id-0c53fb408f9b",
+          "from": "id-750fb4da77d2",
+          "to": "id-486b5a99e63c",
+          "relationshipId": "id-bda95718e55e",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-bdacbf1572da",
-          "from": "id-ef7e2f92c9db",
-          "to": "id-e3ae628919d6",
-          "relationshipId": "id-2bdca5ca2071",
+          "id": "id-6e81ec20dae0",
+          "from": "id-67861dc3ca9d",
+          "to": "id-486b5a99e63c",
+          "relationshipId": "id-ebc66979cbc5",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-2066010591aa",
-          "from": "id-e489533bd418",
-          "to": "id-e3ae628919d6",
-          "relationshipId": "id-9e50e15bfe4d",
+          "id": "id-f58ad048b98e",
+          "from": "id-527a2459dc90",
+          "to": "id-486b5a99e63c",
+          "relationshipId": "id-af9dff04dda6",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-c1df08ab1e27",
-          "from": "id-9a48a622a1f9",
-          "to": "id-e3ae628919d6",
-          "relationshipId": "id-b2a361655827",
+          "id": "id-ba307e6e81bf",
+          "from": "id-d180e07fe755",
+          "to": "id-486b5a99e63c",
+          "relationshipId": "id-09199a1f78ae",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-a1ea256d1be6",
-          "from": "id-9a48a622a1f9",
-          "to": "id-ad14c8a45595",
-          "relationshipId": "id-7b0258e80797",
+          "id": "id-faf6f09c7f22",
+          "from": "id-d180e07fe755",
+          "to": "id-750fb4da77d2",
+          "relationshipId": "id-9c8c2b95a220",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-fa46d6e0c6dd",
-          "from": "id-9ed00c2e64bc",
-          "to": "id-e3ae628919d6",
-          "relationshipId": "id-c34f6c1d51dc",
+          "id": "id-624d5fff609f",
+          "from": "id-1289aa131fe0",
+          "to": "id-486b5a99e63c",
+          "relationshipId": "id-b199baba4943",
           "type": "AssociationRelationship",
           "label": ""
         },
         {
-          "id": "id-98ca1ab3e005",
-          "from": "id-4f40c520864b",
-          "to": "id-d6af8efafffd",
-          "relationshipId": "id-ce5fdf056505",
+          "id": "id-d5775656a305",
+          "from": "id-230fd4089c5d",
+          "to": "id-c464da6ada93",
+          "relationshipId": "id-acbf99663667",
           "type": "AssociationRelationship",
           "label": ""
         },
         {
-          "id": "id-5618be68f8a5",
-          "from": "id-de9dd92a61f5",
-          "to": "id-ad14c8a45595",
-          "relationshipId": "id-59b5fdf2c7fd",
+          "id": "id-80154b842357",
+          "from": "id-48306095e5d7",
+          "to": "id-750fb4da77d2",
+          "relationshipId": "id-d827d5016189",
           "type": "AssociationRelationship",
           "label": ""
         },
         {
-          "id": "id-132ebfbce438",
-          "from": "id-6ccb173f4107",
-          "to": "id-9ed00c2e64bc",
-          "relationshipId": "id-7c17e01bfc81",
+          "id": "id-d379d7586392",
+          "from": "id-2047722f3413",
+          "to": "id-1289aa131fe0",
+          "relationshipId": "id-4471b778cf6d",
           "type": "AssociationRelationship",
           "label": ""
         },
         {
-          "id": "id-c21a31facbec",
-          "from": "id-bd0df08780a7",
-          "to": "id-e3ae628919d6",
-          "relationshipId": "id-94c4671dab4a",
+          "id": "id-c09cd2518e4f",
+          "from": "id-ffeb467fd81f",
+          "to": "id-486b5a99e63c",
+          "relationshipId": "id-a405cfb29e48",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-50729119a56b",
-          "from": "id-1b07b66d37c4",
-          "to": "id-ef7e2f92c9db",
-          "relationshipId": "id-15bec4dbceff",
+          "id": "id-09d5e7efcf7a",
+          "from": "id-66d49fe363b6",
+          "to": "id-67861dc3ca9d",
+          "relationshipId": "id-fede9927c67e",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-9736a1340a9b",
-          "from": "id-ae585cd60285",
-          "to": "id-ad14c8a45595",
-          "relationshipId": "id-48d0b6b79b61",
+          "id": "id-45c0fc82dd9f",
+          "from": "id-13423bbfa725",
+          "to": "id-750fb4da77d2",
+          "relationshipId": "id-75f798b66e77",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-30e2a2742ac3",
-          "from": "id-8428d0ba9764",
-          "to": "id-e3ae628919d6",
-          "relationshipId": "id-979adac79493",
+          "id": "id-9b866d0bdc9b",
+          "from": "id-7593d3eee148",
+          "to": "id-486b5a99e63c",
+          "relationshipId": "id-f745fe86c295",
           "type": "RealizationRelationship",
           "label": ""
         },
         {
-          "id": "id-f45542622c48",
-          "from": "id-2a5c5a9f3383",
-          "to": "id-e3ae628919d6",
-          "relationshipId": "id-9ffa082dc9c6",
+          "id": "id-4656c0f4e009",
+          "from": "id-63a12c474be6",
+          "to": "id-486b5a99e63c",
+          "relationshipId": "id-417c0abd6b7f",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-1886a3a9a97f",
-          "from": "id-3873883810c6",
-          "to": "id-bd0df08780a7",
-          "relationshipId": "id-b11ea0dbc2b9",
+          "id": "id-f6c3c29f78ea",
+          "from": "id-74925579a1d2",
+          "to": "id-ffeb467fd81f",
+          "relationshipId": "id-7888a0b777c2",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-99f230d1b6d9",
-          "from": "id-3873883810c6",
-          "to": "id-1b07b66d37c4",
-          "relationshipId": "id-9d8c66753745",
+          "id": "id-f94aafb3f1a7",
+          "from": "id-74925579a1d2",
+          "to": "id-66d49fe363b6",
+          "relationshipId": "id-1f5b67c33ea1",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-ce4406367ad2",
-          "from": "id-5d059d578384",
-          "to": "id-bd0df08780a7",
-          "relationshipId": "id-0e40cada8089",
+          "id": "id-6968c7fc60c5",
+          "from": "id-bc8e1d3a8756",
+          "to": "id-ffeb467fd81f",
+          "relationshipId": "id-a51d9c7fd214",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-421af0c579df",
-          "from": "id-5d059d578384",
-          "to": "id-1b07b66d37c4",
-          "relationshipId": "id-37b3f975b16b",
+          "id": "id-09caf7d090c4",
+          "from": "id-bc8e1d3a8756",
+          "to": "id-66d49fe363b6",
+          "relationshipId": "id-a3b9f848a143",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-6b75157b5c0d",
-          "from": "id-b4f6518ce379",
-          "to": "id-ae585cd60285",
-          "relationshipId": "id-19138579874e",
+          "id": "id-540f9e55d817",
+          "from": "id-5d2de10792c4",
+          "to": "id-13423bbfa725",
+          "relationshipId": "id-672d3582c308",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-af59055a7cc8",
-          "from": "id-1ad9187a24ee",
-          "to": "id-e3ae628919d6",
-          "relationshipId": "id-fe55a267444b",
+          "id": "id-86633b83de97",
+          "from": "id-09a90ac0c391",
+          "to": "id-486b5a99e63c",
+          "relationshipId": "id-b50bbc71e724",
           "type": "AssociationRelationship",
           "label": ""
         }
       ]
     },
     {
-      "id": "id-d19271941ce5",
+      "id": "id-d2dfd4db1443",
       "name": "Tender Process",
       "description": "EU procurement lifecycle from needs assessment through contract award and implementation",
       "nodes": [
         {
-          "id": "id-a6345437ec78",
+          "id": "id-dd82b1bc643d",
           "elementId": "b001",
           "label": "Municipality",
           "type": "BusinessActor",
@@ -1987,7 +2004,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-dc3f74ead4c2",
+          "id": "id-7e966757bac9",
           "elementId": "b002",
           "label": "ESB Vendor",
           "type": "BusinessActor",
@@ -2001,7 +2018,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-a1efb6f9a03f",
+          "id": "id-b3c4ccba345e",
           "elementId": "b003",
           "label": "Evaluation Committee",
           "type": "BusinessCollaboration",
@@ -2015,7 +2032,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-9f16b19a5865",
+          "id": "id-174a1118e482",
           "elementId": "b004",
           "label": "Contracting Officer",
           "type": "BusinessRole",
@@ -2029,7 +2046,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-73a1c2096f7d",
+          "id": "id-15c8d05a0fba",
           "elementId": "b005",
           "label": "IT Architect",
           "type": "BusinessRole",
@@ -2043,7 +2060,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-5be4c82f029c",
+          "id": "id-ca650c5d2139",
           "elementId": "b006",
           "label": "Legal Advisor",
           "type": "BusinessRole",
@@ -2057,7 +2074,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-b0bb4cf28033",
+          "id": "id-f00ad33fe7b7",
           "elementId": "b007",
           "label": "Needs Assessment",
           "type": "BusinessProcess",
@@ -2071,7 +2088,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-a433cce0f5e9",
+          "id": "id-443a3329157e",
           "elementId": "b008",
           "label": "Market Consultation",
           "type": "BusinessProcess",
@@ -2085,7 +2102,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-8278e3bc0e41",
+          "id": "id-f4f300936bba",
           "elementId": "b009",
           "label": "Tender Preparation",
           "type": "BusinessProcess",
@@ -2099,7 +2116,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-76f015c489d3",
+          "id": "id-ec21cd541ab7",
           "elementId": "b010",
           "label": "Tender Publication",
           "type": "BusinessProcess",
@@ -2113,7 +2130,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-6cdc8061f17d",
+          "id": "id-e076f1725125",
           "elementId": "b011",
           "label": "Tender Reception",
           "type": "BusinessProcess",
@@ -2127,7 +2144,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-9cb8b3df932f",
+          "id": "id-59c6125c3af9",
           "elementId": "b012",
           "label": "Tender Evaluation",
           "type": "BusinessProcess",
@@ -2141,7 +2158,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-9e5fdd88709a",
+          "id": "id-967b4fbcaba6",
           "elementId": "b013",
           "label": "Contract Award",
           "type": "BusinessProcess",
@@ -2155,7 +2172,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-4d9b5fe09848",
+          "id": "id-45a4229ebd4a",
           "elementId": "b014",
           "label": "ESB Implementation",
           "type": "BusinessProcess",
@@ -2169,7 +2186,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-799c967b34b1",
+          "id": "id-ecef4969780c",
           "elementId": "b015",
           "label": "Acceptance Testing",
           "type": "BusinessProcess",
@@ -2183,7 +2200,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-968dcb533dfd",
+          "id": "id-a33cf5d191e0",
           "elementId": "b016",
           "label": "Procurement Service",
           "type": "BusinessService",
@@ -2197,7 +2214,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-e59af0f43330",
+          "id": "id-725eae45c47d",
           "elementId": "b017",
           "label": "Technical Spec",
           "type": "BusinessObject",
@@ -2211,7 +2228,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-1a60e28c9001",
+          "id": "id-162c1a6f6f95",
           "elementId": "b018",
           "label": "Tender Offer",
           "type": "BusinessObject",
@@ -2225,7 +2242,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-55374fbc8548",
+          "id": "id-d2a4bd348cce",
           "elementId": "b019",
           "label": "Award Notice",
           "type": "BusinessObject",
@@ -2239,7 +2256,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-0b86f7f6bb02",
+          "id": "id-62196abc4f18",
           "elementId": "b020",
           "label": "ESB Contract",
           "type": "Contract",
@@ -2255,222 +2272,222 @@ const MODEL = {
       ],
       "edges": [
         {
-          "id": "id-8a65f50f9359",
-          "from": "id-a6345437ec78",
-          "to": "id-9f16b19a5865",
-          "relationshipId": "id-eba0ceeb448c",
+          "id": "id-1df14fa53152",
+          "from": "id-dd82b1bc643d",
+          "to": "id-174a1118e482",
+          "relationshipId": "id-7152273003b7",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-1cec0305fed2",
-          "from": "id-a6345437ec78",
-          "to": "id-73a1c2096f7d",
-          "relationshipId": "id-aef0ce8526e9",
+          "id": "id-58b37a3ee1d0",
+          "from": "id-dd82b1bc643d",
+          "to": "id-15c8d05a0fba",
+          "relationshipId": "id-dc9a29aeb0a3",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-043b5728830c",
-          "from": "id-a6345437ec78",
-          "to": "id-5be4c82f029c",
-          "relationshipId": "id-10278133bd63",
+          "id": "id-169f77d1198a",
+          "from": "id-dd82b1bc643d",
+          "to": "id-ca650c5d2139",
+          "relationshipId": "id-e13fe0e61b27",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-109d3675849d",
-          "from": "id-a1efb6f9a03f",
-          "to": "id-9f16b19a5865",
-          "relationshipId": "id-d6933c049b08",
+          "id": "id-4dc02885bea9",
+          "from": "id-b3c4ccba345e",
+          "to": "id-174a1118e482",
+          "relationshipId": "id-5f5598683336",
           "type": "AggregationRelationship",
           "label": ""
         },
         {
-          "id": "id-539ea2c819a4",
-          "from": "id-a1efb6f9a03f",
-          "to": "id-73a1c2096f7d",
-          "relationshipId": "id-e099e972f4c5",
+          "id": "id-61290aea77c9",
+          "from": "id-b3c4ccba345e",
+          "to": "id-15c8d05a0fba",
+          "relationshipId": "id-571b2eae9835",
           "type": "AggregationRelationship",
           "label": ""
         },
         {
-          "id": "id-f0d0d6e4f371",
-          "from": "id-b0bb4cf28033",
-          "to": "id-a433cce0f5e9",
-          "relationshipId": "id-70eaa18fbf4d",
+          "id": "id-a6520c5582aa",
+          "from": "id-f00ad33fe7b7",
+          "to": "id-443a3329157e",
+          "relationshipId": "id-397be443518d",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-4e41b8d791e5",
-          "from": "id-a433cce0f5e9",
-          "to": "id-8278e3bc0e41",
-          "relationshipId": "id-14a25c25b626",
+          "id": "id-674a7ddd1a0c",
+          "from": "id-443a3329157e",
+          "to": "id-f4f300936bba",
+          "relationshipId": "id-7de3edef8086",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-953a2c33e79a",
-          "from": "id-8278e3bc0e41",
-          "to": "id-76f015c489d3",
-          "relationshipId": "id-47fd47d5b6ee",
+          "id": "id-e7344bc41527",
+          "from": "id-f4f300936bba",
+          "to": "id-ec21cd541ab7",
+          "relationshipId": "id-cdbe71f08213",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-249cb8208508",
-          "from": "id-76f015c489d3",
-          "to": "id-6cdc8061f17d",
-          "relationshipId": "id-34f0bea9198a",
+          "id": "id-e46c11355019",
+          "from": "id-ec21cd541ab7",
+          "to": "id-e076f1725125",
+          "relationshipId": "id-64cc603987d0",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-87e6afc132db",
-          "from": "id-6cdc8061f17d",
-          "to": "id-9cb8b3df932f",
-          "relationshipId": "id-b4d56b75b2c2",
+          "id": "id-420345f3b39a",
+          "from": "id-e076f1725125",
+          "to": "id-59c6125c3af9",
+          "relationshipId": "id-734e487b1172",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-e65fe663aeb8",
-          "from": "id-9cb8b3df932f",
-          "to": "id-9e5fdd88709a",
-          "relationshipId": "id-a75942730ddc",
+          "id": "id-e1b2451a45fa",
+          "from": "id-59c6125c3af9",
+          "to": "id-967b4fbcaba6",
+          "relationshipId": "id-7cbe544747bc",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-394d8f0bb1da",
-          "from": "id-9e5fdd88709a",
-          "to": "id-4d9b5fe09848",
-          "relationshipId": "id-8c588f99dd1e",
+          "id": "id-c5c4779f6b78",
+          "from": "id-967b4fbcaba6",
+          "to": "id-45a4229ebd4a",
+          "relationshipId": "id-edc756103a8f",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-0b9ae3916a05",
-          "from": "id-4d9b5fe09848",
-          "to": "id-799c967b34b1",
-          "relationshipId": "id-c50e341a3086",
+          "id": "id-bf828516d5b7",
+          "from": "id-45a4229ebd4a",
+          "to": "id-ecef4969780c",
+          "relationshipId": "id-ab16b9c03238",
           "type": "TriggeringRelationship",
           "label": ""
         },
         {
-          "id": "id-a1187c0ca962",
-          "from": "id-9f16b19a5865",
-          "to": "id-76f015c489d3",
-          "relationshipId": "id-e76ecdceb7c5",
+          "id": "id-d9cc32aa0c99",
+          "from": "id-174a1118e482",
+          "to": "id-ec21cd541ab7",
+          "relationshipId": "id-394d79bc2430",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-49d9fbea49e4",
-          "from": "id-9f16b19a5865",
-          "to": "id-9e5fdd88709a",
-          "relationshipId": "id-e6fd1efbd0d5",
+          "id": "id-a3f25bfdb62e",
+          "from": "id-174a1118e482",
+          "to": "id-967b4fbcaba6",
+          "relationshipId": "id-b00ca3c23094",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-2e1268325f0d",
-          "from": "id-73a1c2096f7d",
-          "to": "id-b0bb4cf28033",
-          "relationshipId": "id-31781f39365b",
+          "id": "id-564e832f4ef3",
+          "from": "id-15c8d05a0fba",
+          "to": "id-f00ad33fe7b7",
+          "relationshipId": "id-42b4666dee41",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-204cb721d7e3",
-          "from": "id-73a1c2096f7d",
-          "to": "id-8278e3bc0e41",
-          "relationshipId": "id-3b7536461b78",
+          "id": "id-05ae672a4678",
+          "from": "id-15c8d05a0fba",
+          "to": "id-f4f300936bba",
+          "relationshipId": "id-bb927316e247",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-c7d13c2bf43e",
-          "from": "id-5be4c82f029c",
-          "to": "id-8278e3bc0e41",
-          "relationshipId": "id-a4df3cc9ecf7",
+          "id": "id-29e5a94fbeff",
+          "from": "id-ca650c5d2139",
+          "to": "id-f4f300936bba",
+          "relationshipId": "id-5b47a09d7c64",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-7781ccbcefeb",
-          "from": "id-5be4c82f029c",
-          "to": "id-9cb8b3df932f",
-          "relationshipId": "id-76a4afaa7833",
+          "id": "id-9291834e2c4f",
+          "from": "id-ca650c5d2139",
+          "to": "id-59c6125c3af9",
+          "relationshipId": "id-e21ffcdba917",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-599d88b6f63c",
-          "from": "id-8278e3bc0e41",
-          "to": "id-e59af0f43330",
-          "relationshipId": "id-c7fe507d7593",
+          "id": "id-a1fe183abd92",
+          "from": "id-f4f300936bba",
+          "to": "id-725eae45c47d",
+          "relationshipId": "id-8457159376d6",
           "type": "AccessRelationship",
           "label": "write"
         },
         {
-          "id": "id-2dc61b5a7806",
-          "from": "id-9cb8b3df932f",
-          "to": "id-e59af0f43330",
-          "relationshipId": "id-10a7716a5a53",
+          "id": "id-0cdc7626e98c",
+          "from": "id-59c6125c3af9",
+          "to": "id-725eae45c47d",
+          "relationshipId": "id-23999d856d29",
           "type": "AccessRelationship",
           "label": "read"
         },
         {
-          "id": "id-3322736269a5",
-          "from": "id-dc3f74ead4c2",
-          "to": "id-1a60e28c9001",
-          "relationshipId": "id-42b2bf6d2424",
+          "id": "id-674dd37fda40",
+          "from": "id-7e966757bac9",
+          "to": "id-162c1a6f6f95",
+          "relationshipId": "id-ab2c12b78004",
           "type": "AccessRelationship",
           "label": "write"
         },
         {
-          "id": "id-b2f7330a7068",
-          "from": "id-9cb8b3df932f",
-          "to": "id-1a60e28c9001",
-          "relationshipId": "id-e48294919a20",
+          "id": "id-61e9a7ecc5a3",
+          "from": "id-59c6125c3af9",
+          "to": "id-162c1a6f6f95",
+          "relationshipId": "id-cdf0cc76e031",
           "type": "AccessRelationship",
           "label": "read"
         },
         {
-          "id": "id-15a2f6aaae66",
-          "from": "id-9e5fdd88709a",
-          "to": "id-55374fbc8548",
-          "relationshipId": "id-50c662288ec9",
+          "id": "id-cfcbbb37533d",
+          "from": "id-967b4fbcaba6",
+          "to": "id-d2a4bd348cce",
+          "relationshipId": "id-fae154df4d92",
           "type": "AccessRelationship",
           "label": "write"
         },
         {
-          "id": "id-c2b179b6eedd",
-          "from": "id-9e5fdd88709a",
-          "to": "id-0b86f7f6bb02",
-          "relationshipId": "id-249b63970de9",
+          "id": "id-c4b0505477a0",
+          "from": "id-967b4fbcaba6",
+          "to": "id-62196abc4f18",
+          "relationshipId": "id-0824efaf8009",
           "type": "AccessRelationship",
           "label": "write"
         },
         {
-          "id": "id-16f718c8af93",
-          "from": "id-968dcb533dfd",
-          "to": "id-a6345437ec78",
-          "relationshipId": "id-996c9644a710",
+          "id": "id-8e86c2be06de",
+          "from": "id-a33cf5d191e0",
+          "to": "id-dd82b1bc643d",
+          "relationshipId": "id-8e60cccbb30c",
           "type": "ServingRelationship",
           "label": ""
         }
       ]
     },
     {
-      "id": "id-ffdf8d9c1902",
+      "id": "id-fc4633e29778",
       "name": "ESB Solution Architecture",
       "description": "Application components, services, data objects and technology infrastructure for the ESB",
       "nodes": [
         {
-          "id": "id-2af7a191c744",
+          "id": "id-6e1605569ae4",
           "elementId": "a001",
           "label": "ESB Platform",
           "type": "ApplicationComponent",
@@ -2484,7 +2501,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-fdd4521f622f",
+          "id": "id-537b3a48f5f9",
           "elementId": "a002",
           "label": "API Gateway",
           "type": "ApplicationComponent",
@@ -2498,7 +2515,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-da8f32c32556",
+          "id": "id-e1eff9b15c4c",
           "elementId": "a003",
           "label": "Message Broker",
           "type": "ApplicationComponent",
@@ -2512,7 +2529,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-a5929ce74c75",
+          "id": "id-ee12a652dbac",
           "elementId": "a004",
           "label": "Service Registry",
           "type": "ApplicationComponent",
@@ -2526,7 +2543,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-25b2ba853248",
+          "id": "id-cb44f0df621b",
           "elementId": "a005",
           "label": "Monitoring Console",
           "type": "ApplicationComponent",
@@ -2540,7 +2557,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-d7b8d86e2772",
+          "id": "id-f62fde441e65",
           "elementId": "a006",
           "label": "Identity & Access Mgmt",
           "type": "ApplicationComponent",
@@ -2554,7 +2571,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-b922f9486fcc",
+          "id": "id-cf1e9620fee9",
           "elementId": "a007",
           "label": "Message Routing Service",
           "type": "ApplicationService",
@@ -2568,7 +2585,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-c40c7e9f8b24",
+          "id": "id-51c84acc6f49",
           "elementId": "a008",
           "label": "Data Transformation Svc",
           "type": "ApplicationService",
@@ -2582,7 +2599,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-c5e9b0b9a17c",
+          "id": "id-26cc5f148137",
           "elementId": "a009",
           "label": "Protocol Mediation Svc",
           "type": "ApplicationService",
@@ -2596,7 +2613,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-779fed54086f",
+          "id": "id-aaf3434bf76d",
           "elementId": "a010",
           "label": "Service Orchestration",
           "type": "ApplicationService",
@@ -2610,7 +2627,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-dc10e19cc70b",
+          "id": "id-9c54338021d6",
           "elementId": "a011",
           "label": "Integration Schema",
           "type": "DataObject",
@@ -2624,7 +2641,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-4639d27d5b15",
+          "id": "id-87e11e38d36c",
           "elementId": "a012",
           "label": "API Specification",
           "type": "DataObject",
@@ -2638,7 +2655,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-d46638b1a30d",
+          "id": "id-5a00aca03b7d",
           "elementId": "a013",
           "label": "SLA Definition",
           "type": "DataObject",
@@ -2652,7 +2669,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-9396aaa46154",
+          "id": "id-8e1ebed282ba",
           "elementId": "t001",
           "label": "Integration Server",
           "type": "Node",
@@ -2666,7 +2683,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-19d4ecc465c3",
+          "id": "id-bb2f666b249c",
           "elementId": "t002",
           "label": "Message Queue Server",
           "type": "Node",
@@ -2680,7 +2697,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-4d704e91169f",
+          "id": "id-bdcb2fa59b07",
           "elementId": "t003",
           "label": "API Gateway Server",
           "type": "Node",
@@ -2694,7 +2711,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-fec94934b5e4",
+          "id": "id-3caa87b7dc95",
           "elementId": "t004",
           "label": "ESB Software Package",
           "type": "SystemSoftware",
@@ -2708,7 +2725,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-5556a0201b4a",
+          "id": "id-fe15bc7a953f",
           "elementId": "t005",
           "label": "Container Platform",
           "type": "SystemSoftware",
@@ -2722,7 +2739,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-7dd0468c073d",
+          "id": "id-cd94e54ee290",
           "elementId": "t006",
           "label": "Operating System",
           "type": "SystemSoftware",
@@ -2736,7 +2753,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-d39ffbf89c8e",
+          "id": "id-c5dbb01f0f80",
           "elementId": "t007",
           "label": "Municipal Network",
           "type": "CommunicationNetwork",
@@ -2750,7 +2767,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-dea0c3b73ba1",
+          "id": "id-605be69351e0",
           "elementId": "t008",
           "label": "DMZ",
           "type": "CommunicationNetwork",
@@ -2764,7 +2781,7 @@ const MODEL = {
           "status": "Active"
         },
         {
-          "id": "id-121e782d232b",
+          "id": "id-d096a18484ee",
           "elementId": "t009",
           "label": "Deployment Package",
           "type": "Artifact",
@@ -2780,201 +2797,201 @@ const MODEL = {
       ],
       "edges": [
         {
-          "id": "id-4505b7d6fd7a",
-          "from": "id-2af7a191c744",
-          "to": "id-b922f9486fcc",
-          "relationshipId": "id-9f34481bade8",
+          "id": "id-1aea19040de0",
+          "from": "id-6e1605569ae4",
+          "to": "id-cf1e9620fee9",
+          "relationshipId": "id-925a10291f6b",
           "type": "RealizationRelationship",
           "label": ""
         },
         {
-          "id": "id-4f90eea81ad8",
-          "from": "id-2af7a191c744",
-          "to": "id-c40c7e9f8b24",
-          "relationshipId": "id-df51c700be9e",
+          "id": "id-5e43613fb1c9",
+          "from": "id-6e1605569ae4",
+          "to": "id-51c84acc6f49",
+          "relationshipId": "id-868f82605c7f",
           "type": "RealizationRelationship",
           "label": ""
         },
         {
-          "id": "id-6b4b821aeb13",
-          "from": "id-2af7a191c744",
-          "to": "id-c5e9b0b9a17c",
-          "relationshipId": "id-6855449850ed",
+          "id": "id-b97f3f12f52e",
+          "from": "id-6e1605569ae4",
+          "to": "id-26cc5f148137",
+          "relationshipId": "id-4bfce8b710c0",
           "type": "RealizationRelationship",
           "label": ""
         },
         {
-          "id": "id-c532fbe9b4b2",
-          "from": "id-2af7a191c744",
-          "to": "id-779fed54086f",
-          "relationshipId": "id-78b7776b2339",
+          "id": "id-b18fe0d75d18",
+          "from": "id-6e1605569ae4",
+          "to": "id-aaf3434bf76d",
+          "relationshipId": "id-6785f81d2f64",
           "type": "RealizationRelationship",
           "label": ""
         },
         {
-          "id": "id-c35ca9f7bc93",
-          "from": "id-fdd4521f622f",
-          "to": "id-2af7a191c744",
-          "relationshipId": "id-6849f5972965",
+          "id": "id-a46c99ace0ab",
+          "from": "id-537b3a48f5f9",
+          "to": "id-6e1605569ae4",
+          "relationshipId": "id-bda95718e55e",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-8a488dee88a2",
-          "from": "id-da8f32c32556",
-          "to": "id-2af7a191c744",
-          "relationshipId": "id-2bdca5ca2071",
+          "id": "id-22f421c0dbb6",
+          "from": "id-e1eff9b15c4c",
+          "to": "id-6e1605569ae4",
+          "relationshipId": "id-ebc66979cbc5",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-59a687314dc3",
-          "from": "id-a5929ce74c75",
-          "to": "id-2af7a191c744",
-          "relationshipId": "id-9e50e15bfe4d",
+          "id": "id-321644619a08",
+          "from": "id-ee12a652dbac",
+          "to": "id-6e1605569ae4",
+          "relationshipId": "id-af9dff04dda6",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-1ab73c27fd9e",
-          "from": "id-d7b8d86e2772",
-          "to": "id-2af7a191c744",
-          "relationshipId": "id-b2a361655827",
+          "id": "id-27ffd90b2a37",
+          "from": "id-f62fde441e65",
+          "to": "id-6e1605569ae4",
+          "relationshipId": "id-09199a1f78ae",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-71a91d017f83",
-          "from": "id-d7b8d86e2772",
-          "to": "id-fdd4521f622f",
-          "relationshipId": "id-7b0258e80797",
+          "id": "id-313ba651b2c9",
+          "from": "id-f62fde441e65",
+          "to": "id-537b3a48f5f9",
+          "relationshipId": "id-9c8c2b95a220",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-5834ff33838b",
-          "from": "id-25b2ba853248",
-          "to": "id-2af7a191c744",
-          "relationshipId": "id-c34f6c1d51dc",
+          "id": "id-eb23690c4a06",
+          "from": "id-cb44f0df621b",
+          "to": "id-6e1605569ae4",
+          "relationshipId": "id-b199baba4943",
           "type": "AssociationRelationship",
           "label": ""
         },
         {
-          "id": "id-b123a9110ce4",
-          "from": "id-dc10e19cc70b",
-          "to": "id-b922f9486fcc",
-          "relationshipId": "id-ce5fdf056505",
+          "id": "id-8c974e594666",
+          "from": "id-9c54338021d6",
+          "to": "id-cf1e9620fee9",
+          "relationshipId": "id-acbf99663667",
           "type": "AssociationRelationship",
           "label": ""
         },
         {
-          "id": "id-7335dcd20032",
-          "from": "id-4639d27d5b15",
-          "to": "id-fdd4521f622f",
-          "relationshipId": "id-59b5fdf2c7fd",
+          "id": "id-052b1966586a",
+          "from": "id-87e11e38d36c",
+          "to": "id-537b3a48f5f9",
+          "relationshipId": "id-d827d5016189",
           "type": "AssociationRelationship",
           "label": ""
         },
         {
-          "id": "id-74a2abb59cd8",
-          "from": "id-d46638b1a30d",
-          "to": "id-25b2ba853248",
-          "relationshipId": "id-7c17e01bfc81",
+          "id": "id-c6a990ff65a7",
+          "from": "id-5a00aca03b7d",
+          "to": "id-cb44f0df621b",
+          "relationshipId": "id-4471b778cf6d",
           "type": "AssociationRelationship",
           "label": ""
         },
         {
-          "id": "id-b8a5ed611900",
-          "from": "id-9396aaa46154",
-          "to": "id-2af7a191c744",
-          "relationshipId": "id-94c4671dab4a",
+          "id": "id-387f13e90561",
+          "from": "id-8e1ebed282ba",
+          "to": "id-6e1605569ae4",
+          "relationshipId": "id-a405cfb29e48",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-a8f978c72779",
-          "from": "id-19d4ecc465c3",
-          "to": "id-da8f32c32556",
-          "relationshipId": "id-15bec4dbceff",
+          "id": "id-77e946be415d",
+          "from": "id-bb2f666b249c",
+          "to": "id-e1eff9b15c4c",
+          "relationshipId": "id-fede9927c67e",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-dee3d103fe78",
-          "from": "id-4d704e91169f",
-          "to": "id-fdd4521f622f",
-          "relationshipId": "id-48d0b6b79b61",
+          "id": "id-5954b1842286",
+          "from": "id-bdcb2fa59b07",
+          "to": "id-537b3a48f5f9",
+          "relationshipId": "id-75f798b66e77",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-60f6fad50cfd",
-          "from": "id-fec94934b5e4",
-          "to": "id-2af7a191c744",
-          "relationshipId": "id-979adac79493",
+          "id": "id-9ee87afda56b",
+          "from": "id-3caa87b7dc95",
+          "to": "id-6e1605569ae4",
+          "relationshipId": "id-f745fe86c295",
           "type": "RealizationRelationship",
           "label": ""
         },
         {
-          "id": "id-97dd14898377",
-          "from": "id-5556a0201b4a",
-          "to": "id-2af7a191c744",
-          "relationshipId": "id-9ffa082dc9c6",
+          "id": "id-666cae6f6680",
+          "from": "id-fe15bc7a953f",
+          "to": "id-6e1605569ae4",
+          "relationshipId": "id-417c0abd6b7f",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-b9a5a2413bc1",
-          "from": "id-7dd0468c073d",
-          "to": "id-9396aaa46154",
-          "relationshipId": "id-b11ea0dbc2b9",
+          "id": "id-2ff9a23af9b8",
+          "from": "id-cd94e54ee290",
+          "to": "id-8e1ebed282ba",
+          "relationshipId": "id-7888a0b777c2",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-29c7f9207e7c",
-          "from": "id-7dd0468c073d",
-          "to": "id-19d4ecc465c3",
-          "relationshipId": "id-9d8c66753745",
+          "id": "id-2b6952c646dd",
+          "from": "id-cd94e54ee290",
+          "to": "id-bb2f666b249c",
+          "relationshipId": "id-1f5b67c33ea1",
           "type": "AssignmentRelationship",
           "label": ""
         },
         {
-          "id": "id-9a8e438b7478",
-          "from": "id-d39ffbf89c8e",
-          "to": "id-9396aaa46154",
-          "relationshipId": "id-0e40cada8089",
+          "id": "id-3a9ffc4748ba",
+          "from": "id-c5dbb01f0f80",
+          "to": "id-8e1ebed282ba",
+          "relationshipId": "id-a51d9c7fd214",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-c617fda13cad",
-          "from": "id-d39ffbf89c8e",
-          "to": "id-19d4ecc465c3",
-          "relationshipId": "id-37b3f975b16b",
+          "id": "id-f54562da8905",
+          "from": "id-c5dbb01f0f80",
+          "to": "id-bb2f666b249c",
+          "relationshipId": "id-a3b9f848a143",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-3e8dd45a81bb",
-          "from": "id-dea0c3b73ba1",
-          "to": "id-4d704e91169f",
-          "relationshipId": "id-19138579874e",
+          "id": "id-170b29e5a2e6",
+          "from": "id-605be69351e0",
+          "to": "id-bdcb2fa59b07",
+          "relationshipId": "id-672d3582c308",
           "type": "ServingRelationship",
           "label": ""
         },
         {
-          "id": "id-00b999580072",
-          "from": "id-121e782d232b",
-          "to": "id-2af7a191c744",
-          "relationshipId": "id-fe55a267444b",
+          "id": "id-bf6996d3d964",
+          "from": "id-d096a18484ee",
+          "to": "id-6e1605569ae4",
+          "relationshipId": "id-b50bbc71e724",
           "type": "AssociationRelationship",
           "label": ""
         }
       ]
     }
   ],
-  "generatedAt": "2026-03-23 21:07 UTC"
+  "generatedAt": "2026-03-23 21:26 UTC"
 };
 
 /* ── Constants ── */
@@ -3082,16 +3099,56 @@ function renderNetwork(view) {
     nodes: new vis.DataSet(visNodes),
     edges: new vis.DataSet(visEdges),
   };
-  const opts = {
+  const opts = buildOpts('grid');
+
+function buildOpts(mode) {
+  if (mode === 'flow') {
+    return {
+      physics: { enabled: false },
+      interaction: { hover: true, tooltipDelay: 250, selectConnectedEdges: false },
+      layout: {
+        hierarchical: {
+          enabled: true,
+          direction: 'LR',
+          sortMethod: 'directed',
+          nodeSpacing: 140,
+          levelSeparation: 220,
+          treeSpacing: 160,
+          blockShifting: true,
+          edgeMinimization: true,
+          parentCentralization: true,
+        }
+      },
+      nodes: { fixed: false },
+      edges: { selectionWidth: 2, smooth: { type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.4 } },
+    };
+  }
+  if (mode === 'force') {
+    return {
+      physics: {
+        enabled: true,
+        solver: 'forceAtlas2Based',
+        forceAtlas2Based: { gravitationalConstant: -80, centralGravity: 0.01, springLength: 180, springConstant: 0.06 },
+        stabilization: { iterations: 200 },
+      },
+      interaction: { hover: true, tooltipDelay: 250, selectConnectedEdges: false },
+      layout: { improvedLayout: true },
+      nodes: { fixed: false },
+      edges: { selectionWidth: 2 },
+    };
+  }
+  // grid (default) — fixed positions from model
+  return {
     physics: { enabled: false },
     interaction: { hover: true, tooltipDelay: 250, selectConnectedEdges: false },
     layout: { improvedLayout: false },
     nodes: { fixed: true },
     edges: { selectionWidth: 2 },
   };
+}
 
   if (network) network.destroy();
-  network = new vis.Network(container, data, opts);
+  network = new vis.Network(container, data, buildOpts(currentLayout));
 
   network.on('selectNode', params => {
     if (!params.nodes.length) return;
@@ -3233,6 +3290,21 @@ document.querySelectorAll('[data-layer]').forEach(cb => {
 document.getElementById('btn-fit').addEventListener('click', () => network && network.fit({ animation: true }));
 document.getElementById('btn-zin').addEventListener('click',  () => network && network.moveTo({ scale: network.getScale() * 1.25 }));
 document.getElementById('btn-zout').addEventListener('click', () => network && network.moveTo({ scale: network.getScale() * 0.8 }));
+
+/* ── Layout toggle ── */
+let currentLayout = 'grid';
+function setLayout(mode) {
+  currentLayout = mode;
+  document.querySelectorAll('.lt-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('lt-' + mode).classList.add('active');
+  if (currentView) {
+    const idx = +document.getElementById('view-sel').value;
+    loadView(idx);
+  }
+}
+document.getElementById('lt-grid').addEventListener('click',  () => setLayout('grid'));
+document.getElementById('lt-flow').addEventListener('click',  () => setLayout('flow'));
+document.getElementById('lt-force').addEventListener('click', () => setLayout('force'));
 
 /* ── Start ── */
 initViewSelector();

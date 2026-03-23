@@ -214,6 +214,18 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
       position: absolute; bottom: 14px; right: 14px;
       display: flex; flex-direction: column; gap: 4px;
     }
+    #layout-toggle {
+      position: absolute; top: 10px; right: 14px;
+      display: flex; gap: 0; border-radius: 5px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+    .lt-btn {
+      padding: 5px 12px; font-size: 11px; font-weight: 600;
+      cursor: pointer; border: none; background: #fff; color: #555;
+      border-right: 1px solid #ddd;
+    }
+    .lt-btn:last-child { border-right: none; }
+    .lt-btn.active { background: #2F5496; color: #fff; }
     .zoom-btn {
       width: 30px; height: 30px; background: #fff; border: 1px solid #ccc;
       border-radius: 4px; cursor: pointer; font-size: 16px; line-height: 28px;
@@ -287,6 +299,11 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   <!-- Network Canvas -->
   <div id="canvas">
     <div id="network"></div>
+    <div id="layout-toggle">
+      <div class="lt-btn active" id="lt-grid" title="Fixed grid layout from model">Grid</div>
+      <div class="lt-btn" id="lt-flow" title="Hierarchical flow layout following relationships">Flow &#8594;</div>
+      <div class="lt-btn" id="lt-force" title="Force-directed auto layout">Auto</div>
+    </div>
     <div id="zoom-btns">
       <div class="zoom-btn" id="btn-fit" title="Fit view">&#8596;</div>
       <div class="zoom-btn" id="btn-zin" title="Zoom in">+</div>
@@ -420,16 +437,56 @@ function renderNetwork(view) {
     nodes: new vis.DataSet(visNodes),
     edges: new vis.DataSet(visEdges),
   };
-  const opts = {
+  const opts = buildOpts('grid');
+
+function buildOpts(mode) {
+  if (mode === 'flow') {
+    return {
+      physics: { enabled: false },
+      interaction: { hover: true, tooltipDelay: 250, selectConnectedEdges: false },
+      layout: {
+        hierarchical: {
+          enabled: true,
+          direction: 'LR',
+          sortMethod: 'directed',
+          nodeSpacing: 140,
+          levelSeparation: 220,
+          treeSpacing: 160,
+          blockShifting: true,
+          edgeMinimization: true,
+          parentCentralization: true,
+        }
+      },
+      nodes: { fixed: false },
+      edges: { selectionWidth: 2, smooth: { type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.4 } },
+    };
+  }
+  if (mode === 'force') {
+    return {
+      physics: {
+        enabled: true,
+        solver: 'forceAtlas2Based',
+        forceAtlas2Based: { gravitationalConstant: -80, centralGravity: 0.01, springLength: 180, springConstant: 0.06 },
+        stabilization: { iterations: 200 },
+      },
+      interaction: { hover: true, tooltipDelay: 250, selectConnectedEdges: false },
+      layout: { improvedLayout: true },
+      nodes: { fixed: false },
+      edges: { selectionWidth: 2 },
+    };
+  }
+  // grid (default) — fixed positions from model
+  return {
     physics: { enabled: false },
     interaction: { hover: true, tooltipDelay: 250, selectConnectedEdges: false },
     layout: { improvedLayout: false },
     nodes: { fixed: true },
     edges: { selectionWidth: 2 },
   };
+}
 
   if (network) network.destroy();
-  network = new vis.Network(container, data, opts);
+  network = new vis.Network(container, data, buildOpts(currentLayout));
 
   network.on('selectNode', params => {
     if (!params.nodes.length) return;
@@ -571,6 +628,21 @@ document.querySelectorAll('[data-layer]').forEach(cb => {
 document.getElementById('btn-fit').addEventListener('click', () => network && network.fit({ animation: true }));
 document.getElementById('btn-zin').addEventListener('click',  () => network && network.moveTo({ scale: network.getScale() * 1.25 }));
 document.getElementById('btn-zout').addEventListener('click', () => network && network.moveTo({ scale: network.getScale() * 0.8 }));
+
+/* ── Layout toggle ── */
+let currentLayout = 'grid';
+function setLayout(mode) {
+  currentLayout = mode;
+  document.querySelectorAll('.lt-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('lt-' + mode).classList.add('active');
+  if (currentView) {
+    const idx = +document.getElementById('view-sel').value;
+    loadView(idx);
+  }
+}
+document.getElementById('lt-grid').addEventListener('click',  () => setLayout('grid'));
+document.getElementById('lt-flow').addEventListener('click',  () => setLayout('flow'));
+document.getElementById('lt-force').addEventListener('click', () => setLayout('force'));
 
 /* ── Start ── */
 initViewSelector();

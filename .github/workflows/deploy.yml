@@ -55,16 +55,18 @@ jobs:
       - name: Generate HTML viewer
         run: python scripts/generate_html.py
 
-      # ── Commit generated artefacts back to main ───────────────────────
-      - name: Commit generated files
+      # ── Commit model.archimate back to main (only when regenerated from Excel) ──
+      # docs/index.html is NOT committed — it goes directly to Pages to avoid conflicts
+      - name: Commit model.archimate
+        if: steps.changes.outputs.excel_changed == 'true'
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name  "github-actions[bot]"
-          git add model.archimate docs/index.html
+          git add model.archimate
           if git diff --staged --quiet; then
-            echo "No changes to commit."
+            echo "No changes to model.archimate."
           else
-            git commit -m "chore: auto-generate ArchiMate artefacts [skip ci]"
+            git commit -m "chore: regenerate model.archimate from Excel [skip ci]"
             git pull --rebase origin main
             git push
           fi
