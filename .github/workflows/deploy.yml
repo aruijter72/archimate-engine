@@ -38,27 +38,40 @@ jobs:
       - name: Check changed files
         id: changes
         run: |
-          if git diff --name-only HEAD~1 HEAD 2>/dev/null | grep -q "model-input.xlsx"; then
+          CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || true)
+          if echo "$CHANGED" | grep -q "model-input.xlsx"; then
             echo "excel_changed=true" >> $GITHUB_OUTPUT
           else
             echo "excel_changed=false" >> $GITHUB_OUTPUT
           fi
+          if echo "$CHANGED" | grep -q "Koppelregister"; then
+            echo "koppel_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "koppel_changed=false" >> $GITHUB_OUTPUT
+          fi
 
-      # ── Generate model from Excel (only when Excel changed) ───────────
-      - name: Generate model.archimate from Excel
-        if: steps.changes.outputs.excel_changed == 'true'
+      # ── Generate model from Koppelregister (takes priority if changed) ─
+      - name: Generate model.archimate from Koppelregister
+        if: steps.changes.outputs.koppel_changed == 'true'
         run: |
-          echo "Excel changed — regenerating model.archimate ..."
+          echo "Koppelregister changed — regenerating model.archimate ..."
+          python scripts/generate_model_koppelregister.py
+
+      # ── Generate model from model-input.xlsx (fallback / own model) ───
+      - name: Generate model.archimate from Excel
+        if: steps.changes.outputs.excel_changed == 'true' && steps.changes.outputs.koppel_changed != 'true'
+        run: |
+          echo "model-input.xlsx changed — regenerating model.archimate ..."
           python scripts/generate_model.py
 
       # ── Always regenerate HTML from current model.archimate ───────────
       - name: Generate HTML viewer
         run: python scripts/generate_html.py
 
-      # ── Commit model.archimate back to main (only when regenerated from Excel) ──
+      # ── Commit model.archimate back to main (only when regenerated) ───
       # docs/index.html is NOT committed — it goes directly to Pages to avoid conflicts
       - name: Commit model.archimate
-        if: steps.changes.outputs.excel_changed == 'true'
+        if: steps.changes.outputs.excel_changed == 'true' || steps.changes.outputs.koppel_changed == 'true'
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name  "github-actions[bot]"
