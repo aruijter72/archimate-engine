@@ -65,12 +65,15 @@ jobs:
             echo "No changes to commit."
           else
             git commit -m "chore: auto-generate ArchiMate artefacts [skip ci]"
+            git pull --rebase origin main
             git push
           fi
 
       # ── Deploy docs/ to GitHub Pages ──────────────────────────────────
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true   # automatically enables Pages if not yet configured
 
       - name: Upload Pages artefact
         uses: actions/upload-pages-artifact@v3
