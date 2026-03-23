@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archimate:model xmlns:archimate="http://www.archimatetool.com/archimate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="ArchiMate Model" id="id-e23fb011ce6d" version="4.0">
+  <folder name="Strategy" id="id-f49a73cb2c9e" type="strategy"/>
+  <folder name="Business" id="id-c8fde4672c29" type="business">
+    <element xsi:type="archimate:BusinessActor" name="Customer" id="id-577d01512036">
+      <documentation>End user interacting with the platform</documentation>
+      <property key="Tags" value="core, external"/>
+      <property key="Status" value="Active"/>
+    </element>
+    <element xsi:type="archimate:BusinessRole" name="Account Manager" id="id-a7c7376199ff">
+      <documentation>Internal role managing customer accounts</documentation>
+      <property key="Tags" value="internal"/>
+      <property key="Status" value="Active"/>
+    </element>
+    <element xsi:type="archimate:BusinessProcess" name="Order Management" id="id-9cb289c6ff31">
+      <documentation>Process for handling customer orders end-to-end</documentation>
+      <property key="Tags" value="core"/>
+      <property key="Status" value="Active"/>
+    </element>
+    <element xsi:type="archimate:BusinessService" name="Product Catalog Service" id="id-ed4a81565e93">
+      <documentation>Provides product information to customers</documentation>
+      <property key="Tags" value="core"/>
+      <property key="Status" value="Active"/>
+    </element>
+    <element xsi:type="archimate:BusinessObject" name="Order" id="id-2700b49e0fa6">
+      <documentation>Represents a customer order</documentation>
+      <property key="Tags" value="data"/>
+      <property key="Status" value="Active"/>
+    </element>
+  </folder>
+  <folder name="Application" id="id-e5bad0fad009" type="application">
+    <element xsi:type="archimate:ApplicationComponent" name="Order Management System" id="id-c2423782acea">
+      <documentation>Core application for order processing</documentation>
+      <property key="Tags" value="core"/>
+      <property key="Status" value="Active"/>
+    </element>
+    <element xsi:type="archimate:ApplicationComponent" name="CRM System" id="id-3b98408d0bce">
+      <documentation>Customer relationship management platform</documentation>
+      <property key="Tags" value="core"/>
+      <property key="Status" value="Active"/>
+    </element>
+    <element xsi:type="archimate:ApplicationComponent" name="API Gateway" id="id-432d02939914">
+      <documentation>Central API entry point for all services</documentation>
+      <property key="Tags" value="infrastructure"/>
+      <property key="Status" value="Active"/>
+    </element>
+    <element xsi:type="archimate:ApplicationInterface" name="Order API" id="id-65a2e989ec49">
+      <documentation>REST API exposing order operations</documentation>
+      <property key="Tags" value="api"/>
+      <property key="Status" value="Active"/>
+    </element>
+    <element xsi:type="archimate:DataObject" name="Order Data" id="id-6682d484af6e">
+      <documentation>Data entity representing an order record</documentation>
+      <property key="Tags" value="data"/>
+      <property key="Status" value="Active"/>
+    </element>
+  </folder>
+  <folder name="Technology &amp; Physical" id="id-78a9a4bc3883" type="technology">
+    <element xsi:type="archimate:Node" name="Application Server" id="id-34740d7a77d4">
+      <documentation>Hosts core business applications</documentation>
+      <property key="Tags" value="infrastructure"/>
+      <property key="Status" value="Active"/>
+    </element>
+    <element xsi:type="archimate:Node" name="Database Server" id="id-81c047a2ed3e">
+      <documentation>Relational database for transactional data</documentation>
+      <property key="Tags" value="infrastructure"/>
+      <property key="Status" value="Active"/>
+    </element>
+    <element xsi:type="archimate:SystemSoftware" name="Kubernetes Cluster" id="id-b58adb91eaf2">
+      <documentation>Container orchestration platform</documentation>
+      <property key="Tags" value="infrastructure"/>
+      <property key="Status" value="Active"/>
+    </element>
+    <element xsi:type="archimate:CommunicationNetwork" name="Internal Network" id="id-16b2cb52a466">
+      <documentation>Internal corporate network</documentation>
+      <property key="Tags" value="network"/>
+      <property key="Status" value="Active"/>
+    </element>
+    <element xsi:type="archimate:SystemSoftware" name="PostgreSQL" id="id-7b69c85e7d40">
+      <documentation>Primary relational database engine</documentation>
+      <property key="Tags" value="database"/>
+      <property key="Status" value="Active"/>
+    </element>
+  </folder>
+  <folder name="Motivation" id="id-8e7d43262e1f" type="motivation"/>
+  <folder name="Implementation &amp; Migration" id="id-700718ed5be8" type="implementation_migration"/>
+  <folder name="Other" id="id-7c2cd838b592" type="other"/>
+  <folder name="Relations" id="id-bec496dee22f" type="relations"/>
+  <folder name="Views" id="id-1440e8757a48" type="diagrams">
+    <element xsi:type="archimate:ArchimateDiagramModel" name="Full Architecture View" id="id-9f4f20d2b09f">
+      <documentation>Complete view of all architecture layers</documentation>
+      <child xsi:type="archimate:DiagramObject" id="id-bacc20580607" archimateElement="id-577d01512036">
+        <bounds x="20" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-797362799b57" archimateElement="id-a7c7376199ff">
+        <bounds x="170" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-6178adad990a" archimateElement="id-9cb289c6ff31">
+        <bounds x="320" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-6db9fbe23b73" archimateElement="id-ed4a81565e93">
+        <bounds x="470" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-f8b9aa842ee3" archimateElement="id-2700b49e0fa6">
+        <bounds x="620" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-9ab16b57eeae" archimateElement="id-c2423782acea">
+        <bounds x="20" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-faa041b91816" archimateElement="id-3b98408d0bce">
+        <bounds x="170" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-76a645d18c5f" archimateElement="id-432d02939914">
+        <bounds x="320" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-82c8c273a3c9" archimateElement="id-65a2e989ec49">
+        <bounds x="470" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dce19ddc8706" archimateElement="id-6682d484af6e">
+        <bounds x="620" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-e6755a39133f" archimateElement="id-34740d7a77d4">
+        <bounds x="20" y="270" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-5d372a5d8f96" archimateElement="id-81c047a2ed3e">
+        <bounds x="170" y="270" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-b40ca36716a1" archimateElement="id-b58adb91eaf2">
+        <bounds x="320" y="270" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-ff474d99512b" archimateElement="id-16b2cb52a466">
+        <bounds x="470" y="270" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-aa0364657024" archimateElement="id-7b69c85e7d40">
+        <bounds x="620" y="270" width="130" height="55"/>
+      </child>
+    </element>
+    <element xsi:type="archimate:ArchimateDiagramModel" name="Business Layer" id="id-85b860672467">
+      <documentation>Business processes, actors, and services only</documentation>
+      <child xsi:type="archimate:DiagramObject" id="id-0d7a7ae26776" archimateElement="id-577d01512036">
+        <bounds x="20" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-62629686c61f" archimateElement="id-a7c7376199ff">
+        <bounds x="170" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-3b8f8ad333e8" archimateElement="id-9cb289c6ff31">
+        <bounds x="320" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-7a87e6a18789" archimateElement="id-ed4a81565e93">
+        <bounds x="470" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-4a508b4886f4" archimateElement="id-2700b49e0fa6">
+        <bounds x="620" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-4decf56d6b97" archimateElement="id-c2423782acea">
+        <bounds x="20" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-2778373b31e6" archimateElement="id-3b98408d0bce">
+        <bounds x="170" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-880d7cdcda0d" archimateElement="id-432d02939914">
+        <bounds x="320" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-3a6b2262811c" archimateElement="id-65a2e989ec49">
+        <bounds x="470" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-e12081453b06" archimateElement="id-6682d484af6e">
+        <bounds x="620" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-072e2be4ecc0" archimateElement="id-34740d7a77d4">
+        <bounds x="20" y="270" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-d33ee1c1d6b9" archimateElement="id-81c047a2ed3e">
+        <bounds x="170" y="270" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-3fde63f46ab3" archimateElement="id-b58adb91eaf2">
+        <bounds x="320" y="270" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-3867dc3a3828" archimateElement="id-16b2cb52a466">
+        <bounds x="470" y="270" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-58dfa85ea140" archimateElement="id-7b69c85e7d40">
+        <bounds x="620" y="270" width="130" height="55"/>
+      </child>
+    </element>
+    <element xsi:type="archimate:ArchimateDiagramModel" name="Application Architecture" id="id-f054a3d0884d">
+      <documentation>Application components and their connections</documentation>
+      <child xsi:type="archimate:DiagramObject" id="id-34b8afb1ee9e" archimateElement="id-577d01512036">
+        <bounds x="20" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-9235b655d0e4" archimateElement="id-a7c7376199ff">
+        <bounds x="170" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-31b38462a67b" archimateElement="id-9cb289c6ff31">
+        <bounds x="320" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-3afb19a6a3f5" archimateElement="id-ed4a81565e93">
+        <bounds x="470" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-0dc61f5aeacc" archimateElement="id-2700b49e0fa6">
+        <bounds x="620" y="20" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-04e0df02e1e1" archimateElement="id-c2423782acea">
+        <bounds x="20" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-c80b095751b6" archimateElement="id-3b98408d0bce">
+        <bounds x="170" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-23b9e830e7a8" archimateElement="id-432d02939914">
+        <bounds x="320" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-b87b264b54a4" archimateElement="id-65a2e989ec49">
+        <bounds x="470" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-182492ccec9e" archimateElement="id-6682d484af6e">
+        <bounds x="620" y="145" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-a918897f204b" archimateElement="id-34740d7a77d4">
+        <bounds x="20" y="270" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-62b728d8b89a" archimateElement="id-81c047a2ed3e">
+        <bounds x="170" y="270" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-98065aab332d" archimateElement="id-b58adb91eaf2">
+        <bounds x="320" y="270" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-e72e35b82703" archimateElement="id-16b2cb52a466">
+        <bounds x="470" y="270" width="130" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-34c936a67f28" archimateElement="id-7b69c85e7d40">
+        <bounds x="620" y="270" width="130" height="55"/>
+      </child>
+    </element>
+  </folder>
+</archimate:model>

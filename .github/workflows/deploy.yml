@@ -1,0 +1,84 @@
+name: Generate ArchiMate View & Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:   # allow manual trigger from GitHub UI
+
+permissions:
+  contents: write      # needed to commit generated files back to main
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  generate-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2      # need parent commit to detect changed files
+
+      # ── Python setup ──────────────────────────────────────────────────
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install openpyxl lxml
+
+      # ── Determine what changed ────────────────────────────────────────
+      - name: Check changed files
+        id: changes
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "model-input.xlsx")
+          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
+          if echo "$CHANGED" | grep -q "model-input.xlsx"; then
+            echo "excel_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "excel_changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      # ── Generate model from Excel (only when Excel changed) ───────────
+      - name: Generate model.archimate from Excel
+        if: steps.changes.outputs.excel_changed == 'true'
+        run: |
+          echo "Excel changed — regenerating model.archimate ..."
+          python scripts/generate_model.py
+
+      # ── Always regenerate HTML from current model.archimate ───────────
+      - name: Generate HTML viewer
+        run: python scripts/generate_html.py
+
+      # ── Commit generated artefacts back to main ───────────────────────
+      - name: Commit generated files
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name  "github-actions[bot]"
+          git add model.archimate docs/index.html
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: auto-generate ArchiMate artefacts [skip ci]"
+            git push
+          fi
+
+      # ── Deploy docs/ to GitHub Pages ──────────────────────────────────
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artefact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
