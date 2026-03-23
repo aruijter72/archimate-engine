@@ -1,4 +1,4 @@
-name: Generate ArchiMate View & Deploy to GitHub Pages
+name: Generate ArchiMate Artefacts
 
 on:
   push:
@@ -7,15 +7,9 @@ on:
 
 permissions:
   contents: write      # needed to commit generated files back to main
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
-  generate-and-deploy:
+  generate:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2      # need parent commit to detect changed files
+          fetch-depth: 2
 
       # ── Python setup ──────────────────────────────────────────────────
       - name: Set up Python 3.11
@@ -68,15 +62,16 @@ jobs:
             git push
           fi
 
-      # ── Deploy docs/ to GitHub Pages ──────────────────────────────────
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload Pages artefact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs/
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # ── NOTE: GitHub Pages deployment is disabled ──────────────────────
+      # GitHub Pages requires a public repo or a paid GitHub plan.
+      # To enable: make the repo public (Settings → General → Change visibility)
+      # then uncomment and add these steps:
+      #
+      # - uses: actions/configure-pages@v5
+      # - uses: actions/upload-pages-artifact@v3
+      #   with: { path: docs/ }
+      # - uses: actions/deploy-pages@v4
+      #
+      # Also add to the top-level permissions block:
+      #   pages: write
+      #   id-token: write
