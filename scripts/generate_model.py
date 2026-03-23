@@ -218,7 +218,9 @@ def build_model(business, application, technology, relationships, views):
         diag.set('id', vid)
         add_doc(diag, view.get('Description', ''))
 
-        include_str = view.get('Include Elements', 'ALL').strip()
+        # Header may be "Include Elements" or "Include Elements (IDs or ALL)"
+        include_key = next((k for k in view if k.startswith('Include Elements')), 'Include Elements')
+        include_str = view.get(include_key, 'ALL').strip()
         if not include_str or include_str.upper() == 'ALL':
             included = all_element_ids
         else:
