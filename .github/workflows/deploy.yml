@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -21,8 +21,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -32,29 +30,20 @@ jobs:
       - name: Install Python dependencies
         run: pip install openpyxl lxml pandas
 
-      - name: Select input source
-        id: src
+      # Use Koppelregister when present, fall back to model-input.xlsx
+      - name: Generate model.archimate
         run: |
           if [ -f "Koppelregister_v1.xlsx" ]; then
-            echo "use_koppel=true" >> $GITHUB_OUTPUT
+            echo "Using Koppelregister_v1.xlsx"
+            python scripts/generate_model_koppelregister.py
           else
-            echo "use_koppel=false" >> $GITHUB_OUTPUT
+            echo "Using model-input.xlsx"
+            python scripts/generate_model.py
           fi
-
-      - name: Generate model.archimate from Koppelregister
-        if: steps.src.outputs.use_koppel == 'true'
-        run: python scripts/generate_model_koppelregister.py
-
-      - name: Generate model.archimate from Excel
-        if: steps.src.outputs.use_koppel != 'true'
-        run: python scripts/generate_model.py
 
       - name: Generate HTML viewer
         run: python scripts/generate_html.py
 
-      # ── Pages deployment MUST come before the git commit step ─────────
-      # This way docs/index.html is captured before we discard it from
-      # the working tree (needed to keep git pull --rebase clean).
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
@@ -68,19 +57,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      # ── Commit model.archimate AFTER Pages deployment ─────────────────
-      # Discard docs/index.html before pulling so the rebase stays clean.
-      - name: Commit model.archimate
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name  "github-actions[bot]"
-          git add model.archimate
-          if git diff --staged --quiet; then
-            echo "No changes to model.archimate."
-          else
-            git commit -m "chore: regenerate model.archimate from Excel [skip ci]"
-            git restore docs/ 2>/dev/null || git checkout -- docs/
-            git pull --rebase origin main
-            git push
-          fi
