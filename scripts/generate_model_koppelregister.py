@@ -116,6 +116,23 @@ def main():
     )
     app_id = {name: mid() for name in app_names}
 
+    # Primary gemeente per app (most frequent occurrence)
+    from collections import defaultdict
+    app_gem_count: dict = defaultdict(lambda: defaultdict(int))
+    for _, row in data.iterrows():
+        gem = clean(row.get("Gemeente / Organisatie", ""))
+        for app_name in [clean(row["Bronapplicatie"]), clean(row.get("Doelapplicatie", ""))]:
+            if app_name and gem:
+                app_gem_count[app_name][gem] += 1
+    app_primary_gem = {
+        name: max(counts, key=counts.get)
+        for name, counts in app_gem_count.items()
+    }
+    app_all_gems = {
+        name: ",".join(sorted(counts.keys()))
+        for name, counts in app_gem_count.items()
+    }
+
     # Middleware (split compound cells)
     mw_names = sorted({
         p
@@ -215,6 +232,12 @@ def main():
         el = ET.SubElement(f_app, "element")
         el.set(f"{{{XSI}}}type", "archimate:ApplicationComponent")
         el.set("name", name); el.set("id", app_id[name])
+        if name in app_primary_gem:
+            p = ET.SubElement(el, "property")
+            p.set("key", "Gemeente"); p.set("value", app_primary_gem[name])
+        if name in app_all_gems:
+            p2 = ET.SubElement(el, "property")
+            p2.set("key", "Gemeenten"); p2.set("value", app_all_gems[name])
 
     # Technology: middleware
     for name in mw_names:

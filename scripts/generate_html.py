@@ -61,6 +61,8 @@ def parse_model(path):
                     'description': doc,
                     'tags': props.get('Tags', ''),
                     'status': props.get('Status', ''),
+                    'gemeente': props.get('Gemeente', ''),
+                    'gemeenten': props.get('Gemeenten', ''),
                 }
 
             elif ftype == 'relations':
@@ -116,6 +118,8 @@ def parse_model(path):
                             'description': e['description'],
                             'tags': e['tags'],
                             'status': e['status'],
+                            'gemeente': e.get('gemeente', ''),
+                            'gemeenten': e.get('gemeenten', ''),
                         })
 
                 elif 'Connection' in ctype:
@@ -303,6 +307,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
       <div class="lt-btn active" id="lt-grid" title="Fixed grid layout from model">Grid</div>
       <div class="lt-btn" id="lt-flow" title="Hierarchical flow layout following relationships">Flow &#8594;</div>
       <div class="lt-btn" id="lt-force" title="Force-directed auto layout">Auto</div>
+      <div class="lt-btn" id="lt-zones" title="Municipality zones layout">Zones</div>
     </div>
     <div id="zoom-btns">
       <div class="zoom-btn" id="btn-fit" title="Fit view">&#8596;</div>
@@ -496,6 +501,13 @@ function buildOpts(mode) {
   });
   network.on('deselectNode', () => { clearDetails(); clearListHighlight(); });
 
+  if (currentLayout === 'zones') {
+    network.once('stabilized', () => applyZonesLayout(visNodes));
+    network.once('afterDrawing', () => applyZonesLayout(visNodes));
+  } else {
+    network.off('afterDrawing');
+  }
+
   network.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
 }
 
@@ -643,6 +655,96 @@ function setLayout(mode) {
 document.getElementById('lt-grid').addEventListener('click',  () => setLayout('grid'));
 document.getElementById('lt-flow').addEventListener('click',  () => setLayout('flow'));
 document.getElementById('lt-force').addEventListener('click', () => setLayout('force'));
+document.getElementById('lt-zones').addEventListener('click', () => setLayout('zones'));
+
+/* ── Zones layout: municipality zone boxes + ESB hub ── */
+const ZONE_CFG = {
+  'Krimpen':         { x: -750, y: -350, color: 'rgba(180,220,255,0.25)', border: '#6aaddc' },
+  'Capelle':         { x:  150, y: -350, color: 'rgba(180,255,200,0.25)', border: '#5db87a' },
+  'Capelle/Krimpen': { x: -300, y: -500, color: 'rgba(220,200,255,0.25)', border: '#9b7ecb' },
+  'IJsselgemeenten': { x: -300, y:  200, color: 'rgba(255,230,150,0.25)', border: '#c9a227' },
+  'Zuidplas':        { x:  400, y:  200, color: 'rgba(255,190,180,0.25)', border: '#d4736a' },
+};
+const ZONE_W = 580, ZONE_H = 320, COLS_Z = 3, NODE_W = 160, NODE_H = 50;
+const MW_ZONE = { x: -200, y: -120, color: 'rgba(230,230,230,0.4)', border: '#999' };
+
+function buildZonesPositions(nodes) {
+  const positions = {};
+  const counters = {};
+  // Middleware/ESB nodes go to centre hub
+  nodes.forEach(n => {
+    if (n.layer === 'technology') {
+      const i = (counters['__mw'] = (counters['__mw'] || 0));
+      const col = i % 2, row = Math.floor(i / 2);
+      positions[n.id] = { x: MW_ZONE.x + col * (NODE_W + 20), y: MW_ZONE.y + row * (NODE_H + 15) };
+      counters['__mw']++;
+    }
+  });
+  // App nodes go to municipality zone
+  nodes.forEach(n => {
+    if (n.layer !== 'application') return;
+    const zone = n.gemeente && ZONE_CFG[n.gemeente] ? n.gemeente : 'IJsselgemeenten';
+    const cfg = ZONE_CFG[zone] || ZONE_CFG['IJsselgemeenten'];
+    const i = (counters[zone] = (counters[zone] || 0));
+    const col = i % COLS_Z, row = Math.floor(i / COLS_Z);
+    positions[n.id] = { x: cfg.x + 20 + col * (NODE_W + 15), y: cfg.y + 45 + row * (NODE_H + 12) };
+    counters[zone]++;
+  });
+  // Business/other nodes below zones
+  let bizI = 0;
+  nodes.forEach(n => {
+    if (n.layer === 'business') {
+      positions[n.id] = { x: -800 + bizI * 200, y: -650 };
+      bizI++;
+    }
+  });
+  return positions;
+}
+
+function drawZoneBoxes(ctx, nodes, scale, offsetX, offsetY) {
+  function toCanvas(x, y) {
+    return { cx: x * scale + offsetX, cy: y * scale + offsetY };
+  }
+  // Draw MW hub
+  const mwTL = toCanvas(MW_ZONE.x - 15, MW_ZONE.y - 30);
+  const mwBR = toCanvas(MW_ZONE.x + 2 * (NODE_W + 20) + 10, MW_ZONE.y + 3 * (NODE_H + 15) + 10);
+  ctx.fillStyle = MW_ZONE.color; ctx.strokeStyle = MW_ZONE.border; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(mwTL.cx, mwTL.cy, mwBR.cx - mwTL.cx, mwBR.cy - mwTL.cy, 6 * scale);
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#666'; ctx.font = `bold ${Math.max(9, 11 * scale)}px Arial`;
+  ctx.fillText('ESB / Middleware', mwTL.cx + 6, mwTL.cy + Math.max(10, 14 * scale));
+  // Draw municipality zones
+  Object.entries(ZONE_CFG).forEach(([name, cfg]) => {
+    const tl = toCanvas(cfg.x - 10, cfg.y - 10);
+    const br = toCanvas(cfg.x + ZONE_W, cfg.y + ZONE_H);
+    ctx.fillStyle = cfg.color; ctx.strokeStyle = cfg.border; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.roundRect(tl.cx, tl.cy, br.cx - tl.cx, br.cy - tl.cy, 8 * scale);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = cfg.border; ctx.font = `bold ${Math.max(10, 13 * scale)}px Arial`;
+    ctx.fillText(name, tl.cx + 8, tl.cy + Math.max(12, 16 * scale));
+  });
+}
+
+function applyZonesLayout(nodes) {
+  const positions = buildZonesPositions(nodes);
+  Object.entries(positions).forEach(([id, pos]) => {
+    try { network.moveNode(id, pos.x, pos.y); } catch(e) {}
+  });
+  network.setOptions({ physics: { enabled: false }, nodes: { fixed: true } });
+  // Draw zone boxes on canvas using afterDrawing
+  network.off('afterDrawing');
+  network.on('afterDrawing', ctx => {
+    const scale = network.getScale();
+    const vp = network.getViewPosition();
+    const container = document.getElementById('network');
+    const w = container.offsetWidth, h = container.offsetHeight;
+    const offsetX = w / 2 - vp.x * scale;
+    const offsetY = h / 2 - vp.y * scale;
+    drawZoneBoxes(ctx, nodes, scale, offsetX, offsetY);
+  });
+  network.redraw();
+  network.fit({ animation: true });
+}
 
 /* ── Start ── */
 initViewSelector();
