@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArchiMate Engine — Arnold Ruijter IT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #0f1923;
+      --surface:  #1a2535;
+      --surface2: #1e2d42;
+      --border:   rgba(255,255,255,.09);
+      --gold:     #c9a355;
+      --blue:     #4a9fd4;
+      --white:    #e8edf2;
+      --muted:    #8a9ab5;
+      --radius:   7px;
+      /* Layer colours */
+      --biz:        #f5e67a;
+      --biz-bg:     rgba(245,230,122,.1);
+      --biz-border: rgba(245,230,122,.25);
+      --biz-text:   #c8b84a;
+      --app:        #7adaf5;
+      --app-bg:     rgba(122,218,245,.1);
+      --app-border: rgba(122,218,245,.25);
+      --app-text:   #4ab4d4;
+      --tech:       #7af5a0;
+      --tech-bg:    rgba(122,245,160,.1);
+      --tech-border:rgba(122,245,160,.25);
+      --tech-text:  #4ad474;
+      --rel:        #f5a07a;
+      --rel-bg:     rgba(245,160,122,.1);
+      --rel-border: rgba(245,160,122,.25);
+      --rel-text:   #d47a4a;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Catamaran', system-ui, -apple-system, sans-serif;
+      background: var(--bg); color: var(--white);
+      min-height: 100vh; font-size: 14px; line-height: 1.5;
+    }
+
+    /* ── Header ─────────────────────────────────────────────── */
+    .app-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .75rem 1.5rem; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      gap: 1rem;
+    }
+    .header-left  { display: flex; align-items: center; gap: 1.25rem; }
+    .header-right { display: flex; gap: .5rem; flex-shrink: 0; }
+    .app-logo {
+      font-size: 1rem; font-weight: 800; color: var(--gold);
+      white-space: nowrap; letter-spacing: .02em;
+      font-family: 'Catamaran', system-ui, sans-serif;
+    }
+    .app-logo span       { font-weight: 400; color: var(--muted); }
+    .app-logo .logo-name { font-weight: 400; color: var(--white); }
+    .app-logo .logo-gold { font-weight: 800; color: var(--gold); }
+    .model-name-input {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: .35rem .75rem;
+      color: var(--white); font-size: .92rem; font-weight: 600;
+      width: 300px; outline: none;
+    }
+    .model-name-input:focus { border-color: var(--gold); }
+
+    /* ── Buttons ─────────────────────────────────────────────── */
+    .btn {
+      padding: .38rem .9rem; border-radius: var(--radius);
+      border: 1px solid; cursor: pointer; font-size: .8rem;
+      font-weight: 600; transition: all .18s; white-space: nowrap;
+    }
+    .btn-secondary { background: transparent; border-color: var(--border); color: var(--muted); }
+    .btn-secondary:hover { border-color: var(--muted); color: var(--white); }
+    .btn-primary { background: var(--gold); border-color: var(--gold); color: #0f1923; }
+    .btn-primary:hover { background: #d4b060; }
+    .btn-danger { background: transparent; border-color: rgba(239,68,68,.3); color: #ef4444; }
+    .btn-danger:hover { background: rgba(239,68,68,.12); }
+
+    /* ── Model doc bar ───────────────────────────────────────── */
+    .model-doc-bar {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .5rem 1.5rem; background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .model-doc-bar label { font-size: .75rem; color: var(--muted); white-space: nowrap; }
+    .model-doc-input {
+      flex: 1; background: transparent; border: none;
+      border-bottom: 1px solid transparent; color: var(--white);
+      font-size: .84rem; padding: .1rem .25rem; outline: none;
+    }
+    .model-doc-input:focus { border-bottom-color: var(--gold); }
+
+    /* ── Stats bar ───────────────────────────────────────────── */
+    .stats-bar {
+      display: flex; gap: 2rem; padding: .45rem 1.5rem;
+      background: var(--bg); border-bottom: 1px solid var(--border);
+      font-size: .74rem; color: var(--muted); flex-wrap: wrap;
+    }
+    .stat-item { display: flex; align-items: center; gap: .4rem; }
+    .stat-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      display: inline-block; flex-shrink: 0;
+    }
+    .stat-dot.biz  { background: var(--biz); }
+    .stat-dot.app  { background: var(--app); }
+    .stat-dot.tech { background: var(--tech); }
+    .stat-dot.rel  { background: var(--rel); }
+    .stat-count { font-weight: 700; color: var(--white); }
+
+    /* ── Tab navigation ──────────────────────────────────────── */
+    .tab-nav {
+      display: flex; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+    }
+    .tab-btn {
+      padding: .7rem 1.1rem; background: transparent;
+      border: none; border-bottom: 2px solid transparent;
+      color: var(--muted); cursor: pointer;
+      font-size: .84rem; font-weight: 600;
+      display: flex; align-items: center; gap: .45rem;
+      transition: all .18s; margin-bottom: -1px;
+    }
+    .tab-btn:hover { color: var(--white); }
+    .tab-btn.active.biz  { color: var(--white); border-bottom-color: var(--biz); }
+    .tab-btn.active.app  { color: var(--white); border-bottom-color: var(--app); }
+    .tab-btn.active.tech { color: var(--white); border-bottom-color: var(--tech); }
+    .tab-btn.active.rel  { color: var(--white); border-bottom-color: var(--rel); }
+    .tab-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 20px; height: 20px; border-radius: 4px;
+      font-size: .68rem; font-weight: 800;
+    }
+    .tab-icon.biz  { background: var(--biz-bg);  color: var(--biz-text);  border: 1px solid var(--biz-border); }
+    .tab-icon.app  { background: var(--app-bg);  color: var(--app-text);  border: 1px solid var(--app-border); }
+    .tab-icon.tech { background: var(--tech-bg); color: var(--tech-text); border: 1px solid var(--tech-border); }
+    .tab-icon.rel  { background: var(--rel-bg);  color: var(--rel-text);  border: 1px solid var(--rel-border); }
+
+    /* ── Tab panels ──────────────────────────────────────────── */
+    .tab-panel { display: none; padding: 1.5rem 1.5rem 3rem; }
+    .tab-panel.active { display: block; }
+
+    /* ── Layer intro ─────────────────────────────────────────── */
+    .layer-intro {
+      display: flex; align-items: center; gap: .75rem;
+      margin-bottom: 1.5rem; padding-bottom: .75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .layer-badge {
+      padding: .3rem .8rem; border-radius: 5px;
+      font-size: .72rem; font-weight: 800;
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .layer-badge.biz  { background: var(--biz-bg);  color: var(--biz-text);  border: 1px solid var(--biz-border); }
+    .layer-badge.app  { background: var(--app-bg);  color: var(--app-text);  border: 1px solid var(--app-border); }
+    .layer-badge.tech { background: var(--tech-bg); color: var(--tech-text); border: 1px solid var(--tech-border); }
+    .layer-desc { font-size: .82rem; color: var(--muted); }
+
+    /* ── Section (Active Structure / Behaviour / Passive) ─────── */
+    .layer-section {
+      margin-bottom: 2.5rem;
+      border-left: 3px solid transparent;
+      padding-left: 1rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+    .layer-section.active-struct {
+      border-left-color: rgba(74,159,212,.75);
+      background: rgba(74,159,212,.06);
+    }
+    .layer-section.behaviour {
+      border-left-color: rgba(201,163,85,.75);
+      background: rgba(201,163,85,.06);
+    }
+    .layer-section.passive-struct {
+      border-left-color: rgba(138,154,181,.55);
+      background: rgba(138,154,181,.04);
+    }
+    .section-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: .7rem; gap: .5rem; flex-wrap: wrap;
+      padding-top: .65rem;
+    }
+    .section-title {
+      font-size: .72rem; font-weight: 700;
+      letter-spacing: .13em; text-transform: uppercase;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .section-title.active-struct  { color: #6ab8e8; }
+    .section-title.behaviour      { color: #c9a355; }
+    .section-title.passive-struct { color: var(--muted); }
+    .section-title::before {
+      content: ''; display: block; width: 3px; height: 13px; border-radius: 2px;
+    }
+    .section-title.active-struct::before  { background: var(--blue); }
+    .section-title.behaviour::before      { background: var(--gold); }
+    .section-title.passive-struct::before { background: var(--muted); }
+    .section-count {
+      display: inline-block; padding: .05rem .45rem;
+      background: rgba(255,255,255,.06); border-radius: 20px;
+      font-size: .68rem; color: var(--muted); margin-left: .25rem;
+    }
+    .add-buttons { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .btn-add {
+      padding: .25rem .65rem; border-radius: 5px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted); cursor: pointer; font-size: .74rem;
+      font-family: 'Catamaran', system-ui, sans-serif;
+      transition: all .18s;
+    }
+    .btn-add:hover             { border-color: var(--gold);        color: var(--gold); }
+    .btn-add.biz               { border-color: var(--biz-border);  color: var(--biz-text); }
+    .btn-add.biz:hover         { background: var(--biz-bg);        border-color: var(--biz); }
+    .btn-add.app               { border-color: var(--app-border);  color: var(--app-text); }
+    .btn-add.app:hover         { background: var(--app-bg);        border-color: var(--app); }
+    .btn-add.tech              { border-color: var(--tech-border); color: var(--tech-text); }
+    .btn-add.tech:hover        { background: var(--tech-bg);       border-color: var(--tech); }
+
+    /* ── Elements table ──────────────────────────────────────── */
+    .elem-table { width: 100%; border-collapse: collapse; }
+    .elem-table th {
+      text-align: left; padding: .45rem .65rem;
+      font-size: .7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--muted); border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .elem-table td {
+      padding: .45rem .65rem; border-bottom: 1px solid rgba(255,255,255,.035);
+      vertical-align: top;
+    }
+    .elem-table tr:hover td { background: rgba(255,255,255,.018); }
+
+    .type-badge {
+      display: inline-block; padding: .13rem .5rem;
+      border-radius: 4px; font-size: .7rem; font-weight: 600;
+      white-space: nowrap; line-height: 1.4;
+    }
+    .type-badge.biz  { background: var(--biz-bg);  color: var(--biz-text);  border: 1px solid var(--biz-border); }
+    .type-badge.app  { background: var(--app-bg);  color: var(--app-text);  border: 1px solid var(--app-border); }
+    .type-badge.tech { background: var(--tech-bg); color: var(--tech-text); border: 1px solid var(--tech-border); }
+
+    .elem-input {
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 5px; color: var(--white); font-size: .86rem;
+      padding: .25rem .5rem; width: 100%; outline: none;
+      font-family: 'Catamaran', system-ui, sans-serif;
+      transition: border-color .15s, background .15s;
+    }
+    .elem-input:focus { border-color: var(--gold); background: rgba(255,255,255,.08); }
+    .elem-input::placeholder { color: rgba(138,154,181,.4); }
+
+    .elem-textarea {
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09);
+      border-radius: 5px; color: var(--muted); font-size: .8rem;
+      padding: .25rem .5rem; width: 100%; resize: vertical;
+      min-height: 34px; outline: none; font-family: inherit; line-height: 1.45;
+      transition: border-color .15s, background .15s;
+    }
+    .elem-textarea:focus { border-color: rgba(201,163,85,.45); background: rgba(255,255,255,.07); color: var(--white); }
+    .elem-textarea::placeholder { color: rgba(138,154,181,.35); }
+
+    /* ── Properties ──────────────────────────────────────────── */
+    .props-list { display: flex; flex-direction: column; gap: .28rem; margin-bottom: .28rem; }
+    .prop-row { display: flex; gap: .3rem; align-items: center; }
+    .prop-key, .prop-val {
+      background: rgba(255,255,255,.04); border: 1px solid var(--border);
+      border-radius: 4px; color: var(--white); font-size: .75rem;
+      padding: .18rem .45rem; outline: none; flex: 1;
+    }
+    .prop-key:focus, .prop-val:focus { border-color: var(--gold); }
+    .prop-key { max-width: 110px; }
+    .btn-add-prop {
+      background: transparent; border: 1px dashed rgba(138,154,181,.3);
+      border-radius: 4px; color: rgba(138,154,181,.55); cursor: pointer;
+      font-size: .7rem; padding: .13rem .5rem; transition: all .18s;
+    }
+    .btn-add-prop:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-del-sm {
+      background: transparent; border: none; color: rgba(138,154,181,.45);
+      cursor: pointer; padding: .1rem .25rem; font-size: .9rem;
+      border-radius: 3px; line-height: 1; transition: all .15s; flex-shrink: 0;
+    }
+    .btn-del-sm:hover { color: #ef4444; background: rgba(239,68,68,.1); }
+
+    /* ── Relationships ───────────────────────────────────────── */
+    .rel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem; padding-bottom: .7rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .rel-title {
+      font-size: .72rem; font-weight: 700; letter-spacing: .13em;
+      text-transform: uppercase; color: var(--muted);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .rel-select {
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 5px; color: var(--white); font-size: .8rem;
+      padding: .28rem .45rem; width: 100%; outline: none; cursor: pointer;
+      font-family: 'Catamaran', system-ui, sans-serif;
+      transition: border-color .15s, background .15s;
+    }
+    .rel-select:focus { border-color: var(--gold); background: rgba(255,255,255,.09); }
+    .rel-type-badge {
+      display: inline-flex; align-items: center; gap: .3rem;
+      padding: .12rem .5rem; border-radius: 4px;
+      font-size: .68rem; font-weight: 700; font-family: monospace;
+      background: var(--rel-bg); color: var(--rel-text);
+      border: 1px solid var(--rel-border); white-space: nowrap;
+    }
+    .rel-desc { font-size: .68rem; color: var(--muted); margin-top: .2rem; line-height: 1.35; }
+    .rel-extras { display: flex; flex-direction: column; gap: .35rem; margin-top: .4rem; }
+    .rel-extra-row {
+      display: flex; align-items: center; gap: .4rem;
+      font-size: .76rem; color: var(--muted);
+    }
+    .rel-extra-row label { white-space: nowrap; }
+    .rel-extra-row input[type="checkbox"] { accent-color: var(--gold); cursor: pointer; }
+    .rel-extra-row select {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 4px; color: var(--white); font-size: .76rem;
+      padding: .15rem .35rem; outline: none;
+    }
+    .rel-extra-row input[type="text"] {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 4px; color: var(--white); font-size: .76rem;
+      padding: .15rem .4rem; width: 90px; outline: none;
+    }
+    .rel-extra-row input:focus, .rel-extra-row select:focus { border-color: var(--gold); }
+
+    /* ── Empty state ─────────────────────────────────────────── */
+    .empty-state {
+      padding: 1.8rem 1rem; text-align: center;
+      color: var(--muted); font-size: .82rem; line-height: 1.7;
+      border: 1px dashed rgba(138,154,181,.18); border-radius: var(--radius);
+    }
+
+    /* ── Help tooltip ────────────────────────────────────────── */
+    .help-bar {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      padding: .5rem 0; margin-bottom: 1.25rem;
+    }
+    .help-item {
+      display: flex; align-items: flex-start; gap: .5rem;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 5px; padding: .45rem .75rem;
+      font-size: .74rem; color: var(--muted); max-width: 240px;
+    }
+    .help-item-icon { font-size: 1rem; flex-shrink: 0; }
+
+    /* ── Relationship type reference card ────────────────────── */
+    .ref-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: .5rem; margin-bottom: 1.5rem;
+    }
+    .ref-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 5px; padding: .55rem .75rem;
+    }
+    .ref-card-top {
+      display: flex; align-items: center; gap: .5rem; margin-bottom: .2rem;
+    }
+    .ref-name { font-size: .78rem; font-weight: 700; color: var(--white); }
+    .ref-symbol {
+      font-family: monospace; font-size: .72rem;
+      color: var(--rel-text); background: var(--rel-bg);
+      padding: .08rem .35rem; border-radius: 3px; white-space: nowrap;
+    }
+    .ref-desc { font-size: .7rem; color: var(--muted); line-height: 1.4; }
+
+    /* ── Export section ──────────────────────────────────────── */
+    .export-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .export-panel h3 { font-size: .88rem; font-weight: 700; margin-bottom: .5rem; color: var(--white); }
+    .export-panel p { font-size: .8rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    .app-footer {
+      text-align: center; padding: 1.25rem;
+      color: var(--muted); font-size: .72rem;
+      border-top: 1px solid var(--border); margin-top: 2rem;
+    }
+    .app-footer a { color: var(--muted); text-decoration: none; }
+
+    /* ── Manual & Legend tab ─────────────────────────────────── */
+    .tab-icon.help { background: rgba(201,163,85,.12); color: var(--gold); border: 1px solid rgba(201,163,85,.28); }
+    .tab-btn.active.help { color: var(--white); border-bottom-color: var(--gold); }
+
+    .ml-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+    @media (max-width: 900px) { .ml-grid { grid-template-columns: 1fr; } }
+
+    .ml-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .ml-card-head {
+      padding: .75rem 1.1rem; border-bottom: 1px solid var(--border);
+      font-size: .78rem; font-weight: 800; letter-spacing: .07em;
+      text-transform: uppercase; color: var(--white);
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .ml-card-head-icon {
+      width: 22px; height: 22px; border-radius: 5px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: .75rem; background: rgba(201,163,85,.15); color: var(--gold);
+      flex-shrink: 0;
+    }
+    .ml-card-body { padding: 1rem 1.1rem; }
+
+    /* Manual steps */
+    .manual-steps { display: flex; flex-direction: column; gap: .75rem; }
+    .step {
+      display: flex; gap: .85rem; align-items: flex-start;
+    }
+    .step-num {
+      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(201,163,85,.15); color: var(--gold);
+      font-size: .72rem; font-weight: 800; border: 1px solid rgba(201,163,85,.3);
+      display: flex; align-items: center; justify-content: center; margin-top: .1rem;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-size: .84rem; font-weight: 700; color: var(--white); margin-bottom: .15rem; }
+    .step-desc  { font-size: .78rem; color: var(--muted); line-height: 1.55; }
+    .step-desc code {
+      background: rgba(255,255,255,.07); border-radius: 3px;
+      padding: .05rem .35rem; font-size: .75rem; color: var(--white);
+    }
+    .step-tip {
+      margin-top: .3rem; padding: .3rem .6rem;
+      background: rgba(201,163,85,.07); border-left: 2px solid var(--gold);
+      border-radius: 0 4px 4px 0; font-size: .75rem; color: var(--muted); line-height: 1.5;
+    }
+
+    /* Legend — layers */
+    .legend-layers { display: flex; flex-direction: column; gap: .55rem; margin-bottom: 1rem; }
+    .legend-layer {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .55rem .75rem; border-radius: 6px; border: 1px solid;
+    }
+    .legend-layer.biz  { background: var(--biz-bg);  border-color: var(--biz-border); }
+    .legend-layer.app  { background: var(--app-bg);  border-color: var(--app-border); }
+    .legend-layer.tech { background: var(--tech-bg); border-color: var(--tech-border); }
+    .legend-layer-badge {
+      padding: .2rem .6rem; border-radius: 4px;
+      font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+      flex-shrink: 0; width: 100px; text-align: center;
+    }
+    .legend-layer.biz  .legend-layer-badge { background: var(--biz-bg);  color: var(--biz-text);  border: 1px solid var(--biz-border); }
+    .legend-layer.app  .legend-layer-badge { background: var(--app-bg);  color: var(--app-text);  border: 1px solid var(--app-border); }
+    .legend-layer.tech .legend-layer-badge { background: var(--tech-bg); color: var(--tech-text); border: 1px solid var(--tech-border); }
+    .legend-layer-desc { font-size: .77rem; color: var(--muted); line-height: 1.45; }
+
+    /* Legend — element types grid */
+    .legend-elem-group { margin-bottom: 1rem; }
+    .legend-group-title {
+      font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: .4rem;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .legend-group-title::before { content: ''; width: 3px; height: 11px; border-radius: 2px; display: block; }
+    .legend-group-title.active-struct::before { background: var(--blue); }
+    .legend-group-title.behaviour::before     { background: var(--gold); }
+    .legend-group-title.passive::before       { background: var(--muted); }
+
+    .legend-elem-list {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: .35rem;
+    }
+    .legend-elem-item {
+      display: flex; align-items: flex-start; gap: .5rem;
+      padding: .4rem .6rem; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 5px;
+    }
+    .legend-elem-badge {
+      padding: .1rem .4rem; border-radius: 3px;
+      font-size: .65rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+    }
+    .legend-elem-badge.biz  { background: var(--biz-bg);  color: var(--biz-text);  border: 1px solid var(--biz-border); }
+    .legend-elem-badge.app  { background: var(--app-bg);  color: var(--app-text);  border: 1px solid var(--app-border); }
+    .legend-elem-badge.tech { background: var(--tech-bg); color: var(--tech-text); border: 1px solid var(--tech-border); }
+    .legend-elem-desc { font-size: .7rem; color: var(--muted); line-height: 1.4; }
+    .legend-elem-name { font-size: .75rem; font-weight: 600; color: var(--white); }
+
+    /* Legend — relationships */
+    .legend-rel-table { width: 100%; border-collapse: collapse; }
+    .legend-rel-table th {
+      text-align: left; padding: .4rem .6rem;
+      font-size: .68rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .legend-rel-table td {
+      padding: .45rem .6rem; border-bottom: 1px solid rgba(255,255,255,.035);
+      font-size: .76rem; vertical-align: top;
+    }
+    .legend-rel-table tr:hover td { background: rgba(255,255,255,.018); }
+    .rel-sym-cell {
+      font-family: monospace; font-size: .8rem; font-weight: 700;
+      color: var(--rel-text); white-space: nowrap;
+    }
+    .rel-rule {
+      display: inline-block; margin-top: .15rem; padding: .08rem .4rem;
+      border-radius: 3px; font-size: .67rem; font-weight: 600;
+      background: rgba(74,159,212,.1); color: #4ab4d4;
+      border: 1px solid rgba(74,159,212,.2); white-space: nowrap;
+    }
+
+    /* Notation box */
+    .notation-box {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: .9rem 1.1rem;
+      margin-top: 1rem;
+    }
+    .notation-box h4 { font-size: .78rem; font-weight: 700; color: var(--white); margin-bottom: .6rem; }
+    .notation-rows { display: flex; flex-direction: column; gap: .4rem; }
+    .notation-row  { display: flex; align-items: center; gap: .75rem; font-size: .76rem; }
+    .notation-swatch {
+      width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0;
+    }
+    .notation-label { color: var(--white); font-weight: 600; min-width: 90px; }
+    .notation-desc  { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<!-- ── App Header ───────────────────────────────────────────── -->
+<header class="app-header">
+  <div class="header-left">
+    <div class="app-logo">⬡ ArchiMate Engine <span>by <span class="logo-name">Arnold</span> <strong class="logo-gold">Ruijter IT</strong></span></div>
+    <input type="text" id="modelName" class="model-name-input"
+           value="My Architecture Model" placeholder="Model name…"
+           oninput="model.name = this.value">
+  </div>
+  <div class="header-right">
+    <button class="btn btn-secondary" onclick="saveModel()">💾 Save JSON</button>
+    <button class="btn btn-secondary" onclick="triggerLoad()">📂 Load JSON</button>
+    <input type="file" id="loadFile" accept=".json" style="display:none" onchange="handleLoadFile(event)">
+    <button class="btn btn-primary" onclick="exportArchimate()">⬇ Export .archimate</button>
+  </div>
+</header>
+
+<!-- ── Model Description ────────────────────────────────────── -->
+<div class="model-doc-bar">
+  <label>Description:</label>
+  <input type="text" id="modelDoc" class="model-doc-input"
+         placeholder="Describe the purpose and scope of this architecture…"
+         oninput="model.documentation = this.value">
+</div>
+
+<!-- ── Stats Bar ────────────────────────────────────────────── -->
+<div class="stats-bar">
+  <span class="stat-item"><span class="stat-dot biz"></span> Business: <span class="stat-count" id="statBiz">0</span></span>
+  <span class="stat-item"><span class="stat-dot app"></span> Application: <span class="stat-count" id="statApp">0</span></span>
+  <span class="stat-item"><span class="stat-dot tech"></span> Technology: <span class="stat-count" id="statTech">0</span></span>
+  <span class="stat-item"><span class="stat-dot rel"></span> Relationships: <span class="stat-count" id="statRel">0</span></span>
+  <span class="stat-item" style="margin-left:auto">Total elements: <span class="stat-count" id="statTotal">0</span></span>
+</div>
+
+<!-- ── Tab Navigation ───────────────────────────────────────── -->
+<nav class="tab-nav">
+  <button class="tab-btn active biz" id="tab-btn-business"     onclick="showTab('business')">
+    <span class="tab-icon biz">B</span> Business Layer</button>
+  <button class="tab-btn app"         id="tab-btn-application"  onclick="showTab('application')">
+    <span class="tab-icon app">A</span> Application Layer</button>
+  <button class="tab-btn tech"        id="tab-btn-technology"   onclick="showTab('technology')">
+    <span class="tab-icon tech">T</span> Technology Layer</button>
+  <button class="tab-btn rel"         id="tab-btn-relationships" onclick="showTab('relationships')">
+    <span class="tab-icon rel">R</span> Relationships</button>
+  <button class="tab-btn help"        id="tab-btn-help"          onclick="showTab('help')">
+    <span class="tab-icon help">?</span> Manual &amp; Legend</button>
+</nav>
+
+<!-- ── Tab Panels ───────────────────────────────────────────── -->
+<main>
+  <div id="tab-business"      class="tab-panel active"></div>
+  <div id="tab-application"   class="tab-panel"></div>
+  <div id="tab-technology"    class="tab-panel"></div>
+  <div id="tab-relationships" class="tab-panel"></div>
+  <div id="tab-help"          class="tab-panel"></div>
+</main>
+
+<footer class="app-footer">
+  <span class="logo-name">Arnold</span> <strong class="logo-gold">Ruijter IT</strong>
+  &nbsp;·&nbsp;
+  <a href="https://www.archimatetool.com" target="_blank" rel="noopener">Archi 4.x</a> compatible export
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA MODEL
+// ══════════════════════════════════════════════════════════════
+let model = {
+  name:          'My Architecture Model',
+  documentation: '',
+  elements:      [],    // { id, layer, type, name, documentation, properties[] }
+  relationships: []     // { id, type, sourceId, targetId, name, documentation, directed, accessType, strength }
+};
+
+// ══════════════════════════════════════════════════════════════
+// CONFIGURATION — ArchiMate 3 Core Layers
+// ══════════════════════════════════════════════════════════════
+const LAYER_CONFIG = {
+  business: {
+    label: 'Business', colorClass: 'biz',
+    description: 'Represents the business environment — actors, roles, processes, services, and objects handled at the organisational level.',
+    sections: {
+      'Active Structure': ['BusinessActor','BusinessRole','BusinessCollaboration','BusinessInterface'],
+      'Behaviour':        ['BusinessProcess','BusinessFunction','BusinessInteraction','BusinessEvent','BusinessService'],
+      'Passive Structure':['BusinessObject','Contract','Representation','Product']
+    }
+  },
+  application: {
+    label: 'Application', colorClass: 'app',
+    description: 'Represents software applications and their components, interfaces, functions, and data objects that support the business.',
+    sections: {
+      'Active Structure': ['ApplicationComponent','ApplicationCollaboration','ApplicationInterface'],
+      'Behaviour':        ['ApplicationFunction','ApplicationInteraction','ApplicationProcess','ApplicationEvent','ApplicationService'],
+      'Passive Structure':['DataObject']
+    }
+  },
+  technology: {
+    label: 'Technology', colorClass: 'tech',
+    description: 'Represents hardware, software infrastructure, networks, and physical assets that support the application and business layers.',
+    sections: {
+      'Active Structure': ['Node','Device','SystemSoftware','TechnologyCollaboration','TechnologyInterface','Path','CommunicationNetwork'],
+      'Behaviour':        ['TechnologyFunction','TechnologyProcess','TechnologyInteraction','TechnologyEvent','TechnologyService'],
+      'Passive Structure':['Artifact','TechnologyObject']
+    }
+  }
+};
+
+// Human-readable labels for every ArchiMate type
+const TYPE_LABELS = {
+  // Business Active Structure
+  BusinessActor:           'Business Actor',
+  BusinessRole:            'Business Role',
+  BusinessCollaboration:   'Business Collaboration',
+  BusinessInterface:       'Business Interface',
+  // Business Behaviour
+  BusinessProcess:         'Business Process',
+  BusinessFunction:        'Business Function',
+  BusinessInteraction:     'Business Interaction',
+  BusinessEvent:           'Business Event',
+  BusinessService:         'Business Service',
+  // Business Passive Structure
+  BusinessObject:          'Business Object',
+  Contract:                'Contract',
+  Representation:          'Representation',
+  Product:                 'Product',
+  // Application Active Structure
+  ApplicationComponent:    'Application Component',
+  ApplicationCollaboration:'Application Collaboration',
+  ApplicationInterface:    'Application Interface',
+  // Application Behaviour
+  ApplicationFunction:     'Application Function',
+  ApplicationInteraction:  'Application Interaction',
+  ApplicationProcess:      'Application Process',
+  ApplicationEvent:        'Application Event',
+  ApplicationService:      'Application Service',
+  // Application Passive Structure
+  DataObject:              'Data Object',
+  // Technology Active Structure
+  Node:                    'Node',
+  Device:                  'Device',
+  SystemSoftware:          'System Software',
+  TechnologyCollaboration: 'Technology Collaboration',
+  TechnologyInterface:     'Technology Interface',
+  Path:                    'Path',
+  CommunicationNetwork:    'Communication Network',
+  // Technology Behaviour
+  TechnologyFunction:      'Technology Function',
+  TechnologyProcess:       'Technology Process',
+  TechnologyInteraction:   'Technology Interaction',
+  TechnologyEvent:         'Technology Event',
+  TechnologyService:       'Technology Service',
+  // Technology Passive Structure
+  Artifact:                'Artifact',
+  TechnologyObject:        'Technology Object'
+};
+
+// All relationship types with ArchiMate semantics
+const REL_TYPES = [
+  { id:'AssociationRelationship',   label:'Association',    sym:'— —',   hasDirected:true,
+    desc:'Unspecified (or directed) relationship between any two concepts.' },
+  { id:'RealizationRelationship',   label:'Realization',    sym:'╌╌▷',
+    desc:'Concept A is realized / implemented by concept B. E.g. a process realizes a service.' },
+  { id:'AssignmentRelationship',    label:'Assignment',     sym:'●——',
+    desc:'An active structure element is assigned to (responsible for) a behaviour element or vice-versa.' },
+  { id:'AggregationRelationship',   label:'Aggregation',    sym:'◇——',
+    desc:'Structural whole-part relationship (non-exclusive): an element groups related parts.' },
+  { id:'CompositionRelationship',   label:'Composition',    sym:'◆——',
+    desc:'Structural whole-part relationship (exclusive/strong): parts belong to exactly one whole.' },
+  { id:'ServingRelationship',       label:'Serving',        sym:'——▷',
+    desc:'An element provides services to or supports another element.' },
+  { id:'AccessRelationship',        label:'Access',         sym:'╌╌›',  hasAccessType:true,
+    desc:'A behaviour element reads from or writes to a passive structure element.' },
+  { id:'InfluenceRelationship',     label:'Influence',      sym:'╌╌▷',  hasStrength:true,
+    desc:'An element weakly influences another element or property.' },
+  { id:'TriggeringRelationship',    label:'Triggering',     sym:'——▶',
+    desc:'One behaviour element causes / triggers another to execute.' },
+  { id:'FlowRelationship',          label:'Flow',           sym:'╌╌▶',
+    desc:'Transfer of information, goods, or control between behaviour elements.' },
+  { id:'SpecializationRelationship',label:'Specialization', sym:'——△',
+    desc:'One concept is a type/subtype of another (generalization/specialization).' }
+];
+
+// ══════════════════════════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════════════════════════
+let _idCounter = 0;
+function genId() {
+  return 'id-' + Date.now().toString(36) + (_idCounter++).toString(36) + Math.random().toString(36).slice(2,6);
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function relTypeFor(id) { return REL_TYPES.find(r => r.id === id) || REL_TYPES[0]; }
+
+function layerOf(elemId) {
+  const e = model.elements.find(x => x.id === elemId);
+  return e ? LAYER_CONFIG[e.layer]?.label : '?';
+}
+
+function elemLabel(e) {
+  const layer = LAYER_CONFIG[e.layer]?.label || e.layer;
+  const type  = TYPE_LABELS[e.type] || e.type;
+  const name  = e.name || '(unnamed)';
+  return `[${layer}] ${type}: ${name}`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// ELEMENT OPERATIONS
+// ══════════════════════════════════════════════════════════════
+function addElement(layer, type) {
+  const el = { id:genId(), layer, type, name:'', documentation:'', properties:[] };
+  model.elements.push(el);
+  renderLayer(layer);
+  updateStats();
+  setTimeout(() => { const inp = document.querySelector(`[data-eid="${el.id}"]`); if(inp) inp.focus(); }, 30);
+}
+
+function deleteElement(id) {
+  const el = model.elements.find(e => e.id === id);
+  model.elements      = model.elements.filter(e => e.id !== id);
+  model.relationships = model.relationships.filter(r => r.sourceId !== id && r.targetId !== id);
+  if (el) renderLayer(el.layer);
+  renderRelationships();
+  updateStats();
+}
+
+function setElem(id, field, val) {
+  const el = model.elements.find(e => e.id === id);
+  if (el) el[field] = val;
+}
+
+function addProp(elemId) {
+  const el = model.elements.find(e => e.id === elemId);
+  if (el) { el.properties.push({key:'',value:''}); renderLayer(el.layer); }
+}
+
+function delProp(elemId, i) {
+  const el = model.elements.find(e => e.id === elemId);
+  if (el) { el.properties.splice(i,1); renderLayer(el.layer); }
+}
+
+function setProp(elemId, i, field, val) {
+  const el = model.elements.find(e => e.id === elemId);
+  if (el && el.properties[i]) el.properties[i][field] = val;
+}
+
+// ══════════════════════════════════════════════════════════════
+// RELATIONSHIP OPERATIONS
+// ══════════════════════════════════════════════════════════════
+function addRelationship() {
+  model.relationships.push({
+    id: genId(), type:'AssociationRelationship',
+    sourceId:'', targetId:'', name:'', documentation:'',
+    directed:false, accessType:'ReadWrite', strength:''
+  });
+  renderRelationships();
+  updateStats();
+  showTab('relationships');
+}
+
+function deleteRel(id) {
+  model.relationships = model.relationships.filter(r => r.id !== id);
+  renderRelationships();
+  updateStats();
+}
+
+function setRel(id, field, val) {
+  const r = model.relationships.find(r => r.id === id);
+  if (r) { r[field] = val; if (field === 'type') renderRelationships(); }
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDERING
+// ══════════════════════════════════════════════════════════════
+const SECTION_CLS = { 'Active Structure':'active-struct', 'Behaviour':'behaviour', 'Passive Structure':'passive-struct' };
+
+function renderLayer(layer) {
+  const panel  = document.getElementById(`tab-${layer}`);
+  const config = LAYER_CONFIG[layer];
+  const cc     = config.colorClass;
+  let html     = `
+    <div class="layer-intro">
+      <span class="layer-badge ${cc}">${config.label} Layer</span>
+      <span class="layer-desc">${config.description}</span>
+    </div>`;
+
+  for (const [secName, types] of Object.entries(config.sections)) {
+    const elems = model.elements.filter(e => e.layer === layer && types.includes(e.type));
+    const scls  = SECTION_CLS[secName] || 'active-struct';
+    html += `
+    <div class="layer-section ${scls}">
+      <div class="section-header">
+        <div class="section-title ${scls}">
+          ${secName}<span class="section-count">${elems.length}</span>
+        </div>
+        <div class="add-buttons">`;
+    for (const t of types) {
+      html += `<button class="btn-add ${cc}" onclick="addElement('${layer}','${t}')">+ ${TYPE_LABELS[t]}</button>`;
+    }
+    html += `</div></div>`;
+
+    if (elems.length === 0) {
+      html += `<div class="empty-state">No <em>${secName.toLowerCase()}</em> elements yet — use the buttons above to add them.</div>`;
+    } else {
+      html += `
+      <table class="elem-table">
+        <thead><tr>
+          <th style="width:170px">Type</th>
+          <th style="width:210px">Name *</th>
+          <th>Documentation</th>
+          <th style="width:220px">Custom Properties</th>
+          <th style="width:32px"></th>
+        </tr></thead>
+        <tbody>`;
+      for (const el of elems) {
+        html += `
+        <tr>
+          <td><span class="type-badge ${cc}">${TYPE_LABELS[el.type]}</span></td>
+          <td>
+            <input type="text" class="elem-input" data-eid="${el.id}"
+                   value="${esc(el.name)}" placeholder="Enter name…"
+                   oninput="setElem('${el.id}','name',this.value)">
+          </td>
+          <td>
+            <textarea class="elem-textarea" rows="2"
+                      placeholder="Free-text documentation / description…"
+                      oninput="setElem('${el.id}','documentation',this.value)">${esc(el.documentation)}</textarea>
+          </td>
+          <td>
+            <div class="props-list" id="pl-${el.id}">`;
+        for (let i = 0; i < el.properties.length; i++) {
+          const p = el.properties[i];
+          html += `
+              <div class="prop-row">
+                <input class="prop-key" type="text" placeholder="Key"
+                       value="${esc(p.key)}" oninput="setProp('${el.id}',${i},'key',this.value)">
+                <input class="prop-val" type="text" placeholder="Value"
+                       value="${esc(p.value)}" oninput="setProp('${el.id}',${i},'value',this.value)">
+                <button class="btn-del-sm" onclick="delProp('${el.id}',${i})" title="Remove property">×</button>
+              </div>`;
+        }
+        html += `</div>
+            <button class="btn-add-prop" onclick="addProp('${el.id}')">+ add property</button>
+          </td>
+          <td><button class="btn-del-sm" style="font-size:1.1rem" onclick="deleteElement('${el.id}')" title="Delete element">🗑</button></td>
+        </tr>`;
+      }
+      html += `</tbody></table>`;
+    }
+    html += `</div>`;
+  }
+  panel.innerHTML = html;
+}
+
+function renderRelationships() {
+  const panel = document.getElementById('tab-relationships');
+  const allEl = model.elements.map(e => ({ id:e.id, label:elemLabel(e) }));
+
+  let html = `
+    <div class="rel-header">
+      <div class="rel-title">
+        <span class="tab-icon rel" style="width:18px;height:18px;font-size:.6rem">R</span>
+        All Relationships <span class="section-count">${model.relationships.length}</span>
+      </div>
+      <button class="btn btn-add" onclick="addRelationship()">+ Add Relationship</button>
+    </div>`;
+
+  // Quick reference card grid
+  html += `<details style="margin-bottom:1.25rem">
+    <summary style="cursor:pointer;font-size:.75rem;color:var(--muted);padding:.3rem 0;user-select:none">
+      ▶ ArchiMate Relationship Reference (click to expand)
+    </summary>
+    <div class="ref-grid" style="margin-top:.75rem">`;
+  for (const rt of REL_TYPES) {
+    html += `
+      <div class="ref-card">
+        <div class="ref-card-top">
+          <span class="ref-name">${rt.label}</span>
+          <span class="ref-symbol">${rt.sym}</span>
+        </div>
+        <div class="ref-desc">${rt.desc}</div>
+      </div>`;
+  }
+  html += `</div></details>`;
+
+  if (model.relationships.length === 0) {
+    html += `<div class="empty-state">No relationships defined yet.<br>
+      Add elements in the Business, Application, and Technology tabs first — then define how they connect here.<br>
+      Each relationship type has specific ArchiMate semantics (see the reference card above).</div>`;
+  } else {
+    let srcOpts = `<option value="">— select source —</option>`;
+    let tgtOpts = `<option value="">— select target —</option>`;
+    for (const e of allEl) { srcOpts += `<option value="${e.id}">${esc(e.label)}</option>`; }
+    for (const e of allEl) { tgtOpts += `<option value="${e.id}">${esc(e.label)}</option>`; }
+
+    html += `
+    <table class="elem-table">
+      <thead><tr>
+        <th style="width:210px">Source Element</th>
+        <th style="width:195px">Relationship Type</th>
+        <th style="width:210px">Target Element</th>
+        <th style="width:165px">Label / Options</th>
+        <th>Documentation</th>
+        <th style="width:32px"></th>
+      </tr></thead>
+      <tbody>`;
+
+    for (const rel of model.relationships) {
+      const rt = relTypeFor(rel.type);
+
+      // Rebuild dropdowns with correct selection
+      let sOpts = `<option value="">— select source —</option>`;
+      let tOpts = `<option value="">— select target —</option>`;
+      for (const e of allEl) {
+        sOpts += `<option value="${e.id}" ${rel.sourceId===e.id?'selected':''}>${esc(e.label)}</option>`;
+        tOpts += `<option value="${e.id}" ${rel.targetId===e.id?'selected':''}>${esc(e.label)}</option>`;
+      }
+      let rtOpts = '';
+      for (const t of REL_TYPES) {
+        rtOpts += `<option value="${t.id}" ${rel.type===t.id?'selected':''}>${t.label}  ${t.sym}</option>`;
+      }
+
+      // Type-specific extra fields
+      let extras = '';
+      if (rt.hasDirected) {
+        extras += `<div class="rel-extra-row">
+          <input type="checkbox" id="dir-${rel.id}" ${rel.directed?'checked':''}
+                 onchange="setRel('${rel.id}','directed',this.checked)">
+          <label for="dir-${rel.id}">Directed arrow</label></div>`;
+      }
+      if (rt.hasAccessType) {
+        extras += `<div class="rel-extra-row"><label>Access type:</label>
+          <select onchange="setRel('${rel.id}','accessType',this.value)">
+            <option value="Read"      ${rel.accessType==='Read'       ?'selected':''}>Read</option>
+            <option value="Write"     ${rel.accessType==='Write'      ?'selected':''}>Write</option>
+            <option value="ReadWrite" ${rel.accessType==='ReadWrite'  ?'selected':''}>Read / Write</option>
+            <option value="Unspecified" ${rel.accessType==='Unspecified'?'selected':''}>Unspecified</option>
+          </select></div>`;
+      }
+      if (rt.hasStrength) {
+        extras += `<div class="rel-extra-row"><label>Strength:</label>
+          <input type="text" placeholder="e.g. +, −, 50%"
+                 value="${esc(rel.strength)}"
+                 oninput="setRel('${rel.id}','strength',this.value)"></div>`;
+      }
+
+      html += `
+        <tr>
+          <td><select class="rel-select" onchange="setRel('${rel.id}','sourceId',this.value)">${sOpts}</select></td>
+          <td>
+            <select class="rel-select" onchange="setRel('${rel.id}','type',this.value)">${rtOpts}</select>
+            <div class="rel-desc">${rt.desc}</div>
+          </td>
+          <td><select class="rel-select" onchange="setRel('${rel.id}','targetId',this.value)">${tOpts}</select></td>
+          <td>
+            <input type="text" class="elem-input" placeholder="Label (optional)"
+                   value="${esc(rel.name)}" style="margin-bottom:.35rem"
+                   oninput="setRel('${rel.id}','name',this.value)">
+            <div class="rel-extras">${extras}</div>
+          </td>
+          <td>
+            <textarea class="elem-textarea" rows="2" placeholder="Documentation…"
+                      oninput="setRel('${rel.id}','documentation',this.value)">${esc(rel.documentation)}</textarea>
+          </td>
+          <td><button class="btn-del-sm" style="font-size:1.1rem" onclick="deleteRel('${rel.id}')" title="Delete relationship">🗑</button></td>
+        </tr>`;
+    }
+    html += `</tbody></table>`;
+  }
+
+  panel.innerHTML = html;
+}
+
+function renderAll() {
+  renderLayer('business');
+  renderLayer('application');
+  renderLayer('technology');
+  renderRelationships();
+}
+
+function updateStats() {
+  document.getElementById('statBiz').textContent   = model.elements.filter(e=>e.layer==='business').length;
+  document.getElementById('statApp').textContent   = model.elements.filter(e=>e.layer==='application').length;
+  document.getElementById('statTech').textContent  = model.elements.filter(e=>e.layer==='technology').length;
+  document.getElementById('statRel').textContent   = model.relationships.length;
+  document.getElementById('statTotal').textContent = model.elements.length;
+}
+
+// ══════════════════════════════════════════════════════════════
+// TAB NAVIGATION
+// ══════════════════════════════════════════════════════════════
+function showTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.getElementById(`tab-btn-${tab}`).classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════
+// SAVE / LOAD (JSON)
+// ══════════════════════════════════════════════════════════════
+function saveModel() {
+  const json = JSON.stringify(model, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), {href:url, download:(model.name||'model').replace(/[^\w-]/g,'_')+'.json'});
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function triggerLoad() { document.getElementById('loadFile').click(); }
+
+function handleLoadFile(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      model = JSON.parse(e.target.result);
+      document.getElementById('modelName').value = model.name || '';
+      document.getElementById('modelDoc').value  = model.documentation || '';
+      renderAll(); updateStats();
+    } catch(err) { alert('Could not load file: ' + err.message); }
+  };
+  r.readAsText(f);
+  ev.target.value = '';
+}
+
+// ══════════════════════════════════════════════════════════════
+// ARCHIMATE XML EXPORT
+// ══════════════════════════════════════════════════════════════
+function buildElemXml(el) {
+  const a   = `xsi:type="archimate:${el.type}" name="${esc(el.name)}" id="${el.id}"`;
+  const doc = el.documentation ? `\n      <documentation>${esc(el.documentation)}</documentation>` : '';
+  const props = (el.properties||[]).filter(p=>p.key).map(p =>
+    `\n      <property key="${esc(p.key)}" value="${esc(p.value)}"/>`).join('');
+  if (!doc && !props) return `    <element ${a}/>\n`;
+  return `    <element ${a}>${doc}${props}\n    </element>\n`;
+}
+
+function generateArchimateXML() {
+  const mid  = genId(), bfId = genId(), afId = genId(), tfId = genId();
+  const rfId = genId(), vfId = genId(), viewId = genId();
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`
+          + `<archimate:model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n`
+          + `                 xmlns:archimate="http://www.archimatetool.com/archimate"\n`
+          + `                 name="${esc(model.name)}" id="${mid}" version="4.0">\n`;
+
+  if (model.documentation)
+    xml += `  <documentation>${esc(model.documentation)}</documentation>\n`;
+
+  // Element folders
+  const layers = [{key:'business',folder:'Business',id:bfId},
+                  {key:'application',folder:'Application',id:afId},
+                  {key:'technology',folder:'Technology',id:tfId}];
+  for (const {key,folder,id} of layers) {
+    xml += `  <folder name="${folder}" id="${id}" type="${key}">\n`;
+    for (const el of model.elements.filter(e=>e.layer===key)) xml += buildElemXml(el);
+    xml += `  </folder>\n`;
+  }
+
+  // Relations folder
+  xml += `  <folder name="Relations" id="${rfId}" type="relations">\n`;
+  for (const r of model.relationships) {
+    if (!r.sourceId || !r.targetId) continue;
+    let a = `xsi:type="archimate:${r.type}" id="${r.id}" source="${r.sourceId}" target="${r.targetId}"`;
+    if (r.name)                                                   a += ` name="${esc(r.name)}"`;
+    if (r.type==='AssociationRelationship' && r.directed)         a += ` directed="true"`;
+    if (r.type==='AccessRelationship')                            a += ` accessType="${r.accessType||'ReadWrite'}"`;
+    if (r.type==='InfluenceRelationship' && r.strength)           a += ` influenceStrength="${esc(r.strength)}"`;
+    if (r.documentation) xml += `    <element ${a}>\n      <documentation>${esc(r.documentation)}</documentation>\n    </element>\n`;
+    else                 xml += `    <element ${a}/>\n`;
+  }
+  xml += `  </folder>\n`;
+
+  // ── Diagram View with auto-layout ────────────────────────────
+  const EW=120, EH=55, HG=35, VG=28, LG=90, COLS=6, OX=50;
+
+  // Compute diagram-object positions per layer
+  const diagMap = {}; // elemId → { diagId, x, y }
+  let curY = 60;
+  for (const {key} of layers) {
+    const elems = model.elements.filter(e=>e.layer===key);
+    if (!elems.length) continue;
+    let col=0, row=0;
+    for (const el of elems) {
+      diagMap[el.id] = { diagId:genId(), x: OX + col*(EW+HG), y: curY + row*(EH+VG) };
+      if (++col >= COLS) { col=0; row++; }
+    }
+    curY += Math.ceil(elems.length/COLS)*(EH+VG) + LG;
+  }
+
+  // Build connection maps
+  const srcConns = {}; // diagId → [{connId, tgtDiagId, relId}]
+  const tgtConns = {}; // diagId → [connId]
+  for (const r of model.relationships) {
+    if (!r.sourceId||!r.targetId) continue;
+    const sd = diagMap[r.sourceId], td = diagMap[r.targetId];
+    if (!sd||!td) continue;
+    const cid = genId();
+    (srcConns[sd.diagId] = srcConns[sd.diagId]||[]).push({connId:cid, tgtDiagId:td.diagId, relId:r.id});
+    (tgtConns[td.diagId] = tgtConns[td.diagId]||[]).push(cid);
+  }
+
+  xml += `  <folder name="Views" id="${vfId}" type="diagrams">\n`;
+  xml += `    <element xsi:type="archimate:ArchimateDiagramModel" name="Default View" id="${viewId}">\n`;
+  for (const el of model.elements) {
+    const d = diagMap[el.id]; if (!d) continue;
+    const tcAttr = (tgtConns[d.diagId]||[]).length ? ` targetConnections="${tgtConns[d.diagId].join(' ')}"` : '';
+    xml += `      <child xsi:type="archimate:DiagramObject" id="${d.diagId}" archimateElement="${el.id}"${tcAttr}>\n`;
+    xml += `        <bounds x="${d.x}" y="${d.y}" width="${EW}" height="${EH}"/>\n`;
+    for (const c of (srcConns[d.diagId]||[])) {
+      xml += `        <sourceConnection xsi:type="archimate:Connection" id="${c.connId}" source="${d.diagId}" target="${c.tgtDiagId}" archimateRelationship="${c.relId}"/>\n`;
+    }
+    xml += `      </child>\n`;
+  }
+  xml += `    </element>\n`;
+  xml += `  </folder>\n`;
+  xml += `</archimate:model>\n`;
+  return xml;
+}
+
+function exportArchimate() {
+  // Validation warnings
+  const unnamed = model.elements.filter(e=>!e.name.trim());
+  const broken  = model.relationships.filter(r=>!r.sourceId||!r.targetId);
+  let warn = '';
+  if (unnamed.length) warn += `⚠ ${unnamed.length} element(s) have no name.\n`;
+  if (broken.length)  warn += `⚠ ${broken.length} relationship(s) have no source/target and will be skipped.\n`;
+  if (warn && !confirm(warn + '\nExport anyway?')) return;
+
+  const xml  = generateArchimateXML();
+  const blob = new Blob([xml], {type:'application/xml;charset=UTF-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), {href:url, download:(model.name||'model').replace(/[^\w-]/g,'_')+'.archimate'});
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════════════════════════════
+// MANUAL & LEGEND
+// ══════════════════════════════════════════════════════════════
+
+// Full descriptions for every element type
+const ELEM_DESCS = {
+  // Business Active Structure
+  BusinessActor:           'A person, organisation, or organisational unit that has a role in performing behaviour.',
+  BusinessRole:            'A responsibility for performing specific behaviour, to which an actor can be assigned.',
+  BusinessCollaboration:   'An aggregate of two or more business roles that work together to perform behaviour.',
+  BusinessInterface:       'A point of access where a business service is made available to the environment.',
+  // Business Behaviour
+  BusinessProcess:         'A sequence of business activities that collectively produce a defined outcome.',
+  BusinessFunction:        'A collection of business behaviour based on a specific set of criteria (grouping by skill or department).',
+  BusinessInteraction:     'A unit of collective behaviour performed by two or more business roles or actors.',
+  BusinessEvent:           'An organisational state change that triggers or results from behaviour.',
+  BusinessService:         'An explicitly defined exposed behaviour that fulfils a business need for an internal or external customer.',
+  // Business Passive Structure
+  BusinessObject:          'A passive element that has relevance from a business perspective (documents, contracts, data).',
+  Contract:                'A formal or informal specification of an agreement between a provider and consumer.',
+  Representation:          'A perceptible form of the information carried by a business object (e.g. a report or form).',
+  Product:                 'A coherent collection of services or value offered to customers or the market.',
+  // Application Active Structure
+  ApplicationComponent:    'An encapsulation of application functionality aligned to an implementation structure.',
+  ApplicationCollaboration:'An aggregate of two or more application components working together.',
+  ApplicationInterface:    'A point of access where application services are made available (API, UI, endpoint).',
+  // Application Behaviour
+  ApplicationFunction:     'Automated behaviour performed by an application component.',
+  ApplicationInteraction:  'A unit of collective automated behaviour performed by two or more components.',
+  ApplicationProcess:      'A sequence of application actions that collectively produce a defined result.',
+  ApplicationEvent:        'An application state change that triggers or results from behaviour.',
+  ApplicationService:      'An explicitly defined exposed application behaviour that fulfils a need of a user or component.',
+  // Application Passive Structure
+  DataObject:              'Data structured for automated processing (records, datasets, messages, files).',
+  // Technology Active Structure
+  Node:                    'A computational or physical resource that hosts, manipulates, or communicates data.',
+  Device:                  'A physical IT resource (server, network appliance, mobile device) that executes software.',
+  SystemSoftware:          'Software that provides/manages an environment for other software (OS, middleware, DBMS).',
+  TechnologyCollaboration: 'An aggregate of two or more technology elements working together.',
+  TechnologyInterface:     'A point of access where technology services are made available (port, socket, protocol endpoint).',
+  Path:                    'A link between two or more nodes over which information is exchanged.',
+  CommunicationNetwork:    'A set of structures that connects nodes for the transmission of data (LAN, WAN, Internet).',
+  // Technology Behaviour
+  TechnologyFunction:      'A collection of technology behaviour performed by a node.',
+  TechnologyProcess:       'A sequence of technology actions that produce a defined result.',
+  TechnologyInteraction:   'Collective behaviour performed by two or more nodes.',
+  TechnologyEvent:         'A technology state change that triggers or results from behaviour.',
+  TechnologyService:       'An explicitly defined exposed technology behaviour that fulfils a need of a node or component.',
+  // Technology Passive Structure
+  Artifact:                'A piece of data used or produced in a software development or operational process (file, DB, image).',
+  TechnologyObject:        'A passive element used or produced by technology behaviour.'
+};
+
+// Allowed relationship rules (summarised)
+const REL_RULES = {
+  AssociationRelationship:    'Any concept → any concept',
+  RealizationRelationship:    'Behaviour / object → behaviour / object (same or lower layer)',
+  AssignmentRelationship:     'Active structure ↔ Behaviour  (same layer)',
+  AggregationRelationship:    'Any concept → any concept (same type family)',
+  CompositionRelationship:    'Any concept → any concept (same type family)',
+  ServingRelationship:        'Any element → active structure or behaviour',
+  AccessRelationship:         'Behaviour → passive structure',
+  InfluenceRelationship:      'Any concept → any concept (motivation / strategy preferred)',
+  TriggeringRelationship:     'Behaviour → behaviour',
+  FlowRelationship:           'Behaviour → behaviour',
+  SpecializationRelationship: 'Any concept → same type'
+};
+
+function renderHelp() {
+  const panel = document.getElementById('tab-help');
+
+  // ── Layer descriptions ──────────────────────────────────────
+  const layerRows = [
+    { cc:'biz',  name:'Business Layer',     color:'#f5e67a',
+      desc:'Represents the business domain — actors, roles, processes, services, and objects at the organisational level. Traditionally shown in <strong>yellow</strong>.' },
+    { cc:'app',  name:'Application Layer',  color:'#7adaf5',
+      desc:'Represents software and application components, their behaviour (functions, services), and the data they process. Traditionally shown in <strong>light blue / cyan</strong>.' },
+    { cc:'tech', name:'Technology Layer',   color:'#7af5a0',
+      desc:'Represents infrastructure — hardware, system software, networks, and physical resources that support the application and business layers. Traditionally shown in <strong>light green</strong>.' }
+  ];
+
+  // ── Aspect descriptions ─────────────────────────────────────
+  const aspectRows = [
+    { cls:'active-struct', color:'var(--blue)',  name:'Active Structure',
+      desc:'Entities that perform behaviour — actors, components, nodes, etc. They "do" things.' },
+    { cls:'behaviour',     color:'var(--gold)',  name:'Behaviour',
+      desc:'Actions or processes performed by active structure — processes, functions, services, events.' },
+    { cls:'passive',       color:'var(--muted)', name:'Passive Structure',
+      desc:'Objects acted upon — business objects, data objects, artifacts. They are "used" or "produced".' }
+  ];
+
+  let html = `<div class="ml-grid">`;
+
+  // ═══════════════════════════════════════════════════════════
+  // LEFT COLUMN — Manual
+  // ═══════════════════════════════════════════════════════════
+  html += `
+  <div>
+    <div class="ml-card" style="margin-bottom:1.25rem">
+      <div class="ml-card-head"><span class="ml-card-head-icon">📖</span> Quick Start Guide</div>
+      <div class="ml-card-body">
+        <div class="manual-steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <div class="step-title">Name your model</div>
+              <div class="step-desc">Enter a name in the <code>Model name</code> field in the header, and optionally a description in the bar below it. Both appear in the exported file.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <div class="step-title">Add elements per layer</div>
+              <div class="step-desc">Navigate to the <strong>Business</strong>, <strong>Application</strong>, or <strong>Technology</strong> tab. Each tab is divided into three ArchiMate aspects: Active Structure, Behaviour, and Passive Structure. Click <code>+ [Type]</code> to add an element of that type.</div>
+              <div class="step-tip">💡 You can add as many elements as needed. Each element supports a <strong>Name</strong>, free-text <strong>Documentation</strong>, and unlimited custom <strong>Properties</strong> (key / value pairs).</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <div class="step-title">Fill in element details</div>
+              <div class="step-desc">For every element, enter at minimum a clear <strong>Name</strong>. The Documentation field accepts free-form text. Use Properties for any custom attributes (e.g. <code>owner</code>, <code>system</code>, <code>version</code>).</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <div class="step-title">Define relationships</div>
+              <div class="step-desc">Go to the <strong>Relationships</strong> tab. Click <code>+ Add Relationship</code>, then select a <strong>Source</strong>, a <strong>Relationship Type</strong>, and a <strong>Target</strong>. Each type has specific ArchiMate semantics — consult the reference card or the Legend below.</div>
+              <div class="step-tip">💡 Some types have extra options: <em>Association</em> can be directed; <em>Access</em> requires a Read/Write direction; <em>Influence</em> accepts a strength value.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">5</div>
+            <div class="step-body">
+              <div class="step-title">Save your work (JSON)</div>
+              <div class="step-desc">Click <code>💾 Save JSON</code> to download your model as a <code>.json</code> file. Reload it at any time with <code>📂 Load JSON</code>. The JSON preserves all elements, relationships, properties, and documentation.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">6</div>
+            <div class="step-body">
+              <div class="step-title">Export to Archi</div>
+              <div class="step-desc">Click <code>⬇ Export .archimate</code>. Open the downloaded file in <a href="https://www.archimatetool.com" target="_blank" rel="noopener" style="color:var(--gold)">Archi</a> (free tool). All elements appear in the correct folders with their ArchiMate icons, shapes, and a default diagram view with all connections.</div>
+              <div class="step-tip">💡 In Archi you can rearrange the diagram, add colours, create multiple views, and apply the full ArchiMate notation including icons specific to each element type.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ml-card">
+      <div class="ml-card-head"><span class="ml-card-head-icon">💡</span> Tips &amp; Best Practices</div>
+      <div class="ml-card-body">
+        <div class="manual-steps">
+          <div class="step">
+            <div class="step-num">▸</div>
+            <div class="step-body">
+              <div class="step-title">Start with the Business layer</div>
+              <div class="step-desc">Model actors, roles, and processes first. Then identify the applications that support them (Application layer), and the infrastructure that runs the applications (Technology layer).</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">▸</div>
+            <div class="step-body">
+              <div class="step-title">Use Serving for cross-layer support</div>
+              <div class="step-desc">The <em>Serving</em> relationship is the standard way to show that an Application Component supports a Business Process, or a Node hosts an Application Component.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">▸</div>
+            <div class="step-body">
+              <div class="step-title">Assignment links actors to behaviour</div>
+              <div class="step-desc">Use <em>Assignment</em> to connect a Business Actor or Role to the Business Process or Function they perform. Similarly, use it to assign an Application Component to its Application Function.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">▸</div>
+            <div class="step-body">
+              <div class="step-title">Realization for services</div>
+              <div class="step-desc">A Business Process <em>realizes</em> a Business Service. An Application Function <em>realizes</em> an Application Service. This separates the "what" (service) from the "how" (process/function).</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">▸</div>
+            <div class="step-body">
+              <div class="step-title">Use Documentation and Properties</div>
+              <div class="step-desc">Documentation supports free-text descriptions and is exported to Archi's element documentation field. Custom properties appear as key-value pairs and are searchable/filterable in Archi.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // ═══════════════════════════════════════════════════════════
+  // RIGHT COLUMN — Legend
+  // ═══════════════════════════════════════════════════════════
+  html += `<div>`;
+
+  // Layer legend
+  html += `
+    <div class="ml-card" style="margin-bottom:1.25rem">
+      <div class="ml-card-head"><span class="ml-card-head-icon">🎨</span> Layer Colour Coding</div>
+      <div class="ml-card-body">
+        <div class="legend-layers">`;
+  for (const l of layerRows) {
+    html += `
+          <div class="legend-layer ${l.cc}">
+            <span class="legend-layer-badge ${l.cc}">${l.name.split(' ')[0]}</span>
+            <span class="legend-layer-desc">${l.desc}</span>
+          </div>`;
+  }
+  html += `</div>
+
+        <div class="notation-box">
+          <h4>Aspect Indicators (left border colour on section headers)</h4>
+          <div class="notation-rows">`;
+  for (const a of aspectRows) {
+    html += `
+            <div class="notation-row">
+              <span class="notation-swatch" style="background:${a.color}"></span>
+              <span class="notation-label">${a.name}</span>
+              <span class="notation-desc">${a.desc}</span>
+            </div>`;
+  }
+  html += `</div></div>
+      </div>
+    </div>`;
+
+  // Element types by layer
+  html += `
+    <div class="ml-card" style="margin-bottom:1.25rem">
+      <div class="ml-card-head"><span class="ml-card-head-icon">⬡</span> Element Type Reference</div>
+      <div class="ml-card-body">`;
+
+  for (const [layerKey, config] of Object.entries(LAYER_CONFIG)) {
+    const cc = config.colorClass;
+    html += `<div style="margin-bottom:1rem"><div style="font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--${cc}-text);margin-bottom:.5rem;padding:.2rem .5rem;background:var(--${cc}-bg);border-radius:4px;display:inline-block">${config.label} Layer</div>`;
+    for (const [secName, types] of Object.entries(config.sections)) {
+      const scls = SECTION_CLS[secName] || 'active-struct';
+      const scls2 = secName === 'Passive Structure' ? 'passive' : scls;
+      html += `<div class="legend-elem-group"><div class="legend-group-title ${scls2}">${secName}</div><div class="legend-elem-list">`;
+      for (const t of types) {
+        html += `
+                <div class="legend-elem-item">
+                  <div>
+                    <div class="legend-elem-name"><span class="legend-elem-badge ${cc}">${TYPE_LABELS[t]}</span></div>
+                    <div class="legend-elem-desc" style="margin-top:.25rem">${ELEM_DESCS[t]||''}</div>
+                  </div>
+                </div>`;
+      }
+      html += `</div></div>`;
+    }
+    html += `</div>`;
+  }
+  html += `</div></div>`;
+
+  // Relationship types legend
+  html += `
+    <div class="ml-card">
+      <div class="ml-card-head"><span class="ml-card-head-icon">↔</span> Relationship Type Reference</div>
+      <div class="ml-card-body">
+        <table class="legend-rel-table">
+          <thead><tr>
+            <th>Type</th>
+            <th>Symbol</th>
+            <th>Description</th>
+            <th>Typical usage</th>
+          </tr></thead>
+          <tbody>`;
+  for (const rt of REL_TYPES) {
+    html += `
+            <tr>
+              <td style="font-weight:700;color:var(--white);white-space:nowrap">${rt.label}</td>
+              <td class="rel-sym-cell">${rt.sym}</td>
+              <td style="color:var(--muted)">${rt.desc}</td>
+              <td><span class="rel-rule">${REL_RULES[rt.id]||''}</span></td>
+            </tr>`;
+  }
+  html += `</tbody></table>
+      </div>
+    </div>
+  </div>`; // close right column
+
+  html += `</div>`; // close ml-grid
+  panel.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+renderAll();
+renderHelp();
+updateStats();
+</script>
+</body>
+</html>
