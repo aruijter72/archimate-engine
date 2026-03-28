@@ -1,39 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<archimate:model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xmlns:archimate="http://www.archimatetool.com/archimate"
-                 name="ESB Tender — IJsselgemeenten" id="id-mnadnvof03etf" version="4.0">
+<?xml version='1.0' encoding='UTF-8'?>
+<model xmlns="http://www.archimatetool.com/archimate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="ESB Tender — IJsselgemeenten" id="id-mnadnvof03etf" version="4.0">
   <documentation>ArchiMate 3 model for the European procurement (aanbesteding) of an Enterprise Service Bus (ESB) solution by IJsselgemeenten (gemeentelijk samenwerkingsverband). The tender follows EU Directive 2014/24/EU (public sector procurement) and the Dutch Aanbestedingswet 2012. The model covers the full tender lifecycle — from market consultation through contract management — and describes the ESB solution requirements across the Business, Application, and Technology layers.</documentation>
   <folder name="Business" id="id-mnadnvof1cksl" type="business">
     <element xsi:type="archimate:BusinessActor" name="IJsselgemeenten" id="biz-actor-ijssel">
       <documentation>Gemeentelijk samenwerkingsverband (shared municipal service organisation) acting as the contracting authority (aanbestedende dienst) under EU Directive 2014/24/EU. Represents the consortium of municipalities in the IJssel region.</documentation>
-      <property key="Organisatietype" value="Gemeenschappelijke regeling (Wgr)"/>
-      <property key="Rol in aanbesteding" value="Aanbestedende dienst"/>
-      <property key="Toepasselijk recht" value="EU Directive 2014/24/EU · Aanbestedingswet 2012"/>
+      <property key="Organisatietype" value="Gemeenschappelijke regeling (Wgr)" />
+      <property key="Rol in aanbesteding" value="Aanbestedende dienst" />
+      <property key="Toepasselijk recht" value="EU Directive 2014/24/EU · Aanbestedingswet 2012" />
     </element>
     <element xsi:type="archimate:BusinessActor" name="Marktpartijen (Inschrijvers)" id="biz-actor-markt">
       <documentation>Commercial vendors and system integrators that respond to the tender by submitting bids for the ESB solution. Must meet selection criteria (uitsluitingsgronden, geschiktheidseisen) and award criteria (gunningscriteria).</documentation>
-      <property key="Type" value="Leverancier / Dienstverlener"/>
-      <property key="Vereiste kwalificaties" value="ISO 27001, NEN 7510 (indien van toepassing), referentieopdrachten"/>
+      <property key="Type" value="Leverancier / Dienstverlener" />
+      <property key="Vereiste kwalificaties" value="ISO 27001, NEN 7510 (indien van toepassing), referentieopdrachten" />
     </element>
     <element xsi:type="archimate:BusinessActor" name="Centrale Inkooporganisatie" id="biz-actor-cpb">
       <documentation>Central procurement unit within IJsselgemeenten or mandated to assist, responsible for procedure management and compliance with procurement law.</documentation>
-      <property key="Type" value="Interne ondersteunende eenheid"/>
+      <property key="Type" value="Interne ondersteunende eenheid" />
     </element>
     <element xsi:type="archimate:BusinessActor" name="Privacy &amp; Security Officer (CISO/FG)" id="biz-actor-pia">
       <documentation>Functionaris Gegevensbescherming (DPO) and CISO who validate the Privacy Impact Assessment (PIA/DPIA) and information security requirements embedded in the tender specification.</documentation>
-      <property key="Grondslag" value="AVG / GDPR Art. 35 (DPIA), BIO (Baseline Informatiebeveiliging Overheid)"/>
+      <property key="Grondslag" value="AVG / GDPR Art. 35 (DPIA), BIO (Baseline Informatiebeveiliging Overheid)" />
     </element>
     <element xsi:type="archimate:BusinessRole" name="Aanbestedende Dienst" id="biz-role-aanbestedende">
       <documentation>Legal role of the contracting authority under EU procurement law. Responsible for publishing the contract notice, conducting the procedure, and awarding the contract in compliance with EU Directive 2014/24/EU.</documentation>
-      <property key="EU Richtlijn" value="2014/24/EU Art. 2(1)"/>
+      <property key="EU Richtlijn" value="2014/24/EU Art. 2(1)" />
     </element>
     <element xsi:type="archimate:BusinessRole" name="Inschrijver" id="biz-role-inschrijver">
       <documentation>Role of an economic operator that submits a tender in response to the contract notice. Subject to exclusion grounds (art. 2.86-2.87 Aanbestedingswet) and suitability requirements.</documentation>
     </element>
     <element xsi:type="archimate:BusinessRole" name="Beoordelingscommissie" id="biz-role-beoordelaar">
       <documentation>Evaluation committee composed of domain experts, legal advisors, and IT specialists who score tenders on the award criteria (BPKV — Best Price-Quality Ratio).</documentation>
-      <property key="Gunningscriterium" value="BPKV (Beste Prijs-Kwaliteitsverhouding)"/>
-      <property key="Grondslag" value="Art. 2.115 Aanbestedingswet 2012"/>
+      <property key="Gunningscriterium" value="BPKV (Beste Prijs-Kwaliteitsverhouding)" />
+      <property key="Grondslag" value="Art. 2.115 Aanbestedingswet 2012" />
     </element>
     <element xsi:type="archimate:BusinessRole" name="Contractmanager" id="biz-role-contractmgr">
       <documentation>Responsible for managing the ESB contract post-award, including SLA monitoring, change management, and escalation.</documentation>
@@ -43,50 +41,50 @@
     </element>
     <element xsi:type="archimate:BusinessInterface" name="TenderNed / TED Portal" id="biz-iface-tenderned">
       <documentation>Digital publication and submission portal. TenderNed is the Dutch national platform (mandatory for NL contracting authorities); TED (Tenders Electronic Daily) is the EU-wide publication journal for contracts above the EU threshold.</documentation>
-      <property key="Platform NL" value="TenderNed (www.tenderned.nl)"/>
-      <property key="Platform EU" value="TED (Tenders Electronic Daily, EU OJ/S)"/>
-      <property key="EU Drempelwaarde (2024)" value="EUR 221.000 (leveringen/diensten centrale overheid)"/>
+      <property key="Platform NL" value="TenderNed (www.tenderned.nl)" />
+      <property key="Platform EU" value="TED (Tenders Electronic Daily, EU OJ/S)" />
+      <property key="EU Drempelwaarde (2024)" value="EUR 221.000 (leveringen/diensten centrale overheid)" />
     </element>
     <element xsi:type="archimate:BusinessProcess" name="1. Marktverkenning &amp; Voorbereiding" id="biz-proc-marktverkenning">
       <documentation>Prior Market Consultation (PMC) — IJsselgemeenten engages the market to gather insights on ESB capabilities, pricing, and innovation options before publishing the formal tender. Mandatory market analysis and stakeholder interviews. Outcome: Programma van Eisen (PvE) draft.</documentation>
-      <property key="Grondslag" value="Art. 2.47 Aanbestedingswet (marktconsultatie)"/>
-      <property key="Doorlooptijd (indicatief)" value="8 weken"/>
+      <property key="Grondslag" value="Art. 2.47 Aanbestedingswet (marktconsultatie)" />
+      <property key="Doorlooptijd (indicatief)" value="8 weken" />
     </element>
     <element xsi:type="archimate:BusinessProcess" name="2. Specificatie &amp; Bestekopstelling" id="biz-proc-specificatie">
       <documentation>Drafting of the procurement specification: Selectieleidraad, Beschrijvend Document, Programma van Eisen (PvE), DPIA, and model contract (raamovereenkomst). Must comply with the technical neutrality requirement (art. 2.76 Aanbestedingswet) and GDPR/BIO requirements.</documentation>
-      <property key="Deliverables" value="Selectieleidraad · Beschrijvend Document · PvE · Model ROK · DPIA"/>
-      <property key="Doorlooptijd (indicatief)" value="10 weken"/>
+      <property key="Deliverables" value="Selectieleidraad · Beschrijvend Document · PvE · Model ROK · DPIA" />
+      <property key="Doorlooptijd (indicatief)" value="10 weken" />
     </element>
     <element xsi:type="archimate:BusinessProcess" name="3. Publicatie Aankondiging" id="biz-proc-aankondiging">
       <documentation>Publication of the Contract Notice (Aankondiging van Opdracht) on TenderNed and TED/OJEU. Opens the official tender procedure. The notice includes the CPV code, estimated contract value, selection criteria, and deadline for tender submission.</documentation>
-      <property key="CPV Code" value="72316000-3 / 48000000-8"/>
-      <property key="Proceduretype" value="Niet-openbare procedure of Openbare procedure"/>
-      <property key="Grondslag" value="Art. 2.61 Aanbestedingswet / EU Directive 2014/24/EU Art. 49"/>
+      <property key="CPV Code" value="72316000-3 / 48000000-8" />
+      <property key="Proceduretype" value="Niet-openbare procedure of Openbare procedure" />
+      <property key="Grondslag" value="Art. 2.61 Aanbestedingswet / EU Directive 2014/24/EU Art. 49" />
     </element>
     <element xsi:type="archimate:BusinessProcess" name="4. Nota van Inlichtingen (Q&amp;A)" id="biz-proc-nota">
       <documentation>Structured Q&amp;A process: tenderers submit written questions; the contracting authority publishes consolidated answers (Nota van Inlichtingen) to all participants simultaneously, ensuring equal treatment (gelijke behandeling).</documentation>
-      <property key="Publicatie" value="TenderNed — gelijktijdig aan alle deelnemers"/>
-      <property key="Grondslag" value="Art. 2.105 Aanbestedingswet — transparantiebeginsel"/>
+      <property key="Publicatie" value="TenderNed — gelijktijdig aan alle deelnemers" />
+      <property key="Grondslag" value="Art. 2.105 Aanbestedingswet — transparantiebeginsel" />
     </element>
     <element xsi:type="archimate:BusinessProcess" name="5. Inschrijvingsfase" id="biz-proc-inschrijving">
       <documentation>Tenderers prepare and submit their bids digitally via TenderNed before the closing deadline. Submissions include price proposals, technical plans, references, UEA (Uniform European Self-Declaration), and DPIA responses.</documentation>
-      <property key="UEA" value="Uniform Europees Aanbestedingsdocument (art. 2.85 Aanbestedingswet)"/>
-      <property key="Termijn (indicatief)" value="Minimaal 35 dagen (openbare procedure) / 30 dagen (niet-openbaar)"/>
+      <property key="UEA" value="Uniform Europees Aanbestedingsdocument (art. 2.85 Aanbestedingswet)" />
+      <property key="Termijn (indicatief)" value="Minimaal 35 dagen (openbare procedure) / 30 dagen (niet-openbaar)" />
     </element>
     <element xsi:type="archimate:BusinessProcess" name="6. Beoordeling &amp; Rangschikking" id="biz-proc-beoordeling">
       <documentation>The evaluation committee assesses submissions on pre-published award criteria (gunningscriteria) using the BPKV methodology. Scoring includes price, technical quality, implementation plan, SLA compliance, and security maturity.</documentation>
-      <property key="Gunningscriterium" value="BPKV — prijs 40% · kwaliteit 60%"/>
-      <property key="Kwaliteitscriteria" value="Integratiearchitectuur · SLA · Migratie · Security · Innovatie"/>
+      <property key="Gunningscriterium" value="BPKV — prijs 40% · kwaliteit 60%" />
+      <property key="Kwaliteitscriteria" value="Integratiearchitectuur · SLA · Migratie · Security · Innovatie" />
     </element>
     <element xsi:type="archimate:BusinessProcess" name="7. Gunningsbeslissing &amp; Alcatel" id="biz-proc-gunning">
       <documentation>The contracting authority notifies all tenderers of the provisional award decision (voorlopige gunningsbeslissing). A mandatory standstill period (Alcatel-termijn) of at least 20 days applies before the contract is signed.</documentation>
-      <property key="Alcatel-termijn" value="Minimaal 20 kalenderdagen (art. 2.127 Aanbestedingswet)"/>
-      <property key="Rechtsbescherming" value="Kort geding bij de rechtbank"/>
+      <property key="Alcatel-termijn" value="Minimaal 20 kalenderdagen (art. 2.127 Aanbestedingswet)" />
+      <property key="Rechtsbescherming" value="Kort geding bij de rechtbank" />
     </element>
     <element xsi:type="archimate:BusinessProcess" name="8. Contractsluiting &amp; Onboarding" id="biz-proc-contractsluiting">
       <documentation>Signing of the framework agreement (raamovereenkomst) with the winning supplier. Followed by project kick-off, onboarding, and transition planning for the ESB implementation.</documentation>
-      <property key="Contractvorm" value="Raamovereenkomst (max. 4 jaar, art. 2.140 Aanbestedingswet)"/>
-      <property key="Startdatum implementatie" value="Na definitieve gunning"/>
+      <property key="Contractvorm" value="Raamovereenkomst (max. 4 jaar, art. 2.140 Aanbestedingswet)" />
+      <property key="Startdatum implementatie" value="Na definitieve gunning" />
     </element>
     <element xsi:type="archimate:BusinessFunction" name="Definiëren Gunningscriteria" id="biz-func-gunningscriteria">
       <documentation>Organisational function responsible for determining measurable and legally defensible award criteria based on strategic objectives. Criteria must be pre-published and may not be changed after publication.</documentation>
@@ -111,20 +109,20 @@
     </element>
     <element xsi:type="archimate:Contract" name="ESB Raamovereenkomst" id="biz-contract-rok">
       <documentation>Framework agreement (raamovereenkomst) for the delivery, implementation, hosting, and maintenance of the ESB solution. Maximum duration 4 years (2+1+1). Includes model SLA, data processing agreement (verwerkersovereenkomst AVG), and exit provisions.</documentation>
-      <property key="Looptijd" value="2 jaar + 2 x 1 jaar optie (max. 4 jaar)"/>
-      <property key="Type" value="Raamovereenkomst met één opdrachtnemer"/>
+      <property key="Looptijd" value="2 jaar + 2 x 1 jaar optie (max. 4 jaar)" />
+      <property key="Type" value="Raamovereenkomst met één opdrachtnemer" />
     </element>
     <element xsi:type="archimate:Contract" name="Verwerkersovereenkomst (AVG/GDPR)" id="biz-contract-vwo">
       <documentation>Data Processing Agreement (DPA) required under GDPR Art. 28. Governs how the ESB supplier processes personal data on behalf of IJsselgemeenten as the data controller.</documentation>
-      <property key="Grondslag" value="AVG Art. 28 / GDPR Art. 28"/>
+      <property key="Grondslag" value="AVG Art. 28 / GDPR Art. 28" />
     </element>
     <element xsi:type="archimate:BusinessObject" name="Programma van Eisen (PvE)" id="biz-obj-pve">
       <documentation>Functional and non-functional requirements specification for the ESB solution. Includes integration requirements, performance SLAs, security baselines (BIO), API standards, and interoperability with existing municipal systems (zaaksysteem, HRM, financien).</documentation>
-      <property key="Bevat" value="Functionele eisen · NFR's · BIO-eisen · API-standaarden (REST/SOAP) · Migratie-eisen"/>
+      <property key="Bevat" value="Functionele eisen · NFR's · BIO-eisen · API-standaarden (REST/SOAP) · Migratie-eisen" />
     </element>
     <element xsi:type="archimate:BusinessObject" name="Uniform Europees Aanbestedingsdocument (UEA)" id="biz-obj-uea">
       <documentation>Standardised EU self-declaration form submitted by tenderers as initial evidence of their suitability. Final evidence is requested from the winning bidder only.</documentation>
-      <property key="Grondslag" value="Art. 2.85-2.87 Aanbestedingswet / EU Directive 2014/24/EU Art. 59"/>
+      <property key="Grondslag" value="Art. 2.85-2.87 Aanbestedingswet / EU Directive 2014/24/EU Art. 59" />
     </element>
     <element xsi:type="archimate:BusinessObject" name="Nota van Inlichtingen" id="biz-obj-nvi">
       <documentation>Official Q&amp;A document published during the tender period. All questions and answers are public and binding on the contracting authority. Forms part of the tender specification.</documentation>
@@ -134,39 +132,39 @@
     </element>
     <element xsi:type="archimate:Representation" name="Aankondiging van Opdracht (TED/OJEU)" id="biz-rep-aankondiging">
       <documentation>Official contract notice published in the EU Official Journal Supplement (TED — Tenders Electronic Daily). Mandatory for contracts above the EU procurement threshold.</documentation>
-      <property key="Formulier" value="eForms CN — subtype 16 (standaardomschrijving diensten/leveringen)"/>
+      <property key="Formulier" value="eForms CN — subtype 16 (standaardomschrijving diensten/leveringen)" />
     </element>
     <element xsi:type="archimate:Representation" name="Beschrijvend Document / Bestek" id="biz-rep-bestek">
       <documentation>The full tender specification document published to tenderers. Contains requirements, evaluation criteria, procedure rules, model contract, DPIA requirements, and submission instructions.</documentation>
     </element>
     <element xsi:type="archimate:Product" name="ESB Integratiedienstenpakket" id="biz-product-esb">
       <documentation>The product/service bundle being procured: ESB platform software, implementation services, hosting, maintenance, training, and support — delivered under the framework agreement.</documentation>
-      <property key="Inhoudt" value="Licenties · Implementatie · Beheer · Support · Opleiding"/>
+      <property key="Inhoudt" value="Licenties · Implementatie · Beheer · Support · Opleiding" />
     </element>
   </folder>
   <folder name="Application" id="id-mnadnvof250iw" type="application">
     <element xsi:type="archimate:ApplicationComponent" name="ESB Platform (Enterprise Service Bus)" id="app-comp-esb">
       <documentation>Core middleware platform that provides message-based integration between internal and external systems. Must support open standards (REST, SOAP, AMQP, MQTT, JMS), have HA/DR capabilities, and comply with BIO security baseline.</documentation>
-      <property key="Standaarden" value="REST · SOAP/WS · AMQP · JMS · SFTP · AS4 (Digipoort)"/>
-      <property key="Certificering" value="ISO 27001 leverancier · BIO niveau 2"/>
-      <property key="Deploymentmodel" value="On-premise NL / Private Cloud NL (Europees datacentrum)"/>
+      <property key="Standaarden" value="REST · SOAP/WS · AMQP · JMS · SFTP · AS4 (Digipoort)" />
+      <property key="Certificering" value="ISO 27001 leverancier · BIO niveau 2" />
+      <property key="Deploymentmodel" value="On-premise NL / Private Cloud NL (Europees datacentrum)" />
     </element>
     <element xsi:type="archimate:ApplicationComponent" name="API Gateway" id="app-comp-apigateway">
       <documentation>Manages and secures all API traffic in and out of the ESB. Provides rate limiting, authentication (OAuth 2.0/PKCE, mTLS), versioning, and developer portal. Must support NLX (Common Ground) for municipality interoperability.</documentation>
-      <property key="Standaarden" value="OAuth 2.0 · OpenID Connect · OpenAPI 3.x · NLX"/>
-      <property key="Authenticatie" value="DigiD koppeling · eHerkenning · PKIoverheid certificaten"/>
+      <property key="Standaarden" value="OAuth 2.0 · OpenID Connect · OpenAPI 3.x · NLX" />
+      <property key="Authenticatie" value="DigiD koppeling · eHerkenning · PKIoverheid certificaten" />
     </element>
     <element xsi:type="archimate:ApplicationComponent" name="Message Broker" id="app-comp-messagebroker">
       <documentation>Asynchronous messaging component for reliable event-driven integration. Supports publish/subscribe and point-to-point patterns. Guarantees at-least-once or exactly-once delivery depending on the integration scenario.</documentation>
-      <property key="Patronen" value="Pub/Sub · Point-to-Point · Request/Reply · Dead Letter Queue"/>
+      <property key="Patronen" value="Pub/Sub · Point-to-Point · Request/Reply · Dead Letter Queue" />
     </element>
     <element xsi:type="archimate:ApplicationComponent" name="Identity &amp; Access Management (IAM)" id="app-comp-iam">
       <documentation>Manages service identities, API keys, certificates, and role-based access control for all integrations. Integrates with IJsselgemeenten's existing Active Directory / Azure AD.</documentation>
-      <property key="Protocol" value="SAML 2.0 · OAuth 2.0 · LDAP/AD"/>
+      <property key="Protocol" value="SAML 2.0 · OAuth 2.0 · LDAP/AD" />
     </element>
     <element xsi:type="archimate:ApplicationComponent" name="Monitoring &amp; Management Console" id="app-comp-monitoring">
       <documentation>Centralised dashboard for real-time monitoring of message flows, error rates, latency, SLA compliance, and audit trails. Provides alerting and SLA reporting.</documentation>
-      <property key="SLA-indicatoren" value="Uptime &gt;= 99,9% · Responsetijd &lt; 500ms · Foutpercentage &lt; 0,1%"/>
+      <property key="SLA-indicatoren" value="Uptime &gt;= 99,9% · Responsetijd &lt; 500ms · Foutpercentage &lt; 0,1%" />
     </element>
     <element xsi:type="archimate:ApplicationComponent" name="Integration Development Environment (IDE)" id="app-comp-ide">
       <documentation>Low-code / full-code development tooling for building, testing, and deploying integration flows. Includes version control integration (Git), test harnesses, and CI/CD pipeline support.</documentation>
@@ -176,15 +174,15 @@
     </element>
     <element xsi:type="archimate:ApplicationInterface" name="REST/JSON API Interface" id="app-iface-rest">
       <documentation>Primary synchronous integration interface using HTTP/REST and JSON payloads. Follows OpenAPI 3.x specifications and Common Ground API design rules.</documentation>
-      <property key="Standaard" value="OpenAPI 3.x · Common Ground API Design Rules"/>
+      <property key="Standaard" value="OpenAPI 3.x · Common Ground API Design Rules" />
     </element>
     <element xsi:type="archimate:ApplicationInterface" name="SOAP/WS Interface" id="app-iface-soap">
       <documentation>Legacy SOAP web service interface for integration with older back-office systems (e.g. GBA, BRP-koppeling). Must support WS-Security with PKIoverheid certificates.</documentation>
-      <property key="Protocol" value="SOAP 1.1/1.2 · WSDL · WS-Security · WS-ReliableMessaging"/>
+      <property key="Protocol" value="SOAP 1.1/1.2 · WSDL · WS-Security · WS-ReliableMessaging" />
     </element>
     <element xsi:type="archimate:ApplicationInterface" name="Digipoort / AS4 Interface" id="app-iface-digipoort">
       <documentation>Standard government-to-government messaging interface via Logius Digipoort, used for e-invoicing (NEN 2380), reporting to central government, and StUF/SuwiML message exchange.</documentation>
-      <property key="Berichten" value="AS4 · StUF · SuwiML · Aangifte OB (Belastingdienst)"/>
+      <property key="Berichten" value="AS4 · StUF · SuwiML · Aangifte OB (Belastingdienst)" />
     </element>
     <element xsi:type="archimate:ApplicationFunction" name="Message Routing &amp; Transformation" id="app-func-routing">
       <documentation>Core ESB function: routes messages between source and target systems based on content, headers, or rules; transforms data formats (XSLT, JSON mapping, canonical model). Supports dynamic and content-based routing.</documentation>
@@ -194,11 +192,11 @@
     </element>
     <element xsi:type="archimate:ApplicationFunction" name="Beveiligingsfunctie (Encryptie &amp; Authenticatie)" id="app-func-security">
       <documentation>Enforces message-level and transport-level security: TLS 1.3, message signing, payload encryption, and token validation. Aligned with BIO and NEN-ISO/IEC 27001.</documentation>
-      <property key="BIO Maatregel" value="BIO 12 (Cryptografie) · BIO 9 (Toegangsbeveiliging)"/>
+      <property key="BIO Maatregel" value="BIO 12 (Cryptografie) · BIO 9 (Toegangsbeveiliging)" />
     </element>
     <element xsi:type="archimate:ApplicationFunction" name="Logging, Auditing &amp; Rapportage" id="app-func-logging">
       <documentation>Generates immutable audit logs for all message exchanges. Supports SIEM integration and produces SLA performance reports. Retention policy aligned with AVG bewaarbeleid.</documentation>
-      <property key="Bewaartermijn" value="Conform AVG/Archiefwet — minimum 5 jaar voor auditdoeleinden"/>
+      <property key="Bewaartermijn" value="Conform AVG/Archiefwet — minimum 5 jaar voor auditdoeleinden" />
     </element>
     <element xsi:type="archimate:ApplicationProcess" name="Berichtverwerking (Message Processing)" id="app-proc-berichtverwerking">
       <documentation>End-to-end process flow for a single message: receive → validate schema → authenticate → route → transform → deliver → acknowledge → log.</documentation>
@@ -220,14 +218,14 @@
     </element>
     <element xsi:type="archimate:DataObject" name="Berichtschema's &amp; Canonical Data Model" id="app-data-schema">
       <documentation>Standardised message schemas (XSD, JSON Schema, Avro) and the canonical data model used for transformation within the ESB. Aligned with StUF, RSGB, RGBZ, and Common Ground standards.</documentation>
-      <property key="Standaarden" value="StUF · RSGB · RGBZ · GFO Zaken · NL-API Design Rules"/>
+      <property key="Standaarden" value="StUF · RSGB · RGBZ · GFO Zaken · NL-API Design Rules" />
     </element>
     <element xsi:type="archimate:DataObject" name="API Specificaties (OpenAPI/WSDL)" id="app-data-apispec">
       <documentation>Machine-readable API specifications published in the developer portal. All APIs must be documented in OpenAPI 3.x (REST) or WSDL 1.1/2.0 (SOAP).</documentation>
     </element>
     <element xsi:type="archimate:DataObject" name="Audit Log &amp; Verwerkingsregister" id="app-data-auditlog">
       <documentation>Immutable log of all message exchanges including sender, receiver, timestamp, message ID, and processing result. Also serves as part of the AVG verwerkingsregister (Art. 30 GDPR).</documentation>
-      <property key="AVG" value="Verwerkingsregister Art. 30 AVG"/>
+      <property key="AVG" value="Verwerkingsregister Art. 30 AVG" />
     </element>
     <element xsi:type="archimate:DataObject" name="SLA Rapportage" id="app-data-slarapport">
       <documentation>Monthly and quarterly SLA performance reports delivered to IJsselgemeenten. Includes uptime, latency, error rates, incident statistics, and change request overview.</documentation>
@@ -236,9 +234,9 @@
   <folder name="Technology" id="id-mnadnvof3yuhu" type="technology">
     <element xsi:type="archimate:Node" name="Productieomgeving (ESB Cluster)" id="tech-node-prod">
       <documentation>Production environment running the ESB platform in a high-availability cluster configuration. Must be hosted in the Netherlands (EU data residency requirement). Minimum 2 nodes for active-active HA.</documentation>
-      <property key="Locatie" value="Nederlands / EU datacentrum"/>
-      <property key="HA vereiste" value="Actief-Actief · Uptime SLA &gt;= 99,9%"/>
-      <property key="Beveiliging" value="ISO 27001 datacentrum"/>
+      <property key="Locatie" value="Nederlands / EU datacentrum" />
+      <property key="HA vereiste" value="Actief-Actief · Uptime SLA &gt;= 99,9%" />
+      <property key="Beveiliging" value="ISO 27001 datacentrum" />
     </element>
     <element xsi:type="archimate:Node" name="Acceptatieomgeving" id="tech-node-acc">
       <documentation>Acceptance / pre-production environment for integration testing, UAT, and change validation before deploying to production.</documentation>
@@ -248,12 +246,12 @@
     </element>
     <element xsi:type="archimate:Device" name="Application Servers (x86-64)" id="tech-device-server">
       <documentation>Physical or virtual servers running the ESB platform. Must support containerisation (Kubernetes/Docker) for scalability and immutable infrastructure deployments.</documentation>
-      <property key="Platform" value="Kubernetes (CNCF-compliant) / VM (VMware/KVM)"/>
+      <property key="Platform" value="Kubernetes (CNCF-compliant) / VM (VMware/KVM)" />
     </element>
     <element xsi:type="archimate:Device" name="Persistent Storage (NAS/SAN)" id="tech-device-storage">
       <documentation>Persistent storage for message queues, audit logs, and configuration data. Must support encryption at rest (AES-256). Backup to geographically separate location.</documentation>
-      <property key="Encryptie" value="AES-256 at rest"/>
-      <property key="Backup RTO/RPO" value="RTO &lt; 4 uur · RPO &lt; 1 uur"/>
+      <property key="Encryptie" value="AES-256 at rest" />
+      <property key="Backup RTO/RPO" value="RTO &lt; 4 uur · RPO &lt; 1 uur" />
     </element>
     <element xsi:type="archimate:SystemSoftware" name="Container Platform (Kubernetes / OpenShift)" id="tech-sw-os">
       <documentation>Container orchestration platform for deploying and scaling ESB components. Must support automated failover, rolling updates, and blue/green deployments.</documentation>
@@ -263,27 +261,27 @@
     </element>
     <element xsi:type="archimate:SystemSoftware" name="Firewall / WAF" id="tech-sw-firewall">
       <documentation>Next-generation firewall and Web Application Firewall protecting the ESB cluster. Must comply with BIO network security controls.</documentation>
-      <property key="BIO" value="BIO 13 (Communicatiebeveiliging) · BIO 14 (Systeemacquisitie)"/>
+      <property key="BIO" value="BIO 13 (Communicatiebeveiliging) · BIO 14 (Systeemacquisitie)" />
     </element>
     <element xsi:type="archimate:CommunicationNetwork" name="GemeenteNet / Diginetwerk" id="tech-net-gemeente">
       <documentation>Secure private network interconnecting IJsselgemeenten locations and providing connectivity to central government services via Diginetwerk (Logius).</documentation>
-      <property key="Beheerder" value="Logius / VNG Realisatie"/>
+      <property key="Beheerder" value="Logius / VNG Realisatie" />
     </element>
     <element xsi:type="archimate:CommunicationNetwork" name="Internet (TLS-beveiligd)" id="tech-net-internet">
       <documentation>Internet connectivity for external API consumers, citizen-facing integrations, and cloud services. All traffic encrypted with TLS 1.3 minimum.</documentation>
-      <property key="Minimale TLS versie" value="TLS 1.3 (NCSC TLS Richtlijnen)"/>
+      <property key="Minimale TLS versie" value="TLS 1.3 (NCSC TLS Richtlijnen)" />
     </element>
     <element xsi:type="archimate:Path" name="Beveiligde Verbinding (mTLS / PKIoverheid)" id="tech-path-tls">
       <documentation>Mutual TLS (mTLS) communication path between ESB components and connected back-office systems. Uses PKIoverheid certificates for mutual authentication.</documentation>
-      <property key="Certificaten" value="PKIoverheid Private Services Server G1/G2"/>
+      <property key="Certificaten" value="PKIoverheid Private Services Server G1/G2" />
     </element>
     <element xsi:type="archimate:TechnologyService" name="Managed Hosting Service" id="tech-svc-hosting">
       <documentation>Managed infrastructure service for running the ESB platform including OS patching, hardware maintenance, and datacenter operations. SLA: 99.9% uptime, 24/7 NOC monitoring.</documentation>
     </element>
     <element xsi:type="archimate:TechnologyService" name="Disaster Recovery Service" id="tech-svc-dr">
       <documentation>DR service ensuring business continuity in case of primary site failure. Warm standby at secondary NL datacenter. RTO &lt; 4 hours, RPO &lt; 1 hour.</documentation>
-      <property key="RTO" value="&lt; 4 uur"/>
-      <property key="RPO" value="&lt; 1 uur"/>
+      <property key="RTO" value="&lt; 4 uur" />
+      <property key="RPO" value="&lt; 1 uur" />
     </element>
     <element xsi:type="archimate:TechnologyService" name="Backup &amp; Restore Service" id="tech-svc-backup">
       <documentation>Daily automated backups of all ESB configuration, message queues, and audit logs. Restore capability tested quarterly.</documentation>
@@ -293,12 +291,12 @@
     </element>
     <element xsi:type="archimate:TechnologyFunction" name="Patch &amp; Vulnerability Management" id="tech-func-patching">
       <documentation>Systematic patching of OS, middleware, and application components. Critical patches within 24 hours per BIO. Coordinated with IJsselgemeenten change management.</documentation>
-      <property key="BIO Maatregel" value="BIO 12.6 (Technisch beheer van kwetsbaarheden)"/>
+      <property key="BIO Maatregel" value="BIO 12.6 (Technisch beheer van kwetsbaarheden)" />
     </element>
     <element xsi:type="archimate:TechnologyProcess" name="Incident Management (ITIL)" id="tech-proc-incidentmgmt">
       <documentation>ITIL-aligned incident management process for the ESB platform. P1 incidents (production outage) require 1-hour response and 4-hour resolution per SLA. 24/7 on-call support required.</documentation>
-      <property key="SLA P1" value="Reactietijd 1 uur · Hersteltijd 4 uur · 24/7"/>
-      <property key="SLA P2" value="Reactietijd 4 uur · Hersteltijd 8 uur · werkdagen"/>
+      <property key="SLA P1" value="Reactietijd 1 uur · Hersteltijd 4 uur · 24/7" />
+      <property key="SLA P2" value="Reactietijd 4 uur · Hersteltijd 8 uur · werkdagen" />
     </element>
     <element xsi:type="archimate:TechnologyProcess" name="Change Management (ITIL)" id="tech-proc-changemgmt">
       <documentation>Controlled change management process for ESB configuration and infrastructure changes. Standard changes require 5-business-day notice; emergency changes require CAB approval from IJsselgemeenten.</documentation>
@@ -308,19 +306,19 @@
     </element>
     <element xsi:type="archimate:Artifact" name="Deployment Package (Container Image)" id="tech-artifact-deploy">
       <documentation>Versioned, immutable container image for the ESB platform and its components. Stored in a private container registry. Built via CI/CD pipeline with automated security scanning (SAST/DAST, CVE scanning).</documentation>
-      <property key="Registry" value="Private OCI-compliant registry"/>
-      <property key="Security Scan" value="SAST · DAST · SCA (SBOM)"/>
+      <property key="Registry" value="Private OCI-compliant registry" />
+      <property key="Security Scan" value="SAST · DAST · SCA (SBOM)" />
     </element>
     <element xsi:type="archimate:Artifact" name="Infrastructuurconfiguratie (IaC)" id="tech-artifact-config">
       <documentation>Infrastructure-as-Code configuration (Terraform, Ansible, Helm charts) defining the complete ESB platform infrastructure. Versioned in Git. Enables reproducible deployments.</documentation>
     </element>
     <element xsi:type="archimate:Artifact" name="Database Artifact (Configuratie &amp; State)" id="tech-obj-db">
       <documentation>Relational or NoSQL database storing ESB runtime configuration, routing rules, transformation mappings, and operational state. Must support encryption at rest and point-in-time recovery. Modelled as Artifact (Archi 4.x technology passive structure).</documentation>
-      <property key="Subtype" value="Database"/>
+      <property key="Subtype" value="Database" />
     </element>
     <element xsi:type="archimate:Artifact" name="Message Queue Artifact (Persistent)" id="tech-obj-queue">
       <documentation>Persistent message queue ensuring guaranteed message delivery. Messages survive node restarts. Supports DLQ (Dead Letter Queue) for failed messages. Modelled as Artifact (Archi 4.x technology passive structure).</documentation>
-      <property key="Subtype" value="Message Queue"/>
+      <property key="Subtype" value="Message Queue" />
     </element>
   </folder>
   <folder name="Relations" id="id-mnadnvof43emy" type="relations">
@@ -336,32 +334,32 @@
     <element xsi:type="archimate:AssignmentRelationship" id="rel-04" source="biz-actor-ijssel" target="biz-role-contractmgr">
       <documentation>IJsselgemeenten fulfils the contract management role post-award.</documentation>
     </element>
-    <element xsi:type="archimate:AggregationRelationship" id="rel-05" source="biz-collab-aanbestedingsteam" target="biz-role-aanbestedende"/>
-    <element xsi:type="archimate:AggregationRelationship" id="rel-06" source="biz-collab-aanbestedingsteam" target="biz-role-beoordelaar"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-07" source="biz-role-aanbestedende" target="biz-proc-marktverkenning"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-08" source="biz-role-aanbestedende" target="biz-proc-specificatie"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-09" source="biz-role-aanbestedende" target="biz-proc-aankondiging"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-10" source="biz-role-aanbestedende" target="biz-proc-nota"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-11" source="biz-role-inschrijver" target="biz-proc-inschrijving"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-12" source="biz-role-beoordelaar" target="biz-proc-beoordeling"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-13" source="biz-role-aanbestedende" target="biz-proc-gunning"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-14" source="biz-role-contractmgr" target="biz-proc-contractsluiting"/>
+    <element xsi:type="archimate:AggregationRelationship" id="rel-05" source="biz-collab-aanbestedingsteam" target="biz-role-aanbestedende" />
+    <element xsi:type="archimate:AggregationRelationship" id="rel-06" source="biz-collab-aanbestedingsteam" target="biz-role-beoordelaar" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-07" source="biz-role-aanbestedende" target="biz-proc-marktverkenning" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-08" source="biz-role-aanbestedende" target="biz-proc-specificatie" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-09" source="biz-role-aanbestedende" target="biz-proc-aankondiging" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-10" source="biz-role-aanbestedende" target="biz-proc-nota" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-11" source="biz-role-inschrijver" target="biz-proc-inschrijving" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-12" source="biz-role-beoordelaar" target="biz-proc-beoordeling" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-13" source="biz-role-aanbestedende" target="biz-proc-gunning" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-14" source="biz-role-contractmgr" target="biz-proc-contractsluiting" />
     <element xsi:type="archimate:TriggeringRelationship" id="rel-15" source="biz-proc-marktverkenning" target="biz-proc-specificatie">
       <documentation>Market insights feed into the specification.</documentation>
     </element>
     <element xsi:type="archimate:TriggeringRelationship" id="rel-16" source="biz-proc-specificatie" target="biz-proc-aankondiging">
       <documentation>Completed spec triggers publication.</documentation>
     </element>
-    <element xsi:type="archimate:TriggeringRelationship" id="rel-17" source="biz-event-aankondiging" target="biz-proc-nota"/>
-    <element xsi:type="archimate:TriggeringRelationship" id="rel-18" source="biz-proc-nota" target="biz-proc-inschrijving"/>
-    <element xsi:type="archimate:TriggeringRelationship" id="rel-19" source="biz-proc-inschrijving" target="biz-proc-beoordeling"/>
-    <element xsi:type="archimate:TriggeringRelationship" id="rel-20" source="biz-proc-beoordeling" target="biz-proc-gunning"/>
+    <element xsi:type="archimate:TriggeringRelationship" id="rel-17" source="biz-event-aankondiging" target="biz-proc-nota" />
+    <element xsi:type="archimate:TriggeringRelationship" id="rel-18" source="biz-proc-nota" target="biz-proc-inschrijving" />
+    <element xsi:type="archimate:TriggeringRelationship" id="rel-19" source="biz-proc-inschrijving" target="biz-proc-beoordeling" />
+    <element xsi:type="archimate:TriggeringRelationship" id="rel-20" source="biz-proc-beoordeling" target="biz-proc-gunning" />
     <element xsi:type="archimate:TriggeringRelationship" id="rel-21" source="biz-event-gunning" target="biz-proc-contractsluiting">
       <documentation>After Alcatel standstill, contract is signed.</documentation>
     </element>
-    <element xsi:type="archimate:RealizationRelationship" id="rel-22" source="biz-proc-aankondiging" target="biz-svc-aanbestedingsdienst"/>
-    <element xsi:type="archimate:RealizationRelationship" id="rel-23" source="biz-proc-beoordeling" target="biz-svc-beoordelingsdienst"/>
-    <element xsi:type="archimate:RealizationRelationship" id="rel-24" source="biz-proc-contractsluiting" target="biz-svc-contractmgmtsvc"/>
+    <element xsi:type="archimate:RealizationRelationship" id="rel-22" source="biz-proc-aankondiging" target="biz-svc-aanbestedingsdienst" />
+    <element xsi:type="archimate:RealizationRelationship" id="rel-23" source="biz-proc-beoordeling" target="biz-svc-beoordelingsdienst" />
+    <element xsi:type="archimate:RealizationRelationship" id="rel-24" source="biz-proc-contractsluiting" target="biz-svc-contractmgmtsvc" />
     <element xsi:type="archimate:ServingRelationship" id="rel-25" source="biz-iface-tenderned" target="biz-proc-aankondiging">
       <documentation>TenderNed/TED portal hosts the publication.</documentation>
     </element>
@@ -401,23 +399,23 @@
     <element xsi:type="archimate:ServingRelationship" id="rel-37" source="biz-func-gunningscriteria" target="biz-proc-beoordeling">
       <documentation>Defined criteria are used in evaluation.</documentation>
     </element>
-    <element xsi:type="archimate:ServingRelationship" id="rel-38" source="biz-func-contractmonitoring" target="biz-svc-contractmgmtsvc"/>
-    <element xsi:type="archimate:CompositionRelationship" id="rel-39" source="app-comp-esb" target="app-comp-apigateway"/>
-    <element xsi:type="archimate:CompositionRelationship" id="rel-40" source="app-comp-esb" target="app-comp-messagebroker"/>
-    <element xsi:type="archimate:CompositionRelationship" id="rel-41" source="app-comp-esb" target="app-comp-iam"/>
-    <element xsi:type="archimate:CompositionRelationship" id="rel-42" source="app-comp-esb" target="app-comp-monitoring"/>
-    <element xsi:type="archimate:CompositionRelationship" id="rel-43" source="app-comp-esb" target="app-comp-ide"/>
-    <element xsi:type="archimate:AggregationRelationship" id="rel-44" source="app-collab-integration" target="app-comp-esb"/>
-    <element xsi:type="archimate:AggregationRelationship" id="rel-45" source="app-collab-integration" target="app-comp-apigateway"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-46" source="app-comp-esb" target="app-func-routing"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-47" source="app-comp-esb" target="app-func-orchestration"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-48" source="app-comp-iam" target="app-func-security"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-49" source="app-comp-monitoring" target="app-func-logging"/>
-    <element xsi:type="archimate:RealizationRelationship" id="rel-50" source="app-func-routing" target="app-svc-integratie"/>
-    <element xsi:type="archimate:RealizationRelationship" id="rel-51" source="app-func-security" target="app-svc-security"/>
-    <element xsi:type="archimate:RealizationRelationship" id="rel-52" source="app-func-logging" target="app-svc-monitoring"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-53" source="app-comp-esb" target="app-proc-berichtverwerking"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-54" source="app-comp-apigateway" target="app-proc-apilcm"/>
+    <element xsi:type="archimate:ServingRelationship" id="rel-38" source="biz-func-contractmonitoring" target="biz-svc-contractmgmtsvc" />
+    <element xsi:type="archimate:CompositionRelationship" id="rel-39" source="app-comp-esb" target="app-comp-apigateway" />
+    <element xsi:type="archimate:CompositionRelationship" id="rel-40" source="app-comp-esb" target="app-comp-messagebroker" />
+    <element xsi:type="archimate:CompositionRelationship" id="rel-41" source="app-comp-esb" target="app-comp-iam" />
+    <element xsi:type="archimate:CompositionRelationship" id="rel-42" source="app-comp-esb" target="app-comp-monitoring" />
+    <element xsi:type="archimate:CompositionRelationship" id="rel-43" source="app-comp-esb" target="app-comp-ide" />
+    <element xsi:type="archimate:AggregationRelationship" id="rel-44" source="app-collab-integration" target="app-comp-esb" />
+    <element xsi:type="archimate:AggregationRelationship" id="rel-45" source="app-collab-integration" target="app-comp-apigateway" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-46" source="app-comp-esb" target="app-func-routing" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-47" source="app-comp-esb" target="app-func-orchestration" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-48" source="app-comp-iam" target="app-func-security" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-49" source="app-comp-monitoring" target="app-func-logging" />
+    <element xsi:type="archimate:RealizationRelationship" id="rel-50" source="app-func-routing" target="app-svc-integratie" />
+    <element xsi:type="archimate:RealizationRelationship" id="rel-51" source="app-func-security" target="app-svc-security" />
+    <element xsi:type="archimate:RealizationRelationship" id="rel-52" source="app-func-logging" target="app-svc-monitoring" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-53" source="app-comp-esb" target="app-proc-berichtverwerking" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-54" source="app-comp-apigateway" target="app-proc-apilcm" />
     <element xsi:type="archimate:AccessRelationship" id="rel-55" source="app-proc-berichtverwerking" target="app-data-schema" accessType="Read">
       <documentation>Message processing reads schemas.</documentation>
     </element>
@@ -430,20 +428,20 @@
     <element xsi:type="archimate:AccessRelationship" id="rel-58" source="app-proc-apilcm" target="app-data-apispec" accessType="ReadWrite">
       <documentation>API LCM writes API specs.</documentation>
     </element>
-    <element xsi:type="archimate:RealizationRelationship" id="rel-59" source="app-comp-apigateway" target="app-iface-rest"/>
-    <element xsi:type="archimate:RealizationRelationship" id="rel-60" source="app-comp-esb" target="app-iface-soap"/>
-    <element xsi:type="archimate:RealizationRelationship" id="rel-61" source="app-comp-esb" target="app-iface-digipoort"/>
+    <element xsi:type="archimate:RealizationRelationship" id="rel-59" source="app-comp-apigateway" target="app-iface-rest" />
+    <element xsi:type="archimate:RealizationRelationship" id="rel-60" source="app-comp-esb" target="app-iface-soap" />
+    <element xsi:type="archimate:RealizationRelationship" id="rel-61" source="app-comp-esb" target="app-iface-digipoort" />
     <element xsi:type="archimate:TriggeringRelationship" id="rel-62" source="app-event-sla-breach" target="app-svc-monitoring">
       <documentation>SLA breach triggers monitoring alert.</documentation>
     </element>
-    <element xsi:type="archimate:CompositionRelationship" id="rel-63" source="tech-node-prod" target="tech-device-server"/>
-    <element xsi:type="archimate:CompositionRelationship" id="rel-64" source="tech-node-prod" target="tech-device-storage"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-65" source="tech-node-prod" target="tech-svc-hosting"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-66" source="tech-node-prod" target="tech-func-ha"/>
-    <element xsi:type="archimate:RealizationRelationship" id="rel-67" source="tech-func-ha" target="tech-svc-hosting"/>
-    <element xsi:type="archimate:RealizationRelationship" id="rel-68" source="tech-func-patching" target="tech-svc-hosting"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-69" source="tech-node-prod" target="tech-proc-incidentmgmt"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="rel-70" source="tech-node-prod" target="tech-proc-changemgmt"/>
+    <element xsi:type="archimate:CompositionRelationship" id="rel-63" source="tech-node-prod" target="tech-device-server" />
+    <element xsi:type="archimate:CompositionRelationship" id="rel-64" source="tech-node-prod" target="tech-device-storage" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-65" source="tech-node-prod" target="tech-svc-hosting" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-66" source="tech-node-prod" target="tech-func-ha" />
+    <element xsi:type="archimate:RealizationRelationship" id="rel-67" source="tech-func-ha" target="tech-svc-hosting" />
+    <element xsi:type="archimate:RealizationRelationship" id="rel-68" source="tech-func-patching" target="tech-svc-hosting" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-69" source="tech-node-prod" target="tech-proc-incidentmgmt" />
+    <element xsi:type="archimate:AssignmentRelationship" id="rel-70" source="tech-node-prod" target="tech-proc-changemgmt" />
     <element xsi:type="archimate:AssociationRelationship" id="rel-71" source="tech-svc-dr" target="tech-node-prod">
       <documentation>DR service mirrors production environment.</documentation>
     </element>
@@ -474,7 +472,7 @@
     <element xsi:type="archimate:ServingRelationship" id="rel-80" source="tech-sw-firewall" target="tech-node-prod">
       <documentation>Firewall/WAF protects the production cluster.</documentation>
     </element>
-    <element xsi:type="archimate:TriggeringRelationship" id="rel-81" source="tech-event-incident" target="tech-proc-incidentmgmt"/>
+    <element xsi:type="archimate:TriggeringRelationship" id="rel-81" source="tech-event-incident" target="tech-proc-incidentmgmt" />
     <element xsi:type="archimate:ServingRelationship" id="rel-82" source="app-svc-integratie" target="biz-svc-aanbestedingsdienst">
       <documentation>ESB integration services support business procurement processes.</documentation>
     </element>
@@ -533,347 +531,347 @@
   <folder name="Views" id="id-mnadnvof56ijp" type="diagrams">
     <element xsi:type="archimate:ArchimateDiagramModel" name="Default View" id="id-mnadnvof6xiyi">
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog7oofh" archimateElement="biz-actor-ijssel">
-        <bounds x="50" y="60" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2gw1rd" source="id-mnadnvog7oofh" target="id-mnadnvogbrd5r" archimateRelationship="rel-01"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2j55yp" source="id-mnadnvog7oofh" target="id-mnadnvogevbd1" archimateRelationship="rel-04"/>
+        <bounds x="50" y="80" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2gw1rd" source="id-mnadnvog7oofh" target="id-mnadnvogbrd5r" archimateRelationship="rel-01" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2j55yp" source="id-mnadnvog7oofh" target="id-mnadnvogevbd1" archimateRelationship="rel-04" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog82gso" archimateElement="biz-actor-markt">
-        <bounds x="205" y="60" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2hnium" source="id-mnadnvog82gso" target="id-mnadnvogcwnq4" archimateRelationship="rel-02"/>
+        <bounds x="230" y="80" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2hnium" source="id-mnadnvog82gso" target="id-mnadnvogcwnq4" archimateRelationship="rel-02" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog9oa7z" archimateElement="biz-actor-cpb">
-        <bounds x="360" y="60" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2ihqnh" source="id-mnadnvog9oa7z" target="id-mnadnvogdgzte" archimateRelationship="rel-03"/>
+        <bounds x="410" y="80" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2ihqnh" source="id-mnadnvog9oa7z" target="id-mnadnvogdgzte" archimateRelationship="rel-03" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogawihp" archimateElement="biz-actor-pia">
-        <bounds x="515" y="60" width="120" height="55"/>
+        <bounds x="590" y="80" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogbrd5r" archimateElement="biz-role-aanbestedende" targetConnections="id-mnadnvog2gw1rd id-mnadnvog2k79if">
-        <bounds x="670" y="60" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2mba8o" source="id-mnadnvogbrd5r" target="id-mnadnvoghhcv9" archimateRelationship="rel-07"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2nnq78" source="id-mnadnvogbrd5r" target="id-mnadnvogifmyg" archimateRelationship="rel-08"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2ow4am" source="id-mnadnvogbrd5r" target="id-mnadnvogjui7y" archimateRelationship="rel-09"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2pcnqm" source="id-mnadnvogbrd5r" target="id-mnadnvogkttpg" archimateRelationship="rel-10"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2s0a8p" source="id-mnadnvogbrd5r" target="id-mnadnvogn5yvs" archimateRelationship="rel-13"/>
+        <bounds x="50" y="160" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2mba8o" source="id-mnadnvogbrd5r" target="id-mnadnvoghhcv9" archimateRelationship="rel-07" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2nnq78" source="id-mnadnvogbrd5r" target="id-mnadnvogifmyg" archimateRelationship="rel-08" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2ow4am" source="id-mnadnvogbrd5r" target="id-mnadnvogjui7y" archimateRelationship="rel-09" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2pcnqm" source="id-mnadnvogbrd5r" target="id-mnadnvogkttpg" archimateRelationship="rel-10" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2s0a8p" source="id-mnadnvogbrd5r" target="id-mnadnvogn5yvs" archimateRelationship="rel-13" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogcwnq4" archimateElement="biz-role-inschrijver" targetConnections="id-mnadnvog2hnium">
-        <bounds x="825" y="60" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2qvc9s" source="id-mnadnvogcwnq4" target="id-mnadnvogl2uok" archimateRelationship="rel-11"/>
+        <bounds x="230" y="160" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2qvc9s" source="id-mnadnvogcwnq4" target="id-mnadnvogl2uok" archimateRelationship="rel-11" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogdgzte" archimateElement="biz-role-beoordelaar" targetConnections="id-mnadnvog2ihqnh id-mnadnvog2lfl7x">
-        <bounds x="50" y="143" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2ryuiq" source="id-mnadnvogdgzte" target="id-mnadnvogmw5fz" archimateRelationship="rel-12"/>
+        <bounds x="410" y="160" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2ryuiq" source="id-mnadnvogdgzte" target="id-mnadnvogmw5fz" archimateRelationship="rel-12" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogevbd1" archimateElement="biz-role-contractmgr" targetConnections="id-mnadnvog2j55yp">
-        <bounds x="205" y="143" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2t4i3k" source="id-mnadnvogevbd1" target="id-mnadnvogogbzn" archimateRelationship="rel-14"/>
+        <bounds x="590" y="160" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2t4i3k" source="id-mnadnvogevbd1" target="id-mnadnvogogbzn" archimateRelationship="rel-14" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogf77ed" archimateElement="biz-collab-aanbestedingsteam">
-        <bounds x="360" y="143" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2k79if" source="id-mnadnvogf77ed" target="id-mnadnvogbrd5r" archimateRelationship="rel-05"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2lfl7x" source="id-mnadnvogf77ed" target="id-mnadnvogdgzte" archimateRelationship="rel-06"/>
+        <bounds x="50" y="240" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2k79if" source="id-mnadnvogf77ed" target="id-mnadnvogbrd5r" archimateRelationship="rel-05" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2lfl7x" source="id-mnadnvogf77ed" target="id-mnadnvogdgzte" archimateRelationship="rel-06" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvoggjkri" archimateElement="biz-iface-tenderned">
-        <bounds x="515" y="143" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog34v370" source="id-mnadnvoggjkri" target="id-mnadnvogjui7y" archimateRelationship="rel-25"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog353o1r" source="id-mnadnvoggjkri" target="id-mnadnvogl2uok" archimateRelationship="rel-26"/>
+        <bounds x="230" y="240" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog34v370" source="id-mnadnvoggjkri" target="id-mnadnvogjui7y" archimateRelationship="rel-25" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog353o1r" source="id-mnadnvoggjkri" target="id-mnadnvogl2uok" archimateRelationship="rel-26" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvoghhcv9" archimateElement="biz-proc-marktverkenning" targetConnections="id-mnadnvog2mba8o">
-        <bounds x="670" y="143" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2urz1f" source="id-mnadnvoghhcv9" target="id-mnadnvogifmyg" archimateRelationship="rel-15"/>
+        <bounds x="50" y="370" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2urz1f" source="id-mnadnvoghhcv9" target="id-mnadnvogifmyg" archimateRelationship="rel-15" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogifmyg" archimateElement="biz-proc-specificatie" targetConnections="id-mnadnvog2nnq78 id-mnadnvog2urz1f">
-        <bounds x="825" y="143" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2vfex7" source="id-mnadnvogifmyg" target="id-mnadnvogjui7y" archimateRelationship="rel-16"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog361yvg" source="id-mnadnvogifmyg" target="id-mnadnvogy6888" archimateRelationship="rel-27"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog37lmco" source="id-mnadnvogifmyg" target="id-mnadnvog13kp3m" archimateRelationship="rel-28"/>
+        <bounds x="230" y="370" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2vfex7" source="id-mnadnvogifmyg" target="id-mnadnvogjui7y" archimateRelationship="rel-16" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog361yvg" source="id-mnadnvogifmyg" target="id-mnadnvogy6888" archimateRelationship="rel-27" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog37lmco" source="id-mnadnvogifmyg" target="id-mnadnvog13kp3m" archimateRelationship="rel-28" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogjui7y" archimateElement="biz-proc-aankondiging" targetConnections="id-mnadnvog2ow4am id-mnadnvog2vfex7 id-mnadnvog34v370">
-        <bounds x="50" y="226" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog31bvh4" source="id-mnadnvogjui7y" target="id-mnadnvogt7p8g" archimateRelationship="rel-22"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3ccano" source="id-mnadnvogjui7y" target="id-mnadnvog12zov4" archimateRelationship="rel-33"/>
+        <bounds x="410" y="370" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog31bvh4" source="id-mnadnvogjui7y" target="id-mnadnvogt7p8g" archimateRelationship="rel-22" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3ccano" source="id-mnadnvogjui7y" target="id-mnadnvog12zov4" archimateRelationship="rel-33" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogkttpg" archimateElement="biz-proc-nota" targetConnections="id-mnadnvog2pcnqm id-mnadnvog2wi44z">
-        <bounds x="205" y="226" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2x5x6m" source="id-mnadnvogkttpg" target="id-mnadnvogl2uok" archimateRelationship="rel-18"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog386mow" source="id-mnadnvogkttpg" target="id-mnadnvog10vad0" archimateRelationship="rel-29"/>
+        <bounds x="590" y="370" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2x5x6m" source="id-mnadnvogkttpg" target="id-mnadnvogl2uok" archimateRelationship="rel-18" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog386mow" source="id-mnadnvogkttpg" target="id-mnadnvog10vad0" archimateRelationship="rel-29" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogl2uok" archimateElement="biz-proc-inschrijving" targetConnections="id-mnadnvog2qvc9s id-mnadnvog2x5x6m id-mnadnvog353o1r">
-        <bounds x="360" y="226" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2yaoou" source="id-mnadnvogl2uok" target="id-mnadnvogmw5fz" archimateRelationship="rel-19"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog39i2sq" source="id-mnadnvogl2uok" target="id-mnadnvogz3x88" archimateRelationship="rel-30"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3aptp4" source="id-mnadnvogl2uok" target="id-mnadnvog11l0qo" archimateRelationship="rel-31"/>
+        <bounds x="50" y="450" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2yaoou" source="id-mnadnvogl2uok" target="id-mnadnvogmw5fz" archimateRelationship="rel-19" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog39i2sq" source="id-mnadnvogl2uok" target="id-mnadnvogz3x88" archimateRelationship="rel-30" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3aptp4" source="id-mnadnvogl2uok" target="id-mnadnvog11l0qo" archimateRelationship="rel-31" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogmw5fz" archimateElement="biz-proc-beoordeling" targetConnections="id-mnadnvog2ryuiq id-mnadnvog2yaoou id-mnadnvog3gma4f">
-        <bounds x="515" y="226" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2zrdg5" source="id-mnadnvogmw5fz" target="id-mnadnvogn5yvs" archimateRelationship="rel-20"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog32zbb1" source="id-mnadnvogmw5fz" target="id-mnadnvogudoce" archimateRelationship="rel-23"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3bq4ye" source="id-mnadnvogmw5fz" target="id-mnadnvog11l0qo" archimateRelationship="rel-32"/>
+        <bounds x="230" y="450" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2zrdg5" source="id-mnadnvogmw5fz" target="id-mnadnvogn5yvs" archimateRelationship="rel-20" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog32zbb1" source="id-mnadnvogmw5fz" target="id-mnadnvogudoce" archimateRelationship="rel-23" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3bq4ye" source="id-mnadnvogmw5fz" target="id-mnadnvog11l0qo" archimateRelationship="rel-32" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogn5yvs" archimateElement="biz-proc-gunning" targetConnections="id-mnadnvog2s0a8p id-mnadnvog2zrdg5">
-        <bounds x="670" y="226" width="120" height="55"/>
+        <bounds x="410" y="450" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogogbzn" archimateElement="biz-proc-contractsluiting" targetConnections="id-mnadnvog2t4i3k id-mnadnvog30cnv3 id-mnadnvog4svaor">
-        <bounds x="825" y="226" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog33yutb" source="id-mnadnvogogbzn" target="id-mnadnvogvqpgo" archimateRelationship="rel-24"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3dpfxd" source="id-mnadnvogogbzn" target="id-mnadnvogwwrja" archimateRelationship="rel-34"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3exynz" source="id-mnadnvogogbzn" target="id-mnadnvogx8ujw" archimateRelationship="rel-35"/>
+        <bounds x="590" y="450" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog33yutb" source="id-mnadnvogogbzn" target="id-mnadnvogvqpgo" archimateRelationship="rel-24" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3dpfxd" source="id-mnadnvogogbzn" target="id-mnadnvogwwrja" archimateRelationship="rel-34" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3exynz" source="id-mnadnvogogbzn" target="id-mnadnvogx8ujw" archimateRelationship="rel-35" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogpkn1o" archimateElement="biz-func-gunningscriteria">
-        <bounds x="50" y="309" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3gma4f" source="id-mnadnvogpkn1o" target="id-mnadnvogmw5fz" archimateRelationship="rel-37"/>
+        <bounds x="50" y="530" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3gma4f" source="id-mnadnvogpkn1o" target="id-mnadnvogmw5fz" archimateRelationship="rel-37" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogq1qy2" archimateElement="biz-func-contractmonitoring">
-        <bounds x="205" y="309" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3hzxms" source="id-mnadnvogq1qy2" target="id-mnadnvogvqpgo" archimateRelationship="rel-38"/>
+        <bounds x="230" y="530" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3hzxms" source="id-mnadnvogq1qy2" target="id-mnadnvogvqpgo" archimateRelationship="rel-38" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogrsp59" archimateElement="biz-event-aankondiging">
-        <bounds x="360" y="309" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2wi44z" source="id-mnadnvogrsp59" target="id-mnadnvogkttpg" archimateRelationship="rel-17"/>
+        <bounds x="410" y="530" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog2wi44z" source="id-mnadnvogrsp59" target="id-mnadnvogkttpg" archimateRelationship="rel-17" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogsp6qp" archimateElement="biz-event-gunning">
-        <bounds x="515" y="309" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog30cnv3" source="id-mnadnvogsp6qp" target="id-mnadnvogogbzn" archimateRelationship="rel-21"/>
+        <bounds x="590" y="530" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog30cnv3" source="id-mnadnvogsp6qp" target="id-mnadnvogogbzn" archimateRelationship="rel-21" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogt7p8g" archimateElement="biz-svc-aanbestedingsdienst" targetConnections="id-mnadnvog31bvh4 id-mnadnvog4pn336 id-mnadnvog4rwcxs">
-        <bounds x="670" y="309" width="120" height="55"/>
+        <bounds x="50" y="610" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogudoce" archimateElement="biz-svc-beoordelingsdienst" targetConnections="id-mnadnvog32zbb1">
-        <bounds x="825" y="309" width="120" height="55"/>
+        <bounds x="230" y="610" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogvqpgo" archimateElement="biz-svc-contractmgmtsvc" targetConnections="id-mnadnvog33yutb id-mnadnvog3hzxms id-mnadnvog4q8qpf">
-        <bounds x="50" y="392" width="120" height="55"/>
+        <bounds x="410" y="610" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogwwrja" archimateElement="biz-contract-rok" targetConnections="id-mnadnvog3dpfxd">
-        <bounds x="205" y="392" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3f4gbx" source="id-mnadnvogwwrja" target="id-mnadnvog14ahim" archimateRelationship="rel-36"/>
+        <bounds x="50" y="740" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3f4gbx" source="id-mnadnvogwwrja" target="id-mnadnvog14ahim" archimateRelationship="rel-36" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogx8ujw" archimateElement="biz-contract-vwo" targetConnections="id-mnadnvog3exynz">
-        <bounds x="360" y="392" width="120" height="55"/>
+        <bounds x="230" y="740" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogy6888" archimateElement="biz-obj-pve" targetConnections="id-mnadnvog361yvg">
-        <bounds x="515" y="392" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4t4fxd" source="id-mnadnvogy6888" target="id-mnadnvog15lqod" archimateRelationship="rel-86"/>
+        <bounds x="50" y="820" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4t4fxd" source="id-mnadnvogy6888" target="id-mnadnvog15lqod" archimateRelationship="rel-86" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvogz3x88" archimateElement="biz-obj-uea" targetConnections="id-mnadnvog39i2sq">
-        <bounds x="670" y="392" width="120" height="55"/>
+        <bounds x="230" y="820" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog10vad0" archimateElement="biz-obj-nvi" targetConnections="id-mnadnvog386mow">
-        <bounds x="825" y="392" width="120" height="55"/>
+        <bounds x="410" y="820" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog11l0qo" archimateElement="biz-obj-inschrijving" targetConnections="id-mnadnvog3aptp4 id-mnadnvog3bq4ye">
-        <bounds x="50" y="475" width="120" height="55"/>
+        <bounds x="590" y="820" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog12zov4" archimateElement="biz-rep-aankondiging" targetConnections="id-mnadnvog3ccano">
-        <bounds x="205" y="475" width="120" height="55"/>
+        <bounds x="50" y="900" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog13kp3m" archimateElement="biz-rep-bestek" targetConnections="id-mnadnvog37lmco">
-        <bounds x="360" y="475" width="120" height="55"/>
+        <bounds x="230" y="900" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog14ahim" archimateElement="biz-product-esb" targetConnections="id-mnadnvog3f4gbx">
-        <bounds x="515" y="475" width="120" height="55"/>
+        <bounds x="410" y="900" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog15lqod" archimateElement="app-comp-esb" targetConnections="id-mnadnvog3n69c8 id-mnadnvog4t4fxd id-mnadnvog4ujxy5 id-mnadnvog4vpeyr">
-        <bounds x="50" y="648" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3ilrvh" source="id-mnadnvog15lqod" target="id-mnadnvog16y7jr" archimateRelationship="rel-39"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3jsqbf" source="id-mnadnvog15lqod" target="id-mnadnvog173icj" archimateRelationship="rel-40"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3ke4h3" source="id-mnadnvog15lqod" target="id-mnadnvog18hy6w" archimateRelationship="rel-41"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3l6r3s" source="id-mnadnvog15lqod" target="id-mnadnvog19nyyw" archimateRelationship="rel-42"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3mtqsd" source="id-mnadnvog15lqod" target="id-mnadnvog1awcbo" archimateRelationship="rel-43"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3pzelf" source="id-mnadnvog15lqod" target="id-mnadnvog1ffy3i" archimateRelationship="rel-46"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3qy1tv" source="id-mnadnvog15lqod" target="id-mnadnvog1ghqnl" archimateRelationship="rel-47"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3wa7fr" source="id-mnadnvog15lqod" target="id-mnadnvog1jxnqo" archimateRelationship="rel-53"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog43lrbp" source="id-mnadnvog15lqod" target="id-mnadnvog1dym2w" archimateRelationship="rel-60"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog44s7k0" source="id-mnadnvog15lqod" target="id-mnadnvog1ekon7" archimateRelationship="rel-61"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4svaor" source="id-mnadnvog15lqod" target="id-mnadnvogogbzn" archimateRelationship="rel-85"/>
+        <bounds x="50" y="1060" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3ilrvh" source="id-mnadnvog15lqod" target="id-mnadnvog16y7jr" archimateRelationship="rel-39" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3jsqbf" source="id-mnadnvog15lqod" target="id-mnadnvog173icj" archimateRelationship="rel-40" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3ke4h3" source="id-mnadnvog15lqod" target="id-mnadnvog18hy6w" archimateRelationship="rel-41" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3l6r3s" source="id-mnadnvog15lqod" target="id-mnadnvog19nyyw" archimateRelationship="rel-42" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3mtqsd" source="id-mnadnvog15lqod" target="id-mnadnvog1awcbo" archimateRelationship="rel-43" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3pzelf" source="id-mnadnvog15lqod" target="id-mnadnvog1ffy3i" archimateRelationship="rel-46" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3qy1tv" source="id-mnadnvog15lqod" target="id-mnadnvog1ghqnl" archimateRelationship="rel-47" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3wa7fr" source="id-mnadnvog15lqod" target="id-mnadnvog1jxnqo" archimateRelationship="rel-53" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog43lrbp" source="id-mnadnvog15lqod" target="id-mnadnvog1dym2w" archimateRelationship="rel-60" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog44s7k0" source="id-mnadnvog15lqod" target="id-mnadnvog1ekon7" archimateRelationship="rel-61" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4svaor" source="id-mnadnvog15lqod" target="id-mnadnvogogbzn" archimateRelationship="rel-85" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog16y7jr" archimateElement="app-comp-apigateway" targetConnections="id-mnadnvog3ilrvh id-mnadnvog3oxxrn id-mnadnvog4w874y">
-        <bounds x="205" y="648" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3xi7jj" source="id-mnadnvog16y7jr" target="id-mnadnvog1ky0vs" archimateRelationship="rel-54"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog42czol" source="id-mnadnvog16y7jr" target="id-mnadnvog1cf308" archimateRelationship="rel-59"/>
+        <bounds x="230" y="1060" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3xi7jj" source="id-mnadnvog16y7jr" target="id-mnadnvog1ky0vs" archimateRelationship="rel-54" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog42czol" source="id-mnadnvog16y7jr" target="id-mnadnvog1cf308" archimateRelationship="rel-59" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog173icj" archimateElement="app-comp-messagebroker" targetConnections="id-mnadnvog3jsqbf id-mnadnvog4xn2cc">
-        <bounds x="360" y="648" width="120" height="55"/>
+        <bounds x="410" y="1060" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog18hy6w" archimateElement="app-comp-iam" targetConnections="id-mnadnvog3ke4h3">
-        <bounds x="515" y="648" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3rr8av" source="id-mnadnvog18hy6w" target="id-mnadnvog1hd8r1" archimateRelationship="rel-48"/>
+        <bounds x="590" y="1060" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3rr8av" source="id-mnadnvog18hy6w" target="id-mnadnvog1hd8r1" archimateRelationship="rel-48" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog19nyyw" archimateElement="app-comp-monitoring" targetConnections="id-mnadnvog3l6r3s id-mnadnvog4yz9xg">
-        <bounds x="670" y="648" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3swh2v" source="id-mnadnvog19nyyw" target="id-mnadnvog1igk6e" archimateRelationship="rel-49"/>
+        <bounds x="770" y="1060" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3swh2v" source="id-mnadnvog19nyyw" target="id-mnadnvog1igk6e" archimateRelationship="rel-49" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1awcbo" archimateElement="app-comp-ide" targetConnections="id-mnadnvog3mtqsd">
-        <bounds x="825" y="648" width="120" height="55"/>
+        <bounds x="950" y="1060" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1box28" archimateElement="app-collab-integration">
-        <bounds x="50" y="731" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3n69c8" source="id-mnadnvog1box28" target="id-mnadnvog15lqod" archimateRelationship="rel-44"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3oxxrn" source="id-mnadnvog1box28" target="id-mnadnvog16y7jr" archimateRelationship="rel-45"/>
+        <bounds x="50" y="1140" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3n69c8" source="id-mnadnvog1box28" target="id-mnadnvog15lqod" archimateRelationship="rel-44" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3oxxrn" source="id-mnadnvog1box28" target="id-mnadnvog16y7jr" archimateRelationship="rel-45" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1cf308" archimateElement="app-iface-rest" targetConnections="id-mnadnvog42czol id-mnadnvog53wty0">
-        <bounds x="205" y="731" width="120" height="55"/>
+        <bounds x="230" y="1140" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1dym2w" archimateElement="app-iface-soap" targetConnections="id-mnadnvog43lrbp id-mnadnvog52cvuk">
-        <bounds x="360" y="731" width="120" height="55"/>
+        <bounds x="410" y="1140" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1ekon7" archimateElement="app-iface-digipoort" targetConnections="id-mnadnvog44s7k0 id-mnadnvog54runp">
-        <bounds x="515" y="731" width="120" height="55"/>
+        <bounds x="590" y="1140" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1ffy3i" archimateElement="app-func-routing" targetConnections="id-mnadnvog3pzelf">
-        <bounds x="670" y="731" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3t3lo2" source="id-mnadnvog1ffy3i" target="id-mnadnvog1l2h9y" archimateRelationship="rel-50"/>
+        <bounds x="50" y="1270" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3t3lo2" source="id-mnadnvog1ffy3i" target="id-mnadnvog1l2h9y" archimateRelationship="rel-50" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1ghqnl" archimateElement="app-func-orchestration" targetConnections="id-mnadnvog3qy1tv">
-        <bounds x="825" y="731" width="120" height="55"/>
+        <bounds x="230" y="1270" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1hd8r1" archimateElement="app-func-security" targetConnections="id-mnadnvog3rr8av">
-        <bounds x="50" y="814" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3u2sqk" source="id-mnadnvog1hd8r1" target="id-mnadnvog1mphzt" archimateRelationship="rel-51"/>
+        <bounds x="410" y="1270" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3u2sqk" source="id-mnadnvog1hd8r1" target="id-mnadnvog1mphzt" archimateRelationship="rel-51" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1igk6e" archimateElement="app-func-logging" targetConnections="id-mnadnvog3swh2v">
-        <bounds x="205" y="814" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3vrjic" source="id-mnadnvog1igk6e" target="id-mnadnvog1n3cxx" archimateRelationship="rel-52"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3zajh3" source="id-mnadnvog1igk6e" target="id-mnadnvog1ra5ne" archimateRelationship="rel-56"/>
+        <bounds x="590" y="1270" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3vrjic" source="id-mnadnvog1igk6e" target="id-mnadnvog1n3cxx" archimateRelationship="rel-52" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3zajh3" source="id-mnadnvog1igk6e" target="id-mnadnvog1ra5ne" archimateRelationship="rel-56" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1jxnqo" archimateElement="app-proc-berichtverwerking" targetConnections="id-mnadnvog3wa7fr">
-        <bounds x="360" y="814" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3yut5q" source="id-mnadnvog1jxnqo" target="id-mnadnvog1pitnk" archimateRelationship="rel-55"/>
+        <bounds x="50" y="1350" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog3yut5q" source="id-mnadnvog1jxnqo" target="id-mnadnvog1pitnk" archimateRelationship="rel-55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1ky0vs" archimateElement="app-proc-apilcm" targetConnections="id-mnadnvog3xi7jj">
-        <bounds x="515" y="814" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog41xhry" source="id-mnadnvog1ky0vs" target="id-mnadnvog1q0qiy" archimateRelationship="rel-58"/>
+        <bounds x="230" y="1350" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog41xhry" source="id-mnadnvog1ky0vs" target="id-mnadnvog1q0qiy" archimateRelationship="rel-58" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1l2h9y" archimateElement="app-svc-integratie" targetConnections="id-mnadnvog3t3lo2 id-mnadnvog557kcb id-mnadnvog568yyw">
-        <bounds x="670" y="814" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4pn336" source="id-mnadnvog1l2h9y" target="id-mnadnvogt7p8g" archimateRelationship="rel-82"/>
+        <bounds x="50" y="1430" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4pn336" source="id-mnadnvog1l2h9y" target="id-mnadnvogt7p8g" archimateRelationship="rel-82" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1mphzt" archimateElement="app-svc-security" targetConnections="id-mnadnvog3u2sqk">
-        <bounds x="825" y="814" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4rwcxs" source="id-mnadnvog1mphzt" target="id-mnadnvogt7p8g" archimateRelationship="rel-84"/>
+        <bounds x="230" y="1430" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4rwcxs" source="id-mnadnvog1mphzt" target="id-mnadnvogt7p8g" archimateRelationship="rel-84" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1n3cxx" archimateElement="app-svc-monitoring" targetConnections="id-mnadnvog3vrjic id-mnadnvog45iar4">
-        <bounds x="50" y="897" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog40ihfi" source="id-mnadnvog1n3cxx" target="id-mnadnvog1s8ar4" archimateRelationship="rel-57"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4q8qpf" source="id-mnadnvog1n3cxx" target="id-mnadnvogvqpgo" archimateRelationship="rel-83"/>
+        <bounds x="410" y="1430" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog40ihfi" source="id-mnadnvog1n3cxx" target="id-mnadnvog1s8ar4" archimateRelationship="rel-57" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4q8qpf" source="id-mnadnvog1n3cxx" target="id-mnadnvogvqpgo" archimateRelationship="rel-83" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1okcq7" archimateElement="app-event-sla-breach">
-        <bounds x="205" y="897" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog45iar4" source="id-mnadnvog1okcq7" target="id-mnadnvog1n3cxx" archimateRelationship="rel-62"/>
+        <bounds x="50" y="1510" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog45iar4" source="id-mnadnvog1okcq7" target="id-mnadnvog1n3cxx" archimateRelationship="rel-62" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1pitnk" archimateElement="app-data-schema" targetConnections="id-mnadnvog3yut5q id-mnadnvog4z3n6e id-mnadnvog51wduw">
-        <bounds x="360" y="897" width="120" height="55"/>
+        <bounds x="50" y="1640" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1q0qiy" archimateElement="app-data-apispec" targetConnections="id-mnadnvog41xhry">
-        <bounds x="515" y="897" width="120" height="55"/>
+        <bounds x="230" y="1640" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1ra5ne" archimateElement="app-data-auditlog" targetConnections="id-mnadnvog3zajh3 id-mnadnvog50uiy5">
-        <bounds x="670" y="897" width="120" height="55"/>
+        <bounds x="410" y="1640" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1s8ar4" archimateElement="app-data-slarapport" targetConnections="id-mnadnvog40ihfi">
-        <bounds x="825" y="897" width="120" height="55"/>
+        <bounds x="590" y="1640" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1tlsua" archimateElement="tech-node-prod" targetConnections="id-mnadnvog4esctc id-mnadnvog4lpvqc id-mnadnvog4m5vfc id-mnadnvog4n9qd7">
-        <bounds x="50" y="1070" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4606dt" source="id-mnadnvog1tlsua" target="id-mnadnvog1wngoh" archimateRelationship="rel-63"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog47ayz1" source="id-mnadnvog1tlsua" target="id-mnadnvog1xv5le" archimateRelationship="rel-64"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog48z762" source="id-mnadnvog1tlsua" target="id-mnadnvog24sof1" archimateRelationship="rel-65"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog49lymj" source="id-mnadnvog1tlsua" target="id-mnadnvog27r734" archimateRelationship="rel-66"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4cchfw" source="id-mnadnvog1tlsua" target="id-mnadnvog29pnq1" archimateRelationship="rel-69"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4dwbpy" source="id-mnadnvog1tlsua" target="id-mnadnvog2a3muo" archimateRelationship="rel-70"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4jjl5d" source="id-mnadnvog1tlsua" target="id-mnadnvog2c2mbs" archimateRelationship="rel-76"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4kcwwl" source="id-mnadnvog1tlsua" target="id-mnadnvog2dufn0" archimateRelationship="rel-77"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4vpeyr" source="id-mnadnvog1tlsua" target="id-mnadnvog15lqod" archimateRelationship="rel-88"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4w874y" source="id-mnadnvog1tlsua" target="id-mnadnvog16y7jr" archimateRelationship="rel-89"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4xn2cc" source="id-mnadnvog1tlsua" target="id-mnadnvog173icj" archimateRelationship="rel-90"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4yz9xg" source="id-mnadnvog1tlsua" target="id-mnadnvog19nyyw" archimateRelationship="rel-91"/>
+        <bounds x="50" y="1800" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4606dt" source="id-mnadnvog1tlsua" target="id-mnadnvog1wngoh" archimateRelationship="rel-63" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog47ayz1" source="id-mnadnvog1tlsua" target="id-mnadnvog1xv5le" archimateRelationship="rel-64" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog48z762" source="id-mnadnvog1tlsua" target="id-mnadnvog24sof1" archimateRelationship="rel-65" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog49lymj" source="id-mnadnvog1tlsua" target="id-mnadnvog27r734" archimateRelationship="rel-66" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4cchfw" source="id-mnadnvog1tlsua" target="id-mnadnvog29pnq1" archimateRelationship="rel-69" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4dwbpy" source="id-mnadnvog1tlsua" target="id-mnadnvog2a3muo" archimateRelationship="rel-70" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4jjl5d" source="id-mnadnvog1tlsua" target="id-mnadnvog2c2mbs" archimateRelationship="rel-76" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4kcwwl" source="id-mnadnvog1tlsua" target="id-mnadnvog2dufn0" archimateRelationship="rel-77" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4vpeyr" source="id-mnadnvog1tlsua" target="id-mnadnvog15lqod" archimateRelationship="rel-88" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4w874y" source="id-mnadnvog1tlsua" target="id-mnadnvog16y7jr" archimateRelationship="rel-89" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4xn2cc" source="id-mnadnvog1tlsua" target="id-mnadnvog173icj" archimateRelationship="rel-90" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4yz9xg" source="id-mnadnvog1tlsua" target="id-mnadnvog19nyyw" archimateRelationship="rel-91" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1usank" archimateElement="tech-node-acc">
-        <bounds x="205" y="1070" width="120" height="55"/>
+        <bounds x="230" y="1800" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1vddry" archimateElement="tech-node-dev">
-        <bounds x="360" y="1070" width="120" height="55"/>
+        <bounds x="410" y="1800" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1wngoh" archimateElement="tech-device-server" targetConnections="id-mnadnvog4606dt">
-        <bounds x="515" y="1070" width="120" height="55"/>
+        <bounds x="230" y="1880" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1xv5le" archimateElement="tech-device-storage" targetConnections="id-mnadnvog47ayz1">
-        <bounds x="670" y="1070" width="120" height="55"/>
+        <bounds x="410" y="1880" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1y5e9v" archimateElement="tech-sw-os">
-        <bounds x="825" y="1070" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4lpvqc" source="id-mnadnvog1y5e9v" target="id-mnadnvog1tlsua" archimateRelationship="rel-78"/>
+        <bounds x="50" y="1960" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4lpvqc" source="id-mnadnvog1y5e9v" target="id-mnadnvog1tlsua" archimateRelationship="rel-78" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog1ze5ay" archimateElement="tech-sw-lb">
-        <bounds x="50" y="1153" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4m5vfc" source="id-mnadnvog1ze5ay" target="id-mnadnvog1tlsua" archimateRelationship="rel-79"/>
+        <bounds x="230" y="1960" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4m5vfc" source="id-mnadnvog1ze5ay" target="id-mnadnvog1tlsua" archimateRelationship="rel-79" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog20nngc" archimateElement="tech-sw-firewall">
-        <bounds x="205" y="1153" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4n9qd7" source="id-mnadnvog20nngc" target="id-mnadnvog1tlsua" archimateRelationship="rel-80"/>
+        <bounds x="410" y="1960" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4n9qd7" source="id-mnadnvog20nngc" target="id-mnadnvog1tlsua" archimateRelationship="rel-80" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog21pkpk" archimateElement="tech-net-gemeente" targetConnections="id-mnadnvog4h9b4t">
-        <bounds x="360" y="1153" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog52cvuk" source="id-mnadnvog21pkpk" target="id-mnadnvog1dym2w" archimateRelationship="rel-95"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog54runp" source="id-mnadnvog21pkpk" target="id-mnadnvog1ekon7" archimateRelationship="rel-97"/>
+        <bounds x="50" y="2040" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog52cvuk" source="id-mnadnvog21pkpk" target="id-mnadnvog1dym2w" archimateRelationship="rel-95" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog54runp" source="id-mnadnvog21pkpk" target="id-mnadnvog1ekon7" archimateRelationship="rel-97" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog22twzq" archimateElement="tech-net-internet" targetConnections="id-mnadnvog4it2os">
-        <bounds x="515" y="1153" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog53wty0" source="id-mnadnvog22twzq" target="id-mnadnvog1cf308" archimateRelationship="rel-96"/>
+        <bounds x="230" y="2040" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog53wty0" source="id-mnadnvog22twzq" target="id-mnadnvog1cf308" archimateRelationship="rel-96" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog23lsme" archimateElement="tech-path-tls">
-        <bounds x="670" y="1153" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4h9b4t" source="id-mnadnvog23lsme" target="id-mnadnvog21pkpk" archimateRelationship="rel-74"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4it2os" source="id-mnadnvog23lsme" target="id-mnadnvog22twzq" archimateRelationship="rel-75"/>
+        <bounds x="410" y="2040" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4h9b4t" source="id-mnadnvog23lsme" target="id-mnadnvog21pkpk" archimateRelationship="rel-74" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4it2os" source="id-mnadnvog23lsme" target="id-mnadnvog22twzq" archimateRelationship="rel-75" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog24sof1" archimateElement="tech-svc-hosting" targetConnections="id-mnadnvog48z762 id-mnadnvog4axuap id-mnadnvog4bghpe">
-        <bounds x="825" y="1153" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4ujxy5" source="id-mnadnvog24sof1" target="id-mnadnvog15lqod" archimateRelationship="rel-87"/>
+        <bounds x="50" y="2170" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4ujxy5" source="id-mnadnvog24sof1" target="id-mnadnvog15lqod" archimateRelationship="rel-87" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog25l45a" archimateElement="tech-svc-dr">
-        <bounds x="50" y="1236" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4esctc" source="id-mnadnvog25l45a" target="id-mnadnvog1tlsua" archimateRelationship="rel-71"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog557kcb" source="id-mnadnvog25l45a" target="id-mnadnvog1l2h9y" archimateRelationship="rel-98"/>
+        <bounds x="230" y="2170" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4esctc" source="id-mnadnvog25l45a" target="id-mnadnvog1tlsua" archimateRelationship="rel-71" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog557kcb" source="id-mnadnvog25l45a" target="id-mnadnvog1l2h9y" archimateRelationship="rel-98" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog26hv5z" archimateElement="tech-svc-backup">
-        <bounds x="205" y="1236" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4f7ihn" source="id-mnadnvog26hv5z" target="id-mnadnvog2encqb" archimateRelationship="rel-72"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4g5vyz" source="id-mnadnvog26hv5z" target="id-mnadnvog2fa918" archimateRelationship="rel-73"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog568yyw" source="id-mnadnvog26hv5z" target="id-mnadnvog1l2h9y" archimateRelationship="rel-99"/>
+        <bounds x="410" y="2170" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4f7ihn" source="id-mnadnvog26hv5z" target="id-mnadnvog2encqb" archimateRelationship="rel-72" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4g5vyz" source="id-mnadnvog26hv5z" target="id-mnadnvog2fa918" archimateRelationship="rel-73" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog568yyw" source="id-mnadnvog26hv5z" target="id-mnadnvog1l2h9y" archimateRelationship="rel-99" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog27r734" archimateElement="tech-func-ha" targetConnections="id-mnadnvog49lymj">
-        <bounds x="360" y="1236" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4axuap" source="id-mnadnvog27r734" target="id-mnadnvog24sof1" archimateRelationship="rel-67"/>
+        <bounds x="50" y="2250" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4axuap" source="id-mnadnvog27r734" target="id-mnadnvog24sof1" archimateRelationship="rel-67" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog28ujml" archimateElement="tech-func-patching">
-        <bounds x="515" y="1236" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4bghpe" source="id-mnadnvog28ujml" target="id-mnadnvog24sof1" archimateRelationship="rel-68"/>
+        <bounds x="230" y="2250" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4bghpe" source="id-mnadnvog28ujml" target="id-mnadnvog24sof1" archimateRelationship="rel-68" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog29pnq1" archimateElement="tech-proc-incidentmgmt" targetConnections="id-mnadnvog4cchfw id-mnadnvog4ocnpr">
-        <bounds x="670" y="1236" width="120" height="55"/>
+        <bounds x="50" y="2330" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog2a3muo" archimateElement="tech-proc-changemgmt" targetConnections="id-mnadnvog4dwbpy">
-        <bounds x="825" y="1236" width="120" height="55"/>
+        <bounds x="230" y="2330" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog2b01rb" archimateElement="tech-event-incident">
-        <bounds x="50" y="1319" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4ocnpr" source="id-mnadnvog2b01rb" target="id-mnadnvog29pnq1" archimateRelationship="rel-81"/>
+        <bounds x="50" y="2410" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4ocnpr" source="id-mnadnvog2b01rb" target="id-mnadnvog29pnq1" archimateRelationship="rel-81" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog2c2mbs" archimateElement="tech-artifact-deploy" targetConnections="id-mnadnvog4jjl5d">
-        <bounds x="205" y="1319" width="120" height="55"/>
+        <bounds x="50" y="2540" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog2dufn0" archimateElement="tech-artifact-config" targetConnections="id-mnadnvog4kcwwl">
-        <bounds x="360" y="1319" width="120" height="55"/>
+        <bounds x="230" y="2540" width="160" height="55" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog2encqb" archimateElement="tech-obj-db" targetConnections="id-mnadnvog4f7ihn">
-        <bounds x="515" y="1319" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4z3n6e" source="id-mnadnvog2encqb" target="id-mnadnvog1pitnk" archimateRelationship="rel-92"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog50uiy5" source="id-mnadnvog2encqb" target="id-mnadnvog1ra5ne" archimateRelationship="rel-93"/>
+        <bounds x="410" y="2540" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog4z3n6e" source="id-mnadnvog2encqb" target="id-mnadnvog1pitnk" archimateRelationship="rel-92" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog50uiy5" source="id-mnadnvog2encqb" target="id-mnadnvog1ra5ne" archimateRelationship="rel-93" />
       </child>
       <child xsi:type="archimate:DiagramObject" id="id-mnadnvog2fa918" archimateElement="tech-obj-queue" targetConnections="id-mnadnvog4g5vyz">
-        <bounds x="670" y="1319" width="120" height="55"/>
-        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog51wduw" source="id-mnadnvog2fa918" target="id-mnadnvog1pitnk" archimateRelationship="rel-94"/>
+        <bounds x="590" y="2540" width="160" height="55" />
+        <sourceConnection xsi:type="archimate:Connection" id="id-mnadnvog51wduw" source="id-mnadnvog2fa918" target="id-mnadnvog1pitnk" archimateRelationship="rel-94" />
       </child>
     </element>
   </folder>
-</archimate:model>
+</model>
