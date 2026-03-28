@@ -1,988 +1,254 @@
 {
   "name": "ESB Tender — IJsselgemeenten",
-  "documentation": "ArchiMate 3 model for the European procurement (aanbesteding) of an Enterprise Service Bus (ESB) solution by IJsselgemeenten (gemeentelijk samenwerkingsverband). The tender follows EU Directive 2014/24/EU (public sector procurement) and the Dutch Aanbestedingswet 2012 (Wvg). The model covers the full tender lifecycle — from market consultation through contract management — and describes the ESB solution requirements across the Business, Application, and Technology layers.",
+  "documentation": "ArchiMate 3 model for the European procurement (aanbesteding) of an Enterprise Service Bus (ESB) solution by IJsselgemeenten (gemeentelijk samenwerkingsverband). The tender follows EU Directive 2014/24/EU (public sector procurement) and the Dutch Aanbestedingswet 2012. The model covers the full tender lifecycle — from market consultation through contract management — and describes the ESB solution requirements across the Business, Application, and Technology layers.",
 
   "elements": [
 
-    // ══════════════════════════════════════════════════════════════
-    // BUSINESS LAYER — Active Structure
-    // ══════════════════════════════════════════════════════════════
-    {
-      "id": "biz-actor-ijssel",
-      "layer": "business",
-      "type": "BusinessActor",
-      "name": "IJsselgemeenten",
-      "documentation": "Gemeentelijk samenwerkingsverband (shared municipal service organisation) acting as the contracting authority (aanbestedende dienst) under EU Directive 2014/24/EU. Represents the consortium of municipalities in the IJssel region.",
-      "properties": [
-        { "key": "Organisatietype",  "value": "Gemeenschappelijke regeling (Wgr)" },
-        { "key": "Rol in aanbesteding", "value": "Aanbestedende dienst" },
-        { "key": "Toepasselijk recht", "value": "EU Directive 2014/24/EU · Aanbestedingswet 2012" }
-      ]
-    },
-    {
-      "id": "biz-actor-markt",
-      "layer": "business",
-      "type": "BusinessActor",
-      "name": "Marktpartijen (Inschrijvers)",
-      "documentation": "Commercial vendors and system integrators that respond to the tender by submitting bids for the ESB solution. Must meet selection criteria (uitsluitingsgronden, geschiktheidseisen) and award criteria (gunningscriteria).",
-      "properties": [
-        { "key": "Type",   "value": "Leverancier / Dienstverlener" },
-        { "key": "Vereiste kwalificaties", "value": "ISO 27001, NEN 7510 (indien van toepassing), referentieopdrachten" }
-      ]
-    },
-    {
-      "id": "biz-actor-cpb",
-      "layer": "business",
-      "type": "BusinessActor",
-      "name": "Centrale Inkooporganisatie",
-      "documentation": "Central procurement unit within IJsselgemeenten or mandated to assist, responsible for procedure management and compliance with procurement law.",
-      "properties": [
-        { "key": "Type", "value": "Interne ondersteunende eenheid" }
-      ]
-    },
-    {
-      "id": "biz-actor-pia",
-      "layer": "business",
-      "type": "BusinessActor",
-      "name": "Privacy & Security Officer (CISO/FG)",
-      "documentation": "Functionaris Gegevensbescherming (DPO) and CISO who validate the Privacy Impact Assessment (PIA/DPIA) and information security requirements embedded in the tender specification.",
-      "properties": [
-        { "key": "Grondslag", "value": "AVG / GDPR Art. 35 (DPIA), BIO (Baseline Informatiebeveiliging Overheid)" }
-      ]
-    },
-    {
-      "id": "biz-role-aanbestedende",
-      "layer": "business",
-      "type": "BusinessRole",
-      "name": "Aanbestedende Dienst",
-      "documentation": "Legal role of the contracting authority under EU procurement law. Responsible for publishing the contract notice, conducting the procedure, and awarding the contract in compliance with EU Directive 2014/24/EU.",
-      "properties": [
-        { "key": "EU Richtlijn", "value": "2014/24/EU Art. 2(1)" }
-      ]
-    },
-    {
-      "id": "biz-role-inschrijver",
-      "layer": "business",
-      "type": "BusinessRole",
-      "name": "Inschrijver",
-      "documentation": "Role of an economic operator that submits a tender in response to the contract notice. Subject to exclusion grounds (art. 2.86-2.87 Aanbestedingswet) and suitability requirements.",
-      "properties": []
-    },
-    {
-      "id": "biz-role-beoordelaar",
-      "layer": "business",
-      "type": "BusinessRole",
-      "name": "Beoordelingscommissie",
-      "documentation": "Evaluation committee composed of domain experts, legal advisors, and IT specialists who score tenders on the award criteria (BPKV — Best Price-Quality Ratio).",
-      "properties": [
-        { "key": "Gunningscriterium", "value": "BPKV (Beste Prijs-Kwaliteitsverhouding)" },
-        { "key": "Grondslag", "value": "Art. 2.115 Aanbestedingswet 2012" }
-      ]
-    },
-    {
-      "id": "biz-role-contractmgr",
-      "layer": "business",
-      "type": "BusinessRole",
-      "name": "Contractmanager",
-      "documentation": "Responsible for managing the ESB contract post-award, including SLA monitoring, change management, and escalation.",
-      "properties": []
-    },
-    {
-      "id": "biz-collab-aanbestedingsteam",
-      "layer": "business",
-      "type": "BusinessCollaboration",
-      "name": "Aanbestedingsteam IJsselgemeenten",
-      "documentation": "Cross-functional collaboration between IJsselgemeenten's procurement unit, IT department, legal advisors, CISO/FG, and business stakeholders working together to execute the ESB tender.",
-      "properties": []
-    },
-    {
-      "id": "biz-iface-tenderned",
-      "layer": "business",
-      "type": "BusinessInterface",
-      "name": "TenderNed / TED Portal",
-      "documentation": "Digital publication and submission portal. TenderNed is the Dutch national platform (mandatory for NL contracting authorities); TED (Tenders Electronic Daily) is the EU-wide publication journal for contracts above the EU threshold.",
-      "properties": [
-        { "key": "Platform NL", "value": "TenderNed (www.tenderned.nl)" },
-        { "key": "Platform EU", "value": "TED (Tenders Electronic Daily, EU OJ/S)" },
-        { "key": "EU Drempelwaarde (2024)", "value": "€ 221.000 (leveringen/diensten centrale overheid)" }
-      ]
-    },
+    { "id": "biz-actor-ijssel", "layer": "business", "type": "BusinessActor", "name": "IJsselgemeenten", "documentation": "Gemeentelijk samenwerkingsverband (shared municipal service organisation) acting as the contracting authority (aanbestedende dienst) under EU Directive 2014/24/EU. Represents the consortium of municipalities in the IJssel region.", "properties": [ { "key": "Organisatietype", "value": "Gemeenschappelijke regeling (Wgr)" }, { "key": "Rol in aanbesteding", "value": "Aanbestedende dienst" }, { "key": "Toepasselijk recht", "value": "EU Directive 2014/24/EU · Aanbestedingswet 2012" } ] },
+    { "id": "biz-actor-markt", "layer": "business", "type": "BusinessActor", "name": "Marktpartijen (Inschrijvers)", "documentation": "Commercial vendors and system integrators that respond to the tender by submitting bids for the ESB solution. Must meet selection criteria (uitsluitingsgronden, geschiktheidseisen) and award criteria (gunningscriteria).", "properties": [ { "key": "Type", "value": "Leverancier / Dienstverlener" }, { "key": "Vereiste kwalificaties", "value": "ISO 27001, NEN 7510 (indien van toepassing), referentieopdrachten" } ] },
+    { "id": "biz-actor-cpb", "layer": "business", "type": "BusinessActor", "name": "Centrale Inkooporganisatie", "documentation": "Central procurement unit within IJsselgemeenten or mandated to assist, responsible for procedure management and compliance with procurement law.", "properties": [ { "key": "Type", "value": "Interne ondersteunende eenheid" } ] },
+    { "id": "biz-actor-pia", "layer": "business", "type": "BusinessActor", "name": "Privacy & Security Officer (CISO/FG)", "documentation": "Functionaris Gegevensbescherming (DPO) and CISO who validate the Privacy Impact Assessment (PIA/DPIA) and information security requirements embedded in the tender specification.", "properties": [ { "key": "Grondslag", "value": "AVG / GDPR Art. 35 (DPIA), BIO (Baseline Informatiebeveiliging Overheid)" } ] },
 
-    // ══════════════════════════════════════════════════════════════
-    // BUSINESS LAYER — Behaviour
-    // ══════════════════════════════════════════════════════════════
-    {
-      "id": "biz-proc-marktverkenning",
-      "layer": "business",
-      "type": "BusinessProcess",
-      "name": "1. Marktverkenning & Voorbereiding",
-      "documentation": "Prior Market Consultation (PMC) — IJsselgemeenten engages the market to gather insights on ESB capabilities, pricing, and innovation options before publishing the formal tender. Mandatory market analysis and stakeholder interviews. Outcome: Programma van Eisen (PvE) draft.",
-      "properties": [
-        { "key": "Grondslag", "value": "Art. 2.47 Aanbestedingswet (marktconsultatie)" },
-        { "key": "Doorlooptijd (indicatief)", "value": "8 weken" }
-      ]
-    },
-    {
-      "id": "biz-proc-specificatie",
-      "layer": "business",
-      "type": "BusinessProcess",
-      "name": "2. Specificatie & Bestekopstelling",
-      "documentation": "Drafting of the procurement specification: Selectieleidraad (selection guide), Beschrijvend Document (tender spec), Programma van Eisen (PvE), DPIA, and model contract (raamovereenkomst). Must comply with the technical neutrality requirement (art. 2.76 Aanbestedingswet) and GDPR/BIO requirements.",
-      "properties": [
-        { "key": "Deliverables", "value": "Selectieleidraad · Beschrijvend Document · PvE · Model ROK · DPIA" },
-        { "key": "Doorlooptijd (indicatief)", "value": "10 weken" }
-      ]
-    },
-    {
-      "id": "biz-proc-aankondiging",
-      "layer": "business",
-      "type": "BusinessProcess",
-      "name": "3. Publicatie Aankondiging",
-      "documentation": "Publication of the Contract Notice (Aankondiging van Opdracht) on TenderNed and TED/OJEU. Opens the official tender procedure. The notice includes the CPV code, estimated contract value, selection criteria, and deadline for tender submission.",
-      "properties": [
-        { "key": "CPV Code", "value": "72316000-3 (Data analysis services) / 48000000-8 (Software packages)" },
-        { "key": "Procedure type", "value": "Niet-openbare procedure (Two-stage) of Openbare procedure" },
-        { "key": "Grondslag", "value": "Art. 2.61 Aanbestedingswet / EU Directive 2014/24/EU Art. 49" }
-      ]
-    },
-    {
-      "id": "biz-proc-nota",
-      "layer": "business",
-      "type": "BusinessProcess",
-      "name": "4. Nota van Inlichtingen (Q&A)",
-      "documentation": "Structured Q&A process: tenderers submit written questions; the contracting authority publishes consolidated answers (Nota van Inlichtingen) to all participants simultaneously, ensuring equal treatment (gelijke behandeling).",
-      "properties": [
-        { "key": "Publicatie", "value": "TenderNed — gelijktijdig aan alle deelnemers" },
-        { "key": "Grondslag", "value": "Art. 2.105 Aanbestedingswet — transparantiebeginsel" }
-      ]
-    },
-    {
-      "id": "biz-proc-inschrijving",
-      "layer": "business",
-      "type": "BusinessProcess",
-      "name": "5. Inschrijvingsfase",
-      "documentation": "Tenderers prepare and submit their bids digitally via TenderNed before the closing deadline. Submissions include price proposals, technical plans, references, UEA (Uniform European Self-Declaration / UEA), and DPIA responses.",
-      "properties": [
-        { "key": "UEA", "value": "Uniform Europees Aanbestedingsdocument (art. 2.85 Aanbestedingswet)" },
-        { "key": "Termijn (indicatief)", "value": "Minimaal 35 dagen (openbare procedure) / 30 dagen (niet-openbaar)" }
-      ]
-    },
-    {
-      "id": "biz-proc-beoordeling",
-      "layer": "business",
-      "type": "BusinessProcess",
-      "name": "6. Beoordeling & Rangschikking",
-      "documentation": "The evaluation committee assesses submissions on pre-published award criteria (gunningscriteria) using the BPKV methodology. Scoring includes price (price/quality ratio), technical quality, implementation plan, SLA compliance, and security maturity.",
-      "properties": [
-        { "key": "Gunningscriterium", "value": "BPKV — prijs 40% · kwaliteit 60%" },
-        { "key": "Kwaliteitscriteria", "value": "Integratiearchitectuur · SLA · Migratie · Security · Innovatie" }
-      ]
-    },
-    {
-      "id": "biz-proc-gunning",
-      "layer": "business",
-      "type": "BusinessProcess",
-      "name": "7. Gunningsbeslissing & Alcatel",
-      "documentation": "The contracting authority notifies all tenderers of the provisional award decision (voorlopige gunningsbeslissing). A mandatory standstill period (Alcatel-termijn) of at least 20 days applies before the contract is signed, allowing unsuccessful tenderers to initiate legal proceedings.",
-      "properties": [
-        { "key": "Alcatel-termijn", "value": "Minimaal 20 kalenderdagen (art. 2.127 Aanbestedingswet)" },
-        { "key": "Rechtsbescherming", "value": "Kort geding bij de rechtbank" }
-      ]
-    },
-    {
-      "id": "biz-proc-contractsluiting",
-      "layer": "business",
-      "type": "BusinessProcess",
-      "name": "8. Contractsluiting & Onboarding",
-      "documentation": "Signing of the framework agreement (raamovereenkomst) with the winning supplier. Followed by project kick-off, onboarding, and transition planning for the ESB implementation.",
-      "properties": [
-        { "key": "Contractvorm", "value": "Raamovereenkomst (max. 4 jaar, art. 2.140 Aanbestedingswet)" },
-        { "key": "Startdatum implementatie", "value": "Na definitieve gunning" }
-      ]
-    },
-    {
-      "id": "biz-func-gunningscriteria",
-      "layer": "business",
-      "type": "BusinessFunction",
-      "name": "Definiëren Gunningscriteria",
-      "documentation": "Organisational function responsible for determining measurable and legally defensible award criteria based on strategic objectives. Criteria must be pre-published and may not be changed after publication.",
-      "properties": []
-    },
-    {
-      "id": "biz-func-contractmonitoring",
-      "layer": "business",
-      "type": "BusinessFunction",
-      "name": "Contract- & SLA-monitoring",
-      "documentation": "Ongoing monitoring of contractual obligations, SLA performance (uptime, response times, incident resolution), and compliance with BIO/AVG requirements post-contract award.",
-      "properties": []
-    },
-    {
-      "id": "biz-event-aankondiging",
-      "layer": "business",
-      "type": "BusinessEvent",
-      "name": "Aankondiging Gepubliceerd (TED/TenderNed)",
-      "documentation": "Triggering event: contract notice is published on TED (EU) and TenderNed (NL). This formally opens the tender procedure and starts the submission deadline clock.",
-      "properties": []
-    },
-    {
-      "id": "biz-event-gunning",
-      "layer": "business",
-      "type": "BusinessEvent",
-      "name": "Voorlopige Gunningsbeslissing Verzonden",
-      "documentation": "Award decision dispatched to all tenderers simultaneously. Starts the Alcatel standstill period.",
-      "properties": []
-    },
-    {
-      "id": "biz-svc-aanbestedingsdienst",
-      "layer": "business",
-      "type": "BusinessService",
-      "name": "Aanbestedingsdienst",
-      "documentation": "Service provided by the procurement unit: end-to-end management of the procurement procedure in compliance with EU and national regulations.",
-      "properties": []
-    },
-    {
-      "id": "biz-svc-beoordelingsdienst",
-      "layer": "business",
-      "type": "BusinessService",
-      "name": "Beoordelingsdienst",
-      "documentation": "Independent and auditable evaluation service: assessment of all submitted tenders against pre-published criteria, producing a ranked scoring report.",
-      "properties": []
-    },
-    {
-      "id": "biz-svc-contractmgmtsvc",
-      "layer": "business",
-      "type": "BusinessService",
-      "name": "Contractmanagementdienst",
-      "documentation": "Post-award service: managing the contract lifecycle, SLA performance reviews, change requests, and supplier relationship management.",
-      "properties": []
-    },
+    { "id": "biz-role-aanbestedende", "layer": "business", "type": "BusinessRole", "name": "Aanbestedende Dienst", "documentation": "Legal role of the contracting authority under EU procurement law. Responsible for publishing the contract notice, conducting the procedure, and awarding the contract in compliance with EU Directive 2014/24/EU.", "properties": [ { "key": "EU Richtlijn", "value": "2014/24/EU Art. 2(1)" } ] },
+    { "id": "biz-role-inschrijver", "layer": "business", "type": "BusinessRole", "name": "Inschrijver", "documentation": "Role of an economic operator that submits a tender in response to the contract notice. Subject to exclusion grounds (art. 2.86-2.87 Aanbestedingswet) and suitability requirements.", "properties": [] },
+    { "id": "biz-role-beoordelaar", "layer": "business", "type": "BusinessRole", "name": "Beoordelingscommissie", "documentation": "Evaluation committee composed of domain experts, legal advisors, and IT specialists who score tenders on the award criteria (BPKV — Best Price-Quality Ratio).", "properties": [ { "key": "Gunningscriterium", "value": "BPKV (Beste Prijs-Kwaliteitsverhouding)" }, { "key": "Grondslag", "value": "Art. 2.115 Aanbestedingswet 2012" } ] },
+    { "id": "biz-role-contractmgr", "layer": "business", "type": "BusinessRole", "name": "Contractmanager", "documentation": "Responsible for managing the ESB contract post-award, including SLA monitoring, change management, and escalation.", "properties": [] },
 
-    // ══════════════════════════════════════════════════════════════
-    // BUSINESS LAYER — Passive Structure
-    // ══════════════════════════════════════════════════════════════
-    {
-      "id": "biz-contract-rok",
-      "layer": "business",
-      "type": "Contract",
-      "name": "ESB Raamovereenkomst",
-      "documentation": "Framework agreement (raamovereenkomst) for the delivery, implementation, hosting, and maintenance of the ESB solution. Maximum duration 4 years (2+1+1). Includes model SLA, data processing agreement (verwerkersovereenkomst AVG), and exit provisions.",
-      "properties": [
-        { "key": "Looptijd", "value": "2 jaar + 2 × 1 jaar optie (max. 4 jaar)" },
-        { "key": "Type",     "value": "Raamovereenkomst met één opdrachtnemer" }
-      ]
-    },
-    {
-      "id": "biz-contract-vwo",
-      "layer": "business",
-      "type": "Contract",
-      "name": "Verwerkersovereenkomst (AVG/GDPR)",
-      "documentation": "Data Processing Agreement (DPA) required under GDPR Art. 28. Governs how the ESB supplier processes personal data on behalf of IJsselgemeenten as the data controller.",
-      "properties": [
-        { "key": "Grondslag", "value": "AVG Art. 28 / GDPR Art. 28" }
-      ]
-    },
-    {
-      "id": "biz-obj-pve",
-      "layer": "business",
-      "type": "BusinessObject",
-      "name": "Programma van Eisen (PvE)",
-      "documentation": "Functional and non-functional requirements specification for the ESB solution. Includes integration requirements, performance SLAs, security baselines (BIO), API standards, and interoperability with existing municipal systems (zaaksysteem, HRM, financiën).",
-      "properties": [
-        { "key": "Bevat", "value": "Functionele eisen · NFR's · BIO-eisen · API-standaarden (REST/SOAP) · Migratie-eisen" }
-      ]
-    },
-    {
-      "id": "biz-obj-uea",
-      "layer": "business",
-      "type": "BusinessObject",
-      "name": "Uniform Europees Aanbestedingsdocument (UEA)",
-      "documentation": "Standardised EU self-declaration form submitted by tenderers as initial evidence of their suitability (no exclusion grounds, meeting selection criteria). Final evidence (Bibob, KvK extract, tax clearance) is requested from the winning bidder only.",
-      "properties": [
-        { "key": "Grondslag", "value": "Art. 2.85-2.87 Aanbestedingswet / EU Directive 2014/24/EU Art. 59" }
-      ]
-    },
-    {
-      "id": "biz-obj-nvi",
-      "layer": "business",
-      "type": "BusinessObject",
-      "name": "Nota van Inlichtingen",
-      "documentation": "Official Q&A document published during the tender period. All questions and answers are public and binding on the contracting authority. Forms part of the tender specification.",
-      "properties": []
-    },
-    {
-      "id": "biz-obj-inschrijving",
-      "layer": "business",
-      "type": "BusinessObject",
-      "name": "Inschrijving (Tender Bid)",
-      "documentation": "The formal tender submission by a market party, consisting of a price proposal, technical plan, references, UEA, DPIA response, and SLA proposal.",
-      "properties": []
-    },
-    {
-      "id": "biz-rep-aankondiging",
-      "layer": "business",
-      "type": "Representation",
-      "name": "Aankondiging van Opdracht (TED/OJEU)",
-      "documentation": "Official contract notice published in the EU Official Journal Supplement (TED — Tenders Electronic Daily). Mandatory for contracts above the EU procurement threshold.",
-      "properties": [
-        { "key": "Formulier", "value": "eForms CN — subtype 16 (standaardomschrijving diensten/leveringen)" }
-      ]
-    },
-    {
-      "id": "biz-rep-bestek",
-      "layer": "business",
-      "type": "Representation",
-      "name": "Beschrijvend Document / Bestek",
-      "documentation": "The full tender specification document published to tenderers. Contains requirements, evaluation criteria, procedure rules, model contract, DPIA requirements, and submission instructions.",
-      "properties": []
-    },
-    {
-      "id": "biz-product-esb",
-      "layer": "business",
-      "type": "Product",
-      "name": "ESB Integratiedienstenpakket",
-      "documentation": "The product/service bundle being procured: ESB platform software, implementation services, hosting, maintenance, training, and support — delivered under the framework agreement.",
-      "properties": [
-        { "key": "Inhoudt", "value": "Licenties · Implementatie · Beheer · Support · Opleiding" }
-      ]
-    },
+    { "id": "biz-collab-aanbestedingsteam", "layer": "business", "type": "BusinessCollaboration", "name": "Aanbestedingsteam IJsselgemeenten", "documentation": "Cross-functional collaboration between IJsselgemeenten's procurement unit, IT department, legal advisors, CISO/FG, and business stakeholders working together to execute the ESB tender.", "properties": [] },
 
-    // ══════════════════════════════════════════════════════════════
-    // APPLICATION LAYER — Active Structure
-    // ══════════════════════════════════════════════════════════════
-    {
-      "id": "app-comp-esb",
-      "layer": "application",
-      "type": "ApplicationComponent",
-      "name": "ESB Platform (Enterprise Service Bus)",
-      "documentation": "Core middleware platform that provides message-based integration between internal and external systems. Must support open standards (REST, SOAP, AMQP, MQTT, JMS), have HA/DR capabilities, and comply with BIO security baseline.",
-      "properties": [
-        { "key": "Standaarden", "value": "REST · SOAP/WS · AMQP · JMS · SFTP · AS4 (Digipoort)" },
-        { "key": "Certificering",  "value": "ISO 27001 leverancier · BIO niveau 2" },
-        { "key": "Deploymentmodel", "value": "On-premise NL / Private Cloud NL (Europees datacentrum)" }
-      ]
-    },
-    {
-      "id": "app-comp-apigateway",
-      "layer": "application",
-      "type": "ApplicationComponent",
-      "name": "API Gateway",
-      "documentation": "Manages and secures all API traffic in and out of the ESB. Provides rate limiting, authentication (OAuth 2.0/PKCE, mTLS), versioning, and developer portal. Must support NLX (Common Ground) for municipality interoperability.",
-      "properties": [
-        { "key": "Standaarden",   "value": "OAuth 2.0 · OpenID Connect · OpenAPI 3.x · NLX" },
-        { "key": "Authenticatie", "value": "DigiD koppeling · eHerkenning · PKIoverheid certificaten" }
-      ]
-    },
-    {
-      "id": "app-comp-messagebroker",
-      "layer": "application",
-      "type": "ApplicationComponent",
-      "name": "Message Broker",
-      "documentation": "Asynchronous messaging component for reliable event-driven integration. Supports publish/subscribe and point-to-point patterns. Guarantees at-least-once or exactly-once delivery depending on the integration scenario.",
-      "properties": [
-        { "key": "Patronen", "value": "Pub/Sub · Point-to-Point · Request/Reply · Dead Letter Queue" }
-      ]
-    },
-    {
-      "id": "app-comp-iam",
-      "layer": "application",
-      "type": "ApplicationComponent",
-      "name": "Identity & Access Management (IAM)",
-      "documentation": "Manages service identities, API keys, certificates, and role-based access control for all integrations. Integrates with IJsselgemeenten's existing Active Directory / Azure AD.",
-      "properties": [
-        { "key": "Protocol", "value": "SAML 2.0 · OAuth 2.0 · LDAP/AD" }
-      ]
-    },
-    {
-      "id": "app-comp-monitoring",
-      "layer": "application",
-      "type": "ApplicationComponent",
-      "name": "Monitoring & Management Console",
-      "documentation": "Centralised dashboard for real-time monitoring of message flows, error rates, latency, SLA compliance, and audit trails. Provides alerting and SLA reporting.",
-      "properties": [
-        { "key": "SLA-indicatoren", "value": "Uptime ≥ 99,9% · Responsetijd < 500ms · Foutpercentage < 0,1%" }
-      ]
-    },
-    {
-      "id": "app-comp-ide",
-      "layer": "application",
-      "type": "ApplicationComponent",
-      "name": "Integration Development Environment (IDE)",
-      "documentation": "Low-code / full-code development tooling for building, testing, and deploying integration flows. Includes version control integration (Git), test harnesses, and CI/CD pipeline support.",
-      "properties": []
-    },
-    {
-      "id": "app-collab-integration",
-      "layer": "application",
-      "type": "ApplicationCollaboration",
-      "name": "ESB Integratieplatform (Samenwerking)",
-      "documentation": "Collaborative integration between the ESB Platform, API Gateway, Message Broker, IAM, and Monitoring components to deliver end-to-end integration services.",
-      "properties": []
-    },
-    {
-      "id": "app-iface-rest",
-      "layer": "application",
-      "type": "ApplicationInterface",
-      "name": "REST/JSON API Interface",
-      "documentation": "Primary synchronous integration interface using HTTP/REST and JSON payloads. Follows OpenAPI 3.x specifications and Common Ground API design rules (api.commonground.nl).",
-      "properties": [
-        { "key": "Standaard", "value": "OpenAPI 3.x · Common Ground API Design Rules" }
-      ]
-    },
-    {
-      "id": "app-iface-soap",
-      "layer": "application",
-      "type": "ApplicationInterface",
-      "name": "SOAP/WS Interface",
-      "documentation": "Legacy SOAP web service interface for integration with older back-office systems (e.g. GBA, BRP-koppeling). Must support WS-Security with PKIoverheid certificates.",
-      "properties": [
-        { "key": "Protocol", "value": "SOAP 1.1/1.2 · WSDL · WS-Security · WS-ReliableMessaging" }
-      ]
-    },
-    {
-      "id": "app-iface-digipoort",
-      "layer": "application",
-      "type": "ApplicationInterface",
-      "name": "Digipoort / AS4 Interface",
-      "documentation": "Standard government-to-government messaging interface via Logius Digipoort, used for e-invoicing (e-facturering, NEN 2380), reporting to central government, and StUF/SuwiML message exchange.",
-      "properties": [
-        { "key": "Berichten", "value": "AS4 · StUF · SuwiML · Aangifte OB (Belastingdienst)" }
-      ]
-    },
+    { "id": "biz-iface-tenderned", "layer": "business", "type": "BusinessInterface", "name": "TenderNed / TED Portal", "documentation": "Digital publication and submission portal. TenderNed is the Dutch national platform (mandatory for NL contracting authorities); TED (Tenders Electronic Daily) is the EU-wide publication journal for contracts above the EU threshold.", "properties": [ { "key": "Platform NL", "value": "TenderNed (www.tenderned.nl)" }, { "key": "Platform EU", "value": "TED (Tenders Electronic Daily, EU OJ/S)" }, { "key": "EU Drempelwaarde (2024)", "value": "EUR 221.000 (leveringen/diensten centrale overheid)" } ] },
 
-    // ══════════════════════════════════════════════════════════════
-    // APPLICATION LAYER — Behaviour
-    // ══════════════════════════════════════════════════════════════
-    {
-      "id": "app-func-routing",
-      "layer": "application",
-      "type": "ApplicationFunction",
-      "name": "Message Routing & Transformation",
-      "documentation": "Core ESB function: routes messages between source and target systems based on content, headers, or rules; transforms data formats (XSLT, JSON mapping, canonical model). Must support dynamic routing and content-based routing.",
-      "properties": []
-    },
-    {
-      "id": "app-func-orchestration",
-      "layer": "application",
-      "type": "ApplicationFunction",
-      "name": "Service Orchestration",
-      "documentation": "Coordinates multiple services in a defined sequence to implement complex integration scenarios (e.g. BPEL, service composition). Used for multi-step municipal process flows.",
-      "properties": []
-    },
-    {
-      "id": "app-func-security",
-      "layer": "application",
-      "type": "ApplicationFunction",
-      "name": "Beveiligingsfunctie (Encryptie & Authenticatie)",
-      "documentation": "Enforces message-level and transport-level security: TLS 1.3, message signing, payload encryption, and token validation. Aligned with BIO (Baseline Informatiebeveiliging Overheid) and NEN-ISO/IEC 27001.",
-      "properties": [
-        { "key": "BIO Maatregel", "value": "BIO 12 (Cryptografie) · BIO 9 (Toegangsbeveiliging)" }
-      ]
-    },
-    {
-      "id": "app-func-logging",
-      "layer": "application",
-      "type": "ApplicationFunction",
-      "name": "Logging, Auditing & Rapportage",
-      "documentation": "Generates immutable audit logs for all message exchanges. Supports SIEM integration and produces SLA performance reports. Retention policy aligned with AVG bewaarbeleid.",
-      "properties": [
-        { "key": "Bewaartermijn", "value": "Conform AVG/Archiefwet — minimum 5 jaar voor auditdoeleinden" }
-      ]
-    },
-    {
-      "id": "app-proc-berichtverwerking",
-      "layer": "application",
-      "type": "ApplicationProcess",
-      "name": "Berichtverwerking (Message Processing)",
-      "documentation": "End-to-end process flow for a single message: receive → validate schema → authenticate → route → transform → deliver → acknowledge → log.",
-      "properties": []
-    },
-    {
-      "id": "app-proc-apilcm",
-      "layer": "application",
-      "type": "ApplicationProcess",
-      "name": "API Lifecycle Management",
-      "documentation": "Process for managing API versions: design, publish, deprecate, retire. Ensures backward compatibility and gives consumers sufficient notice before API changes.",
-      "properties": []
-    },
-    {
-      "id": "app-svc-integratie",
-      "layer": "application",
-      "type": "ApplicationService",
-      "name": "Integratieservice",
-      "documentation": "Core application service: reliable, secure, and auditable routing and transformation of data between connected municipal systems.",
-      "properties": []
-    },
-    {
-      "id": "app-svc-security",
-      "layer": "application",
-      "type": "ApplicationService",
-      "name": "Beveiligingsservice",
-      "documentation": "Security service providing authentication, authorisation, and encryption for all integration flows.",
-      "properties": []
-    },
-    {
-      "id": "app-svc-monitoring",
-      "layer": "application",
-      "type": "ApplicationService",
-      "name": "Monitoring & SLA Rapportageservice",
-      "documentation": "Provides real-time and historical SLA dashboards, alerting, and automated reports for IJsselgemeenten contract management.",
-      "properties": []
-    },
-    {
-      "id": "app-event-sla-breach",
-      "layer": "application",
-      "type": "ApplicationEvent",
-      "name": "SLA Drempelwaarde Overschreden",
-      "documentation": "Automated event triggered when an SLA threshold (uptime, response time, error rate) is breached. Initiates alerting and incident management process.",
-      "properties": []
-    },
+    { "id": "biz-proc-marktverkenning", "layer": "business", "type": "BusinessProcess", "name": "1. Marktverkenning & Voorbereiding", "documentation": "Prior Market Consultation (PMC) — IJsselgemeenten engages the market to gather insights on ESB capabilities, pricing, and innovation options before publishing the formal tender. Mandatory market analysis and stakeholder interviews. Outcome: Programma van Eisen (PvE) draft.", "properties": [ { "key": "Grondslag", "value": "Art. 2.47 Aanbestedingswet (marktconsultatie)" }, { "key": "Doorlooptijd (indicatief)", "value": "8 weken" } ] },
+    { "id": "biz-proc-specificatie", "layer": "business", "type": "BusinessProcess", "name": "2. Specificatie & Bestekopstelling", "documentation": "Drafting of the procurement specification: Selectieleidraad, Beschrijvend Document, Programma van Eisen (PvE), DPIA, and model contract (raamovereenkomst). Must comply with the technical neutrality requirement (art. 2.76 Aanbestedingswet) and GDPR/BIO requirements.", "properties": [ { "key": "Deliverables", "value": "Selectieleidraad · Beschrijvend Document · PvE · Model ROK · DPIA" }, { "key": "Doorlooptijd (indicatief)", "value": "10 weken" } ] },
+    { "id": "biz-proc-aankondiging", "layer": "business", "type": "BusinessProcess", "name": "3. Publicatie Aankondiging", "documentation": "Publication of the Contract Notice (Aankondiging van Opdracht) on TenderNed and TED/OJEU. Opens the official tender procedure. The notice includes the CPV code, estimated contract value, selection criteria, and deadline for tender submission.", "properties": [ { "key": "CPV Code", "value": "72316000-3 / 48000000-8" }, { "key": "Proceduretype", "value": "Niet-openbare procedure of Openbare procedure" }, { "key": "Grondslag", "value": "Art. 2.61 Aanbestedingswet / EU Directive 2014/24/EU Art. 49" } ] },
+    { "id": "biz-proc-nota", "layer": "business", "type": "BusinessProcess", "name": "4. Nota van Inlichtingen (Q&A)", "documentation": "Structured Q&A process: tenderers submit written questions; the contracting authority publishes consolidated answers (Nota van Inlichtingen) to all participants simultaneously, ensuring equal treatment (gelijke behandeling).", "properties": [ { "key": "Publicatie", "value": "TenderNed — gelijktijdig aan alle deelnemers" }, { "key": "Grondslag", "value": "Art. 2.105 Aanbestedingswet — transparantiebeginsel" } ] },
+    { "id": "biz-proc-inschrijving", "layer": "business", "type": "BusinessProcess", "name": "5. Inschrijvingsfase", "documentation": "Tenderers prepare and submit their bids digitally via TenderNed before the closing deadline. Submissions include price proposals, technical plans, references, UEA (Uniform European Self-Declaration), and DPIA responses.", "properties": [ { "key": "UEA", "value": "Uniform Europees Aanbestedingsdocument (art. 2.85 Aanbestedingswet)" }, { "key": "Termijn (indicatief)", "value": "Minimaal 35 dagen (openbare procedure) / 30 dagen (niet-openbaar)" } ] },
+    { "id": "biz-proc-beoordeling", "layer": "business", "type": "BusinessProcess", "name": "6. Beoordeling & Rangschikking", "documentation": "The evaluation committee assesses submissions on pre-published award criteria (gunningscriteria) using the BPKV methodology. Scoring includes price, technical quality, implementation plan, SLA compliance, and security maturity.", "properties": [ { "key": "Gunningscriterium", "value": "BPKV — prijs 40% · kwaliteit 60%" }, { "key": "Kwaliteitscriteria", "value": "Integratiearchitectuur · SLA · Migratie · Security · Innovatie" } ] },
+    { "id": "biz-proc-gunning", "layer": "business", "type": "BusinessProcess", "name": "7. Gunningsbeslissing & Alcatel", "documentation": "The contracting authority notifies all tenderers of the provisional award decision (voorlopige gunningsbeslissing). A mandatory standstill period (Alcatel-termijn) of at least 20 days applies before the contract is signed.", "properties": [ { "key": "Alcatel-termijn", "value": "Minimaal 20 kalenderdagen (art. 2.127 Aanbestedingswet)" }, { "key": "Rechtsbescherming", "value": "Kort geding bij de rechtbank" } ] },
+    { "id": "biz-proc-contractsluiting", "layer": "business", "type": "BusinessProcess", "name": "8. Contractsluiting & Onboarding", "documentation": "Signing of the framework agreement (raamovereenkomst) with the winning supplier. Followed by project kick-off, onboarding, and transition planning for the ESB implementation.", "properties": [ { "key": "Contractvorm", "value": "Raamovereenkomst (max. 4 jaar, art. 2.140 Aanbestedingswet)" }, { "key": "Startdatum implementatie", "value": "Na definitieve gunning" } ] },
 
-    // ══════════════════════════════════════════════════════════════
-    // APPLICATION LAYER — Passive Structure
-    // ══════════════════════════════════════════════════════════════
-    {
-      "id": "app-data-schema",
-      "layer": "application",
-      "type": "DataObject",
-      "name": "Berichtschema's & Canonical Data Model",
-      "documentation": "Standardised message schemas (XSD, JSON Schema, Avro) and the canonical data model used for transformation within the ESB. Aligned with StUF, RSGB, RGBZ, and Common Ground standards.",
-      "properties": [
-        { "key": "Standaarden", "value": "StUF · RSGB · RGBZ · GFO Zaken · NL-API Design Rules" }
-      ]
-    },
-    {
-      "id": "app-data-apispec",
-      "layer": "application",
-      "type": "DataObject",
-      "name": "API Specificaties (OpenAPI/WSDL)",
-      "documentation": "Machine-readable API specifications published in the developer portal. All APIs must be documented in OpenAPI 3.x (REST) or WSDL 1.1/2.0 (SOAP).",
-      "properties": []
-    },
-    {
-      "id": "app-data-auditlog",
-      "layer": "application",
-      "type": "DataObject",
-      "name": "Audit Log & Verwerkingsregister",
-      "documentation": "Immutable log of all message exchanges including sender, receiver, timestamp, message ID, and processing result. Also serves as part of the AVG verwerkingsregister (Art. 30 GDPR).",
-      "properties": [
-        { "key": "AVG", "value": "Verwerkingsregister Art. 30 AVG" }
-      ]
-    },
-    {
-      "id": "app-data-slarapport",
-      "layer": "application",
-      "type": "DataObject",
-      "name": "SLA Rapportage",
-      "documentation": "Monthly and quarterly SLA performance reports delivered to IJsselgemeenten. Includes uptime, latency, error rates, incident statistics, and change request overview.",
-      "properties": []
-    },
+    { "id": "biz-func-gunningscriteria", "layer": "business", "type": "BusinessFunction", "name": "Definiëren Gunningscriteria", "documentation": "Organisational function responsible for determining measurable and legally defensible award criteria based on strategic objectives. Criteria must be pre-published and may not be changed after publication.", "properties": [] },
+    { "id": "biz-func-contractmonitoring", "layer": "business", "type": "BusinessFunction", "name": "Contract- & SLA-monitoring", "documentation": "Ongoing monitoring of contractual obligations, SLA performance (uptime, response times, incident resolution), and compliance with BIO/AVG requirements post-contract award.", "properties": [] },
 
-    // ══════════════════════════════════════════════════════════════
-    // TECHNOLOGY LAYER — Active Structure
-    // ══════════════════════════════════════════════════════════════
-    {
-      "id": "tech-node-prod",
-      "layer": "technology",
-      "type": "Node",
-      "name": "Productieomgeving (ESB Cluster)",
-      "documentation": "Production environment running the ESB platform in a high-availability cluster configuration. Must be hosted in the Netherlands (EU data residency requirement). Minimum 2 nodes for active-active HA.",
-      "properties": [
-        { "key": "Locatie",      "value": "Nederlands / EU datacentrum" },
-        { "key": "HA vereiste",  "value": "Actief-Actief · Uptime SLA ≥ 99,9%" },
-        { "key": "Beveiliging",  "value": "ISO 27001 datacentrum · NEN 7510 (indien zorg)" }
-      ]
-    },
-    {
-      "id": "tech-node-acc",
-      "layer": "technology",
-      "type": "Node",
-      "name": "Acceptatieomgeving",
-      "documentation": "Acceptance / pre-production environment for integration testing, UAT, and change validation before deploying to production.",
-      "properties": []
-    },
-    {
-      "id": "tech-node-dev",
-      "layer": "technology",
-      "type": "Node",
-      "name": "Ontwikkel- & Testomgeving",
-      "documentation": "Development and unit test environment for IJsselgemeenten integration developers and the supplier's development team.",
-      "properties": []
-    },
-    {
-      "id": "tech-device-server",
-      "layer": "technology",
-      "type": "Device",
-      "name": "Application Servers (x86-64)",
-      "documentation": "Physical or virtual servers running the ESB platform. Must support containerisation (Kubernetes/Docker) for scalability and immutable infrastructure deployments.",
-      "properties": [
-        { "key": "Platform", "value": "Kubernetes (CNCF-compliant) / VM (VMware/KVM)" }
-      ]
-    },
-    {
-      "id": "tech-device-storage",
-      "layer": "technology",
-      "type": "Device",
-      "name": "Persistent Storage (NAS/SAN)",
-      "documentation": "Persistent storage for message queues, audit logs, and configuration data. Must support encryption at rest (AES-256). Backup to geographically separate location.",
-      "properties": [
-        { "key": "Encryptie", "value": "AES-256 at rest" },
-        { "key": "Backup RTO/RPO", "value": "RTO < 4 uur · RPO < 1 uur" }
-      ]
-    },
-    {
-      "id": "tech-sw-os",
-      "layer": "technology",
-      "type": "SystemSoftware",
-      "name": "Container Platform (Kubernetes / OpenShift)",
-      "documentation": "Container orchestration platform for deploying and scaling ESB components. Must support automated failover, rolling updates, and blue/green deployments.",
-      "properties": []
-    },
-    {
-      "id": "tech-sw-lb",
-      "layer": "technology",
-      "type": "SystemSoftware",
-      "name": "Load Balancer / Reverse Proxy",
-      "documentation": "Distributes incoming traffic across ESB nodes. Provides SSL termination, health checks, and DDoS protection layer.",
-      "properties": []
-    },
-    {
-      "id": "tech-sw-firewall",
-      "layer": "technology",
-      "type": "SystemSoftware",
-      "name": "Firewall / WAF",
-      "documentation": "Next-generation firewall and Web Application Firewall protecting the ESB cluster. Must comply with BIO network security controls. IDS/IPS capabilities required.",
-      "properties": [
-        { "key": "BIO", "value": "BIO 13 (Communicatiebeveiliging) · BIO 14 (Systeemacquisitie)" }
-      ]
-    },
-    {
-      "id": "tech-net-gemeente",
-      "layer": "technology",
-      "type": "CommunicationNetwork",
-      "name": "GemeenteNet / Diginetwerk",
-      "documentation": "Secure private network interconnecting IJsselgemeenten locations and providing connectivity to central government services via Diginetwerk (Logius). Used for inter-municipal and government-to-government communications.",
-      "properties": [
-        { "key": "Beheerder", "value": "Logius / VNG Realisatie" }
-      ]
-    },
-    {
-      "id": "tech-net-internet",
-      "layer": "technology",
-      "type": "CommunicationNetwork",
-      "name": "Internet (TLS-beveiligd)",
-      "documentation": "Internet connectivity for external API consumers, citizen-facing integrations, and cloud services. All traffic encrypted with TLS 1.3 minimum.",
-      "properties": [
-        { "key": "Minimale TLS versie", "value": "TLS 1.3 (NCSC TLS Richtlijnen 2021)" }
-      ]
-    },
-    {
-      "id": "tech-path-tls",
-      "layer": "technology",
-      "type": "Path",
-      "name": "Beveiligde Verbinding (mTLS / PKIoverheid)",
-      "documentation": "Mutual TLS (mTLS) communication path between ESB components and connected back-office systems. Uses PKIoverheid certificates for mutual authentication.",
-      "properties": [
-        { "key": "Certificaten", "value": "PKIoverheid Private Services Server G1/G2" }
-      ]
-    },
+    { "id": "biz-event-aankondiging", "layer": "business", "type": "BusinessEvent", "name": "Aankondiging Gepubliceerd (TED/TenderNed)", "documentation": "Triggering event: contract notice is published on TED (EU) and TenderNed (NL). This formally opens the tender procedure and starts the submission deadline clock.", "properties": [] },
+    { "id": "biz-event-gunning", "layer": "business", "type": "BusinessEvent", "name": "Voorlopige Gunningsbeslissing Verzonden", "documentation": "Award decision dispatched to all tenderers simultaneously. Starts the Alcatel standstill period.", "properties": [] },
 
-    // ══════════════════════════════════════════════════════════════
-    // TECHNOLOGY LAYER — Behaviour
-    // ══════════════════════════════════════════════════════════════
-    {
-      "id": "tech-svc-hosting",
-      "layer": "technology",
-      "type": "TechnologyService",
-      "name": "Managed Hosting Service",
-      "documentation": "Managed infrastructure service for running the ESB platform including OS patching, hardware maintenance, and datacenter operations. SLA: 99.9% uptime, 24/7 NOC monitoring.",
-      "properties": []
-    },
-    {
-      "id": "tech-svc-dr",
-      "layer": "technology",
-      "type": "TechnologyService",
-      "name": "Disaster Recovery Service",
-      "documentation": "DR service ensuring business continuity in case of primary site failure. Warm standby at secondary NL datacenter. RTO < 4 hours, RPO < 1 hour.",
-      "properties": [
-        { "key": "RTO", "value": "< 4 uur" },
-        { "key": "RPO", "value": "< 1 uur" }
-      ]
-    },
-    {
-      "id": "tech-svc-backup",
-      "layer": "technology",
-      "type": "TechnologyService",
-      "name": "Backup & Restore Service",
-      "documentation": "Daily automated backups of all ESB configuration, message queues, and audit logs. Restore capability tested quarterly.",
-      "properties": []
-    },
-    {
-      "id": "tech-func-ha",
-      "layer": "technology",
-      "type": "TechnologyFunction",
-      "name": "High Availability & Failover",
-      "documentation": "Automated failover mechanism ensuring the ESB platform remains operational when individual nodes fail. Active-active clustering with no single point of failure.",
-      "properties": []
-    },
-    {
-      "id": "tech-func-patching",
-      "layer": "technology",
-      "type": "TechnologyFunction",
-      "name": "Patch & Vulnerability Management",
-      "documentation": "Systematic patching of OS, middleware, and application components. Critical patches within 24 hours per BIO (Baseline Informatiebeveiliging Overheid). Coordinated with IJsselgemeenten change management.",
-      "properties": [
-        { "key": "BIO Maatregel", "value": "BIO 12.6 (Technisch beheer van kwetsbaarheden)" }
-      ]
-    },
-    {
-      "id": "tech-proc-incidentmgmt",
-      "layer": "technology",
-      "type": "TechnologyProcess",
-      "name": "Incident Management (ITIL)",
-      "documentation": "ITIL-aligned incident management process for the ESB platform. P1 incidents (production outage) require 1-hour response and 4-hour resolution per SLA. 24/7 on-call support required.",
-      "properties": [
-        { "key": "SLA P1", "value": "Reactietijd 1 uur · Hersteltijd 4 uur · 24/7" },
-        { "key": "SLA P2", "value": "Reactietijd 4 uur · Hersteltijd 8 uur · werkdagen" }
-      ]
-    },
-    {
-      "id": "tech-proc-changemgmt",
-      "layer": "technology",
-      "type": "TechnologyProcess",
-      "name": "Change Management (ITIL)",
-      "documentation": "Controlled change management process for ESB configuration and infrastructure changes. Standard changes require 5-business-day notice; emergency changes require CAB approval from IJsselgemeenten.",
-      "properties": []
-    },
-    {
-      "id": "tech-event-incident",
-      "layer": "technology",
-      "type": "TechnologyEvent",
-      "name": "Infrastructuurincident Gedetecteerd",
-      "documentation": "Monitoring event triggered when infrastructure anomaly or failure is detected. Initiates the incident management process.",
-      "properties": []
-    },
+    { "id": "biz-svc-aanbestedingsdienst", "layer": "business", "type": "BusinessService", "name": "Aanbestedingsdienst", "documentation": "Service provided by the procurement unit: end-to-end management of the procurement procedure in compliance with EU and national regulations.", "properties": [] },
+    { "id": "biz-svc-beoordelingsdienst", "layer": "business", "type": "BusinessService", "name": "Beoordelingsdienst", "documentation": "Independent and auditable evaluation service: assessment of all submitted tenders against pre-published criteria, producing a ranked scoring report.", "properties": [] },
+    { "id": "biz-svc-contractmgmtsvc", "layer": "business", "type": "BusinessService", "name": "Contractmanagementdienst", "documentation": "Post-award service: managing the contract lifecycle, SLA performance reviews, change requests, and supplier relationship management.", "properties": [] },
 
-    // ══════════════════════════════════════════════════════════════
-    // TECHNOLOGY LAYER — Passive Structure
-    // ══════════════════════════════════════════════════════════════
-    {
-      "id": "tech-artifact-deploy",
-      "layer": "technology",
-      "type": "Artifact",
-      "name": "Deployment Package (Container Image)",
-      "documentation": "Versioned, immutable container image for the ESB platform and its components. Stored in a private container registry. Built via CI/CD pipeline with automated security scanning (SAST/DAST, CVE scanning).",
-      "properties": [
-        { "key": "Registry", "value": "Private OCI-compliant registry (bijv. Harbor)" },
-        { "key": "Security Scan", "value": "SAST · DAST · SCA (SBOM)" }
-      ]
-    },
-    {
-      "id": "tech-artifact-config",
-      "layer": "technology",
-      "type": "Artifact",
-      "name": "Infrastructuurconfiguratie (IaC)",
-      "documentation": "Infrastructure-as-Code configuration (Terraform, Ansible, Helm charts) defining the complete ESB platform infrastructure. Versioned in Git. Enables reproducible deployments.",
-      "properties": []
-    },
-    {
-      "id": "tech-obj-db",
-      "layer": "technology",
-      "type": "TechnologyObject",
-      "name": "Database (Configuratie & State)",
-      "documentation": "Relational or NoSQL database storing ESB runtime configuration, routing rules, transformation mappings, and operational state. Must support encryption at rest and point-in-time recovery.",
-      "properties": []
-    },
-    {
-      "id": "tech-obj-queue",
-      "layer": "technology",
-      "type": "TechnologyObject",
-      "name": "Message Queue (Persistent)",
-      "documentation": "Persistent message queue ensuring guaranteed message delivery. Messages survive node restarts. Supports DLQ (Dead Letter Queue) for failed messages.",
-      "properties": []
-    }
+    { "id": "biz-contract-rok", "layer": "business", "type": "Contract", "name": "ESB Raamovereenkomst", "documentation": "Framework agreement (raamovereenkomst) for the delivery, implementation, hosting, and maintenance of the ESB solution. Maximum duration 4 years (2+1+1). Includes model SLA, data processing agreement (verwerkersovereenkomst AVG), and exit provisions.", "properties": [ { "key": "Looptijd", "value": "2 jaar + 2 x 1 jaar optie (max. 4 jaar)" }, { "key": "Type", "value": "Raamovereenkomst met één opdrachtnemer" } ] },
+    { "id": "biz-contract-vwo", "layer": "business", "type": "Contract", "name": "Verwerkersovereenkomst (AVG/GDPR)", "documentation": "Data Processing Agreement (DPA) required under GDPR Art. 28. Governs how the ESB supplier processes personal data on behalf of IJsselgemeenten as the data controller.", "properties": [ { "key": "Grondslag", "value": "AVG Art. 28 / GDPR Art. 28" } ] },
+
+    { "id": "biz-obj-pve", "layer": "business", "type": "BusinessObject", "name": "Programma van Eisen (PvE)", "documentation": "Functional and non-functional requirements specification for the ESB solution. Includes integration requirements, performance SLAs, security baselines (BIO), API standards, and interoperability with existing municipal systems (zaaksysteem, HRM, financien).", "properties": [ { "key": "Bevat", "value": "Functionele eisen · NFR's · BIO-eisen · API-standaarden (REST/SOAP) · Migratie-eisen" } ] },
+    { "id": "biz-obj-uea", "layer": "business", "type": "BusinessObject", "name": "Uniform Europees Aanbestedingsdocument (UEA)", "documentation": "Standardised EU self-declaration form submitted by tenderers as initial evidence of their suitability. Final evidence is requested from the winning bidder only.", "properties": [ { "key": "Grondslag", "value": "Art. 2.85-2.87 Aanbestedingswet / EU Directive 2014/24/EU Art. 59" } ] },
+    { "id": "biz-obj-nvi", "layer": "business", "type": "BusinessObject", "name": "Nota van Inlichtingen", "documentation": "Official Q&A document published during the tender period. All questions and answers are public and binding on the contracting authority. Forms part of the tender specification.", "properties": [] },
+    { "id": "biz-obj-inschrijving", "layer": "business", "type": "BusinessObject", "name": "Inschrijving (Tender Bid)", "documentation": "The formal tender submission by a market party, consisting of a price proposal, technical plan, references, UEA, DPIA response, and SLA proposal.", "properties": [] },
+
+    { "id": "biz-rep-aankondiging", "layer": "business", "type": "Representation", "name": "Aankondiging van Opdracht (TED/OJEU)", "documentation": "Official contract notice published in the EU Official Journal Supplement (TED — Tenders Electronic Daily). Mandatory for contracts above the EU procurement threshold.", "properties": [ { "key": "Formulier", "value": "eForms CN — subtype 16 (standaardomschrijving diensten/leveringen)" } ] },
+    { "id": "biz-rep-bestek", "layer": "business", "type": "Representation", "name": "Beschrijvend Document / Bestek", "documentation": "The full tender specification document published to tenderers. Contains requirements, evaluation criteria, procedure rules, model contract, DPIA requirements, and submission instructions.", "properties": [] },
+
+    { "id": "biz-product-esb", "layer": "business", "type": "Product", "name": "ESB Integratiedienstenpakket", "documentation": "The product/service bundle being procured: ESB platform software, implementation services, hosting, maintenance, training, and support — delivered under the framework agreement.", "properties": [ { "key": "Inhoudt", "value": "Licenties · Implementatie · Beheer · Support · Opleiding" } ] },
+
+    { "id": "app-comp-esb", "layer": "application", "type": "ApplicationComponent", "name": "ESB Platform (Enterprise Service Bus)", "documentation": "Core middleware platform that provides message-based integration between internal and external systems. Must support open standards (REST, SOAP, AMQP, MQTT, JMS), have HA/DR capabilities, and comply with BIO security baseline.", "properties": [ { "key": "Standaarden", "value": "REST · SOAP/WS · AMQP · JMS · SFTP · AS4 (Digipoort)" }, { "key": "Certificering", "value": "ISO 27001 leverancier · BIO niveau 2" }, { "key": "Deploymentmodel", "value": "On-premise NL / Private Cloud NL (Europees datacentrum)" } ] },
+    { "id": "app-comp-apigateway", "layer": "application", "type": "ApplicationComponent", "name": "API Gateway", "documentation": "Manages and secures all API traffic in and out of the ESB. Provides rate limiting, authentication (OAuth 2.0/PKCE, mTLS), versioning, and developer portal. Must support NLX (Common Ground) for municipality interoperability.", "properties": [ { "key": "Standaarden", "value": "OAuth 2.0 · OpenID Connect · OpenAPI 3.x · NLX" }, { "key": "Authenticatie", "value": "DigiD koppeling · eHerkenning · PKIoverheid certificaten" } ] },
+    { "id": "app-comp-messagebroker", "layer": "application", "type": "ApplicationComponent", "name": "Message Broker", "documentation": "Asynchronous messaging component for reliable event-driven integration. Supports publish/subscribe and point-to-point patterns. Guarantees at-least-once or exactly-once delivery depending on the integration scenario.", "properties": [ { "key": "Patronen", "value": "Pub/Sub · Point-to-Point · Request/Reply · Dead Letter Queue" } ] },
+    { "id": "app-comp-iam", "layer": "application", "type": "ApplicationComponent", "name": "Identity & Access Management (IAM)", "documentation": "Manages service identities, API keys, certificates, and role-based access control for all integrations. Integrates with IJsselgemeenten's existing Active Directory / Azure AD.", "properties": [ { "key": "Protocol", "value": "SAML 2.0 · OAuth 2.0 · LDAP/AD" } ] },
+    { "id": "app-comp-monitoring", "layer": "application", "type": "ApplicationComponent", "name": "Monitoring & Management Console", "documentation": "Centralised dashboard for real-time monitoring of message flows, error rates, latency, SLA compliance, and audit trails. Provides alerting and SLA reporting.", "properties": [ { "key": "SLA-indicatoren", "value": "Uptime >= 99,9% · Responsetijd < 500ms · Foutpercentage < 0,1%" } ] },
+    { "id": "app-comp-ide", "layer": "application", "type": "ApplicationComponent", "name": "Integration Development Environment (IDE)", "documentation": "Low-code / full-code development tooling for building, testing, and deploying integration flows. Includes version control integration (Git), test harnesses, and CI/CD pipeline support.", "properties": [] },
+
+    { "id": "app-collab-integration", "layer": "application", "type": "ApplicationCollaboration", "name": "ESB Integratieplatform (Samenwerking)", "documentation": "Collaborative integration between the ESB Platform, API Gateway, Message Broker, IAM, and Monitoring components to deliver end-to-end integration services.", "properties": [] },
+
+    { "id": "app-iface-rest", "layer": "application", "type": "ApplicationInterface", "name": "REST/JSON API Interface", "documentation": "Primary synchronous integration interface using HTTP/REST and JSON payloads. Follows OpenAPI 3.x specifications and Common Ground API design rules.", "properties": [ { "key": "Standaard", "value": "OpenAPI 3.x · Common Ground API Design Rules" } ] },
+    { "id": "app-iface-soap", "layer": "application", "type": "ApplicationInterface", "name": "SOAP/WS Interface", "documentation": "Legacy SOAP web service interface for integration with older back-office systems (e.g. GBA, BRP-koppeling). Must support WS-Security with PKIoverheid certificates.", "properties": [ { "key": "Protocol", "value": "SOAP 1.1/1.2 · WSDL · WS-Security · WS-ReliableMessaging" } ] },
+    { "id": "app-iface-digipoort", "layer": "application", "type": "ApplicationInterface", "name": "Digipoort / AS4 Interface", "documentation": "Standard government-to-government messaging interface via Logius Digipoort, used for e-invoicing (NEN 2380), reporting to central government, and StUF/SuwiML message exchange.", "properties": [ { "key": "Berichten", "value": "AS4 · StUF · SuwiML · Aangifte OB (Belastingdienst)" } ] },
+
+    { "id": "app-func-routing", "layer": "application", "type": "ApplicationFunction", "name": "Message Routing & Transformation", "documentation": "Core ESB function: routes messages between source and target systems based on content, headers, or rules; transforms data formats (XSLT, JSON mapping, canonical model). Supports dynamic and content-based routing.", "properties": [] },
+    { "id": "app-func-orchestration", "layer": "application", "type": "ApplicationFunction", "name": "Service Orchestration", "documentation": "Coordinates multiple services in a defined sequence to implement complex integration scenarios. Used for multi-step municipal process flows.", "properties": [] },
+    { "id": "app-func-security", "layer": "application", "type": "ApplicationFunction", "name": "Beveiligingsfunctie (Encryptie & Authenticatie)", "documentation": "Enforces message-level and transport-level security: TLS 1.3, message signing, payload encryption, and token validation. Aligned with BIO and NEN-ISO/IEC 27001.", "properties": [ { "key": "BIO Maatregel", "value": "BIO 12 (Cryptografie) · BIO 9 (Toegangsbeveiliging)" } ] },
+    { "id": "app-func-logging", "layer": "application", "type": "ApplicationFunction", "name": "Logging, Auditing & Rapportage", "documentation": "Generates immutable audit logs for all message exchanges. Supports SIEM integration and produces SLA performance reports. Retention policy aligned with AVG bewaarbeleid.", "properties": [ { "key": "Bewaartermijn", "value": "Conform AVG/Archiefwet — minimum 5 jaar voor auditdoeleinden" } ] },
+
+    { "id": "app-proc-berichtverwerking", "layer": "application", "type": "ApplicationProcess", "name": "Berichtverwerking (Message Processing)", "documentation": "End-to-end process flow for a single message: receive → validate schema → authenticate → route → transform → deliver → acknowledge → log.", "properties": [] },
+    { "id": "app-proc-apilcm", "layer": "application", "type": "ApplicationProcess", "name": "API Lifecycle Management", "documentation": "Process for managing API versions: design, publish, deprecate, retire. Ensures backward compatibility and gives consumers sufficient notice before API changes.", "properties": [] },
+
+    { "id": "app-svc-integratie", "layer": "application", "type": "ApplicationService", "name": "Integratieservice", "documentation": "Core application service: reliable, secure, and auditable routing and transformation of data between connected municipal systems.", "properties": [] },
+    { "id": "app-svc-security", "layer": "application", "type": "ApplicationService", "name": "Beveiligingsservice", "documentation": "Security service providing authentication, authorisation, and encryption for all integration flows.", "properties": [] },
+    { "id": "app-svc-monitoring", "layer": "application", "type": "ApplicationService", "name": "Monitoring & SLA Rapportageservice", "documentation": "Provides real-time and historical SLA dashboards, alerting, and automated reports for IJsselgemeenten contract management.", "properties": [] },
+
+    { "id": "app-event-sla-breach", "layer": "application", "type": "ApplicationEvent", "name": "SLA Drempelwaarde Overschreden", "documentation": "Automated event triggered when an SLA threshold (uptime, response time, error rate) is breached. Initiates alerting and incident management process.", "properties": [] },
+
+    { "id": "app-data-schema", "layer": "application", "type": "DataObject", "name": "Berichtschema's & Canonical Data Model", "documentation": "Standardised message schemas (XSD, JSON Schema, Avro) and the canonical data model used for transformation within the ESB. Aligned with StUF, RSGB, RGBZ, and Common Ground standards.", "properties": [ { "key": "Standaarden", "value": "StUF · RSGB · RGBZ · GFO Zaken · NL-API Design Rules" } ] },
+    { "id": "app-data-apispec", "layer": "application", "type": "DataObject", "name": "API Specificaties (OpenAPI/WSDL)", "documentation": "Machine-readable API specifications published in the developer portal. All APIs must be documented in OpenAPI 3.x (REST) or WSDL 1.1/2.0 (SOAP).", "properties": [] },
+    { "id": "app-data-auditlog", "layer": "application", "type": "DataObject", "name": "Audit Log & Verwerkingsregister", "documentation": "Immutable log of all message exchanges including sender, receiver, timestamp, message ID, and processing result. Also serves as part of the AVG verwerkingsregister (Art. 30 GDPR).", "properties": [ { "key": "AVG", "value": "Verwerkingsregister Art. 30 AVG" } ] },
+    { "id": "app-data-slarapport", "layer": "application", "type": "DataObject", "name": "SLA Rapportage", "documentation": "Monthly and quarterly SLA performance reports delivered to IJsselgemeenten. Includes uptime, latency, error rates, incident statistics, and change request overview.", "properties": [] },
+
+    { "id": "tech-node-prod", "layer": "technology", "type": "Node", "name": "Productieomgeving (ESB Cluster)", "documentation": "Production environment running the ESB platform in a high-availability cluster configuration. Must be hosted in the Netherlands (EU data residency requirement). Minimum 2 nodes for active-active HA.", "properties": [ { "key": "Locatie", "value": "Nederlands / EU datacentrum" }, { "key": "HA vereiste", "value": "Actief-Actief · Uptime SLA >= 99,9%" }, { "key": "Beveiliging", "value": "ISO 27001 datacentrum" } ] },
+    { "id": "tech-node-acc", "layer": "technology", "type": "Node", "name": "Acceptatieomgeving", "documentation": "Acceptance / pre-production environment for integration testing, UAT, and change validation before deploying to production.", "properties": [] },
+    { "id": "tech-node-dev", "layer": "technology", "type": "Node", "name": "Ontwikkel- & Testomgeving", "documentation": "Development and unit test environment for IJsselgemeenten integration developers and the supplier's development team.", "properties": [] },
+
+    { "id": "tech-device-server", "layer": "technology", "type": "Device", "name": "Application Servers (x86-64)", "documentation": "Physical or virtual servers running the ESB platform. Must support containerisation (Kubernetes/Docker) for scalability and immutable infrastructure deployments.", "properties": [ { "key": "Platform", "value": "Kubernetes (CNCF-compliant) / VM (VMware/KVM)" } ] },
+    { "id": "tech-device-storage", "layer": "technology", "type": "Device", "name": "Persistent Storage (NAS/SAN)", "documentation": "Persistent storage for message queues, audit logs, and configuration data. Must support encryption at rest (AES-256). Backup to geographically separate location.", "properties": [ { "key": "Encryptie", "value": "AES-256 at rest" }, { "key": "Backup RTO/RPO", "value": "RTO < 4 uur · RPO < 1 uur" } ] },
+
+    { "id": "tech-sw-os", "layer": "technology", "type": "SystemSoftware", "name": "Container Platform (Kubernetes / OpenShift)", "documentation": "Container orchestration platform for deploying and scaling ESB components. Must support automated failover, rolling updates, and blue/green deployments.", "properties": [] },
+    { "id": "tech-sw-lb", "layer": "technology", "type": "SystemSoftware", "name": "Load Balancer / Reverse Proxy", "documentation": "Distributes incoming traffic across ESB nodes. Provides SSL termination, health checks, and DDoS protection layer.", "properties": [] },
+    { "id": "tech-sw-firewall", "layer": "technology", "type": "SystemSoftware", "name": "Firewall / WAF", "documentation": "Next-generation firewall and Web Application Firewall protecting the ESB cluster. Must comply with BIO network security controls.", "properties": [ { "key": "BIO", "value": "BIO 13 (Communicatiebeveiliging) · BIO 14 (Systeemacquisitie)" } ] },
+
+    { "id": "tech-net-gemeente", "layer": "technology", "type": "CommunicationNetwork", "name": "GemeenteNet / Diginetwerk", "documentation": "Secure private network interconnecting IJsselgemeenten locations and providing connectivity to central government services via Diginetwerk (Logius).", "properties": [ { "key": "Beheerder", "value": "Logius / VNG Realisatie" } ] },
+    { "id": "tech-net-internet", "layer": "technology", "type": "CommunicationNetwork", "name": "Internet (TLS-beveiligd)", "documentation": "Internet connectivity for external API consumers, citizen-facing integrations, and cloud services. All traffic encrypted with TLS 1.3 minimum.", "properties": [ { "key": "Minimale TLS versie", "value": "TLS 1.3 (NCSC TLS Richtlijnen)" } ] },
+
+    { "id": "tech-path-tls", "layer": "technology", "type": "Path", "name": "Beveiligde Verbinding (mTLS / PKIoverheid)", "documentation": "Mutual TLS (mTLS) communication path between ESB components and connected back-office systems. Uses PKIoverheid certificates for mutual authentication.", "properties": [ { "key": "Certificaten", "value": "PKIoverheid Private Services Server G1/G2" } ] },
+
+    { "id": "tech-svc-hosting", "layer": "technology", "type": "TechnologyService", "name": "Managed Hosting Service", "documentation": "Managed infrastructure service for running the ESB platform including OS patching, hardware maintenance, and datacenter operations. SLA: 99.9% uptime, 24/7 NOC monitoring.", "properties": [] },
+    { "id": "tech-svc-dr", "layer": "technology", "type": "TechnologyService", "name": "Disaster Recovery Service", "documentation": "DR service ensuring business continuity in case of primary site failure. Warm standby at secondary NL datacenter. RTO < 4 hours, RPO < 1 hour.", "properties": [ { "key": "RTO", "value": "< 4 uur" }, { "key": "RPO", "value": "< 1 uur" } ] },
+    { "id": "tech-svc-backup", "layer": "technology", "type": "TechnologyService", "name": "Backup & Restore Service", "documentation": "Daily automated backups of all ESB configuration, message queues, and audit logs. Restore capability tested quarterly.", "properties": [] },
+
+    { "id": "tech-func-ha", "layer": "technology", "type": "TechnologyFunction", "name": "High Availability & Failover", "documentation": "Automated failover mechanism ensuring the ESB platform remains operational when individual nodes fail. Active-active clustering with no single point of failure.", "properties": [] },
+    { "id": "tech-func-patching", "layer": "technology", "type": "TechnologyFunction", "name": "Patch & Vulnerability Management", "documentation": "Systematic patching of OS, middleware, and application components. Critical patches within 24 hours per BIO. Coordinated with IJsselgemeenten change management.", "properties": [ { "key": "BIO Maatregel", "value": "BIO 12.6 (Technisch beheer van kwetsbaarheden)" } ] },
+
+    { "id": "tech-proc-incidentmgmt", "layer": "technology", "type": "TechnologyProcess", "name": "Incident Management (ITIL)", "documentation": "ITIL-aligned incident management process for the ESB platform. P1 incidents (production outage) require 1-hour response and 4-hour resolution per SLA. 24/7 on-call support required.", "properties": [ { "key": "SLA P1", "value": "Reactietijd 1 uur · Hersteltijd 4 uur · 24/7" }, { "key": "SLA P2", "value": "Reactietijd 4 uur · Hersteltijd 8 uur · werkdagen" } ] },
+    { "id": "tech-proc-changemgmt", "layer": "technology", "type": "TechnologyProcess", "name": "Change Management (ITIL)", "documentation": "Controlled change management process for ESB configuration and infrastructure changes. Standard changes require 5-business-day notice; emergency changes require CAB approval from IJsselgemeenten.", "properties": [] },
+
+    { "id": "tech-event-incident", "layer": "technology", "type": "TechnologyEvent", "name": "Infrastructuurincident Gedetecteerd", "documentation": "Monitoring event triggered when infrastructure anomaly or failure is detected. Initiates the incident management process.", "properties": [] },
+
+    { "id": "tech-artifact-deploy", "layer": "technology", "type": "Artifact", "name": "Deployment Package (Container Image)", "documentation": "Versioned, immutable container image for the ESB platform and its components. Stored in a private container registry. Built via CI/CD pipeline with automated security scanning (SAST/DAST, CVE scanning).", "properties": [ { "key": "Registry", "value": "Private OCI-compliant registry" }, { "key": "Security Scan", "value": "SAST · DAST · SCA (SBOM)" } ] },
+    { "id": "tech-artifact-config", "layer": "technology", "type": "Artifact", "name": "Infrastructuurconfiguratie (IaC)", "documentation": "Infrastructure-as-Code configuration (Terraform, Ansible, Helm charts) defining the complete ESB platform infrastructure. Versioned in Git. Enables reproducible deployments.", "properties": [] },
+
+    { "id": "tech-obj-db", "layer": "technology", "type": "TechnologyObject", "name": "Database (Configuratie & State)", "documentation": "Relational or NoSQL database storing ESB runtime configuration, routing rules, transformation mappings, and operational state. Must support encryption at rest and point-in-time recovery.", "properties": [] },
+    { "id": "tech-obj-queue", "layer": "technology", "type": "TechnologyObject", "name": "Message Queue (Persistent)", "documentation": "Persistent message queue ensuring guaranteed message delivery. Messages survive node restarts. Supports DLQ (Dead Letter Queue) for failed messages.", "properties": [] }
 
   ],
 
   "relationships": [
 
-    // ══════════════════════════════════════════════════════════════
-    // Business Layer — Internal Relationships
-    // ══════════════════════════════════════════════════════════════
+    { "id": "rel-01", "type": "AssignmentRelationship",  "sourceId": "biz-actor-ijssel",   "targetId": "biz-role-aanbestedende",  "name": "", "documentation": "IJsselgemeenten fulfils the role of Aanbestedende Dienst." },
+    { "id": "rel-02", "type": "AssignmentRelationship",  "sourceId": "biz-actor-markt",    "targetId": "biz-role-inschrijver",    "name": "", "documentation": "Market parties fulfil the Inschrijver role." },
+    { "id": "rel-03", "type": "AssignmentRelationship",  "sourceId": "biz-actor-cpb",      "targetId": "biz-role-beoordelaar",   "name": "", "documentation": "Inkooporganisatie leads the evaluation committee." },
+    { "id": "rel-04", "type": "AssignmentRelationship",  "sourceId": "biz-actor-ijssel",   "targetId": "biz-role-contractmgr",   "name": "", "documentation": "IJsselgemeenten fulfils the contract management role post-award." },
 
-    // Actor → Role assignments
-    { "id": "rel-01", "type": "AssignmentRelationship", "sourceId": "biz-actor-ijssel",   "targetId": "biz-role-aanbestedende",  "name": "", "documentation": "IJsselgemeenten fulfils the role of Aanbestedende Dienst." },
-    { "id": "rel-02", "type": "AssignmentRelationship", "sourceId": "biz-actor-markt",    "targetId": "biz-role-inschrijver",    "name": "", "documentation": "Market parties fulfil the Inschrijver role." },
-    { "id": "rel-03", "type": "AssignmentRelationship", "sourceId": "biz-actor-cpb",      "targetId": "biz-role-beoordelaar",   "name": "", "documentation": "Inkooporganisatie leads the evaluation committee." },
-    { "id": "rel-04", "type": "AssignmentRelationship", "sourceId": "biz-actor-ijssel",   "targetId": "biz-role-contractmgr",   "name": "", "documentation": "IJsselgemeenten fulfils the contract management role post-award." },
-
-    // Collaboration aggregates roles
     { "id": "rel-05", "type": "AggregationRelationship", "sourceId": "biz-collab-aanbestedingsteam", "targetId": "biz-role-aanbestedende", "name": "", "documentation": "" },
     { "id": "rel-06", "type": "AggregationRelationship", "sourceId": "biz-collab-aanbestedingsteam", "targetId": "biz-role-beoordelaar",  "name": "", "documentation": "" },
 
-    // Role → Process assignments
-    { "id": "rel-07", "type": "AssignmentRelationship", "sourceId": "biz-role-aanbestedende", "targetId": "biz-proc-marktverkenning",  "name": "", "documentation": "" },
-    { "id": "rel-08", "type": "AssignmentRelationship", "sourceId": "biz-role-aanbestedende", "targetId": "biz-proc-specificatie",     "name": "", "documentation": "" },
-    { "id": "rel-09", "type": "AssignmentRelationship", "sourceId": "biz-role-aanbestedende", "targetId": "biz-proc-aankondiging",     "name": "", "documentation": "" },
-    { "id": "rel-10", "type": "AssignmentRelationship", "sourceId": "biz-role-aanbestedende", "targetId": "biz-proc-nota",            "name": "", "documentation": "" },
-    { "id": "rel-11", "type": "AssignmentRelationship", "sourceId": "biz-role-inschrijver",   "targetId": "biz-proc-inschrijving",    "name": "", "documentation": "" },
-    { "id": "rel-12", "type": "AssignmentRelationship", "sourceId": "biz-role-beoordelaar",   "targetId": "biz-proc-beoordeling",     "name": "", "documentation": "" },
-    { "id": "rel-13", "type": "AssignmentRelationship", "sourceId": "biz-role-aanbestedende", "targetId": "biz-proc-gunning",         "name": "", "documentation": "" },
-    { "id": "rel-14", "type": "AssignmentRelationship", "sourceId": "biz-role-contractmgr",   "targetId": "biz-proc-contractsluiting","name": "", "documentation": "" },
+    { "id": "rel-07", "type": "AssignmentRelationship",  "sourceId": "biz-role-aanbestedende", "targetId": "biz-proc-marktverkenning",  "name": "", "documentation": "" },
+    { "id": "rel-08", "type": "AssignmentRelationship",  "sourceId": "biz-role-aanbestedende", "targetId": "biz-proc-specificatie",     "name": "", "documentation": "" },
+    { "id": "rel-09", "type": "AssignmentRelationship",  "sourceId": "biz-role-aanbestedende", "targetId": "biz-proc-aankondiging",     "name": "", "documentation": "" },
+    { "id": "rel-10", "type": "AssignmentRelationship",  "sourceId": "biz-role-aanbestedende", "targetId": "biz-proc-nota",            "name": "", "documentation": "" },
+    { "id": "rel-11", "type": "AssignmentRelationship",  "sourceId": "biz-role-inschrijver",   "targetId": "biz-proc-inschrijving",    "name": "", "documentation": "" },
+    { "id": "rel-12", "type": "AssignmentRelationship",  "sourceId": "biz-role-beoordelaar",   "targetId": "biz-proc-beoordeling",     "name": "", "documentation": "" },
+    { "id": "rel-13", "type": "AssignmentRelationship",  "sourceId": "biz-role-aanbestedende", "targetId": "biz-proc-gunning",         "name": "", "documentation": "" },
+    { "id": "rel-14", "type": "AssignmentRelationship",  "sourceId": "biz-role-contractmgr",   "targetId": "biz-proc-contractsluiting","name": "", "documentation": "" },
 
-    // Process sequencing (Triggering)
-    { "id": "rel-15", "type": "TriggeringRelationship", "sourceId": "biz-proc-marktverkenning",  "targetId": "biz-proc-specificatie",    "name": "", "documentation": "Market insights feed into the specification." },
-    { "id": "rel-16", "type": "TriggeringRelationship", "sourceId": "biz-proc-specificatie",     "targetId": "biz-proc-aankondiging",    "name": "", "documentation": "Completed spec triggers publication." },
-    { "id": "rel-17", "type": "TriggeringRelationship", "sourceId": "biz-event-aankondiging",    "targetId": "biz-proc-nota",            "name": "", "documentation": "" },
-    { "id": "rel-18", "type": "TriggeringRelationship", "sourceId": "biz-proc-nota",             "targetId": "biz-proc-inschrijving",    "name": "", "documentation": "" },
-    { "id": "rel-19", "type": "TriggeringRelationship", "sourceId": "biz-proc-inschrijving",     "targetId": "biz-proc-beoordeling",     "name": "", "documentation": "" },
-    { "id": "rel-20", "type": "TriggeringRelationship", "sourceId": "biz-proc-beoordeling",      "targetId": "biz-proc-gunning",         "name": "", "documentation": "" },
-    { "id": "rel-21", "type": "TriggeringRelationship", "sourceId": "biz-event-gunning",         "targetId": "biz-proc-contractsluiting","name": "", "documentation": "After Alcatel standstill, contract is signed." },
+    { "id": "rel-15", "type": "TriggeringRelationship",  "sourceId": "biz-proc-marktverkenning",  "targetId": "biz-proc-specificatie",    "name": "", "documentation": "Market insights feed into the specification." },
+    { "id": "rel-16", "type": "TriggeringRelationship",  "sourceId": "biz-proc-specificatie",     "targetId": "biz-proc-aankondiging",    "name": "", "documentation": "Completed spec triggers publication." },
+    { "id": "rel-17", "type": "TriggeringRelationship",  "sourceId": "biz-event-aankondiging",    "targetId": "biz-proc-nota",            "name": "", "documentation": "" },
+    { "id": "rel-18", "type": "TriggeringRelationship",  "sourceId": "biz-proc-nota",             "targetId": "biz-proc-inschrijving",    "name": "", "documentation": "" },
+    { "id": "rel-19", "type": "TriggeringRelationship",  "sourceId": "biz-proc-inschrijving",     "targetId": "biz-proc-beoordeling",     "name": "", "documentation": "" },
+    { "id": "rel-20", "type": "TriggeringRelationship",  "sourceId": "biz-proc-beoordeling",      "targetId": "biz-proc-gunning",         "name": "", "documentation": "" },
+    { "id": "rel-21", "type": "TriggeringRelationship",  "sourceId": "biz-event-gunning",         "targetId": "biz-proc-contractsluiting","name": "", "documentation": "After Alcatel standstill, contract is signed." },
 
-    // Process → Service (Realization)
-    { "id": "rel-22", "type": "RealizationRelationship", "sourceId": "biz-proc-aankondiging", "targetId": "biz-svc-aanbestedingsdienst", "name": "", "documentation": "" },
-    { "id": "rel-23", "type": "RealizationRelationship", "sourceId": "biz-proc-beoordeling",  "targetId": "biz-svc-beoordelingsdienst",  "name": "", "documentation": "" },
-    { "id": "rel-24", "type": "RealizationRelationship", "sourceId": "biz-proc-contractsluiting", "targetId": "biz-svc-contractmgmtsvc", "name": "", "documentation": "" },
+    { "id": "rel-22", "type": "RealizationRelationship", "sourceId": "biz-proc-aankondiging",    "targetId": "biz-svc-aanbestedingsdienst", "name": "", "documentation": "" },
+    { "id": "rel-23", "type": "RealizationRelationship", "sourceId": "biz-proc-beoordeling",     "targetId": "biz-svc-beoordelingsdienst",  "name": "", "documentation": "" },
+    { "id": "rel-24", "type": "RealizationRelationship", "sourceId": "biz-proc-contractsluiting","targetId": "biz-svc-contractmgmtsvc",     "name": "", "documentation": "" },
 
-    // Interface serving processes
-    { "id": "rel-25", "type": "ServingRelationship", "sourceId": "biz-iface-tenderned", "targetId": "biz-proc-aankondiging", "name": "", "documentation": "TenderNed/TED portal hosts the publication." },
-    { "id": "rel-26", "type": "ServingRelationship", "sourceId": "biz-iface-tenderned", "targetId": "biz-proc-inschrijving", "name": "", "documentation": "TenderNed portal receives submissions." },
+    { "id": "rel-25", "type": "ServingRelationship",     "sourceId": "biz-iface-tenderned", "targetId": "biz-proc-aankondiging", "name": "", "documentation": "TenderNed/TED portal hosts the publication." },
+    { "id": "rel-26", "type": "ServingRelationship",     "sourceId": "biz-iface-tenderned", "targetId": "biz-proc-inschrijving", "name": "", "documentation": "TenderNed portal receives submissions." },
 
-    // Process ↔ Documents (Access)
-    { "id": "rel-27", "type": "AccessRelationship", "sourceId": "biz-proc-specificatie",  "targetId": "biz-obj-pve",         "name": "", "documentation": "Specification process writes the PvE.", "accessType": "Write" },
-    { "id": "rel-28", "type": "AccessRelationship", "sourceId": "biz-proc-specificatie",  "targetId": "biz-rep-bestek",      "name": "", "documentation": "Specification process writes the Bestek.", "accessType": "Write" },
-    { "id": "rel-29", "type": "AccessRelationship", "sourceId": "biz-proc-nota",          "targetId": "biz-obj-nvi",         "name": "", "documentation": "Q&A process writes the NvI.", "accessType": "Write" },
-    { "id": "rel-30", "type": "AccessRelationship", "sourceId": "biz-proc-inschrijving",  "targetId": "biz-obj-uea",         "name": "", "documentation": "Tenderer submits UEA.", "accessType": "Write" },
-    { "id": "rel-31", "type": "AccessRelationship", "sourceId": "biz-proc-inschrijving",  "targetId": "biz-obj-inschrijving","name": "", "documentation": "Tenderer creates and submits bid.", "accessType": "Write" },
-    { "id": "rel-32", "type": "AccessRelationship", "sourceId": "biz-proc-beoordeling",   "targetId": "biz-obj-inschrijving","name": "", "documentation": "Evaluation committee reads submissions.", "accessType": "Read" },
-    { "id": "rel-33", "type": "AccessRelationship", "sourceId": "biz-proc-aankondiging",  "targetId": "biz-rep-aankondiging","name": "", "documentation": "Publication process writes the contract notice.", "accessType": "Write" },
-    { "id": "rel-34", "type": "AccessRelationship", "sourceId": "biz-proc-contractsluiting", "targetId": "biz-contract-rok","name": "", "documentation": "Contract signing process creates the ROK.", "accessType": "Write" },
-    { "id": "rel-35", "type": "AccessRelationship", "sourceId": "biz-proc-contractsluiting", "targetId": "biz-contract-vwo","name": "", "documentation": "Contract signing includes the DPA.", "accessType": "Write" },
+    { "id": "rel-27", "type": "AccessRelationship",      "sourceId": "biz-proc-specificatie",     "targetId": "biz-obj-pve",          "name": "", "documentation": "Specification process writes the PvE.", "accessType": "Write" },
+    { "id": "rel-28", "type": "AccessRelationship",      "sourceId": "biz-proc-specificatie",     "targetId": "biz-rep-bestek",       "name": "", "documentation": "Specification process writes the Bestek.", "accessType": "Write" },
+    { "id": "rel-29", "type": "AccessRelationship",      "sourceId": "biz-proc-nota",             "targetId": "biz-obj-nvi",          "name": "", "documentation": "Q&A process writes the NvI.", "accessType": "Write" },
+    { "id": "rel-30", "type": "AccessRelationship",      "sourceId": "biz-proc-inschrijving",     "targetId": "biz-obj-uea",          "name": "", "documentation": "Tenderer submits UEA.", "accessType": "Write" },
+    { "id": "rel-31", "type": "AccessRelationship",      "sourceId": "biz-proc-inschrijving",     "targetId": "biz-obj-inschrijving", "name": "", "documentation": "Tenderer creates and submits bid.", "accessType": "Write" },
+    { "id": "rel-32", "type": "AccessRelationship",      "sourceId": "biz-proc-beoordeling",      "targetId": "biz-obj-inschrijving", "name": "", "documentation": "Evaluation committee reads submissions.", "accessType": "Read" },
+    { "id": "rel-33", "type": "AccessRelationship",      "sourceId": "biz-proc-aankondiging",     "targetId": "biz-rep-aankondiging", "name": "", "documentation": "Publication process writes the contract notice.", "accessType": "Write" },
+    { "id": "rel-34", "type": "AccessRelationship",      "sourceId": "biz-proc-contractsluiting", "targetId": "biz-contract-rok",     "name": "", "documentation": "Contract signing process creates the ROK.", "accessType": "Write" },
+    { "id": "rel-35", "type": "AccessRelationship",      "sourceId": "biz-proc-contractsluiting", "targetId": "biz-contract-vwo",     "name": "", "documentation": "Contract signing includes the DPA.", "accessType": "Write" },
 
-    // Contract associated with product
-    { "id": "rel-36", "type": "AssociationRelationship", "sourceId": "biz-contract-rok", "targetId": "biz-product-esb", "name": "", "documentation": "ROK governs the delivery of the ESB product bundle." },
+    { "id": "rel-36", "type": "AssociationRelationship", "sourceId": "biz-contract-rok",          "targetId": "biz-product-esb",      "name": "", "documentation": "ROK governs the delivery of the ESB product bundle." },
+    { "id": "rel-37", "type": "ServingRelationship",     "sourceId": "biz-func-gunningscriteria", "targetId": "biz-proc-beoordeling", "name": "", "documentation": "Defined criteria are used in evaluation." },
+    { "id": "rel-38", "type": "ServingRelationship",     "sourceId": "biz-func-contractmonitoring","targetId": "biz-svc-contractmgmtsvc","name": "", "documentation": "" },
 
-    // Function supports process
-    { "id": "rel-37", "type": "ServingRelationship", "sourceId": "biz-func-gunningscriteria", "targetId": "biz-proc-beoordeling",     "name": "", "documentation": "Defined criteria are used in evaluation." },
-    { "id": "rel-38", "type": "ServingRelationship", "sourceId": "biz-func-contractmonitoring","targetId": "biz-svc-contractmgmtsvc", "name": "", "documentation": "" },
+    { "id": "rel-39", "type": "CompositionRelationship", "sourceId": "app-comp-esb", "targetId": "app-comp-apigateway",    "name": "", "documentation": "" },
+    { "id": "rel-40", "type": "CompositionRelationship", "sourceId": "app-comp-esb", "targetId": "app-comp-messagebroker", "name": "", "documentation": "" },
+    { "id": "rel-41", "type": "CompositionRelationship", "sourceId": "app-comp-esb", "targetId": "app-comp-iam",           "name": "", "documentation": "" },
+    { "id": "rel-42", "type": "CompositionRelationship", "sourceId": "app-comp-esb", "targetId": "app-comp-monitoring",    "name": "", "documentation": "" },
+    { "id": "rel-43", "type": "CompositionRelationship", "sourceId": "app-comp-esb", "targetId": "app-comp-ide",           "name": "", "documentation": "" },
 
-    // ══════════════════════════════════════════════════════════════
-    // Application Layer — Internal Relationships
-    // ══════════════════════════════════════════════════════════════
-
-    // ESB platform composes sub-components
-    { "id": "rel-39", "type": "CompositionRelationship", "sourceId": "app-comp-esb",  "targetId": "app-comp-apigateway",   "name": "", "documentation": "" },
-    { "id": "rel-40", "type": "CompositionRelationship", "sourceId": "app-comp-esb",  "targetId": "app-comp-messagebroker","name": "", "documentation": "" },
-    { "id": "rel-41", "type": "CompositionRelationship", "sourceId": "app-comp-esb",  "targetId": "app-comp-iam",          "name": "", "documentation": "" },
-    { "id": "rel-42", "type": "CompositionRelationship", "sourceId": "app-comp-esb",  "targetId": "app-comp-monitoring",   "name": "", "documentation": "" },
-    { "id": "rel-43", "type": "CompositionRelationship", "sourceId": "app-comp-esb",  "targetId": "app-comp-ide",          "name": "", "documentation": "" },
-
-    // Collaboration aggregates components
     { "id": "rel-44", "type": "AggregationRelationship", "sourceId": "app-collab-integration", "targetId": "app-comp-esb",        "name": "", "documentation": "" },
     { "id": "rel-45", "type": "AggregationRelationship", "sourceId": "app-collab-integration", "targetId": "app-comp-apigateway", "name": "", "documentation": "" },
 
-    // Component → Function (Assignment)
-    { "id": "rel-46", "type": "AssignmentRelationship", "sourceId": "app-comp-esb",        "targetId": "app-func-routing",       "name": "", "documentation": "" },
-    { "id": "rel-47", "type": "AssignmentRelationship", "sourceId": "app-comp-esb",        "targetId": "app-func-orchestration", "name": "", "documentation": "" },
-    { "id": "rel-48", "type": "AssignmentRelationship", "sourceId": "app-comp-iam",        "targetId": "app-func-security",      "name": "", "documentation": "" },
-    { "id": "rel-49", "type": "AssignmentRelationship", "sourceId": "app-comp-monitoring", "targetId": "app-func-logging",       "name": "", "documentation": "" },
+    { "id": "rel-46", "type": "AssignmentRelationship",  "sourceId": "app-comp-esb",        "targetId": "app-func-routing",       "name": "", "documentation": "" },
+    { "id": "rel-47", "type": "AssignmentRelationship",  "sourceId": "app-comp-esb",        "targetId": "app-func-orchestration", "name": "", "documentation": "" },
+    { "id": "rel-48", "type": "AssignmentRelationship",  "sourceId": "app-comp-iam",        "targetId": "app-func-security",      "name": "", "documentation": "" },
+    { "id": "rel-49", "type": "AssignmentRelationship",  "sourceId": "app-comp-monitoring", "targetId": "app-func-logging",       "name": "", "documentation": "" },
 
-    // Function realizes Service
-    { "id": "rel-50", "type": "RealizationRelationship", "sourceId": "app-func-routing",       "targetId": "app-svc-integratie",  "name": "", "documentation": "" },
-    { "id": "rel-51", "type": "RealizationRelationship", "sourceId": "app-func-security",      "targetId": "app-svc-security",    "name": "", "documentation": "" },
-    { "id": "rel-52", "type": "RealizationRelationship", "sourceId": "app-func-logging",       "targetId": "app-svc-monitoring",  "name": "", "documentation": "" },
+    { "id": "rel-50", "type": "RealizationRelationship", "sourceId": "app-func-routing",  "targetId": "app-svc-integratie", "name": "", "documentation": "" },
+    { "id": "rel-51", "type": "RealizationRelationship", "sourceId": "app-func-security", "targetId": "app-svc-security",   "name": "", "documentation": "" },
+    { "id": "rel-52", "type": "RealizationRelationship", "sourceId": "app-func-logging",  "targetId": "app-svc-monitoring", "name": "", "documentation": "" },
 
-    // Process uses Function
-    { "id": "rel-53", "type": "AssignmentRelationship", "sourceId": "app-comp-esb",        "targetId": "app-proc-berichtverwerking", "name": "", "documentation": "" },
-    { "id": "rel-54", "type": "AssignmentRelationship", "sourceId": "app-comp-apigateway", "targetId": "app-proc-apilcm",           "name": "", "documentation": "" },
+    { "id": "rel-53", "type": "AssignmentRelationship",  "sourceId": "app-comp-esb",        "targetId": "app-proc-berichtverwerking", "name": "", "documentation": "" },
+    { "id": "rel-54", "type": "AssignmentRelationship",  "sourceId": "app-comp-apigateway", "targetId": "app-proc-apilcm",           "name": "", "documentation": "" },
 
-    // Data access
-    { "id": "rel-55", "type": "AccessRelationship", "sourceId": "app-proc-berichtverwerking", "targetId": "app-data-schema",   "name": "", "documentation": "Message processing reads schemas for validation.", "accessType": "Read" },
-    { "id": "rel-56", "type": "AccessRelationship", "sourceId": "app-func-logging",           "targetId": "app-data-auditlog", "name": "", "documentation": "Logging function writes to audit log.", "accessType": "Write" },
-    { "id": "rel-57", "type": "AccessRelationship", "sourceId": "app-svc-monitoring",         "targetId": "app-data-slarapport","name": "", "documentation": "Monitoring service writes SLA reports.", "accessType": "Write" },
-    { "id": "rel-58", "type": "AccessRelationship", "sourceId": "app-proc-apilcm",            "targetId": "app-data-apispec",  "name": "", "documentation": "API lifecycle management writes API specs.", "accessType": "ReadWrite" },
+    { "id": "rel-55", "type": "AccessRelationship",      "sourceId": "app-proc-berichtverwerking", "targetId": "app-data-schema",    "name": "", "documentation": "Message processing reads schemas.", "accessType": "Read" },
+    { "id": "rel-56", "type": "AccessRelationship",      "sourceId": "app-func-logging",           "targetId": "app-data-auditlog",  "name": "", "documentation": "Logging writes to audit log.", "accessType": "Write" },
+    { "id": "rel-57", "type": "AccessRelationship",      "sourceId": "app-svc-monitoring",         "targetId": "app-data-slarapport","name": "", "documentation": "Monitoring writes SLA reports.", "accessType": "Write" },
+    { "id": "rel-58", "type": "AccessRelationship",      "sourceId": "app-proc-apilcm",            "targetId": "app-data-apispec",   "name": "", "documentation": "API LCM writes API specs.", "accessType": "ReadWrite" },
 
-    // Interfaces served by components
-    { "id": "rel-59", "type": "RealizationRelationship", "sourceId": "app-comp-apigateway",   "targetId": "app-iface-rest",      "name": "", "documentation": "" },
-    { "id": "rel-60", "type": "RealizationRelationship", "sourceId": "app-comp-esb",          "targetId": "app-iface-soap",      "name": "", "documentation": "" },
-    { "id": "rel-61", "type": "RealizationRelationship", "sourceId": "app-comp-esb",          "targetId": "app-iface-digipoort", "name": "", "documentation": "" },
+    { "id": "rel-59", "type": "RealizationRelationship", "sourceId": "app-comp-apigateway", "targetId": "app-iface-rest",      "name": "", "documentation": "" },
+    { "id": "rel-60", "type": "RealizationRelationship", "sourceId": "app-comp-esb",        "targetId": "app-iface-soap",      "name": "", "documentation": "" },
+    { "id": "rel-61", "type": "RealizationRelationship", "sourceId": "app-comp-esb",        "targetId": "app-iface-digipoort", "name": "", "documentation": "" },
 
-    // Event triggers process
-    { "id": "rel-62", "type": "TriggeringRelationship", "sourceId": "app-event-sla-breach", "targetId": "app-svc-monitoring", "name": "", "documentation": "SLA breach triggers monitoring alert." },
+    { "id": "rel-62", "type": "TriggeringRelationship",  "sourceId": "app-event-sla-breach", "targetId": "app-svc-monitoring", "name": "", "documentation": "SLA breach triggers monitoring alert." },
 
-    // ══════════════════════════════════════════════════════════════
-    // Technology Layer — Internal Relationships
-    // ══════════════════════════════════════════════════════════════
-
-    // Node composition
     { "id": "rel-63", "type": "CompositionRelationship", "sourceId": "tech-node-prod", "targetId": "tech-device-server",  "name": "", "documentation": "" },
     { "id": "rel-64", "type": "CompositionRelationship", "sourceId": "tech-node-prod", "targetId": "tech-device-storage", "name": "", "documentation": "" },
 
-    // System software runs on nodes
-    { "id": "rel-65", "type": "AssignmentRelationship", "sourceId": "tech-node-prod", "targetId": "tech-svc-hosting", "name": "", "documentation": "" },
-    { "id": "rel-66", "type": "AssignmentRelationship", "sourceId": "tech-node-prod", "targetId": "tech-func-ha",     "name": "", "documentation": "" },
+    { "id": "rel-65", "type": "AssignmentRelationship",  "sourceId": "tech-node-prod", "targetId": "tech-svc-hosting", "name": "", "documentation": "" },
+    { "id": "rel-66", "type": "AssignmentRelationship",  "sourceId": "tech-node-prod", "targetId": "tech-func-ha",     "name": "", "documentation": "" },
 
-    // Services realize functions
-    { "id": "rel-67", "type": "RealizationRelationship", "sourceId": "tech-func-ha",      "targetId": "tech-svc-hosting", "name": "", "documentation": "" },
-    { "id": "rel-68", "type": "RealizationRelationship", "sourceId": "tech-func-patching","targetId": "tech-svc-hosting", "name": "", "documentation": "" },
+    { "id": "rel-67", "type": "RealizationRelationship", "sourceId": "tech-func-ha",       "targetId": "tech-svc-hosting", "name": "", "documentation": "" },
+    { "id": "rel-68", "type": "RealizationRelationship", "sourceId": "tech-func-patching", "targetId": "tech-svc-hosting", "name": "", "documentation": "" },
 
-    // Process assignments
-    { "id": "rel-69", "type": "AssignmentRelationship", "sourceId": "tech-node-prod", "targetId": "tech-proc-incidentmgmt", "name": "", "documentation": "" },
-    { "id": "rel-70", "type": "AssignmentRelationship", "sourceId": "tech-node-prod", "targetId": "tech-proc-changemgmt",   "name": "", "documentation": "" },
+    { "id": "rel-69", "type": "AssignmentRelationship",  "sourceId": "tech-node-prod", "targetId": "tech-proc-incidentmgmt", "name": "", "documentation": "" },
+    { "id": "rel-70", "type": "AssignmentRelationship",  "sourceId": "tech-node-prod", "targetId": "tech-proc-changemgmt",   "name": "", "documentation": "" },
 
-    // DR and Backup services
-    { "id": "rel-71", "type": "AssociationRelationship", "sourceId": "tech-svc-dr",     "targetId": "tech-node-prod",    "name": "", "documentation": "DR service mirrors production environment." },
-    { "id": "rel-72", "type": "ServingRelationship",     "sourceId": "tech-svc-backup",  "targetId": "tech-obj-db",       "name": "", "documentation": "Backup service protects database." },
-    { "id": "rel-73", "type": "ServingRelationship",     "sourceId": "tech-svc-backup",  "targetId": "tech-obj-queue",    "name": "", "documentation": "Backup service protects message queue." },
+    { "id": "rel-71", "type": "AssociationRelationship", "sourceId": "tech-svc-dr",    "targetId": "tech-node-prod",  "name": "", "documentation": "DR service mirrors production environment." },
+    { "id": "rel-72", "type": "ServingRelationship",     "sourceId": "tech-svc-backup","targetId": "tech-obj-db",     "name": "", "documentation": "Backup service protects database." },
+    { "id": "rel-73", "type": "ServingRelationship",     "sourceId": "tech-svc-backup","targetId": "tech-obj-queue",  "name": "", "documentation": "Backup service protects message queue." },
 
-    // Network paths
-    { "id": "rel-74", "type": "AssociationRelationship", "sourceId": "tech-path-tls",     "targetId": "tech-net-gemeente", "name": "", "documentation": "mTLS path runs over GemeenteNet." },
-    { "id": "rel-75", "type": "AssociationRelationship", "sourceId": "tech-path-tls",     "targetId": "tech-net-internet", "name": "", "documentation": "mTLS path secures internet traffic." },
+    { "id": "rel-74", "type": "AssociationRelationship", "sourceId": "tech-path-tls", "targetId": "tech-net-gemeente", "name": "", "documentation": "mTLS path runs over GemeenteNet." },
+    { "id": "rel-75", "type": "AssociationRelationship", "sourceId": "tech-path-tls", "targetId": "tech-net-internet", "name": "", "documentation": "mTLS path secures internet traffic." },
 
-    // Artifacts stored on nodes
-    { "id": "rel-76", "type": "AssociationRelationship", "sourceId": "tech-node-prod",   "targetId": "tech-artifact-deploy", "name": "", "documentation": "Production runs container images." },
-    { "id": "rel-77", "type": "AssociationRelationship", "sourceId": "tech-node-prod",   "targetId": "tech-artifact-config", "name": "", "documentation": "IaC defines production infrastructure." },
+    { "id": "rel-76", "type": "AssociationRelationship", "sourceId": "tech-node-prod", "targetId": "tech-artifact-deploy", "name": "", "documentation": "Production runs container images." },
+    { "id": "rel-77", "type": "AssociationRelationship", "sourceId": "tech-node-prod", "targetId": "tech-artifact-config", "name": "", "documentation": "IaC defines production infrastructure." },
 
-    // System software serves nodes
-    { "id": "rel-78", "type": "ServingRelationship", "sourceId": "tech-sw-os",       "targetId": "tech-node-prod", "name": "", "documentation": "Container platform runs ESB workloads." },
-    { "id": "rel-79", "type": "ServingRelationship", "sourceId": "tech-sw-lb",       "targetId": "tech-node-prod", "name": "", "documentation": "Load balancer distributes traffic across nodes." },
-    { "id": "rel-80", "type": "ServingRelationship", "sourceId": "tech-sw-firewall", "targetId": "tech-node-prod", "name": "", "documentation": "Firewall/WAF protects the production cluster." },
+    { "id": "rel-78", "type": "ServingRelationship",     "sourceId": "tech-sw-os",       "targetId": "tech-node-prod", "name": "", "documentation": "Container platform runs ESB workloads." },
+    { "id": "rel-79", "type": "ServingRelationship",     "sourceId": "tech-sw-lb",       "targetId": "tech-node-prod", "name": "", "documentation": "Load balancer distributes traffic." },
+    { "id": "rel-80", "type": "ServingRelationship",     "sourceId": "tech-sw-firewall", "targetId": "tech-node-prod", "name": "", "documentation": "Firewall/WAF protects the production cluster." },
 
-    // Event triggers process
-    { "id": "rel-81", "type": "TriggeringRelationship", "sourceId": "tech-event-incident", "targetId": "tech-proc-incidentmgmt", "name": "", "documentation": "" },
+    { "id": "rel-81", "type": "TriggeringRelationship",  "sourceId": "tech-event-incident", "targetId": "tech-proc-incidentmgmt", "name": "", "documentation": "" },
 
-    // ══════════════════════════════════════════════════════════════
-    // Cross-layer Relationships (Business → Application → Technology)
-    // ══════════════════════════════════════════════════════════════
+    { "id": "rel-82", "type": "ServingRelationship",     "sourceId": "app-svc-integratie", "targetId": "biz-svc-aanbestedingsdienst", "name": "", "documentation": "ESB integration services support business procurement processes." },
+    { "id": "rel-83", "type": "ServingRelationship",     "sourceId": "app-svc-monitoring", "targetId": "biz-svc-contractmgmtsvc",     "name": "", "documentation": "ESB monitoring service enables SLA contract management." },
+    { "id": "rel-84", "type": "ServingRelationship",     "sourceId": "app-svc-security",   "targetId": "biz-svc-aanbestedingsdienst", "name": "", "documentation": "Security service enforces BIO/AVG requirements." },
 
-    // Business Service served by Application Service
-    { "id": "rel-82", "type": "ServingRelationship", "sourceId": "app-svc-integratie", "targetId": "biz-svc-aanbestedingsdienst", "name": "", "documentation": "ESB integration services support business procurement processes." },
-    { "id": "rel-83", "type": "ServingRelationship", "sourceId": "app-svc-monitoring", "targetId": "biz-svc-contractmgmtsvc",     "name": "", "documentation": "ESB monitoring service enables SLA contract management." },
-    { "id": "rel-84", "type": "ServingRelationship", "sourceId": "app-svc-security",   "targetId": "biz-svc-aanbestedingsdienst", "name": "", "documentation": "Security service enforces BIO/AVG requirements for business processes." },
+    { "id": "rel-85", "type": "ServingRelationship",     "sourceId": "app-comp-esb",   "targetId": "biz-proc-contractsluiting", "name": "", "documentation": "ESB platform is the subject of the contract being awarded." },
+    { "id": "rel-86", "type": "AssociationRelationship", "sourceId": "biz-obj-pve",    "targetId": "app-comp-esb",             "name": "", "documentation": "PvE defines requirements for the ESB platform." },
 
-    // Business process uses application component
-    { "id": "rel-85", "type": "ServingRelationship", "sourceId": "app-comp-esb",     "targetId": "biz-proc-contractsluiting", "name": "", "documentation": "ESB platform is the subject of the contract being awarded." },
-    { "id": "rel-86", "type": "AssociationRelationship", "sourceId": "biz-obj-pve",  "targetId": "app-comp-esb",             "name": "", "documentation": "PvE defines requirements for the ESB platform." },
+    { "id": "rel-87", "type": "RealizationRelationship", "sourceId": "tech-svc-hosting", "targetId": "app-comp-esb",           "name": "", "documentation": "Managed hosting service runs the ESB platform." },
+    { "id": "rel-88", "type": "RealizationRelationship", "sourceId": "tech-node-prod",   "targetId": "app-comp-esb",           "name": "", "documentation": "Production cluster hosts the ESB." },
+    { "id": "rel-89", "type": "RealizationRelationship", "sourceId": "tech-node-prod",   "targetId": "app-comp-apigateway",    "name": "", "documentation": "Production cluster hosts the API Gateway." },
+    { "id": "rel-90", "type": "RealizationRelationship", "sourceId": "tech-node-prod",   "targetId": "app-comp-messagebroker", "name": "", "documentation": "Production cluster hosts the Message Broker." },
+    { "id": "rel-91", "type": "RealizationRelationship", "sourceId": "tech-node-prod",   "targetId": "app-comp-monitoring",    "name": "", "documentation": "Production cluster hosts the Monitoring Console." },
 
-    // Application Component realized by Technology Service
-    { "id": "rel-87", "type": "RealizationRelationship", "sourceId": "tech-svc-hosting", "targetId": "app-comp-esb",          "name": "", "documentation": "Managed hosting service runs the ESB platform." },
-    { "id": "rel-88", "type": "RealizationRelationship", "sourceId": "tech-node-prod",   "targetId": "app-comp-esb",          "name": "", "documentation": "Production cluster hosts the ESB." },
-    { "id": "rel-89", "type": "RealizationRelationship", "sourceId": "tech-node-prod",   "targetId": "app-comp-apigateway",   "name": "", "documentation": "Production cluster hosts the API Gateway." },
-    { "id": "rel-90", "type": "RealizationRelationship", "sourceId": "tech-node-prod",   "targetId": "app-comp-messagebroker","name": "", "documentation": "Production cluster hosts the Message Broker." },
-    { "id": "rel-91", "type": "RealizationRelationship", "sourceId": "tech-node-prod",   "targetId": "app-comp-monitoring",   "name": "", "documentation": "Production cluster hosts the Monitoring Console." },
-
-    // Data Objects stored in Technology Objects
     { "id": "rel-92", "type": "RealizationRelationship", "sourceId": "tech-obj-db",    "targetId": "app-data-schema",   "name": "", "documentation": "Schemas stored in database." },
     { "id": "rel-93", "type": "RealizationRelationship", "sourceId": "tech-obj-db",    "targetId": "app-data-auditlog", "name": "", "documentation": "Audit logs persisted in database." },
     { "id": "rel-94", "type": "RealizationRelationship", "sourceId": "tech-obj-queue", "targetId": "app-data-schema",   "name": "", "documentation": "Messages in queue conform to schemas." },
 
-    // Network serves application interfaces
-    { "id": "rel-95", "type": "ServingRelationship", "sourceId": "tech-net-gemeente", "targetId": "app-iface-soap",      "name": "", "documentation": "GemeenteNet carries SOAP traffic to back-office systems." },
-    { "id": "rel-96", "type": "ServingRelationship", "sourceId": "tech-net-internet", "targetId": "app-iface-rest",      "name": "", "documentation": "Internet carries REST API traffic for external consumers." },
-    { "id": "rel-97", "type": "ServingRelationship", "sourceId": "tech-net-gemeente", "targetId": "app-iface-digipoort", "name": "", "documentation": "Diginetwerk connects to Logius Digipoort." },
+    { "id": "rel-95", "type": "ServingRelationship",     "sourceId": "tech-net-gemeente", "targetId": "app-iface-soap",      "name": "", "documentation": "GemeenteNet carries SOAP traffic." },
+    { "id": "rel-96", "type": "ServingRelationship",     "sourceId": "tech-net-internet", "targetId": "app-iface-rest",      "name": "", "documentation": "Internet carries REST API traffic." },
+    { "id": "rel-97", "type": "ServingRelationship",     "sourceId": "tech-net-gemeente", "targetId": "app-iface-digipoort", "name": "", "documentation": "Diginetwerk connects to Logius Digipoort." },
 
-    // Technology Service serves Application SLA monitoring
-    { "id": "rel-98", "type": "ServingRelationship", "sourceId": "tech-svc-dr",     "targetId": "app-svc-integratie", "name": "", "documentation": "DR service ensures continuity of integration service." },
-    { "id": "rel-99", "type": "ServingRelationship", "sourceId": "tech-svc-backup", "targetId": "app-svc-integratie", "name": "", "documentation": "Backup service protects integration service data." }
+    { "id": "rel-98", "type": "ServingRelationship",     "sourceId": "tech-svc-dr",     "targetId": "app-svc-integratie", "name": "", "documentation": "DR service ensures continuity of integration service." },
+    { "id": "rel-99", "type": "ServingRelationship",     "sourceId": "tech-svc-backup", "targetId": "app-svc-integratie", "name": "", "documentation": "Backup service protects integration service data." }
 
   ]
 }
