@@ -2,10 +2,6 @@
   "name": "Retail Brand — EU Customer Services & EDI Processes",
   "documentation": "ArchiMate 3 model of a retail brand's EU customer service operations covering the five core B2B processes: Replenishment Order Management, Despatch Advice & Shipment Tracking, Invoice & eInvoicing, Sales Reporting (sell-through), and Inventory Reporting. Standards covered: UN/EDIFACT (ORDERS, ORDRSP, DESADV, INVOIC, SLSRPT, INVRPT), Peppol / EN 16931 eInvoicing, GS1 (GTIN, GLN), and REST/XML APIs. Based on a typical fashion/apparel brand with wholesale customers across EU countries.",
   "elements": [
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // BUSINESS LAYER — Actors
-    // ─────────────────────────────────────────────────────────────────────────
     {
       "id": "biz-actor-brand",
       "layer": "business",
@@ -13,8 +9,14 @@
       "name": "Retail Brand (EU Operations)",
       "documentation": "The fashion / apparel brand operating across EU markets. Owns the product range, manages wholesale accounts, and is responsible for order fulfilment, invoicing, and compliance with EU trade and tax regulations.",
       "properties": [
-        { "key": "Sector", "value": "Fashion / Apparel retail" },
-        { "key": "Market", "value": "EU wholesale (B2B)" }
+        {
+          "key": "Sector",
+          "value": "Fashion / Apparel retail"
+        },
+        {
+          "key": "Market",
+          "value": "EU wholesale (B2B)"
+        }
       ]
     },
     {
@@ -24,8 +26,14 @@
       "name": "EU Customer Service Teams",
       "documentation": "Country-level customer service teams across EU (e.g. NL, DE, FR, UK, IT, ES). Responsible for order intake, query handling, despatch tracking, and invoice dispute resolution for wholesale accounts.",
       "properties": [
-        { "key": "Coverage", "value": "Multi-country EU" },
-        { "key": "Channels", "value": "Phone, e-mail, B2B portal, EDI" }
+        {
+          "key": "Coverage",
+          "value": "Multi-country EU"
+        },
+        {
+          "key": "Channels",
+          "value": "Phone, e-mail, B2B portal, EDI"
+        }
       ]
     },
     {
@@ -35,8 +43,14 @@
       "name": "Wholesale Customer / Retailer",
       "documentation": "Department stores, independent retailers, and key accounts that purchase from the brand on a wholesale basis. They place replenishment orders, receive shipments, process invoices, and report sell-through and inventory data back to the brand.",
       "properties": [
-        { "key": "Type", "value": "Department store, independent retailer, key account" },
-        { "key": "EDI capability", "value": "EDIFACT and/or REST API" }
+        {
+          "key": "Type",
+          "value": "Department store, independent retailer, key account"
+        },
+        {
+          "key": "EDI capability",
+          "value": "EDIFACT and/or REST API"
+        }
       ]
     },
     {
@@ -46,7 +60,10 @@
       "name": "3PL / Logistics Partner",
       "documentation": "Third-party logistics provider responsible for warehouse operations, pick/pack, and carrier management. Generates despatch advice (ASN) and shipment tracking events.",
       "properties": [
-        { "key": "Functions", "value": "Warehousing, pick/pack, carrier management, ASN generation" }
+        {
+          "key": "Functions",
+          "value": "Warehousing, pick/pack, carrier management, ASN generation"
+        }
       ]
     },
     {
@@ -56,13 +73,12 @@
       "name": "Finance & Accounts Receivable",
       "documentation": "Internal finance team responsible for invoice generation, credit management, VAT compliance, and eInvoicing under EU Directive 2014/55/EU and national transpositions. Handles credit notes and dispute resolution.",
       "properties": [
-        { "key": "Compliance", "value": "EU Directive 2014/55/EU (eInvoicing), EN 16931, VAT regulations" }
+        {
+          "key": "Compliance",
+          "value": "EU Directive 2014/55/EU (eInvoicing), EN 16931, VAT regulations"
+        }
       ]
     },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // BUSINESS LAYER — Roles
-    // ─────────────────────────────────────────────────────────────────────────
     {
       "id": "biz-role-cs-rep",
       "layer": "business",
@@ -78,7 +94,10 @@
       "name": "EDI Coordinator",
       "documentation": "Manages EDI trading partner onboarding, message monitoring, error handling, and reconciliation of EDIFACT/API transactions. Liaises between CS teams and the IT/EDI platform team.",
       "properties": [
-        { "key": "Standards", "value": "EDIFACT D96A, GS1 XML, REST APIs" }
+        {
+          "key": "Standards",
+          "value": "EDIFACT D96A, GS1 XML, REST APIs"
+        }
       ]
     },
     {
@@ -96,7 +115,10 @@
       "name": "Finance Manager / Credit Controller",
       "documentation": "Manages invoice issuance, credit limits, payment terms, and VAT compliance per country. Responsible for eInvoicing compliance (Peppol, EN 16931) where mandated.",
       "properties": [
-        { "key": "eInvoicing standard", "value": "Peppol BIS Billing 3.0 / EN 16931" }
+        {
+          "key": "eInvoicing standard",
+          "value": "Peppol BIS Billing 3.0 / EN 16931"
+        }
       ]
     },
     {
@@ -107,10 +129,6 @@
       "documentation": "Coordinates with the 3PL on despatch planning, carrier selection, and shipment tracking. Ensures accurate and timely DESADV messages are sent to customers.",
       "properties": []
     },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // BUSINESS LAYER — Processes
-    // ─────────────────────────────────────────────────────────────────────────
     {
       "id": "biz-proc-order",
       "layer": "business",
@@ -118,9 +136,18 @@
       "name": "1. Replenishment Order Management",
       "documentation": "End-to-end process for receiving, validating, and confirming wholesale replenishment orders from customers. Covers EDI ORDERS message receipt (or portal/API entry), inventory allocation, and ORDRSP (order response) issuance. Supports regular seasonal replenishment as well as open-to-buy (OTB) top-up orders.",
       "properties": [
-        { "key": "EDI messages", "value": "ORDERS D96A, ORDRSP D96A" },
-        { "key": "GS1 identifiers", "value": "GTIN (product), GLN (buyer/seller/ship-to)" },
-        { "key": "Trigger", "value": "Customer PO via EDI, portal, or e-mail" }
+        {
+          "key": "EDI messages",
+          "value": "ORDERS D96A, ORDRSP D96A"
+        },
+        {
+          "key": "GS1 identifiers",
+          "value": "GTIN (product), GLN (buyer/seller/ship-to)"
+        },
+        {
+          "key": "Trigger",
+          "value": "Customer PO via EDI, portal, or e-mail"
+        }
       ]
     },
     {
@@ -130,9 +157,18 @@
       "name": "2. Despatch Advice & Shipment Tracking",
       "documentation": "Process for generating and sending Advance Shipment Notifications (ASN / DESADV) to customers once goods are picked and despatched by the 3PL. Includes carton-level GS1-128 label data, carrier tracking references, and expected delivery dates. Customer sends back RECADV (receiving advice) upon goods receipt.",
       "properties": [
-        { "key": "EDI messages", "value": "DESADV D96A, RECADV D96A" },
-        { "key": "GS1 identifiers", "value": "SSCC (pallet/carton), GTIN, GLN" },
-        { "key": "Carriers", "value": "DHL, UPS, DPD, country-specific last-mile" }
+        {
+          "key": "EDI messages",
+          "value": "DESADV D96A, RECADV D96A"
+        },
+        {
+          "key": "GS1 identifiers",
+          "value": "SSCC (pallet/carton), GTIN, GLN"
+        },
+        {
+          "key": "Carriers",
+          "value": "DHL, UPS, DPD, country-specific last-mile"
+        }
       ]
     },
     {
@@ -142,9 +178,18 @@
       "name": "3. Invoice Processing & eInvoicing",
       "documentation": "Invoicing process covering generation of commercial invoices after despatch, VAT calculation per country, credit note issuance, and compliance with EU eInvoicing regulations. Invoices are sent via EDIFACT INVOIC message and/or Peppol BIS Billing 3.0 (EN 16931) for countries requiring structured electronic invoicing.",
       "properties": [
-        { "key": "EDI messages", "value": "INVOIC D96A, CREADV (credit advice)" },
-        { "key": "eInvoicing standard", "value": "Peppol BIS Billing 3.0, EN 16931, UBL 2.1 / CII" },
-        { "key": "VAT compliance", "value": "Per-country EU VAT rules, OSS where applicable" }
+        {
+          "key": "EDI messages",
+          "value": "INVOIC D96A, CREADV (credit advice)"
+        },
+        {
+          "key": "eInvoicing standard",
+          "value": "Peppol BIS Billing 3.0, EN 16931, UBL 2.1 / CII"
+        },
+        {
+          "key": "VAT compliance",
+          "value": "Per-country EU VAT rules, OSS where applicable"
+        }
       ]
     },
     {
@@ -154,9 +199,18 @@
       "name": "4. Sales Reporting (Sell-Through)",
       "documentation": "Process for collecting and processing sell-through (POS) data from wholesale customers. Customers submit weekly or monthly sales reports (SLSRPT or flat-file equivalent) showing units sold per SKU/location. Data feeds brand merchandising, forecasting, and replenishment planning.",
       "properties": [
-        { "key": "EDI messages", "value": "SLSRPT D96A (or CSV/XML equivalent)" },
-        { "key": "Frequency", "value": "Weekly (key accounts), monthly (standard)" },
-        { "key": "Use", "value": "Sell-through analysis, OTB planning, brand KPIs" }
+        {
+          "key": "EDI messages",
+          "value": "SLSRPT D96A (or CSV/XML equivalent)"
+        },
+        {
+          "key": "Frequency",
+          "value": "Weekly (key accounts), monthly (standard)"
+        },
+        {
+          "key": "Use",
+          "value": "Sell-through analysis, OTB planning, brand KPIs"
+        }
       ]
     },
     {
@@ -166,15 +220,20 @@
       "name": "5. Inventory Reporting",
       "documentation": "Process for collecting stock-on-hand data from customers and own distribution centres. Customers submit INVRPT messages (or portal uploads) covering stock levels per SKU/location. Used for inventory visibility, VMI (Vendor Managed Inventory), and replenishment triggers.",
       "properties": [
-        { "key": "EDI messages", "value": "INVRPT D96A" },
-        { "key": "Frequency", "value": "Weekly or real-time (API)" },
-        { "key": "Use", "value": "VMI, replenishment triggers, availability checks" }
+        {
+          "key": "EDI messages",
+          "value": "INVRPT D96A"
+        },
+        {
+          "key": "Frequency",
+          "value": "Weekly or real-time (API)"
+        },
+        {
+          "key": "Use",
+          "value": "VMI, replenishment triggers, availability checks"
+        }
       ]
     },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // BUSINESS LAYER — Services
-    // ─────────────────────────────────────────────────────────────────────────
     {
       "id": "biz-svc-order",
       "layer": "business",
@@ -207,10 +266,6 @@
       "documentation": "Service that receives, validates, and processes sell-through (SLSRPT) and inventory (INVRPT) data from wholesale customers, making it available to merchandising and planning teams.",
       "properties": []
     },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // BUSINESS LAYER — Business Objects (documents / data)
-    // ─────────────────────────────────────────────────────────────────────────
     {
       "id": "biz-obj-po",
       "layer": "business",
@@ -218,7 +273,10 @@
       "name": "Purchase Order (ORDERS D96A)",
       "documentation": "Formal purchase order from a wholesale customer to the brand. Contains buyer GLN, seller GLN, line items with GTIN, ordered quantities, requested delivery date, and price agreements. Transmitted via EDIFACT ORDERS D96A or equivalent REST payload.",
       "properties": [
-        { "key": "Standard", "value": "EDIFACT ORDERS D96A / GS1 XML PurchaseOrder" }
+        {
+          "key": "Standard",
+          "value": "EDIFACT ORDERS D96A / GS1 XML PurchaseOrder"
+        }
       ]
     },
     {
@@ -228,7 +286,10 @@
       "name": "Order Response (ORDRSP)",
       "documentation": "Brand's response to a customer purchase order, confirming accepted lines, back-orders, substitutions, or cancellations. Includes confirmed delivery date and quantities per line.",
       "properties": [
-        { "key": "Standard", "value": "EDIFACT ORDRSP D96A" }
+        {
+          "key": "Standard",
+          "value": "EDIFACT ORDRSP D96A"
+        }
       ]
     },
     {
@@ -238,8 +299,14 @@
       "name": "Despatch Advice / ASN (DESADV)",
       "documentation": "Advance Shipment Notification sent by the brand/3PL to the customer prior to delivery. Contains SSCC carton labels, GTIN/qty per carton, carrier and tracking reference, and expected delivery date.",
       "properties": [
-        { "key": "Standard", "value": "EDIFACT DESADV D96A / GS1 XML DespatchAdvice" },
-        { "key": "GS1 labels", "value": "GS1-128 / SSCC" }
+        {
+          "key": "Standard",
+          "value": "EDIFACT DESADV D96A / GS1 XML DespatchAdvice"
+        },
+        {
+          "key": "GS1 labels",
+          "value": "GS1-128 / SSCC"
+        }
       ]
     },
     {
@@ -249,8 +316,14 @@
       "name": "Invoice (INVOIC / Peppol BIS)",
       "documentation": "Commercial invoice issued after despatch. Includes line-level GTIN, quantities, unit prices, VAT breakdown per country, and payment terms. Transmitted via EDIFACT INVOIC or Peppol BIS Billing 3.0 (UBL 2.1 / CII) depending on customer/country capability.",
       "properties": [
-        { "key": "Standards", "value": "EDIFACT INVOIC D96A, Peppol BIS Billing 3.0, EN 16931" },
-        { "key": "VAT", "value": "Per EU country; OSS for cross-border where applicable" }
+        {
+          "key": "Standards",
+          "value": "EDIFACT INVOIC D96A, Peppol BIS Billing 3.0, EN 16931"
+        },
+        {
+          "key": "VAT",
+          "value": "Per EU country; OSS for cross-border where applicable"
+        }
       ]
     },
     {
@@ -260,7 +333,10 @@
       "name": "Credit Note",
       "documentation": "Document issued to reverse or partially offset an invoice. Generated for returns, shortages, pricing disputes, or damaged goods. Transmitted via EDIFACT CREADV or Peppol BIS Credit Note 3.0.",
       "properties": [
-        { "key": "Standard", "value": "EDIFACT CREADV / Peppol BIS Credit Note 3.0" }
+        {
+          "key": "Standard",
+          "value": "EDIFACT CREADV / Peppol BIS Credit Note 3.0"
+        }
       ]
     },
     {
@@ -270,8 +346,14 @@
       "name": "Sales Report (SLSRPT)",
       "documentation": "Sell-through report submitted by the wholesale customer showing units sold per SKU, per store location, for a given period. Used by the brand for sell-through analytics, OTB, and replenishment.",
       "properties": [
-        { "key": "Standard", "value": "EDIFACT SLSRPT D96A / CSV / XML" },
-        { "key": "Granularity", "value": "SKU (GTIN) x Store (GLN) x Period" }
+        {
+          "key": "Standard",
+          "value": "EDIFACT SLSRPT D96A / CSV / XML"
+        },
+        {
+          "key": "Granularity",
+          "value": "SKU (GTIN) x Store (GLN) x Period"
+        }
       ]
     },
     {
@@ -281,14 +363,16 @@
       "name": "Inventory Report (INVRPT)",
       "documentation": "Stock-on-hand report from customer locations or the brand's own DC. Shows available inventory per GTIN per location. Feeds VMI and automated replenishment.",
       "properties": [
-        { "key": "Standard", "value": "EDIFACT INVRPT D96A" },
-        { "key": "Granularity", "value": "GTIN x Location (GLN) x Inventory type" }
+        {
+          "key": "Standard",
+          "value": "EDIFACT INVRPT D96A"
+        },
+        {
+          "key": "Granularity",
+          "value": "GTIN x Location (GLN) x Inventory type"
+        }
       ]
     },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // APPLICATION LAYER — Components
-    // ─────────────────────────────────────────────────────────────────────────
     {
       "id": "app-comp-erp",
       "layer": "application",
@@ -296,8 +380,14 @@
       "name": "ERP System (SAP S/4HANA)",
       "documentation": "Core enterprise resource planning system managing order-to-cash (O2C), financial accounting, and inventory management. Acts as the system of record for orders, invoices, customer master, and product master (including GTIN mapping).",
       "properties": [
-        { "key": "System", "value": "SAP S/4HANA (or AFS/IS-Retail)" },
-        { "key": "Modules", "value": "SD (Sales & Distribution), FI (Finance), MM (Materials Mgmt)" }
+        {
+          "key": "System",
+          "value": "SAP S/4HANA (or AFS/IS-Retail)"
+        },
+        {
+          "key": "Modules",
+          "value": "SD (Sales & Distribution), FI (Finance), MM (Materials Mgmt)"
+        }
       ]
     },
     {
@@ -307,9 +397,18 @@
       "name": "EDI / B2B Gateway Platform",
       "documentation": "Middleware platform handling EDIFACT message translation, routing, and trading partner management. Converts between internal ERP formats and external EDIFACT messages. Manages AS2, SFTP, and VAN connectivity. Examples: Seeburger BIS, OpenText TN, MuleSoft B2B.",
       "properties": [
-        { "key": "Protocols", "value": "AS2, SFTP, HTTPS" },
-        { "key": "Standards", "value": "EDIFACT D96A, GS1 XML, ANSI X12" },
-        { "key": "Examples", "value": "Seeburger BIS, OpenText TN, MuleSoft B2B, Cleo" }
+        {
+          "key": "Protocols",
+          "value": "AS2, SFTP, HTTPS"
+        },
+        {
+          "key": "Standards",
+          "value": "EDIFACT D96A, GS1 XML, ANSI X12"
+        },
+        {
+          "key": "Examples",
+          "value": "Seeburger BIS, OpenText TN, MuleSoft B2B, Cleo"
+        }
       ]
     },
     {
@@ -319,7 +418,10 @@
       "name": "Order Management System (OMS)",
       "documentation": "Manages the full order lifecycle: order capture, allocation, release to warehouse, backorder management, and delivery tracking. May be a standalone OMS (e.g. Manhattan, Blue Yonder) or embedded in ERP.",
       "properties": [
-        { "key": "Examples", "value": "Manhattan OMS, Blue Yonder, SAP EWM" }
+        {
+          "key": "Examples",
+          "value": "Manhattan OMS, Blue Yonder, SAP EWM"
+        }
       ]
     },
     {
@@ -329,7 +431,10 @@
       "name": "Warehouse Management System (WMS)",
       "documentation": "Manages 3PL warehouse operations: inbound receipts, storage, pick/pack, and despatch. Generates SSCC labels and triggers DESADV message creation on shipment confirmation.",
       "properties": [
-        { "key": "Integration", "value": "Triggers DESADV on ship-confirm; receives ORDERS for picking" }
+        {
+          "key": "Integration",
+          "value": "Triggers DESADV on ship-confirm; receives ORDERS for picking"
+        }
       ]
     },
     {
@@ -339,9 +444,18 @@
       "name": "eInvoicing Platform (Peppol AP)",
       "documentation": "Certified Peppol Access Point enabling compliant eInvoicing across the EU Peppol network. Converts SAP invoice output to Peppol BIS Billing 3.0 (UBL 2.1 / CII) and transmits via the 4-corner Peppol model. Also supports country-specific mandates (IT SDI, FR Chorus Pro, NL SBdH).",
       "properties": [
-        { "key": "Standard", "value": "Peppol BIS Billing 3.0, EN 16931, UBL 2.1, CII D16B" },
-        { "key": "Country mandates", "value": "IT (SDI/FatturaPA), FR (Chorus Pro), NL (SBdH/Simplerinvoicing)" },
-        { "key": "Certified AP examples", "value": "Pagero, Basware, Tungsten, Tradeshift" }
+        {
+          "key": "Standard",
+          "value": "Peppol BIS Billing 3.0, EN 16931, UBL 2.1, CII D16B"
+        },
+        {
+          "key": "Country mandates",
+          "value": "IT (SDI/FatturaPA), FR (Chorus Pro), NL (SBdH/Simplerinvoicing)"
+        },
+        {
+          "key": "Certified AP examples",
+          "value": "Pagero, Basware, Tungsten, Tradeshift"
+        }
       ]
     },
     {
@@ -351,8 +465,14 @@
       "name": "B2B Customer Self-Service Portal",
       "documentation": "Web-based portal allowing wholesale customers to place orders, track shipments, view invoices, download sales reports, and upload inventory/sales data. Provides an alternative to EDI for smaller customers without EDI capability.",
       "properties": [
-        { "key": "Users", "value": "Wholesale customers (buyers, finance contacts)" },
-        { "key": "Features", "value": "Order entry, shipment tracking, invoice view/download, data upload" }
+        {
+          "key": "Users",
+          "value": "Wholesale customers (buyers, finance contacts)"
+        },
+        {
+          "key": "Features",
+          "value": "Order entry, shipment tracking, invoice view/download, data upload"
+        }
       ]
     },
     {
@@ -362,14 +482,16 @@
       "name": "BI & Reporting Application",
       "documentation": "Business intelligence platform consolidating sales reporting (SLSRPT), inventory (INVRPT), and operational data for merchandising, planning, and management reporting. Examples: SAP Analytics Cloud, Power BI, Tableau.",
       "properties": [
-        { "key": "Examples", "value": "SAP Analytics Cloud, Power BI, Tableau" },
-        { "key": "Data feeds", "value": "SLSRPT, INVRPT, ERP sales/inventory data" }
+        {
+          "key": "Examples",
+          "value": "SAP Analytics Cloud, Power BI, Tableau"
+        },
+        {
+          "key": "Data feeds",
+          "value": "SLSRPT, INVRPT, ERP sales/inventory data"
+        }
       ]
     },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // APPLICATION LAYER — Services
-    // ─────────────────────────────────────────────────────────────────────────
     {
       "id": "app-svc-order-proc",
       "layer": "application",
@@ -409,13 +531,12 @@
       "name": "EDI Translation & Routing Service",
       "documentation": "Translates between internal application data formats and EDIFACT/GS1 XML messages. Routes inbound and outbound messages between trading partners and back-end systems. Provides acknowledgement (CONTRL) handling and error alerting.",
       "properties": [
-        { "key": "Messages handled", "value": "ORDERS, ORDRSP, DESADV, RECADV, INVOIC, CREADV, SLSRPT, INVRPT, CONTRL" }
+        {
+          "key": "Messages handled",
+          "value": "ORDERS, ORDRSP, DESADV, RECADV, INVOIC, CREADV, SLSRPT, INVRPT, CONTRL"
+        }
       ]
     },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // APPLICATION LAYER — Data Objects
-    // ─────────────────────────────────────────────────────────────────────────
     {
       "id": "app-data-product",
       "layer": "application",
@@ -423,7 +544,10 @@
       "name": "Product Master Data (GTIN / GS1)",
       "documentation": "Canonical product data including GTIN-13/GTIN-14, product descriptions, size/colour variants, EAN barcodes, and GPC (Global Product Classification). Maintained in ERP and syndicated to EDI platform and portal.",
       "properties": [
-        { "key": "Standard", "value": "GS1 GTIN, GDSN (Global Data Synchronisation Network)" }
+        {
+          "key": "Standard",
+          "value": "GS1 GTIN, GDSN (Global Data Synchronisation Network)"
+        }
       ]
     },
     {
@@ -433,7 +557,10 @@
       "name": "Customer Master Data (GLN)",
       "documentation": "Trading partner data including GLN (Global Location Number) for buyer, ship-to, and bill-to locations, EDI partner IDs, Peppol participant IDs, and payment terms per customer.",
       "properties": [
-        { "key": "Standard", "value": "GS1 GLN, Peppol participant ID" }
+        {
+          "key": "Standard",
+          "value": "GS1 GLN, Peppol participant ID"
+        }
       ]
     },
     {
@@ -452,10 +579,6 @@
       "documentation": "Invoice records, credit notes, VAT amounts per country, payment status, and open items. Used for accounts receivable management and statutory reporting.",
       "properties": []
     },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // TECHNOLOGY LAYER — Nodes
-    // ─────────────────────────────────────────────────────────────────────────
     {
       "id": "tech-node-erp",
       "layer": "technology",
@@ -463,7 +586,10 @@
       "name": "ERP Application Server",
       "documentation": "On-premise or cloud-hosted server (or RISE with SAP) running the ERP application. Central processing node for order-to-cash and financial accounting.",
       "properties": [
-        { "key": "Deployment", "value": "On-premise / RISE with SAP (cloud)" }
+        {
+          "key": "Deployment",
+          "value": "On-premise / RISE with SAP (cloud)"
+        }
       ]
     },
     {
@@ -481,7 +607,10 @@
       "name": "Peppol Access Point",
       "documentation": "Certified Peppol Access Point node registered in the Peppol SML/SMP. Handles four-corner message exchange for eInvoicing across the EU Peppol network.",
       "properties": [
-        { "key": "Certification", "value": "OpenPeppol-certified AP" }
+        {
+          "key": "Certification",
+          "value": "OpenPeppol-certified AP"
+        }
       ]
     },
     {
@@ -491,8 +620,14 @@
       "name": "Cloud Infrastructure (IaaS / PaaS)",
       "documentation": "Cloud hosting environment (AWS, Azure, or GCP) for portal, BI, and integration middleware components. Provides scalability, high availability, and EU data residency compliance.",
       "properties": [
-        { "key": "Providers", "value": "AWS / Azure / GCP (EU region)" },
-        { "key": "Compliance", "value": "GDPR data residency, ISO 27001" }
+        {
+          "key": "Providers",
+          "value": "AWS / Azure / GCP (EU region)"
+        },
+        {
+          "key": "Compliance",
+          "value": "GDPR data residency, ISO 27001"
+        }
       ]
     },
     {
@@ -503,10 +638,6 @@
       "documentation": "High-availability database cluster storing transactional order, invoice, and reporting data. Provides persistence for ERP, OMS, and reporting applications.",
       "properties": []
     },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // TECHNOLOGY LAYER — System Software
-    // ─────────────────────────────────────────────────────────────────────────
     {
       "id": "tech-sys-middleware",
       "layer": "technology",
@@ -514,7 +645,10 @@
       "name": "Integration Middleware / ESB",
       "documentation": "Enterprise Service Bus or iPaaS layer orchestrating message flows between ERP, EDI platform, WMS, and OMS. Handles protocol transformation, data mapping, and error handling. Examples: MuleSoft, Dell Boomi, Azure Integration Services.",
       "properties": [
-        { "key": "Examples", "value": "MuleSoft Anypoint, Dell Boomi, Azure Integration Services, SAP CPI" }
+        {
+          "key": "Examples",
+          "value": "MuleSoft Anypoint, Dell Boomi, Azure Integration Services, SAP CPI"
+        }
       ]
     },
     {
@@ -524,8 +658,14 @@
       "name": "AS2 / SFTP Communication Software",
       "documentation": "Software layer implementing AS2 (Applicability Statement 2) and SFTP protocols for secure B2B file exchange with trading partners. Provides encryption, digital signatures, and MDN acknowledgements.",
       "properties": [
-        { "key": "Protocol", "value": "AS2 (RFC 4130), SFTP (SSH-2)" },
-        { "key": "Security", "value": "S/MIME encryption, digital signatures, MDN" }
+        {
+          "key": "Protocol",
+          "value": "AS2 (RFC 4130), SFTP (SSH-2)"
+        },
+        {
+          "key": "Security",
+          "value": "S/MIME encryption, digital signatures, MDN"
+        }
       ]
     },
     {
@@ -535,13 +675,12 @@
       "name": "Value-Added Network (VAN)",
       "documentation": "Third-party EDI network providing store-and-forward messaging, trading partner connectivity, and message archiving for customers that do not support direct AS2 connectivity. Examples: GXS/OpenText, SPS Commerce, Crossroads.",
       "properties": [
-        { "key": "Examples", "value": "OpenText GXS, SPS Commerce, Crossroads, BRNETS" }
+        {
+          "key": "Examples",
+          "value": "OpenText GXS, SPS Commerce, Crossroads, BRNETS"
+        }
       ]
     },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // TECHNOLOGY LAYER — Technology Services
-    // ─────────────────────────────────────────────────────────────────────────
     {
       "id": "tech-svc-edi-transport",
       "layer": "technology",
@@ -557,8 +696,14 @@
       "name": "Peppol Network Service",
       "documentation": "Peppol four-corner transport service enabling structured eInvoice delivery to any Peppol-connected receiver across EU. Uses PINT / BIS Billing 3.0 message format over AS4 protocol.",
       "properties": [
-        { "key": "Protocol", "value": "AS4 (ebMS 3.0)" },
-        { "key": "Lookup", "value": "Peppol SML / SMP (participant directory)" }
+        {
+          "key": "Protocol",
+          "value": "AS4 (ebMS 3.0)"
+        },
+        {
+          "key": "Lookup",
+          "value": "Peppol SML / SMP (participant directory)"
+        }
       ]
     },
     {
@@ -568,14 +713,16 @@
       "name": "REST API Gateway Service",
       "documentation": "API gateway exposing RESTful endpoints for order submission, order status, inventory query, and reporting data exchange. Supports OAuth 2.0 / OpenID Connect for customer authentication.",
       "properties": [
-        { "key": "Protocol", "value": "HTTPS REST / JSON" },
-        { "key": "Security", "value": "OAuth 2.0, OpenID Connect, API key" }
+        {
+          "key": "Protocol",
+          "value": "HTTPS REST / JSON"
+        },
+        {
+          "key": "Security",
+          "value": "OAuth 2.0, OpenID Connect, API key"
+        }
       ]
     },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // TECHNOLOGY LAYER — Artifacts (EDI message types)
-    // ─────────────────────────────────────────────────────────────────────────
     {
       "id": "tech-art-orders",
       "layer": "technology",
@@ -583,7 +730,10 @@
       "name": "EDIFACT ORDERS / ORDRSP Message",
       "documentation": "EDIFACT D96A ORDERS (purchase order) and ORDRSP (order response) message files. Structured per GS1/EAN.COM guidelines for retail. Contains UNH/UNT envelope, BGM, DTM, NAD (GLN), LIN (GTIN), QTY, PRI segments.",
       "properties": [
-        { "key": "Standard", "value": "EDIFACT D96A ORDERS / ORDRSP" }
+        {
+          "key": "Standard",
+          "value": "EDIFACT D96A ORDERS / ORDRSP"
+        }
       ]
     },
     {
@@ -593,7 +743,10 @@
       "name": "EDIFACT DESADV Message",
       "documentation": "EDIFACT D96A DESADV (despatch advice / ASN) message file. Contains shipment header, packing hierarchy (CPS), item data with GTIN and SSCC carton references, and carrier/tracking information.",
       "properties": [
-        { "key": "Standard", "value": "EDIFACT D96A DESADV; GS1 SSCC, GS1-128 labels" }
+        {
+          "key": "Standard",
+          "value": "EDIFACT D96A DESADV; GS1 SSCC, GS1-128 labels"
+        }
       ]
     },
     {
@@ -603,7 +756,10 @@
       "name": "EDIFACT INVOIC / Peppol BIS Invoice",
       "documentation": "Invoice message transmitted as EDIFACT D96A INVOIC or Peppol BIS Billing 3.0 (UBL 2.1 / CII D16B). Contains invoice header, VAT summary, line items with GTIN, quantities, prices, and payment instructions.",
       "properties": [
-        { "key": "Standards", "value": "EDIFACT INVOIC D96A, Peppol BIS Billing 3.0, EN 16931, UBL 2.1" }
+        {
+          "key": "Standards",
+          "value": "EDIFACT INVOIC D96A, Peppol BIS Billing 3.0, EN 16931, UBL 2.1"
+        }
       ]
     },
     {
@@ -613,7 +769,10 @@
       "name": "EDIFACT SLSRPT Message",
       "documentation": "EDIFACT D96A SLSRPT (sales report) message. Contains reporting period, location (GLN), and line-level sold quantities per GTIN. Submitted by the wholesale customer to the brand.",
       "properties": [
-        { "key": "Standard", "value": "EDIFACT D96A SLSRPT" }
+        {
+          "key": "Standard",
+          "value": "EDIFACT D96A SLSRPT"
+        }
       ]
     },
     {
@@ -623,149 +782,620 @@
       "name": "EDIFACT INVRPT Message",
       "documentation": "EDIFACT D96A INVRPT (inventory report) message. Contains stock-on-hand quantities per GTIN per location (GLN), inventory type (available, on-order, in-transit), and reporting date.",
       "properties": [
-        { "key": "Standard", "value": "EDIFACT D96A INVRPT" }
+        {
+          "key": "Standard",
+          "value": "EDIFACT D96A INVRPT"
+        }
       ]
     }
   ],
-
   "relationships": [
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Actor → Role (AssignmentRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-01", "type": "AssignmentRelationship", "sourceId": "biz-actor-cs-eu",    "targetId": "biz-role-cs-rep",      "name": "", "documentation": "CS teams fulfil the Customer Service Representative role." },
-    { "id": "rel-02", "type": "AssignmentRelationship", "sourceId": "biz-actor-cs-eu",    "targetId": "biz-role-edi-coord",   "name": "", "documentation": "EDI Coordinators are part of the EU CS organisation." },
-    { "id": "rel-03", "type": "AssignmentRelationship", "sourceId": "biz-actor-brand",    "targetId": "biz-role-order-mgr",   "name": "", "documentation": "Brand operations staff fill the Order Manager role." },
-    { "id": "rel-04", "type": "AssignmentRelationship", "sourceId": "biz-actor-finance",  "targetId": "biz-role-finance-mgr", "name": "", "documentation": "Finance team fills Finance Manager / Credit Controller role." },
-    { "id": "rel-05", "type": "AssignmentRelationship", "sourceId": "biz-actor-3pl",      "targetId": "biz-role-logistics",   "name": "", "documentation": "3PL staff fulfil the Logistics Coordinator role." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Role → Process (AssignmentRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-06", "type": "AssignmentRelationship", "sourceId": "biz-role-cs-rep",      "targetId": "biz-proc-order",   "name": "", "documentation": "CS Reps handle order intake and confirmation." },
-    { "id": "rel-07", "type": "AssignmentRelationship", "sourceId": "biz-role-cs-rep",      "targetId": "biz-proc-desadv",  "name": "", "documentation": "CS Reps track and communicate despatch status." },
-    { "id": "rel-08", "type": "AssignmentRelationship", "sourceId": "biz-role-edi-coord",   "targetId": "biz-proc-slsrpt",  "name": "", "documentation": "EDI Coordinators manage SLSRPT ingestion and validation." },
-    { "id": "rel-09", "type": "AssignmentRelationship", "sourceId": "biz-role-edi-coord",   "targetId": "biz-proc-invrpt",  "name": "", "documentation": "EDI Coordinators manage INVRPT ingestion and validation." },
-    { "id": "rel-10", "type": "AssignmentRelationship", "sourceId": "biz-role-finance-mgr", "targetId": "biz-proc-invoice", "name": "", "documentation": "Finance Manager owns the invoicing and eInvoicing process." },
-    { "id": "rel-11", "type": "AssignmentRelationship", "sourceId": "biz-role-order-mgr",   "targetId": "biz-proc-order",   "name": "", "documentation": "Order Manager oversees order allocation and fulfilment." },
-    { "id": "rel-12", "type": "AssignmentRelationship", "sourceId": "biz-role-logistics",   "targetId": "biz-proc-desadv",  "name": "", "documentation": "Logistics Coordinator manages 3PL despatch and ASN generation." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Process → Process (TriggeringRelationship — the order-to-cash chain)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-13", "type": "TriggeringRelationship", "sourceId": "biz-proc-order",  "targetId": "biz-proc-desadv",  "name": "triggers", "documentation": "A confirmed replenishment order triggers the despatch and shipment process." },
-    { "id": "rel-14", "type": "TriggeringRelationship", "sourceId": "biz-proc-desadv", "targetId": "biz-proc-invoice", "name": "triggers", "documentation": "Goods despatch triggers invoice generation (invoice follows shipment)." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Customer / 3PL → Process (ServingRelationship — external inputs)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-15", "type": "ServingRelationship", "sourceId": "biz-actor-customer", "targetId": "biz-proc-slsrpt",  "name": "submits SLSRPT", "documentation": "Customer submits weekly/monthly sell-through data (SLSRPT) to the brand." },
-    { "id": "rel-16", "type": "ServingRelationship", "sourceId": "biz-actor-customer", "targetId": "biz-proc-invrpt",  "name": "submits INVRPT", "documentation": "Customer submits inventory stock-on-hand data (INVRPT) to the brand." },
-    { "id": "rel-17", "type": "ServingRelationship", "sourceId": "biz-actor-customer", "targetId": "biz-proc-order",   "name": "places ORDERS", "documentation": "Customer places replenishment purchase orders via EDI or portal." },
-    { "id": "rel-18", "type": "ServingRelationship", "sourceId": "biz-actor-3pl",      "targetId": "biz-proc-desadv",  "name": "provides shipment data", "documentation": "3PL generates DESADV on ship-confirm and provides carrier tracking." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Process → Business Object (AccessRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-19", "type": "AccessRelationship", "sourceId": "biz-proc-order",   "targetId": "biz-obj-po",       "name": "", "documentation": "Order process reads inbound Purchase Order.", "accessType": "Read" },
-    { "id": "rel-20", "type": "AccessRelationship", "sourceId": "biz-proc-order",   "targetId": "biz-obj-ordrsp",   "name": "", "documentation": "Order process writes Order Response (ORDRSP).", "accessType": "Write" },
-    { "id": "rel-21", "type": "AccessRelationship", "sourceId": "biz-proc-desadv",  "targetId": "biz-obj-desadv",   "name": "", "documentation": "Despatch process writes and reads Despatch Advice / ASN.", "accessType": "ReadWrite" },
-    { "id": "rel-22", "type": "AccessRelationship", "sourceId": "biz-proc-invoice",  "targetId": "biz-obj-invoice",  "name": "", "documentation": "Invoice process writes commercial invoice.", "accessType": "Write" },
-    { "id": "rel-23", "type": "AccessRelationship", "sourceId": "biz-proc-invoice",  "targetId": "biz-obj-creditnote","name": "", "documentation": "Invoice process writes credit notes for returns/disputes.", "accessType": "Write" },
-    { "id": "rel-24", "type": "AccessRelationship", "sourceId": "biz-proc-slsrpt",  "targetId": "biz-obj-slsrpt",   "name": "", "documentation": "Sales reporting process reads inbound SLSRPT data.", "accessType": "Read" },
-    { "id": "rel-25", "type": "AccessRelationship", "sourceId": "biz-proc-invrpt",  "targetId": "biz-obj-invrpt",   "name": "", "documentation": "Inventory reporting process reads inbound INVRPT data.", "accessType": "Read" },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Process → Business Service (RealizationRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-26", "type": "RealizationRelationship", "sourceId": "biz-proc-order",  "targetId": "biz-svc-order",     "name": "", "documentation": "Order process realises the Order Management Service." },
-    { "id": "rel-27", "type": "RealizationRelationship", "sourceId": "biz-proc-desadv", "targetId": "biz-svc-logistics", "name": "", "documentation": "Despatch process realises the Logistics & Fulfilment Service." },
-    { "id": "rel-28", "type": "RealizationRelationship", "sourceId": "biz-proc-invoice","targetId": "biz-svc-invoicing", "name": "", "documentation": "Invoice process realises the eInvoicing Service." },
-    { "id": "rel-29", "type": "RealizationRelationship", "sourceId": "biz-proc-slsrpt", "targetId": "biz-svc-reporting", "name": "", "documentation": "Sales reporting process realises the Reporting Service." },
-    { "id": "rel-30", "type": "RealizationRelationship", "sourceId": "biz-proc-invrpt", "targetId": "biz-svc-reporting", "name": "", "documentation": "Inventory reporting process realises the Reporting Service." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Application Service → Business Service/Process (ServingRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-31", "type": "ServingRelationship", "sourceId": "app-svc-order-proc",  "targetId": "biz-svc-order",     "name": "", "documentation": "OMS order processing service supports the business order management service." },
-    { "id": "rel-32", "type": "ServingRelationship", "sourceId": "app-svc-invoice-gen", "targetId": "biz-svc-invoicing", "name": "", "documentation": "Invoice generation service supports the eInvoicing service." },
-    { "id": "rel-33", "type": "ServingRelationship", "sourceId": "app-svc-report-dist", "targetId": "biz-svc-reporting", "name": "", "documentation": "Report distribution service supports sales & inventory reporting service." },
-    { "id": "rel-34", "type": "ServingRelationship", "sourceId": "app-svc-edi-trans",   "targetId": "biz-proc-order",    "name": "", "documentation": "EDI translation service supports order management process (ORDERS/ORDRSP)." },
-    { "id": "rel-35", "type": "ServingRelationship", "sourceId": "app-svc-edi-trans",   "targetId": "biz-proc-desadv",   "name": "", "documentation": "EDI translation service supports despatch advice process (DESADV/RECADV)." },
-    { "id": "rel-36", "type": "ServingRelationship", "sourceId": "app-svc-edi-trans",   "targetId": "biz-proc-slsrpt",   "name": "", "documentation": "EDI translation service supports sales reporting process (SLSRPT)." },
-    { "id": "rel-37", "type": "ServingRelationship", "sourceId": "app-svc-edi-trans",   "targetId": "biz-proc-invrpt",   "name": "", "documentation": "EDI translation service supports inventory reporting process (INVRPT)." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Portal → Customer (ServingRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-38", "type": "ServingRelationship", "sourceId": "app-comp-portal", "targetId": "biz-actor-customer", "name": "self-service", "documentation": "B2B portal provides self-service order, invoice, and reporting access to wholesale customers." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Application Component → Application Service (RealizationRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-39", "type": "RealizationRelationship", "sourceId": "app-comp-erp",      "targetId": "app-svc-order-proc",  "name": "", "documentation": "ERP (SAP SD) realises order processing service." },
-    { "id": "rel-40", "type": "RealizationRelationship", "sourceId": "app-comp-erp",      "targetId": "app-svc-invoice-gen", "name": "", "documentation": "ERP (SAP FI) realises invoice generation service." },
-    { "id": "rel-41", "type": "RealizationRelationship", "sourceId": "app-comp-erp",      "targetId": "app-svc-inventory",   "name": "", "documentation": "ERP (SAP MM/WM) realises inventory management service." },
-    { "id": "rel-42", "type": "RealizationRelationship", "sourceId": "app-comp-edi",      "targetId": "app-svc-edi-trans",   "name": "", "documentation": "EDI/B2B gateway platform realises EDI translation & routing service." },
-    { "id": "rel-43", "type": "RealizationRelationship", "sourceId": "app-comp-bi",       "targetId": "app-svc-report-dist", "name": "", "documentation": "BI platform realises report distribution service." },
-    { "id": "rel-44", "type": "RealizationRelationship", "sourceId": "app-comp-einvoice", "targetId": "app-svc-invoice-gen", "name": "", "documentation": "Peppol AP realises invoice generation for structured eInvoicing." },
-    { "id": "rel-45", "type": "RealizationRelationship", "sourceId": "app-comp-oms",      "targetId": "app-svc-order-proc",  "name": "", "documentation": "OMS realises order processing for allocation and lifecycle management." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Application Component → Data Object (AccessRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-46", "type": "AccessRelationship", "sourceId": "app-comp-erp",    "targetId": "app-data-product",    "name": "", "documentation": "ERP reads and maintains product master (GTIN).", "accessType": "ReadWrite" },
-    { "id": "rel-47", "type": "AccessRelationship", "sourceId": "app-comp-erp",    "targetId": "app-data-customer",   "name": "", "documentation": "ERP reads and maintains customer master (GLN).", "accessType": "ReadWrite" },
-    { "id": "rel-48", "type": "AccessRelationship", "sourceId": "app-comp-erp",    "targetId": "app-data-order",      "name": "", "documentation": "ERP reads and writes order & fulfilment data.", "accessType": "ReadWrite" },
-    { "id": "rel-49", "type": "AccessRelationship", "sourceId": "app-comp-erp",    "targetId": "app-data-financial",  "name": "", "documentation": "ERP reads and writes financial & invoice data.", "accessType": "ReadWrite" },
-    { "id": "rel-50", "type": "AccessRelationship", "sourceId": "app-comp-edi",    "targetId": "app-data-product",    "name": "", "documentation": "EDI platform reads product master for GTIN mapping.", "accessType": "Read" },
-    { "id": "rel-51", "type": "AccessRelationship", "sourceId": "app-comp-edi",    "targetId": "app-data-customer",   "name": "", "documentation": "EDI platform reads customer master for GLN/partner ID routing.", "accessType": "Read" },
-    { "id": "rel-52", "type": "AccessRelationship", "sourceId": "app-comp-portal", "targetId": "app-data-order",      "name": "", "documentation": "Portal reads order & fulfilment data for customer self-service.", "accessType": "Read" },
-    { "id": "rel-53", "type": "AccessRelationship", "sourceId": "app-comp-bi",     "targetId": "app-data-order",      "name": "", "documentation": "BI platform reads order data for sell-through and fulfilment analytics.", "accessType": "Read" },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Technology Service → Application Service (ServingRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-54", "type": "ServingRelationship", "sourceId": "tech-svc-edi-transport", "targetId": "app-svc-edi-trans",   "name": "", "documentation": "EDI transport (AS2/SFTP) enables EDI translation & routing service." },
-    { "id": "rel-55", "type": "ServingRelationship", "sourceId": "tech-svc-peppol-net",    "targetId": "app-svc-invoice-gen", "name": "", "documentation": "Peppol network service enables structured eInvoice delivery." },
-    { "id": "rel-56", "type": "ServingRelationship", "sourceId": "tech-svc-api-gw",        "targetId": "app-svc-order-proc",  "name": "", "documentation": "REST API gateway enables API-based order submission and status." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Technology Node → Application Component (RealizationRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-57", "type": "RealizationRelationship", "sourceId": "tech-node-erp",    "targetId": "app-comp-erp",      "name": "", "documentation": "ERP server hosts the ERP application." },
-    { "id": "rel-58", "type": "RealizationRelationship", "sourceId": "tech-node-edi",    "targetId": "app-comp-edi",      "name": "", "documentation": "EDI gateway server hosts the B2B gateway platform." },
-    { "id": "rel-59", "type": "RealizationRelationship", "sourceId": "tech-node-peppol", "targetId": "app-comp-einvoice", "name": "", "documentation": "Peppol AP node hosts the eInvoicing platform." },
-    { "id": "rel-60", "type": "RealizationRelationship", "sourceId": "tech-node-cloud",  "targetId": "app-comp-portal",   "name": "", "documentation": "Cloud IaaS hosts the B2B customer portal." },
-    { "id": "rel-61", "type": "RealizationRelationship", "sourceId": "tech-node-cloud",  "targetId": "app-comp-bi",       "name": "", "documentation": "Cloud IaaS/PaaS hosts the BI & reporting application." },
-    { "id": "rel-62", "type": "RealizationRelationship", "sourceId": "tech-node-cloud",  "targetId": "app-comp-oms",      "name": "", "documentation": "Cloud IaaS hosts the Order Management System." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Middleware → Application Components (ServingRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-63", "type": "ServingRelationship", "sourceId": "tech-sys-middleware", "targetId": "app-comp-edi", "name": "", "documentation": "ESB/middleware orchestrates message flows into and out of the EDI platform." },
-    { "id": "rel-64", "type": "ServingRelationship", "sourceId": "tech-sys-middleware", "targetId": "app-comp-erp", "name": "", "documentation": "ESB/middleware connects ERP to EDI and OMS integration flows." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // System Software → Technology Service (RealizationRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-65", "type": "RealizationRelationship", "sourceId": "tech-sys-as2", "targetId": "tech-svc-edi-transport", "name": "", "documentation": "AS2/SFTP software realises the EDI transport service." },
-    { "id": "rel-66", "type": "RealizationRelationship", "sourceId": "tech-sys-van", "targetId": "tech-svc-edi-transport", "name": "", "documentation": "VAN realises the EDI transport service for partners without direct AS2." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Database → Data Objects (ServingRelationship)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-67", "type": "ServingRelationship", "sourceId": "tech-node-db", "targetId": "app-data-order",     "name": "", "documentation": "Database cluster persists order & fulfilment data." },
-    { "id": "rel-68", "type": "ServingRelationship", "sourceId": "tech-node-db", "targetId": "app-data-financial", "name": "", "documentation": "Database cluster persists financial & invoice data." },
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Artifact → Business Object (AssociationRelationship — technical realisation)
-    // ─────────────────────────────────────────────────────────────────────────
-    { "id": "rel-69", "type": "AssociationRelationship", "sourceId": "tech-art-orders",  "targetId": "biz-obj-po",      "name": "carries", "documentation": "EDIFACT ORDERS message is the technical carrier of the Purchase Order document." },
-    { "id": "rel-70", "type": "AssociationRelationship", "sourceId": "tech-art-orders",  "targetId": "biz-obj-ordrsp",  "name": "carries", "documentation": "EDIFACT ORDRSP message is the technical carrier of the Order Response." },
-    { "id": "rel-71", "type": "AssociationRelationship", "sourceId": "tech-art-desadv",  "targetId": "biz-obj-desadv",  "name": "carries", "documentation": "EDIFACT DESADV message is the technical carrier of the Despatch Advice." },
-    { "id": "rel-72", "type": "AssociationRelationship", "sourceId": "tech-art-invoic",  "targetId": "biz-obj-invoice", "name": "carries", "documentation": "EDIFACT INVOIC / Peppol BIS is the technical carrier of the Invoice." },
-    { "id": "rel-73", "type": "AssociationRelationship", "sourceId": "tech-art-slsrpt",  "targetId": "biz-obj-slsrpt",  "name": "carries", "documentation": "EDIFACT SLSRPT message is the technical carrier of the Sales Report." },
-    { "id": "rel-74", "type": "AssociationRelationship", "sourceId": "tech-art-invrpt",  "targetId": "biz-obj-invrpt",  "name": "carries", "documentation": "EDIFACT INVRPT message is the technical carrier of the Inventory Report." }
+    {
+      "id": "rel-01",
+      "type": "AssignmentRelationship",
+      "sourceId": "biz-actor-cs-eu",
+      "targetId": "biz-role-cs-rep",
+      "name": "",
+      "documentation": "CS teams fulfil the Customer Service Representative role."
+    },
+    {
+      "id": "rel-02",
+      "type": "AssignmentRelationship",
+      "sourceId": "biz-actor-cs-eu",
+      "targetId": "biz-role-edi-coord",
+      "name": "",
+      "documentation": "EDI Coordinators are part of the EU CS organisation."
+    },
+    {
+      "id": "rel-03",
+      "type": "AssignmentRelationship",
+      "sourceId": "biz-actor-brand",
+      "targetId": "biz-role-order-mgr",
+      "name": "",
+      "documentation": "Brand operations staff fill the Order Manager role."
+    },
+    {
+      "id": "rel-04",
+      "type": "AssignmentRelationship",
+      "sourceId": "biz-actor-finance",
+      "targetId": "biz-role-finance-mgr",
+      "name": "",
+      "documentation": "Finance team fills Finance Manager / Credit Controller role."
+    },
+    {
+      "id": "rel-05",
+      "type": "AssignmentRelationship",
+      "sourceId": "biz-actor-3pl",
+      "targetId": "biz-role-logistics",
+      "name": "",
+      "documentation": "3PL staff fulfil the Logistics Coordinator role."
+    },
+    {
+      "id": "rel-06",
+      "type": "AssignmentRelationship",
+      "sourceId": "biz-role-cs-rep",
+      "targetId": "biz-proc-order",
+      "name": "",
+      "documentation": "CS Reps handle order intake and confirmation."
+    },
+    {
+      "id": "rel-07",
+      "type": "AssignmentRelationship",
+      "sourceId": "biz-role-cs-rep",
+      "targetId": "biz-proc-desadv",
+      "name": "",
+      "documentation": "CS Reps track and communicate despatch status."
+    },
+    {
+      "id": "rel-08",
+      "type": "AssignmentRelationship",
+      "sourceId": "biz-role-edi-coord",
+      "targetId": "biz-proc-slsrpt",
+      "name": "",
+      "documentation": "EDI Coordinators manage SLSRPT ingestion and validation."
+    },
+    {
+      "id": "rel-09",
+      "type": "AssignmentRelationship",
+      "sourceId": "biz-role-edi-coord",
+      "targetId": "biz-proc-invrpt",
+      "name": "",
+      "documentation": "EDI Coordinators manage INVRPT ingestion and validation."
+    },
+    {
+      "id": "rel-10",
+      "type": "AssignmentRelationship",
+      "sourceId": "biz-role-finance-mgr",
+      "targetId": "biz-proc-invoice",
+      "name": "",
+      "documentation": "Finance Manager owns the invoicing and eInvoicing process."
+    },
+    {
+      "id": "rel-11",
+      "type": "AssignmentRelationship",
+      "sourceId": "biz-role-order-mgr",
+      "targetId": "biz-proc-order",
+      "name": "",
+      "documentation": "Order Manager oversees order allocation and fulfilment."
+    },
+    {
+      "id": "rel-12",
+      "type": "AssignmentRelationship",
+      "sourceId": "biz-role-logistics",
+      "targetId": "biz-proc-desadv",
+      "name": "",
+      "documentation": "Logistics Coordinator manages 3PL despatch and ASN generation."
+    },
+    {
+      "id": "rel-13",
+      "type": "TriggeringRelationship",
+      "sourceId": "biz-proc-order",
+      "targetId": "biz-proc-desadv",
+      "name": "triggers",
+      "documentation": "A confirmed replenishment order triggers the despatch and shipment process."
+    },
+    {
+      "id": "rel-14",
+      "type": "TriggeringRelationship",
+      "sourceId": "biz-proc-desadv",
+      "targetId": "biz-proc-invoice",
+      "name": "triggers",
+      "documentation": "Goods despatch triggers invoice generation (invoice follows shipment)."
+    },
+    {
+      "id": "rel-15",
+      "type": "ServingRelationship",
+      "sourceId": "biz-actor-customer",
+      "targetId": "biz-proc-slsrpt",
+      "name": "submits SLSRPT",
+      "documentation": "Customer submits weekly/monthly sell-through data (SLSRPT) to the brand."
+    },
+    {
+      "id": "rel-16",
+      "type": "ServingRelationship",
+      "sourceId": "biz-actor-customer",
+      "targetId": "biz-proc-invrpt",
+      "name": "submits INVRPT",
+      "documentation": "Customer submits inventory stock-on-hand data (INVRPT) to the brand."
+    },
+    {
+      "id": "rel-17",
+      "type": "ServingRelationship",
+      "sourceId": "biz-actor-customer",
+      "targetId": "biz-proc-order",
+      "name": "places ORDERS",
+      "documentation": "Customer places replenishment purchase orders via EDI or portal."
+    },
+    {
+      "id": "rel-18",
+      "type": "ServingRelationship",
+      "sourceId": "biz-actor-3pl",
+      "targetId": "biz-proc-desadv",
+      "name": "provides shipment data",
+      "documentation": "3PL generates DESADV on ship-confirm and provides carrier tracking."
+    },
+    {
+      "id": "rel-19",
+      "type": "AccessRelationship",
+      "sourceId": "biz-proc-order",
+      "targetId": "biz-obj-po",
+      "name": "",
+      "documentation": "Order process reads inbound Purchase Order.",
+      "accessType": "Read"
+    },
+    {
+      "id": "rel-20",
+      "type": "AccessRelationship",
+      "sourceId": "biz-proc-order",
+      "targetId": "biz-obj-ordrsp",
+      "name": "",
+      "documentation": "Order process writes Order Response (ORDRSP).",
+      "accessType": "Write"
+    },
+    {
+      "id": "rel-21",
+      "type": "AccessRelationship",
+      "sourceId": "biz-proc-desadv",
+      "targetId": "biz-obj-desadv",
+      "name": "",
+      "documentation": "Despatch process writes and reads Despatch Advice / ASN.",
+      "accessType": "ReadWrite"
+    },
+    {
+      "id": "rel-22",
+      "type": "AccessRelationship",
+      "sourceId": "biz-proc-invoice",
+      "targetId": "biz-obj-invoice",
+      "name": "",
+      "documentation": "Invoice process writes commercial invoice.",
+      "accessType": "Write"
+    },
+    {
+      "id": "rel-23",
+      "type": "AccessRelationship",
+      "sourceId": "biz-proc-invoice",
+      "targetId": "biz-obj-creditnote",
+      "name": "",
+      "documentation": "Invoice process writes credit notes for returns/disputes.",
+      "accessType": "Write"
+    },
+    {
+      "id": "rel-24",
+      "type": "AccessRelationship",
+      "sourceId": "biz-proc-slsrpt",
+      "targetId": "biz-obj-slsrpt",
+      "name": "",
+      "documentation": "Sales reporting process reads inbound SLSRPT data.",
+      "accessType": "Read"
+    },
+    {
+      "id": "rel-25",
+      "type": "AccessRelationship",
+      "sourceId": "biz-proc-invrpt",
+      "targetId": "biz-obj-invrpt",
+      "name": "",
+      "documentation": "Inventory reporting process reads inbound INVRPT data.",
+      "accessType": "Read"
+    },
+    {
+      "id": "rel-26",
+      "type": "RealizationRelationship",
+      "sourceId": "biz-proc-order",
+      "targetId": "biz-svc-order",
+      "name": "",
+      "documentation": "Order process realises the Order Management Service."
+    },
+    {
+      "id": "rel-27",
+      "type": "RealizationRelationship",
+      "sourceId": "biz-proc-desadv",
+      "targetId": "biz-svc-logistics",
+      "name": "",
+      "documentation": "Despatch process realises the Logistics & Fulfilment Service."
+    },
+    {
+      "id": "rel-28",
+      "type": "RealizationRelationship",
+      "sourceId": "biz-proc-invoice",
+      "targetId": "biz-svc-invoicing",
+      "name": "",
+      "documentation": "Invoice process realises the eInvoicing Service."
+    },
+    {
+      "id": "rel-29",
+      "type": "RealizationRelationship",
+      "sourceId": "biz-proc-slsrpt",
+      "targetId": "biz-svc-reporting",
+      "name": "",
+      "documentation": "Sales reporting process realises the Reporting Service."
+    },
+    {
+      "id": "rel-30",
+      "type": "RealizationRelationship",
+      "sourceId": "biz-proc-invrpt",
+      "targetId": "biz-svc-reporting",
+      "name": "",
+      "documentation": "Inventory reporting process realises the Reporting Service."
+    },
+    {
+      "id": "rel-31",
+      "type": "ServingRelationship",
+      "sourceId": "app-svc-order-proc",
+      "targetId": "biz-svc-order",
+      "name": "",
+      "documentation": "OMS order processing service supports the business order management service."
+    },
+    {
+      "id": "rel-32",
+      "type": "ServingRelationship",
+      "sourceId": "app-svc-invoice-gen",
+      "targetId": "biz-svc-invoicing",
+      "name": "",
+      "documentation": "Invoice generation service supports the eInvoicing service."
+    },
+    {
+      "id": "rel-33",
+      "type": "ServingRelationship",
+      "sourceId": "app-svc-report-dist",
+      "targetId": "biz-svc-reporting",
+      "name": "",
+      "documentation": "Report distribution service supports sales & inventory reporting service."
+    },
+    {
+      "id": "rel-34",
+      "type": "ServingRelationship",
+      "sourceId": "app-svc-edi-trans",
+      "targetId": "biz-proc-order",
+      "name": "",
+      "documentation": "EDI translation service supports order management process (ORDERS/ORDRSP)."
+    },
+    {
+      "id": "rel-35",
+      "type": "ServingRelationship",
+      "sourceId": "app-svc-edi-trans",
+      "targetId": "biz-proc-desadv",
+      "name": "",
+      "documentation": "EDI translation service supports despatch advice process (DESADV/RECADV)."
+    },
+    {
+      "id": "rel-36",
+      "type": "ServingRelationship",
+      "sourceId": "app-svc-edi-trans",
+      "targetId": "biz-proc-slsrpt",
+      "name": "",
+      "documentation": "EDI translation service supports sales reporting process (SLSRPT)."
+    },
+    {
+      "id": "rel-37",
+      "type": "ServingRelationship",
+      "sourceId": "app-svc-edi-trans",
+      "targetId": "biz-proc-invrpt",
+      "name": "",
+      "documentation": "EDI translation service supports inventory reporting process (INVRPT)."
+    },
+    {
+      "id": "rel-38",
+      "type": "ServingRelationship",
+      "sourceId": "app-comp-portal",
+      "targetId": "biz-actor-customer",
+      "name": "self-service",
+      "documentation": "B2B portal provides self-service order, invoice, and reporting access to wholesale customers."
+    },
+    {
+      "id": "rel-39",
+      "type": "RealizationRelationship",
+      "sourceId": "app-comp-erp",
+      "targetId": "app-svc-order-proc",
+      "name": "",
+      "documentation": "ERP (SAP SD) realises order processing service."
+    },
+    {
+      "id": "rel-40",
+      "type": "RealizationRelationship",
+      "sourceId": "app-comp-erp",
+      "targetId": "app-svc-invoice-gen",
+      "name": "",
+      "documentation": "ERP (SAP FI) realises invoice generation service."
+    },
+    {
+      "id": "rel-41",
+      "type": "RealizationRelationship",
+      "sourceId": "app-comp-erp",
+      "targetId": "app-svc-inventory",
+      "name": "",
+      "documentation": "ERP (SAP MM/WM) realises inventory management service."
+    },
+    {
+      "id": "rel-42",
+      "type": "RealizationRelationship",
+      "sourceId": "app-comp-edi",
+      "targetId": "app-svc-edi-trans",
+      "name": "",
+      "documentation": "EDI/B2B gateway platform realises EDI translation & routing service."
+    },
+    {
+      "id": "rel-43",
+      "type": "RealizationRelationship",
+      "sourceId": "app-comp-bi",
+      "targetId": "app-svc-report-dist",
+      "name": "",
+      "documentation": "BI platform realises report distribution service."
+    },
+    {
+      "id": "rel-44",
+      "type": "RealizationRelationship",
+      "sourceId": "app-comp-einvoice",
+      "targetId": "app-svc-invoice-gen",
+      "name": "",
+      "documentation": "Peppol AP realises invoice generation for structured eInvoicing."
+    },
+    {
+      "id": "rel-45",
+      "type": "RealizationRelationship",
+      "sourceId": "app-comp-oms",
+      "targetId": "app-svc-order-proc",
+      "name": "",
+      "documentation": "OMS realises order processing for allocation and lifecycle management."
+    },
+    {
+      "id": "rel-46",
+      "type": "AccessRelationship",
+      "sourceId": "app-comp-erp",
+      "targetId": "app-data-product",
+      "name": "",
+      "documentation": "ERP reads and maintains product master (GTIN).",
+      "accessType": "ReadWrite"
+    },
+    {
+      "id": "rel-47",
+      "type": "AccessRelationship",
+      "sourceId": "app-comp-erp",
+      "targetId": "app-data-customer",
+      "name": "",
+      "documentation": "ERP reads and maintains customer master (GLN).",
+      "accessType": "ReadWrite"
+    },
+    {
+      "id": "rel-48",
+      "type": "AccessRelationship",
+      "sourceId": "app-comp-erp",
+      "targetId": "app-data-order",
+      "name": "",
+      "documentation": "ERP reads and writes order & fulfilment data.",
+      "accessType": "ReadWrite"
+    },
+    {
+      "id": "rel-49",
+      "type": "AccessRelationship",
+      "sourceId": "app-comp-erp",
+      "targetId": "app-data-financial",
+      "name": "",
+      "documentation": "ERP reads and writes financial & invoice data.",
+      "accessType": "ReadWrite"
+    },
+    {
+      "id": "rel-50",
+      "type": "AccessRelationship",
+      "sourceId": "app-comp-edi",
+      "targetId": "app-data-product",
+      "name": "",
+      "documentation": "EDI platform reads product master for GTIN mapping.",
+      "accessType": "Read"
+    },
+    {
+      "id": "rel-51",
+      "type": "AccessRelationship",
+      "sourceId": "app-comp-edi",
+      "targetId": "app-data-customer",
+      "name": "",
+      "documentation": "EDI platform reads customer master for GLN/partner ID routing.",
+      "accessType": "Read"
+    },
+    {
+      "id": "rel-52",
+      "type": "AccessRelationship",
+      "sourceId": "app-comp-portal",
+      "targetId": "app-data-order",
+      "name": "",
+      "documentation": "Portal reads order & fulfilment data for customer self-service.",
+      "accessType": "Read"
+    },
+    {
+      "id": "rel-53",
+      "type": "AccessRelationship",
+      "sourceId": "app-comp-bi",
+      "targetId": "app-data-order",
+      "name": "",
+      "documentation": "BI platform reads order data for sell-through and fulfilment analytics.",
+      "accessType": "Read"
+    },
+    {
+      "id": "rel-54",
+      "type": "ServingRelationship",
+      "sourceId": "tech-svc-edi-transport",
+      "targetId": "app-svc-edi-trans",
+      "name": "",
+      "documentation": "EDI transport (AS2/SFTP) enables EDI translation & routing service."
+    },
+    {
+      "id": "rel-55",
+      "type": "ServingRelationship",
+      "sourceId": "tech-svc-peppol-net",
+      "targetId": "app-svc-invoice-gen",
+      "name": "",
+      "documentation": "Peppol network service enables structured eInvoice delivery."
+    },
+    {
+      "id": "rel-56",
+      "type": "ServingRelationship",
+      "sourceId": "tech-svc-api-gw",
+      "targetId": "app-svc-order-proc",
+      "name": "",
+      "documentation": "REST API gateway enables API-based order submission and status."
+    },
+    {
+      "id": "rel-57",
+      "type": "RealizationRelationship",
+      "sourceId": "tech-node-erp",
+      "targetId": "app-comp-erp",
+      "name": "",
+      "documentation": "ERP server hosts the ERP application."
+    },
+    {
+      "id": "rel-58",
+      "type": "RealizationRelationship",
+      "sourceId": "tech-node-edi",
+      "targetId": "app-comp-edi",
+      "name": "",
+      "documentation": "EDI gateway server hosts the B2B gateway platform."
+    },
+    {
+      "id": "rel-59",
+      "type": "RealizationRelationship",
+      "sourceId": "tech-node-peppol",
+      "targetId": "app-comp-einvoice",
+      "name": "",
+      "documentation": "Peppol AP node hosts the eInvoicing platform."
+    },
+    {
+      "id": "rel-60",
+      "type": "RealizationRelationship",
+      "sourceId": "tech-node-cloud",
+      "targetId": "app-comp-portal",
+      "name": "",
+      "documentation": "Cloud IaaS hosts the B2B customer portal."
+    },
+    {
+      "id": "rel-61",
+      "type": "RealizationRelationship",
+      "sourceId": "tech-node-cloud",
+      "targetId": "app-comp-bi",
+      "name": "",
+      "documentation": "Cloud IaaS/PaaS hosts the BI & reporting application."
+    },
+    {
+      "id": "rel-62",
+      "type": "RealizationRelationship",
+      "sourceId": "tech-node-cloud",
+      "targetId": "app-comp-oms",
+      "name": "",
+      "documentation": "Cloud IaaS hosts the Order Management System."
+    },
+    {
+      "id": "rel-63",
+      "type": "ServingRelationship",
+      "sourceId": "tech-sys-middleware",
+      "targetId": "app-comp-edi",
+      "name": "",
+      "documentation": "ESB/middleware orchestrates message flows into and out of the EDI platform."
+    },
+    {
+      "id": "rel-64",
+      "type": "ServingRelationship",
+      "sourceId": "tech-sys-middleware",
+      "targetId": "app-comp-erp",
+      "name": "",
+      "documentation": "ESB/middleware connects ERP to EDI and OMS integration flows."
+    },
+    {
+      "id": "rel-65",
+      "type": "RealizationRelationship",
+      "sourceId": "tech-sys-as2",
+      "targetId": "tech-svc-edi-transport",
+      "name": "",
+      "documentation": "AS2/SFTP software realises the EDI transport service."
+    },
+    {
+      "id": "rel-66",
+      "type": "RealizationRelationship",
+      "sourceId": "tech-sys-van",
+      "targetId": "tech-svc-edi-transport",
+      "name": "",
+      "documentation": "VAN realises the EDI transport service for partners without direct AS2."
+    },
+    {
+      "id": "rel-67",
+      "type": "ServingRelationship",
+      "sourceId": "tech-node-db",
+      "targetId": "app-data-order",
+      "name": "",
+      "documentation": "Database cluster persists order & fulfilment data."
+    },
+    {
+      "id": "rel-68",
+      "type": "ServingRelationship",
+      "sourceId": "tech-node-db",
+      "targetId": "app-data-financial",
+      "name": "",
+      "documentation": "Database cluster persists financial & invoice data."
+    },
+    {
+      "id": "rel-69",
+      "type": "AssociationRelationship",
+      "sourceId": "tech-art-orders",
+      "targetId": "biz-obj-po",
+      "name": "carries",
+      "documentation": "EDIFACT ORDERS message is the technical carrier of the Purchase Order document."
+    },
+    {
+      "id": "rel-70",
+      "type": "AssociationRelationship",
+      "sourceId": "tech-art-orders",
+      "targetId": "biz-obj-ordrsp",
+      "name": "carries",
+      "documentation": "EDIFACT ORDRSP message is the technical carrier of the Order Response."
+    },
+    {
+      "id": "rel-71",
+      "type": "AssociationRelationship",
+      "sourceId": "tech-art-desadv",
+      "targetId": "biz-obj-desadv",
+      "name": "carries",
+      "documentation": "EDIFACT DESADV message is the technical carrier of the Despatch Advice."
+    },
+    {
+      "id": "rel-72",
+      "type": "AssociationRelationship",
+      "sourceId": "tech-art-invoic",
+      "targetId": "biz-obj-invoice",
+      "name": "carries",
+      "documentation": "EDIFACT INVOIC / Peppol BIS is the technical carrier of the Invoice."
+    },
+    {
+      "id": "rel-73",
+      "type": "AssociationRelationship",
+      "sourceId": "tech-art-slsrpt",
+      "targetId": "biz-obj-slsrpt",
+      "name": "carries",
+      "documentation": "EDIFACT SLSRPT message is the technical carrier of the Sales Report."
+    },
+    {
+      "id": "rel-74",
+      "type": "AssociationRelationship",
+      "sourceId": "tech-art-invrpt",
+      "targetId": "biz-obj-invrpt",
+      "name": "carries",
+      "documentation": "EDIFACT INVRPT message is the technical carrier of the Inventory Report."
+    }
   ]
 }
