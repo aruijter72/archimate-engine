@@ -724,6 +724,7 @@
         <input type="checkbox" id="onboardNoShow" style="accent-color:var(--gold)" onchange="setOnboardPref(this.checked)">
         Don't show again
       </label>
+      <button class="btn btn-secondary" onclick="closeOnboard(); showWizard()">🪄 Build step by step</button>
       <button class="btn btn-secondary" onclick="closeOnboard(); showTemplates()">📋 Start from a template</button>
       <button class="btn btn-primary" onclick="closeOnboard()">Start from scratch →</button>
     </div>
@@ -767,6 +768,7 @@
            oninput="model.name = this.value">
   </div>
   <div class="header-right">
+    <button class="btn btn-secondary" onclick="showWizard()">🪄 Guided Start</button>
     <button class="btn btn-secondary" onclick="showTemplates()">📋 Templates</button>
     <button class="btn btn-secondary" onclick="saveModel()">💾 Save JSON</button>
     <button class="btn btn-secondary" onclick="triggerLoad()">📂 Load JSON</button>
