@@ -2102,6 +2102,43 @@ function renderHelp() {
         </div>
       </div>
     </div>
+
+    <div class="ml-card" style="margin-top:1.25rem">
+      <div class="ml-card-head"><span class="ml-card-head-icon">🔗</span> Connectors in Archi — Constraints &amp; Customisation</div>
+      <div class="ml-card-body">
+        <div class="manual-steps">
+          <div class="step">
+            <div class="step-num">!</div>
+            <div class="step-body">
+              <div class="step-title">Why can I only use certain connectors?</div>
+              <div class="step-desc">ArchiMate defines a <strong>metamodel</strong> — a formal set of rules specifying which relationship types are valid between which element types. For example, an <em>Access</em> relationship is only valid from a behaviour element (such as a Process or Function) to a passive structure element (such as a Data Object). Archi enforces these rules and will not let you draw connections that violate the metamodel.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">!</div>
+            <div class="step-body">
+              <div class="step-title">Adjusting visible connectors in Archi</div>
+              <div class="step-desc">In Archi, navigate to <code>Edit → Preferences → Connections</code>. Here you can toggle which relationship types are shown or hidden for each source/target element combination. This simplifies a busy diagram without removing the underlying relationships from the model.</div>
+              <div class="step-tip">💡 Hiding a connector type in Preferences only affects what is drawn on screen — the relationship is still stored in the model and included in any export.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">!</div>
+            <div class="step-body">
+              <div class="step-title">Derived relationships</div>
+              <div class="step-desc">ArchiMate allows certain relationships to be <em>derived</em> — automatically inferred from a chain of existing direct relationships. Archi can display these as dashed connectors in a view. Whether a derived relationship is valid is determined solely by the metamodel and cannot be customised by the user.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">!</div>
+            <div class="step-body">
+              <div class="step-title">Use Association when unsure</div>
+              <div class="step-desc">The <em>Association</em> relationship is always valid between any two elements in any layer and can optionally be directed. When you are unsure which precise relationship type applies, Association is the safe default. You can always refine it to a more specific type once the intent is clear.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>`;
 
   // ═══════════════════════════════════════════════════════════
