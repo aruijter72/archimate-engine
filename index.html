@@ -872,7 +872,8 @@ const REL_TYPES = [
 // ══════════════════════════════════════════════════════════════
 // TOOLTIP
 // ══════════════════════════════════════════════════════════════
-const _tipEl = document.getElementById('tipPopup');
+const _tipEl   = document.getElementById('tipPopup');
+const _tipData = {};   // id → html string; avoids embedding HTML inside attributes
 
 function showTip(anchor, html) {
   _tipEl.innerHTML = html;
@@ -880,27 +881,36 @@ function showTip(anchor, html) {
   const r = anchor.getBoundingClientRect();
   let top  = r.bottom + 8;
   let left = r.left;
-  if (left + 285 > window.innerWidth) left = window.innerWidth - 290;
-  if (top  + 180 > window.innerHeight) top = r.top - 8 - _tipEl.offsetHeight;
+  if (left + 285 > window.innerWidth)  left = window.innerWidth  - 290;
+  if (top  + 180 > window.innerHeight) top  = r.top - 8 - _tipEl.offsetHeight;
   _tipEl.style.top  = top  + 'px';
   _tipEl.style.left = left + 'px';
 }
+function showTipById(anchor, id) { showTip(anchor, _tipData[id] || ''); }
 function hideTip() { _tipEl.classList.remove('show'); }
 
-function tipHtml(type) {
-  const d = (ELEM_DESCS[type]    || '').replace(/'/g,"&#39;").replace(/"/g,'&quot;');
-  const e = (TYPE_EXAMPLES[type] || '').replace(/'/g,"&#39;").replace(/"/g,'&quot;');
-  return `<span class='tp-title'>${TYPE_LABELS[type]}</span>${d}${e?`<span class='tp-ex'>${e}</span>`:''}`;
+function _buildTipHtml(title, desc, example) {
+  return `<span class="tp-title">${title}</span>${desc}` +
+         (example ? `<span class="tp-ex">${example}</span>` : '');
 }
-function secTipHtml(secName) {
-  const s = SECTION_DESCS[secName] || {};
-  const d = (s.desc||'').replace(/'/g,"&#39;");
-  const e = (s.ex  ||'').replace(/'/g,"&#39;");
-  return `<span class='tp-title'>${(s.title||secName).replace(/'/g,"&#39;")}</span>${d}${e?`<span class='tp-ex'>${e}</span>`:''}`;
+
+// Pre-register all element-type tooltips once at startup
+function initTipData() {
+  for (const type of Object.keys(TYPE_LABELS)) {
+    _tipData['type-' + type] = _buildTipHtml(
+      TYPE_LABELS[type],
+      ELEM_DESCS[type]    || '',
+      TYPE_EXAMPLES[type] || ''
+    );
+  }
+  for (const [sec, s] of Object.entries(SECTION_DESCS)) {
+    _tipData['sec-' + sec] = _buildTipHtml(s.title || sec, s.desc || '', s.ex || '');
+  }
 }
+
 function tipBtn(type) {
-  const h = tipHtml(type);
-  return `<i class="tip-icon" onmouseenter="showTip(this,'${h}')" onmouseleave="hideTip()">?</i>`;
+  const id = 'type-' + type;
+  return `<i class="tip-icon" onmouseenter="showTipById(this,'${id}')" onmouseleave="hideTip()">?</i>`;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1063,13 +1073,13 @@ function renderLayer(layer) {
   for (const [secName, types] of Object.entries(config.sections)) {
     const elems = model.elements.filter(e => e.layer === layer && types.includes(e.type));
     const scls  = SECTION_CLS[secName] || 'active-struct';
-    const sh    = secTipHtml(secName);
+    const secId = 'sec-' + secName;
     html += `
     <div class="layer-section ${scls}">
       <div class="section-header">
         <div class="section-title ${scls}">
           ${secName}<span class="section-count">${elems.length}</span>
-          <i class="tip-icon" style="margin-left:5px" onmouseenter="showTip(this,'${sh}')" onmouseleave="hideTip()">?</i>
+          <i class="tip-icon" style="margin-left:5px" onmouseenter="showTipById(this,'${secId}')" onmouseleave="hideTip()">?</i>
         </div>
         <div class="add-buttons">`;
     for (const t of types) {
