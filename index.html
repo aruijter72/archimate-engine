@@ -1612,21 +1612,54 @@ function generateArchimateXML() {
   }
   xml += `  </folder>\n`;
 
-  // ── Diagram View with auto-layout ────────────────────────────
-  const EW=120, EH=55, HG=35, VG=28, LG=90, COLS=6, OX=50;
+  // ── Diagram View — aspect-aware ArchiMate layout ─────────────
+  // Elements are placed in three vertical columns per layer:
+  //   Active Structure | Behaviour | Passive Structure
+  // This mirrors the standard ArchiMate reading convention and
+  // minimises manual rearrangement needed in Archi.
+  const EW=150, EH=58, HG=22, VG=20, LG=110, OX=40, OY=50;
+  const ASPECT_COLS = 3;   // elements per row within each aspect group
+  const ASPECT_GAP  = 55;  // horizontal space between the three aspect columns
 
-  // Compute diagram-object positions per layer
-  const diagMap = {}; // elemId → { diagId, x, y }
-  let curY = 60;
-  for (const {key} of layers) {
-    const elems = model.elements.filter(e=>e.layer===key);
-    if (!elems.length) continue;
-    let col=0, row=0;
-    for (const el of elems) {
-      diagMap[el.id] = { diagId:genId(), x: OX + col*(EW+HG), y: curY + row*(EH+VG) };
-      if (++col >= COLS) { col=0; row++; }
+  // Build type → aspect index  (0=Active Structure, 1=Behaviour, 2=Passive Structure)
+  const TYPE_ASPECT = {};
+  for (const config of Object.values(LAYER_CONFIG)) {
+    let ai = 0;
+    for (const types of Object.values(config.sections)) {
+      for (const t of types) TYPE_ASPECT[t] = ai;
+      ai++;
     }
-    curY += Math.ceil(elems.length/COLS)*(EH+VG) + LG;
+  }
+
+  const diagMap = {};
+  let layerY = OY;
+  const aspectW = ASPECT_COLS * (EW + HG) - HG; // width of one aspect column group
+
+  for (const {key} of layers) {
+    const elems = model.elements.filter(e => e.layer === key);
+    if (!elems.length) continue;
+
+    // Split into three aspect buckets
+    const groups = [[], [], []];
+    for (const el of elems) groups[TYPE_ASPECT[el.type] ?? 0].push(el);
+
+    // Place each aspect group in its column
+    for (let asp = 0; asp < 3; asp++) {
+      const grp = groups[asp];
+      grp.forEach((el, i) => {
+        const col = i % ASPECT_COLS;
+        const row = Math.floor(i / ASPECT_COLS);
+        diagMap[el.id] = {
+          diagId: genId(),
+          x: OX + asp * (aspectW + ASPECT_GAP) + col * (EW + HG),
+          y: layerY + row * (EH + VG)
+        };
+      });
+    }
+
+    // Advance Y by the tallest aspect group in this layer
+    const maxRows = Math.max(1, ...groups.map(g => Math.ceil(g.length / ASPECT_COLS)));
+    layerY += maxRows * (EH + VG) + LG;
   }
 
   // Build connection maps
