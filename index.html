@@ -624,6 +624,69 @@
 </head>
 <body>
 
+<!-- ── Onboarding Modal ──────────────────────────────────── -->
+<div id="onboardModal" class="modal-overlay open">
+  <div class="modal-box" style="max-width:620px">
+    <div class="modal-header">
+      <div class="modal-title">⬡ Welcome to the ArchiMate Engine</div>
+      <button class="modal-close" onclick="closeOnboard()">×</button>
+    </div>
+    <p class="modal-sub">This tool helps you create <strong style="color:var(--white)">architecture models</strong> — structured diagrams showing how an organisation works, what software supports it, and what technology runs underneath. You don't need to be a technical expert.</p>
+    <p style="font-size:.82rem;font-weight:700;color:var(--white);margin-bottom:.4rem">Think of it as three floors of a building:</p>
+    <div class="onboard-layers">
+      <div class="onboard-layer biz">
+        <div class="onboard-layer-icon">🏢</div>
+        <div>
+          <div class="onboard-layer-name">Business Layer</div>
+          <div class="onboard-layer-q">"Who does what in the organisation?"</div>
+          <div class="onboard-layer-ex">People, teams, steps, processes, documents, rules, services</div>
+        </div>
+      </div>
+      <div class="onboard-layer app">
+        <div class="onboard-layer-icon">💻</div>
+        <div>
+          <div class="onboard-layer-name">Application Layer</div>
+          <div class="onboard-layer-q">"Which software supports the business?"</div>
+          <div class="onboard-layer-ex">Systems, apps, databases, APIs, data files</div>
+        </div>
+      </div>
+      <div class="onboard-layer tech">
+        <div class="onboard-layer-icon">🔧</div>
+        <div>
+          <div class="onboard-layer-name">Technology Layer</div>
+          <div class="onboard-layer-q">"What infrastructure runs the software?"</div>
+          <div class="onboard-layer-ex">Servers, networks, cloud platforms, hardware, storage</div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:.79rem;color:var(--muted);line-height:1.65">Every element type has a <strong style="color:var(--white)">? button</strong> next to it — hover over it for a plain-language explanation and real-world examples. The <strong style="color:var(--white)">Manual &amp; Legend</strong> tab has the full reference.</p>
+    <div class="onboard-actions">
+      <label style="font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:.4rem;cursor:pointer;margin-right:auto">
+        <input type="checkbox" id="onboardNoShow" style="accent-color:var(--gold)" onchange="setOnboardPref(this.checked)">
+        Don't show again
+      </label>
+      <button class="btn btn-secondary" onclick="closeOnboard(); showTemplates()">📋 Start from a template</button>
+      <button class="btn btn-primary" onclick="closeOnboard()">Start from scratch →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Template Modal ────────────────────────────────────── -->
+<div id="tmplModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">📋 Start from a Template</div>
+      <button class="modal-close" onclick="hideTemplates()">×</button>
+    </div>
+    <p class="modal-sub">Choose a ready-made model to get started quickly. Loading a template will replace your current model — save your work first if needed.</p>
+    <div id="tmplGrid" class="tmpl-grid"></div>
+    <p style="font-size:.74rem;color:var(--muted)">Templates are starting points — rename, add, or delete any element after loading.</p>
+  </div>
+</div>
+
+<!-- Floating tooltip -->
+<div id="tipPopup"></div>
+
 <!-- ── App Header ───────────────────────────────────────────── -->
 <header class="app-header">
   <div class="header-left">
@@ -633,6 +696,7 @@
            oninput="model.name = this.value">
   </div>
   <div class="header-right">
+    <button class="btn btn-secondary" onclick="showTemplates()">📋 Templates</button>
     <button class="btn btn-secondary" onclick="saveModel()">💾 Save JSON</button>
     <button class="btn btn-secondary" onclick="triggerLoad()">📂 Load JSON</button>
     <input type="file" id="loadFile" accept=".json" style="display:none" onchange="handleLoadFile(event)">
