@@ -1063,15 +1063,17 @@ function renderLayer(layer) {
   for (const [secName, types] of Object.entries(config.sections)) {
     const elems = model.elements.filter(e => e.layer === layer && types.includes(e.type));
     const scls  = SECTION_CLS[secName] || 'active-struct';
+    const sh    = secTipHtml(secName);
     html += `
     <div class="layer-section ${scls}">
       <div class="section-header">
         <div class="section-title ${scls}">
           ${secName}<span class="section-count">${elems.length}</span>
+          <i class="tip-icon" style="margin-left:5px" onmouseenter="showTip(this,'${sh}')" onmouseleave="hideTip()">?</i>
         </div>
         <div class="add-buttons">`;
     for (const t of types) {
-      html += `<button class="btn-add ${cc}" onclick="addElement('${layer}','${t}')">+ ${TYPE_LABELS[t]}</button>`;
+      html += `<span style="display:inline-flex;align-items:center;gap:2px"><button class="btn-add ${cc}" onclick="addElement('${layer}','${t}')">+ ${TYPE_LABELS[t]}</button>${tipBtn(t)}</span>`;
     }
     html += `</div></div>`;
 
@@ -1320,7 +1322,7 @@ function generateArchimateXML() {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`
           + `<archimate:model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n`
           + `                 xmlns:archimate="http://www.archimatetool.com/archimate"\n`
-          + `                 name="${esc(model.name)}" id="${mid}" version="4.0">\n`;
+          + `                 name="${esc(model.name)}" id="${mid}" version="5.0">\n`;
 
   if (model.documentation)
     xml += `  <documentation>${esc(model.documentation)}</documentation>\n`;
@@ -1959,6 +1961,7 @@ function renderHelp() {
 renderAll();
 renderHelp();
 updateStats();
+showOnboard();
 </script>
 </body>
 </html>
