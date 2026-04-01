@@ -870,6 +870,91 @@ const REL_TYPES = [
 ];
 
 // ══════════════════════════════════════════════════════════════
+// TOOLTIP
+// ══════════════════════════════════════════════════════════════
+const _tipEl = document.getElementById('tipPopup');
+
+function showTip(anchor, html) {
+  _tipEl.innerHTML = html;
+  _tipEl.classList.add('show');
+  const r = anchor.getBoundingClientRect();
+  let top  = r.bottom + 8;
+  let left = r.left;
+  if (left + 285 > window.innerWidth) left = window.innerWidth - 290;
+  if (top  + 180 > window.innerHeight) top = r.top - 8 - _tipEl.offsetHeight;
+  _tipEl.style.top  = top  + 'px';
+  _tipEl.style.left = left + 'px';
+}
+function hideTip() { _tipEl.classList.remove('show'); }
+
+function tipHtml(type) {
+  const d = (ELEM_DESCS[type]    || '').replace(/'/g,"&#39;").replace(/"/g,'&quot;');
+  const e = (TYPE_EXAMPLES[type] || '').replace(/'/g,"&#39;").replace(/"/g,'&quot;');
+  return `<span class='tp-title'>${TYPE_LABELS[type]}</span>${d}${e?`<span class='tp-ex'>${e}</span>`:''}`;
+}
+function secTipHtml(secName) {
+  const s = SECTION_DESCS[secName] || {};
+  const d = (s.desc||'').replace(/'/g,"&#39;");
+  const e = (s.ex  ||'').replace(/'/g,"&#39;");
+  return `<span class='tp-title'>${(s.title||secName).replace(/'/g,"&#39;")}</span>${d}${e?`<span class='tp-ex'>${e}</span>`:''}`;
+}
+function tipBtn(type) {
+  const h = tipHtml(type);
+  return `<i class="tip-icon" onmouseenter="showTip(this,'${h}')" onmouseleave="hideTip()">?</i>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// ONBOARDING
+// ══════════════════════════════════════════════════════════════
+function showOnboard() {
+  try { if (localStorage.getItem('archimate-no-onboard') === '1') return; } catch(e) {}
+  document.getElementById('onboardModal').classList.add('open');
+}
+function closeOnboard() {
+  document.getElementById('onboardModal').classList.remove('open');
+}
+function setOnboardPref(checked) {
+  try { localStorage.setItem('archimate-no-onboard', checked ? '1' : '0'); } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════════
+// TEMPLATE GALLERY
+// ══════════════════════════════════════════════════════════════
+function showTemplates() {
+  renderTemplateGrid();
+  document.getElementById('tmplModal').classList.add('open');
+}
+function hideTemplates() {
+  document.getElementById('tmplModal').classList.remove('open');
+}
+function renderTemplateGrid() {
+  const grid = document.getElementById('tmplGrid');
+  grid.innerHTML = TEMPLATES.map((t, i) => {
+    const tags = t.tags.map(tag => `<span class="tmpl-meta-tag">${tag}</span>`).join('');
+    const blank = t.isBlank ? ' tmpl-blank' : '';
+    const elCount = t.isBlank ? '' : `<span class="tmpl-meta-tag">${t.model.elements.length} elements</span>`;
+    return `
+      <button class="tmpl-card${blank}" onclick="loadTemplate(${i})">
+        <div class="tmpl-card-icon">${t.icon}</div>
+        <div class="tmpl-card-name">${t.name}</div>
+        <div class="tmpl-card-desc">${t.desc}</div>
+        <div class="tmpl-card-meta">${tags}${elCount}</div>
+      </button>`;
+  }).join('');
+}
+function loadTemplate(idx) {
+  const t = TEMPLATES[idx];
+  if (!t.isBlank && model.elements.length > 0) {
+    if (!confirm('Load "' + t.name + '"? Your current model will be replaced.')) return;
+  }
+  model = JSON.parse(JSON.stringify(t.model));
+  document.getElementById('modelName').value = model.name || '';
+  document.getElementById('modelDoc').value  = model.documentation || '';
+  renderAll(); updateStats();
+  hideTemplates();
+}
+
+// ══════════════════════════════════════════════════════════════
 // UTILITIES
 // ══════════════════════════════════════════════════════════════
 let _idCounter = 0;
