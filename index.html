@@ -475,6 +475,65 @@
     .tmpl-meta-tag  { font-size: .65rem; padding: .1rem .35rem; background: rgba(255,255,255,.06); border-radius: 3px; color: var(--muted); border: 1px solid var(--border); }
     .tmpl-blank { border-style: dashed; }
 
+    /* ── Guided Wizard ─────────────────────────────────────── */
+    .wiz-steps {
+      display: flex; gap: 0; margin-bottom: 1.5rem;
+      border-radius: 8px; overflow: hidden;
+      background: rgba(255,255,255,.04); border: 1px solid var(--border);
+    }
+    .wiz-step-dot {
+      flex: 1; padding: .4rem .3rem; text-align: center;
+      font-size: .65rem; font-weight: 700; color: var(--muted);
+      border-right: 1px solid var(--border); transition: all .2s; line-height: 1.3;
+    }
+    .wiz-step-dot:last-child { border-right: none; }
+    .wiz-step-dot.active { background: rgba(201,163,85,.15); color: var(--gold); }
+    .wiz-step-dot.done   { background: rgba(201,163,85,.06); color: rgba(201,163,85,.6); }
+    .wiz-q { font-size: 1rem; font-weight: 800; color: var(--white); margin-bottom: .3rem; }
+    .wiz-hint { font-size: .8rem; color: var(--muted); margin-bottom: .85rem; line-height: 1.55; }
+    .wiz-textarea {
+      width: 100%; background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12); border-radius: 8px;
+      color: var(--white); font-size: .88rem; padding: .7rem .9rem;
+      outline: none; resize: vertical; min-height: 90px; line-height: 1.6;
+      font-family: 'Catamaran', system-ui, sans-serif; transition: border-color .15s;
+    }
+    .wiz-textarea:focus { border-color: var(--gold); background: rgba(255,255,255,.08); }
+    .wiz-input {
+      width: 100%; background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12); border-radius: 8px;
+      color: var(--white); font-size: .95rem; padding: .55rem .85rem;
+      outline: none; font-family: 'Catamaran', system-ui, sans-serif;
+      font-weight: 600; transition: border-color .15s;
+    }
+    .wiz-input:focus { border-color: var(--gold); background: rgba(255,255,255,.08); }
+    .wiz-preview {
+      background: rgba(255,255,255,.04); border: 1px solid var(--border);
+      border-radius: 8px; padding: .8rem 1rem; margin-bottom: .6rem;
+    }
+    .wiz-preview-title {
+      font-size: .68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .1em; margin-bottom: .45rem;
+    }
+    .wiz-preview-title.biz { color: var(--biz-text); }
+    .wiz-preview-title.app { color: var(--app-text); }
+    .wiz-preview-title.rel { color: var(--rel-text); }
+    .wiz-tag {
+      display: inline-block; padding: .12rem .45rem; border-radius: 4px;
+      font-size: .74rem; margin: .12rem .08rem; font-weight: 600;
+    }
+    .wiz-tag.biz { background: var(--biz-bg); color: var(--biz-text); border: 1px solid var(--biz-border); }
+    .wiz-tag.app { background: var(--app-bg); color: var(--app-text); border: 1px solid var(--app-border); }
+    .wiz-tag.rel { background: var(--rel-bg); color: var(--rel-text); border: 1px solid var(--rel-border); }
+    .wiz-actions { display: flex; gap: .6rem; justify-content: flex-end; margin-top: 1.25rem; align-items: center; }
+    .wiz-back {
+      background: transparent; border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--muted); cursor: pointer; font-size: .84rem; font-weight: 600;
+      padding: .38rem .9rem; transition: all .18s;
+    }
+    .wiz-back:hover { border-color: var(--muted); color: var(--white); }
+    .wiz-err { color: #ef4444; font-size: .78rem; margin-top: .35rem; }
+
     /* ── Footer ──────────────────────────────────────────────── */
     .app-footer {
       text-align: center; padding: 1.25rem;
@@ -681,6 +740,18 @@
     <p class="modal-sub">Choose a ready-made model to get started quickly. Loading a template will replace your current model — save your work first if needed.</p>
     <div id="tmplGrid" class="tmpl-grid"></div>
     <p style="font-size:.74rem;color:var(--muted)">Templates are starting points — rename, add, or delete any element after loading.</p>
+  </div>
+</div>
+
+<!-- ── Guided Wizard Modal ─────────────────────────────── -->
+<div id="wizModal" class="modal-overlay">
+  <div class="modal-box" style="max-width:580px">
+    <div class="modal-header">
+      <div class="modal-title">🪄 Build Step by Step</div>
+      <button class="modal-close" onclick="hideWizard()">×</button>
+    </div>
+    <p class="modal-sub">Answer four quick questions and the engine will create a working architecture model you can refine.</p>
+    <div id="wizContent"></div>
   </div>
 </div>
 
