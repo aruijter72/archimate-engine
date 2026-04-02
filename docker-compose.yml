@@ -1,0 +1,10 @@
+services:
+  archimate-engine:
+    build: .
+    container_name: archimate-engine
+    ports:
+      - "8080:80"           # Change left-hand port to serve on a different port
+    restart: unless-stopped
+    # Optional: mount a customised index.html without rebuilding the image
+    # volumes:
+    #   - ./index.html:/usr/share/nginx/html/index.html:ro
