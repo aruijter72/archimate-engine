@@ -1890,13 +1890,13 @@ function renderRelationships() {
         <span class="tab-icon rel" style="width:18px;height:18px;font-size:.6rem">R</span>
         All Relationships <span class="section-count">${model.relationships.length}</span>
       </div>
-      <button class="btn btn-add" onclick="addRelationship()">+ Add Relationship</button>
+      <button class="btn btn-add" onclick="addRelationship()">${t('add-rel')}</button>
     </div>`;
 
   // Quick reference card grid
   html += `<details style="margin-bottom:1.25rem">
     <summary style="cursor:pointer;font-size:.75rem;color:var(--muted);padding:.3rem 0;user-select:none">
-      ArchiMate Relationship Reference (click to expand)
+      ${t('rel-ref-hdr')}
     </summary>
     <div class="ref-grid" style="margin-top:.75rem">`;
   for (const rt of REL_TYPES) {
@@ -1912,9 +1912,7 @@ function renderRelationships() {
   html += `</div></details>`;
 
   if (model.relationships.length === 0) {
-    html += `<div class="empty-state">No relationships defined yet.<br>
-      Add elements in the Business, Application, and Technology tabs first — then define how they connect here.<br>
-      Each relationship type has specific ArchiMate semantics (see the reference card above).</div>`;
+    html += `<div class="empty-state">${t('no-elems')}</div>`;
   } else {
     let srcOpts = `<option value="">— select source —</option>`;
     let tgtOpts = `<option value="">— select target —</option>`;
@@ -1924,11 +1922,11 @@ function renderRelationships() {
     html += `
     <table class="elem-table">
       <thead><tr>
-        <th style="width:210px">Source Element</th>
-        <th style="width:195px">Relationship Type</th>
-        <th style="width:210px">Target Element</th>
-        <th style="width:165px">Label / Options</th>
-        <th>Documentation</th>
+        <th style="width:210px">${t('col-src')}</th>
+        <th style="width:195px">${t('col-rtype')}</th>
+        <th style="width:210px">${t('col-tgt')}</th>
+        <th style="width:165px">${t('col-lopts')}</th>
+        <th>${t('col-doc')}</th>
         <th style="width:32px"></th>
       </tr></thead>
       <tbody>`;
