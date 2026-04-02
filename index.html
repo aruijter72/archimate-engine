@@ -274,6 +274,13 @@
     /* ── Properties ──────────────────────────────────────────── */
     .props-list { display: flex; flex-direction: column; gap: .28rem; margin-bottom: .28rem; }
     .prop-row { display: flex; gap: .3rem; align-items: center; }
+    .prop-field-labels {
+      display: flex; gap: .3rem; margin-bottom: .18rem; padding: 0 .1rem;
+    }
+    .prop-field-label {
+      flex: 1; font-size: .63rem; color: var(--muted);
+      display: flex; align-items: center; gap: .2rem;
+    }
     .prop-key, .prop-val {
       background: rgba(255,255,255,.04); border: 1px solid var(--border);
       border-radius: 4px; color: var(--white); font-size: .75rem;
@@ -1460,6 +1467,10 @@ function renderLayer(layer) {
               </div>`;
         }
         html += `</div>
+            <div class="prop-field-labels">
+              <span class="prop-field-label" style="max-width:110px">Key <i class="tip-icon" onmouseenter="showTipById(this,'prop-key')" onmouseleave="hideTip()">?</i></span>
+              <span class="prop-field-label">Value <i class="tip-icon" onmouseenter="showTipById(this,'prop-val')" onmouseleave="hideTip()">?</i></span>
+            </div>
             <button class="btn-add-prop" onclick="addProp('${el.id}')">+ add property</button>
           </td>
           <td><button class="btn-del-sm" style="font-size:1.1rem" onclick="deleteElement('${el.id}')" title="Delete element">🗑</button></td>
