@@ -1803,7 +1803,7 @@ function renderLayer(layer) {
   let html     = `
     <div class="layer-intro">
       <span class="layer-badge ${cc}">${config.label} Layer</span>
-      <span class="layer-desc">${config.description}</span>
+      <span class="layer-desc">${t(LAYER_DESC_KEY[layer])}</span>
     </div>`;
 
   for (const [secName, types] of Object.entries(config.sections)) {
@@ -1814,7 +1814,7 @@ function renderLayer(layer) {
     <div class="layer-section ${scls}">
       <div class="section-header">
         <div class="section-title ${scls}">
-          ${secName}<span class="section-count">${elems.length}</span>
+          ${t(SEC_KEY[secName])}<span class="section-count">${elems.length}</span>
           <i class="tip-icon" style="margin-left:5px" onmouseenter="showTipById(this,'${secId}')" onmouseleave="hideTip()">?</i>
         </div>
         <div class="add-buttons">`;
