@@ -728,12 +728,12 @@
 <div id="onboardModal" class="modal-overlay open">
   <div class="modal-box" style="max-width:620px">
     <div class="modal-header">
-      <div class="modal-title">⬡ Welcome to the ArchiMate Engine</div>
+      <div class="modal-title" id="ob-title">⬡ Welcome to the ArchiMate Engine</div>
       <button class="modal-close" onclick="closeOnboard()">×</button>
     </div>
     <img src="Logo Huisstijl geel.png" alt="Arnold Ruijter IT" class="ar-logo ar-logo-modal">
-    <p class="modal-sub">This tool helps you create <strong style="color:var(--white)">architecture models</strong> — structured diagrams showing how an organisation works, what software supports it, and what technology runs underneath. You don't need to be a technical expert.</p>
-    <p style="font-size:.82rem;font-weight:700;color:var(--white);margin-bottom:.4rem">Think of it as three floors of a building:</p>
+    <p class="modal-sub" id="ob-sub">This tool helps you create <strong style="color:var(--white)">architecture models</strong> — structured diagrams showing how an organisation works, what software supports it, and what technology runs underneath. You don't need to be a technical expert.</p>
+    <p style="font-size:.82rem;font-weight:700;color:var(--white);margin-bottom:.4rem" id="ob-floors">Think of it as three floors of a building:</p>
     <div class="onboard-layers">
       <div class="onboard-layer biz">
         <div class="onboard-layer-icon">🏢</div>
@@ -835,11 +835,11 @@
 
 <!-- ── Stats Bar ────────────────────────────────────────────── -->
 <div class="stats-bar">
-  <span class="stat-item"><span class="stat-dot biz"></span> Business: <span class="stat-count" id="statBiz">0</span></span>
-  <span class="stat-item"><span class="stat-dot app"></span> Application: <span class="stat-count" id="statApp">0</span></span>
-  <span class="stat-item"><span class="stat-dot tech"></span> Technology: <span class="stat-count" id="statTech">0</span></span>
-  <span class="stat-item"><span class="stat-dot rel"></span> Relationships: <span class="stat-count" id="statRel">0</span></span>
-  <span class="stat-item" style="margin-left:auto">Total elements: <span class="stat-count" id="statTotal">0</span></span>
+  <span class="stat-item"><span class="stat-dot biz"></span> <span id="stat-biz-lbl">Business</span>: <span class="stat-count" id="statBiz">0</span></span>
+  <span class="stat-item"><span class="stat-dot app"></span> <span id="stat-app-lbl">Application</span>: <span class="stat-count" id="statApp">0</span></span>
+  <span class="stat-item"><span class="stat-dot tech"></span> <span id="stat-tech-lbl">Technology</span>: <span class="stat-count" id="statTech">0</span></span>
+  <span class="stat-item"><span class="stat-dot rel"></span> <span id="stat-rel-lbl">Relationships</span>: <span class="stat-count" id="statRel">0</span></span>
+  <span class="stat-item" style="margin-left:auto"><span id="stat-total-lbl">Total elements</span>: <span class="stat-count" id="statTotal">0</span></span>
 </div>
 
 <!-- ── Tab Navigation ───────────────────────────────────────── -->
