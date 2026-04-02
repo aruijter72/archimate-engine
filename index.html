@@ -1955,20 +1955,20 @@ function renderRelationships() {
         extras += `<div class="rel-extra-row">
           <input type="checkbox" id="dir-${rel.id}" ${rel.directed?'checked':''}
                  onchange="setRel('${rel.id}','directed',this.checked)">
-          <label for="dir-${rel.id}">Directed arrow</label></div>`;
+          <label for="dir-${rel.id}">${t('rel-directed')}</label></div>`;
       }
       if (rt.hasAccessType) {
-        extras += `<div class="rel-extra-row"><label>Access type:</label>
+        extras += `<div class="rel-extra-row"><label>${t('rel-acctype')}</label>
           <select onchange="setRel('${rel.id}','accessType',this.value)">
-            <option value="Read"      ${rel.accessType==='Read'       ?'selected':''}>Read</option>
-            <option value="Write"     ${rel.accessType==='Write'      ?'selected':''}>Write</option>
-            <option value="ReadWrite" ${rel.accessType==='ReadWrite'  ?'selected':''}>Read / Write</option>
-            <option value="Unspecified" ${rel.accessType==='Unspecified'?'selected':''}>Unspecified</option>
+            <option value="Read"      ${rel.accessType==='Read'       ?'selected':''}>${t('acc-read')}</option>
+            <option value="Write"     ${rel.accessType==='Write'      ?'selected':''}>${t('acc-write')}</option>
+            <option value="ReadWrite" ${rel.accessType==='ReadWrite'  ?'selected':''}>${t('acc-rw')}</option>
+            <option value="Unspecified" ${rel.accessType==='Unspecified'?'selected':''}>${t('acc-unspec')}</option>
           </select></div>`;
       }
       if (rt.hasStrength) {
-        extras += `<div class="rel-extra-row"><label>Strength:</label>
-          <input type="text" placeholder="e.g. +, −, 50%"
+        extras += `<div class="rel-extra-row"><label>${t('rel-strength')}</label>
+          <input type="text" placeholder="${t('ph-strength')}"
                  value="${esc(rel.strength)}"
                  oninput="setRel('${rel.id}','strength',this.value)"></div>`;
       }
@@ -1983,7 +1983,7 @@ function renderRelationships() {
           </td>
           <td><select class="rel-select" onchange="setRel('${rel.id}','targetId',this.value)">${tOpts}</select></td>
           <td>
-            <input type="text" class="elem-input" placeholder="Label (optional)"
+            <input type="text" class="elem-input" placeholder="${t('ph-label')}"
                    value="${esc(rel.name)}" style="margin-bottom:.35rem"
                    oninput="setRel('${rel.id}','name',this.value)">
             <div class="rel-extras">${extras}</div>
