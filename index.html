@@ -796,6 +796,7 @@
     <button class="btn btn-secondary" onclick="triggerLoad()">📂 Load JSON</button>
     <input type="file" id="loadFile" accept=".json" style="display:none" onchange="handleLoadFile(event)">
     <button class="btn btn-primary" onclick="exportArchimate()">⬇ Export .archimate</button>
+    <button class="btn btn-secondary" onclick="exportAMEFF()" title="Export Open Group AMEFF format (archimodel.app compatible)">⬇ Export AMEFF</button>
   </div>
 </header>
 
@@ -1809,6 +1810,98 @@ function generateArchimateXML() {
   xml += `  </folder>\n`;
   xml += `</archimate:model>\n`;
   return xml;
+}
+
+// ── AMEFF Export (Open Group ArchiMate Model Exchange File Format) ──────────
+// Compatible with archimodel.app and any AMEFF-compliant tool.
+function generateAMEFF() {
+  const modelId = genId(), viewId = genId();
+  const ameffRel = id => id.replace('Relationship',''); // strip suffix for AMEFF types
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`
+          + `<model xmlns="http://www.opengroup.org/xsd/archimate/3.0/"\n`
+          + `       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n`
+          + `       xsi:schemaLocation="http://www.opengroup.org/xsd/archimate/3.0/ `
+          + `http://www.opengroup.org/xsd/archimate/3.1/archimate3_Diagram.xsd"\n`
+          + `       identifier="${modelId}" version="1.1">\n`;
+  xml += `  <name xml:lang="en">${esc(model.name)}</name>\n`;
+  if (model.documentation)
+    xml += `  <documentation xml:lang="en">${esc(model.documentation)}</documentation>\n`;
+
+  // Elements
+  xml += `  <elements>\n`;
+  for (const el of model.elements) {
+    xml += `    <element identifier="${el.id}" xsi:type="${el.type}">\n`;
+    xml += `      <name xml:lang="en">${esc(el.name)}</name>\n`;
+    if (el.documentation) xml += `      <documentation xml:lang="en">${esc(el.documentation)}</documentation>\n`;
+    xml += `    </element>\n`;
+  }
+  xml += `  </elements>\n`;
+
+  // Relationships
+  xml += `  <relationships>\n`;
+  for (const r of model.relationships) {
+    if (!r.sourceId||!r.targetId) continue;
+    xml += `    <relationship identifier="${r.id}" xsi:type="${ameffRel(r.type)}" source="${r.sourceId}" target="${r.targetId}">\n`;
+    if (r.name) xml += `      <name xml:lang="en">${esc(r.name)}</name>\n`;
+    if (r.documentation) xml += `      <documentation xml:lang="en">${esc(r.documentation)}</documentation>\n`;
+    xml += `    </relationship>\n`;
+  }
+  xml += `  </relationships>\n`;
+
+  // Diagram view — same aspect-aware layout as Archi export
+  const EW=120, EH=55, HG=20, VG=18, LG=100, OX=30, OY=60;
+  const ASPECT_COLS=3, ASPECT_GAP=50;
+  const TYPE_ASPECT2={};
+  for (const config of Object.values(LAYER_CONFIG)) {
+    let ai=0;
+    for (const types of Object.values(config.sections)) {
+      for (const t of types) TYPE_ASPECT2[t]=ai;
+      ai++;
+    }
+  }
+  const aspW2 = ASPECT_COLS*(EW+HG)-HG;
+  const nodeMap={};
+  let ly=OY;
+  for (const key of ['business','application','technology']) {
+    const elems=model.elements.filter(e=>e.layer===key);
+    if (!elems.length) continue;
+    const grps=[[],[],[]];
+    for (const el of elems) grps[TYPE_ASPECT2[el.type]??0].push(el);
+    for (let asp=0;asp<3;asp++) {
+      grps[asp].forEach((el,i)=>{
+        nodeMap[el.id]={nodeId:genId(), x:OX+asp*(aspW2+ASPECT_GAP)+(i%ASPECT_COLS)*(EW+HG), y:ly+Math.floor(i/ASPECT_COLS)*(EH+VG)};
+      });
+    }
+    const mx=Math.max(1,...grps.map(g=>Math.ceil(g.length/ASPECT_COLS)));
+    ly+=mx*(EH+VG)+LG;
+  }
+
+  xml += `  <views>\n    <diagrams>\n`;
+  xml += `      <view identifier="${viewId}" xsi:type="Diagram">\n`;
+  xml += `        <name xml:lang="en">Default View</name>\n`;
+  for (const el of model.elements) {
+    const n=nodeMap[el.id]; if (!n) continue;
+    xml += `        <node identifier="${n.nodeId}" elementRef="${el.id}" xsi:type="Element" x="${n.x}" y="${n.y}" w="${EW}" h="${EH}"/>\n`;
+  }
+  for (const r of model.relationships) {
+    if (!r.sourceId||!r.targetId) continue;
+    const sn=nodeMap[r.sourceId], tn=nodeMap[r.targetId];
+    if (!sn||!tn) continue;
+    xml += `        <connection identifier="${genId()}" relationshipRef="${r.id}" xsi:type="Relationship" source="${sn.nodeId}" target="${tn.nodeId}"/>\n`;
+  }
+  xml += `      </view>\n    </diagrams>\n  </views>\n</model>\n`;
+  return xml;
+}
+
+function exportAMEFF() {
+  const broken = model.relationships.filter(r=>!r.sourceId||!r.targetId);
+  if (broken.length && !confirm(`⚠ ${broken.length} relationship(s) have no source/target and will be skipped.\nExport anyway?`)) return;
+  const xml  = generateAMEFF();
+  const blob = new Blob([xml],{type:'application/xml;charset=UTF-8'});
+  const url  = URL.createObjectURL(blob);
+  Object.assign(document.createElement('a'),{href:url,download:(model.name||'model').replace(/[^\w-]/g,'_')+'_ameff.xml'}).click();
+  URL.revokeObjectURL(url);
 }
 
 function exportArchimate() {
