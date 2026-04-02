@@ -777,12 +777,12 @@
 <div id="tmplModal" class="modal-overlay">
   <div class="modal-box">
     <div class="modal-header">
-      <div class="modal-title">📋 Start from a Template</div>
+      <div class="modal-title" id="tmpl-title-el">📋 Start from a Template</div>
       <button class="modal-close" onclick="hideTemplates()">×</button>
     </div>
-    <p class="modal-sub">Choose a ready-made model to get started quickly. Loading a template will replace your current model — save your work first if needed.</p>
+    <p class="modal-sub" id="tmpl-sub-el">Choose a ready-made model to get started quickly. Loading a template will replace your current model — save your work first if needed.</p>
     <div id="tmplGrid" class="tmpl-grid"></div>
-    <p style="font-size:.74rem;color:var(--muted)">Templates are starting points — rename, add, or delete any element after loading.</p>
+    <p style="font-size:.74rem;color:var(--muted)" id="tmpl-note-el">Templates are starting points — rename, add, or delete any element after loading.</p>
   </div>
 </div>
 
@@ -790,10 +790,10 @@
 <div id="wizModal" class="modal-overlay">
   <div class="modal-box" style="max-width:580px">
     <div class="modal-header">
-      <div class="modal-title">🪄 Build Step by Step</div>
+      <div class="modal-title" id="wiz-title-el">🪄 Build Step by Step</div>
       <button class="modal-close" onclick="hideWizard()">×</button>
     </div>
-    <p class="modal-sub">Answer four quick questions and the engine will create a working architecture model you can refine.</p>
+    <p class="modal-sub" id="wiz-sub-el">Answer four quick questions and the engine will create a working architecture model you can refine.</p>
     <div id="wizContent"></div>
   </div>
 </div>
