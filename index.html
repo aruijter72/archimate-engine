@@ -975,6 +975,7 @@
   <div id="tab-help"          class="tab-panel"></div>
   <div id="tab-process"       class="tab-panel"></div>
 </main>
+<input type="file" id="procLoadFile" accept=".json,.swimlane.json" style="display:none" onchange="handleLoadProcFile(event)">
 
 <footer class="app-footer">
   <img src="Logo Huisstijl geel.png" alt="Arnold Ruijter IT" class="ar-logo ar-logo-footer">
@@ -3834,69 +3835,115 @@ function renderProcTab() {
 function exportDrawio() {
   const proc = getActiveProc(); if (!proc) return;
 
-  const LANE_STRIP = 150, LANE_H = 130, PROC_HDR = 40;
+  const LANE_STRIP = 150, PROC_HDR = 40, COL_HDR_H = 32;
   const STEP_W = 130, STEP_H = 54, STEP_R = 27;
-  const COL_W = 190, MARGIN = 30;
+  const MARGIN = 30;
 
-  const { lanes, steps, flows } = proc;
-  const colMap  = procColMap(steps, flows);
-  const maxCol  = steps.length ? Math.max(...steps.map(s => colMap[s.id])) : 0;
+  const { lanes, steps, flows, columns } = proc;
+  const hasColumns = columns && columns.length > 0;
   const laneIdx = {}; lanes.forEach((l, i) => laneIdx[l.id] = i);
   const numLanes = Math.max(1, lanes.length);
 
-  const totalW = LANE_STRIP + MARGIN + (maxCol + 1) * COL_W + MARGIN;
-  const totalH = PROC_HDR + numLanes * LANE_H;
-
   let dxId = 2;
   const nextId = () => String(dxId++);
-  const containerId = nextId();
   const laneIds = {}, stepIds = {};
+  let cells = '', totalW, totalH, LANE_H;
 
-  let cells = '';
+  if (hasColumns) {
+    // ── Grid mode ─────────────────────────────────────────────
+    const COL_W = 200;
+    const colIdx = {}; columns.forEach((c, i) => colIdx[c.id] = i);
 
-  // Pool
-  cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#141628;strokeColor=#3a3f5c;fontColor=#c9a355;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
+    // Compute LANE_H from max steps per cell
+    const cellCount = {};
+    steps.forEach(s => {
+      const k = `${laneIdx[s.laneId]??0}_${colIdx[s.columnId]??0}`;
+      cellCount[k] = (cellCount[k]||0)+1;
+    });
+    const maxStack = Math.max(1, ...Object.values(cellCount));
+    LANE_H = Math.max(100, maxStack*(STEP_H+16)+30);
 
-  // Lanes
-  if (lanes.length) {
-    for (let i = 0; i < lanes.length; i++) {
-      const lid = nextId();
-      laneIds[lanes[i].id] = lid;
-      cells += `<mxCell id="${lid}" value="${esc(lanes[i].name||'Lane '+(i+1))}" style="swimlane;startSize=${LANE_STRIP};horizontal=0;fillColor=#1a1f35;strokeColor=#3a3f5c;fontColor=#9496b8;fontStyle=1;fontSize=11;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="${PROC_HDR + i * LANE_H}" width="${totalW}" height="${LANE_H}" as="geometry"/></mxCell>\n`;
-    }
+    totalW = LANE_STRIP + columns.length * COL_W;
+    totalH = PROC_HDR + COL_HDR_H + numLanes * LANE_H;
+
+    const containerId = nextId();
+    cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#141628;strokeColor=#3a3f5c;fontColor=#c9a355;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
+
+    // Lanes (horizontal rows)
+    lanes.forEach((l, i) => {
+      const lid = nextId(); laneIds[l.id] = lid;
+      cells += `<mxCell id="${lid}" value="${esc(l.name||'Lane '+(i+1))}" style="swimlane;startSize=${LANE_STRIP};horizontal=0;fillColor=#1a1f35;strokeColor=#3a3f5c;fontColor=#9496b8;fontStyle=1;fontSize=11;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="${PROC_HDR+COL_HDR_H+i*LANE_H}" width="${totalW}" height="${LANE_H}" as="geometry"/></mxCell>\n`;
+    });
+
+    // Column header labels (as non-editable text cells inside pool)
+    columns.forEach((c, ci) => {
+      const hid = nextId();
+      cells += `<mxCell id="${hid}" value="${esc(c.name||'Col '+(ci+1))}" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#b09af5;strokeColor=none;fillColor=rgba(167,138,245,0.1);" vertex="1" parent="${containerId}"><mxGeometry x="${LANE_STRIP+ci*COL_W}" y="${PROC_HDR}" width="${COL_W}" height="${COL_HDR_H}" as="geometry"/></mxCell>\n`;
+    });
+
+    // Steps — track stacking order per cell
+    const cellOrder = {};
+    steps.forEach(s => {
+      const ci = colIdx[s.columnId] ?? 0;
+      const li = laneIdx[s.laneId] ?? 0;
+      const k = `${li}_${ci}`;
+      if (!cellOrder[k]) cellOrder[k] = 0;
+      const order = cellOrder[k]++;
+      const total = cellCount[k] || 1;
+      const isRound = s.type==='start'||s.type==='end';
+      const sw = isRound?STEP_R*2:STEP_W, sh=isRound?STEP_R*2:STEP_H;
+      const sx = LANE_STRIP + ci*COL_W + (COL_W-sw)/2;
+      const stackH = total*(STEP_H+16)-16;
+      const sy = (LANE_H-stackH)/2 + order*(STEP_H+16) + (STEP_H-sh)/2;
+      const sid = nextId(); stepIds[s.id]=sid;
+      const parentId = lanes.length?(laneIds[s.laneId]||containerId):containerId;
+      let style;
+      if(s.type==='start')    style=`ellipse;fillColor=#1d4a2e;strokeColor=#50d482;fontColor=#50d482;fontStyle=1;fontSize=10;`;
+      else if(s.type==='end') style=`ellipse;fillColor=#4a1d1d;strokeColor=#ef6060;fontColor=#ef6060;fontStyle=1;fontSize=10;`;
+      else if(s.type==='decision') style=`rhombus;fillColor=#2d2810;strokeColor=#c9a355;fontColor=#c9a355;fontStyle=1;fontSize=10;`;
+      else                    style=`rounded=1;arcSize=12;fillColor=#0d1e2d;strokeColor=#5aabdd;fontColor=#5aabdd;fontStyle=1;fontSize=10;`;
+      cells+=`<mxCell id="${sid}" value="${esc(s.label||s.type)}" style="${style}" vertex="1" parent="${parentId}"><mxGeometry x="${sx}" y="${sy}" width="${sw}" height="${sh}" as="geometry"/></mxCell>\n`;
+    });
+
+  } else {
+    // ── Flow mode ─────────────────────────────────────────────
+    const COL_W = 190;
+    LANE_H = 130;
+    const colMap = procColMap(steps, flows);
+    const maxCol = steps.length ? Math.max(...steps.map(s => colMap[s.id])) : 0;
+    totalW = LANE_STRIP + MARGIN + (maxCol+1)*COL_W + MARGIN;
+    totalH = PROC_HDR + numLanes * LANE_H;
+
+    const containerId = nextId();
+    cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#141628;strokeColor=#3a3f5c;fontColor=#c9a355;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
+
+    lanes.forEach((l, i) => {
+      const lid = nextId(); laneIds[l.id] = lid;
+      cells += `<mxCell id="${lid}" value="${esc(l.name||'Lane '+(i+1))}" style="swimlane;startSize=${LANE_STRIP};horizontal=0;fillColor=#1a1f35;strokeColor=#3a3f5c;fontColor=#9496b8;fontStyle=1;fontSize=11;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="${PROC_HDR+i*LANE_H}" width="${totalW}" height="${LANE_H}" as="geometry"/></mxCell>\n`;
+    });
+
+    steps.forEach(s => {
+      const col=colMap[s.id], lIdx=laneIdx[s.laneId]??0;
+      const isRound=s.type==='start'||s.type==='end';
+      const sw=isRound?STEP_R*2:STEP_W, sh=isRound?STEP_R*2:STEP_H;
+      const sx=MARGIN+col*COL_W+(isRound?(STEP_W-sw)/2:0), sy=(LANE_H-sh)/2;
+      const sid=nextId(); stepIds[s.id]=sid;
+      const parentId=lanes.length?(laneIds[s.laneId]||containerId):containerId;
+      let style;
+      if(s.type==='start')    style=`ellipse;fillColor=#1d4a2e;strokeColor=#50d482;fontColor=#50d482;fontStyle=1;fontSize=10;`;
+      else if(s.type==='end') style=`ellipse;fillColor=#4a1d1d;strokeColor=#ef6060;fontColor=#ef6060;fontStyle=1;fontSize=10;`;
+      else if(s.type==='decision') style=`rhombus;fillColor=#2d2810;strokeColor=#c9a355;fontColor=#c9a355;fontStyle=1;fontSize=10;`;
+      else                    style=`rounded=1;arcSize=12;fillColor=#0d1e2d;strokeColor=#5aabdd;fontColor=#5aabdd;fontStyle=1;fontSize=10;`;
+      cells+=`<mxCell id="${sid}" value="${esc(s.label||s.type)}" style="${style}" vertex="1" parent="${parentId}"><mxGeometry x="${sx}" y="${sy}" width="${sw}" height="${sh}" as="geometry"/></mxCell>\n`;
+    });
   }
 
-  // Steps
-  for (const s of steps) {
-    const col   = colMap[s.id];
-    const lIdx  = laneIdx[s.laneId] ?? 0;
-    const sid   = nextId();
-    stepIds[s.id] = sid;
-
-    const isRound = s.type === 'start' || s.type === 'end';
-    const sw = isRound ? STEP_R*2 : STEP_W;
-    const sh = isRound ? STEP_R*2 : STEP_H;
-    const sx = MARGIN + col * COL_W + (isRound ? (STEP_W - sw) / 2 : 0);
-    const sy = (LANE_H - sh) / 2;
-
-    const parentId = lanes.length ? (laneIds[s.laneId] || containerId) : containerId;
-
-    let style;
-    if (s.type === 'start')    style = `ellipse;fillColor=#1d4a2e;strokeColor=#50d482;fontColor=#50d482;fontStyle=1;fontSize=10;`;
-    else if (s.type === 'end') style = `ellipse;fillColor=#4a1d1d;strokeColor=#ef6060;fontColor=#ef6060;fontStyle=1;fontSize=10;`;
-    else if (s.type === 'decision') style = `rhombus;fillColor=#2d2810;strokeColor=#c9a355;fontColor=#c9a355;fontStyle=1;fontSize=10;`;
-    else                       style = `rounded=1;arcSize=12;fillColor=#0d1e2d;strokeColor=#5aabdd;fontColor=#5aabdd;fontStyle=1;fontSize=10;`;
-
-    cells += `<mxCell id="${sid}" value="${esc(s.label||s.type)}" style="${style}" vertex="1" parent="${parentId}"><mxGeometry x="${sx}" y="${sy}" width="${sw}" height="${sh}" as="geometry"/></mxCell>\n`;
-  }
-
-  // Flows
-  for (const f of flows) {
-    const eid = nextId();
-    const src = stepIds[f.from], tgt = stepIds[f.to];
-    if (!src || !tgt) continue;
-    cells += `<mxCell id="${eid}" value="${esc(f.label||'')}" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#a78af5;fontColor=#c9a355;fontSize=9;fontStyle=1;" edge="1" source="${src}" target="${tgt}" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>\n`;
-  }
+  // Flows (same for both modes)
+  flows.forEach(f => {
+    const src=stepIds[f.from], tgt=stepIds[f.to]; if(!src||!tgt) return;
+    const eid=nextId();
+    cells+=`<mxCell id="${eid}" value="${esc(f.label||'')}" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#a78af5;fontColor=#c9a355;fontSize=9;fontStyle=1;" edge="1" source="${src}" target="${tgt}" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>\n`;
+  });
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
@@ -3910,8 +3957,7 @@ function exportDrawio() {
   const blob = new Blob([xml], { type: 'application/xml' });
   const url  = URL.createObjectURL(blob);
   const a    = Object.assign(document.createElement('a'), {
-    href: url,
-    download: (proc.name || 'process').replace(/[^\w-]/g,'_') + '.drawio'
+    href: url, download: (proc.name||'process').replace(/[^\w-]/g,'_')+'.drawio'
   });
   a.click();
   URL.revokeObjectURL(url);
