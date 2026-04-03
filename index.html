@@ -3257,6 +3257,51 @@ function deleteFlow(flowId) {
   renderProcPreview();
 }
 
+// ── Save / Load swimlane ──────────────────────────────────────
+function saveProcJSON() {
+  const proc = getActiveProc();
+  if (!proc) { alert('Select a process first.'); return; }
+  const blob = new Blob([JSON.stringify(proc, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), {
+    href: url,
+    download: (proc.name || 'process').replace(/[^\w-]/g,'_') + '.swimlane.json'
+  });
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function triggerLoadProc() {
+  document.getElementById('procLoadFile').click();
+}
+
+function handleLoadProcFile(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const proc = JSON.parse(e.target.result);
+      if (!Array.isArray(proc.lanes) || !Array.isArray(proc.steps) || !Array.isArray(proc.flows))
+        throw new Error('Not a valid swimlane file.');
+      if (!proc.id)      proc.id      = genId();
+      if (!proc.columns) proc.columns = [];
+      if (!model.processes) model.processes = [];
+      const idx = model.processes.findIndex(p => p.id === proc.id);
+      if (idx >= 0) {
+        if (confirm(`Replace existing process "${model.processes[idx].name}"?`))
+          model.processes[idx] = proc;
+        else return;
+      } else {
+        model.processes.push(proc);
+      }
+      _activeProcId = proc.id;
+      renderProcTab();
+    } catch(err) { alert('Could not load file: ' + err.message); }
+  };
+  r.readAsText(f);
+  ev.target.value = '';
+}
+
 // ── Live field updates ────────────────────────────────────────
 function updateProcName(id, val) {
   const p = model.processes.find(x => x.id === id);
