@@ -2349,32 +2349,41 @@ function generateAMEFF(extLayout = null) {
   }
   xml += `  </relationships>\n`;
 
-  // Diagram view — same aspect-aware layout as Archi export
+  // Diagram view — aspect-aware layout (or dagre when extLayout is provided)
   const EW=120, EH=55, HG=20, VG=18, LG=100, OX=30, OY=60;
   const ASPECT_COLS=3, ASPECT_GAP=50;
-  const TYPE_ASPECT2={};
-  for (const config of Object.values(LAYER_CONFIG)) {
-    let ai=0;
-    for (const types of Object.values(config.sections)) {
-      for (const t of types) TYPE_ASPECT2[t]=ai;
-      ai++;
-    }
-  }
-  const aspW2 = ASPECT_COLS*(EW+HG)-HG;
   const nodeMap={};
-  let ly=OY;
-  for (const key of ['business','application','technology']) {
-    const elems=model.elements.filter(e=>e.layer===key);
-    if (!elems.length) continue;
-    const grps=[[],[],[]];
-    for (const el of elems) grps[TYPE_ASPECT2[el.type]??0].push(el);
-    for (let asp=0;asp<3;asp++) {
-      grps[asp].forEach((el,i)=>{
-        nodeMap[el.id]={nodeId:genId(), x:OX+asp*(aspW2+ASPECT_GAP)+(i%ASPECT_COLS)*(EW+HG), y:ly+Math.floor(i/ASPECT_COLS)*(EH+VG)};
-      });
+  if (extLayout) {
+    // Dagre-computed positions — use x/y from extLayout, keep w/h from layout entry
+    for (const el of model.elements) {
+      const pos = extLayout[el.id];
+      if (pos) nodeMap[el.id] = { nodeId: genId(), x: pos.x, y: pos.y, w: pos.w, h: pos.h };
     }
-    const mx=Math.max(1,...grps.map(g=>Math.ceil(g.length/ASPECT_COLS)));
-    ly+=mx*(EH+VG)+LG;
+  } else {
+    // Default aspect-aware column layout
+    const TYPE_ASPECT2={};
+    for (const config of Object.values(LAYER_CONFIG)) {
+      let ai=0;
+      for (const types of Object.values(config.sections)) {
+        for (const t of types) TYPE_ASPECT2[t]=ai;
+        ai++;
+      }
+    }
+    const aspW2 = ASPECT_COLS*(EW+HG)-HG;
+    let ly=OY;
+    for (const key of ['business','application','technology']) {
+      const elems=model.elements.filter(e=>e.layer===key);
+      if (!elems.length) continue;
+      const grps=[[],[],[]];
+      for (const el of elems) grps[TYPE_ASPECT2[el.type]??0].push(el);
+      for (let asp=0;asp<3;asp++) {
+        grps[asp].forEach((el,i)=>{
+          nodeMap[el.id]={ nodeId:genId(), x:OX+asp*(aspW2+ASPECT_GAP)+(i%ASPECT_COLS)*(EW+HG), y:ly+Math.floor(i/ASPECT_COLS)*(EH+VG), w:EW, h:EH };
+        });
+      }
+      const mx=Math.max(1,...grps.map(g=>Math.ceil(g.length/ASPECT_COLS)));
+      ly+=mx*(EH+VG)+LG;
+    }
   }
 
   xml += `  <views>\n    <diagrams>\n`;
