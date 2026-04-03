@@ -4132,6 +4132,71 @@ function exportDrawio() {
   URL.revokeObjectURL(url);
 }
 
+// ── Process Template Picker ───────────────────────────────────
+function showProcTemplates() {
+  document.getElementById('proc-tmpl-overlay')?.remove();
+  const overlay = document.createElement('div');
+  overlay.id = 'proc-tmpl-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:2000;display:flex;align-items:center;justify-content:center;padding:1rem';
+
+  const cards = PROC_TEMPLATES.map((t, i) => {
+    const tags = t.tags.map(tag => `<span style="display:inline-block;padding:.08rem .42rem;border-radius:3px;font-size:.65rem;font-weight:700;background:var(--proc-bg);color:var(--proc-text);border:1px solid var(--proc-border)">${tag}</span>`).join(' ');
+    const steps = t.isBlank ? '' : `<span style="display:inline-block;padding:.08rem .42rem;border-radius:3px;font-size:.65rem;background:rgba(255,255,255,.06);color:var(--muted)">${t.process.steps.length} steps</span>`;
+    const gridBadge = t.process.columns?.length ? `<span style="display:inline-block;padding:.08rem .42rem;border-radius:3px;font-size:.65rem;background:rgba(167,138,245,.12);color:var(--proc-text);border:1px solid var(--proc-border)">grid mode</span>` : '';
+    return `
+      <button onclick="loadProcTemplate(${i})" style="
+        background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+        padding:1rem;text-align:left;cursor:pointer;transition:all .18s;
+        display:flex;flex-direction:column;gap:.4rem;
+        font-family:'Catamaran',system-ui,sans-serif;
+      " onmouseover="this.style.borderColor='var(--proc)';this.style.background='rgba(167,138,245,.08)'"
+         onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--surface2)'">
+        <div style="font-size:1.5rem;line-height:1">${t.icon}</div>
+        <div style="font-size:.9rem;font-weight:700;color:var(--white)">${t.name}</div>
+        <div style="font-size:.77rem;color:var(--muted);line-height:1.4">${t.desc}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.15rem">${tags}${steps}${gridBadge}</div>
+      </button>`;
+  }).join('');
+
+  overlay.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.4rem;width:100%;max-width:700px;max-height:88vh;overflow-y:auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <strong style="color:var(--white);font-size:.95rem">📋 Process Templates</strong>
+        <button onclick="document.getElementById('proc-tmpl-overlay').remove()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.25rem;line-height:1">×</button>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem">Choose a template to add to your process list — your existing processes are kept.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem">
+        ${cards}
+      </div>
+    </div>`;
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+
+function loadProcTemplate(idx) {
+  const t = PROC_TEMPLATES[idx];
+  if (!model.processes) model.processes = [];
+
+  // Deep-copy so the template stays pristine
+  const proc = JSON.parse(JSON.stringify(t.process));
+
+  // Give it a fresh id so multiple loads of the same template don't collide
+  proc.id = genId();
+
+  // If a process with the same name already exists, ask
+  const sameNameIdx = model.processes.findIndex(p => p.name === proc.name);
+  if (sameNameIdx >= 0) {
+    if (!confirm(`A process named "${proc.name}" already exists. Add another copy?`)) return;
+    proc.name += ' (copy)';
+  }
+
+  model.processes.push(proc);
+  _activeProcId = proc.id;
+  document.getElementById('proc-tmpl-overlay')?.remove();
+  renderProcTab();
+  showTab('process');
+}
+
 // ══════════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════════
