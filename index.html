@@ -4036,19 +4036,29 @@ function exportDrawio() {
     totalW = LANE_STRIP + columns.length * COL_W;
     totalH = PROC_HDR + COL_HDR_H + numLanes * LANE_H;
 
+    // Light colour palette for export
+    const DX_LANE_COLORS = ['#FFFFFF','#F7F9FC','#F9FBF7','#FDF8F5','#F9F7FD','#F5FAFA'];
+    const dxStepStyle = type => {
+      if (type==='start')    return `ellipse;fillColor=#D4EDDA;strokeColor=#28A745;fontColor=#155724;fontStyle=1;fontSize=10;`;
+      if (type==='end')      return `ellipse;fillColor=#F8D7DA;strokeColor=#DC3545;fontColor=#721C24;fontStyle=1;fontSize=10;`;
+      if (type==='decision') return `rhombus;fillColor=#FFF3CD;strokeColor=#D4A000;fontColor=#664D03;fontStyle=1;fontSize=10;`;
+      return `rounded=1;arcSize=12;fillColor=#D1ECF1;strokeColor=#0C7A9D;fontColor=#0C5460;fontStyle=1;fontSize=10;`;
+    };
+
     const containerId = nextId();
-    cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#141628;strokeColor=#3a3f5c;fontColor=#c9a355;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
+    cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#FFFFFF;strokeColor=#CCCCCC;fontColor=#333333;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
 
     // Lanes (horizontal rows)
     lanes.forEach((l, i) => {
       const lid = nextId(); laneIds[l.id] = lid;
-      cells += `<mxCell id="${lid}" value="${esc(l.name||'Lane '+(i+1))}" style="swimlane;startSize=${LANE_STRIP};horizontal=0;fillColor=#1a1f35;strokeColor=#3a3f5c;fontColor=#9496b8;fontStyle=1;fontSize=11;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="${PROC_HDR+COL_HDR_H+i*LANE_H}" width="${totalW}" height="${LANE_H}" as="geometry"/></mxCell>\n`;
+      const laneColor = DX_LANE_COLORS[i % DX_LANE_COLORS.length];
+      cells += `<mxCell id="${lid}" value="${esc(l.name||'Lane '+(i+1))}" style="swimlane;startSize=${LANE_STRIP};horizontal=0;fillColor=${laneColor};strokeColor=#CCCCCC;fontColor=#444444;fontStyle=1;fontSize=11;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="${PROC_HDR+COL_HDR_H+i*LANE_H}" width="${totalW}" height="${LANE_H}" as="geometry"/></mxCell>\n`;
     });
 
-    // Column header labels (as non-editable text cells inside pool)
+    // Column header labels
     columns.forEach((c, ci) => {
       const hid = nextId();
-      cells += `<mxCell id="${hid}" value="${esc(c.name||'Col '+(ci+1))}" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#b09af5;strokeColor=none;fillColor=rgba(167,138,245,0.1);" vertex="1" parent="${containerId}"><mxGeometry x="${LANE_STRIP+ci*COL_W}" y="${PROC_HDR}" width="${COL_W}" height="${COL_HDR_H}" as="geometry"/></mxCell>\n`;
+      cells += `<mxCell id="${hid}" value="${esc(c.name||'Col '+(ci+1))}" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#5E35B1;strokeColor=#D1C4E9;fillColor=#EDE7F6;" vertex="1" parent="${containerId}"><mxGeometry x="${LANE_STRIP+ci*COL_W}" y="${PROC_HDR}" width="${COL_W}" height="${COL_HDR_H}" as="geometry"/></mxCell>\n`;
     });
 
     // Steps — track stacking order per cell
@@ -4067,12 +4077,7 @@ function exportDrawio() {
       const sy = (LANE_H-stackH)/2 + order*(STEP_H+16) + (STEP_H-sh)/2;
       const sid = nextId(); stepIds[s.id]=sid;
       const parentId = lanes.length?(laneIds[s.laneId]||containerId):containerId;
-      let style;
-      if(s.type==='start')    style=`ellipse;fillColor=#1d4a2e;strokeColor=#50d482;fontColor=#50d482;fontStyle=1;fontSize=10;`;
-      else if(s.type==='end') style=`ellipse;fillColor=#4a1d1d;strokeColor=#ef6060;fontColor=#ef6060;fontStyle=1;fontSize=10;`;
-      else if(s.type==='decision') style=`rhombus;fillColor=#2d2810;strokeColor=#c9a355;fontColor=#c9a355;fontStyle=1;fontSize=10;`;
-      else                    style=`rounded=1;arcSize=12;fillColor=#0d1e2d;strokeColor=#5aabdd;fontColor=#5aabdd;fontStyle=1;fontSize=10;`;
-      cells+=`<mxCell id="${sid}" value="${esc(s.label||s.type)}" style="${style}" vertex="1" parent="${parentId}"><mxGeometry x="${sx}" y="${sy}" width="${sw}" height="${sh}" as="geometry"/></mxCell>\n`;
+      cells+=`<mxCell id="${sid}" value="${esc(s.label||s.type)}" style="${dxStepStyle(s.type)}" vertex="1" parent="${parentId}"><mxGeometry x="${sx}" y="${sy}" width="${sw}" height="${sh}" as="geometry"/></mxCell>\n`;
     });
 
   } else {
@@ -4084,12 +4089,21 @@ function exportDrawio() {
     totalW = LANE_STRIP + MARGIN + (maxCol+1)*COL_W + MARGIN;
     totalH = PROC_HDR + numLanes * LANE_H;
 
+    const DX_LANE_COLORS = ['#FFFFFF','#F7F9FC','#F9FBF7','#FDF8F5','#F9F7FD','#F5FAFA'];
+    const dxStepStyle = type => {
+      if (type==='start')    return `ellipse;fillColor=#D4EDDA;strokeColor=#28A745;fontColor=#155724;fontStyle=1;fontSize=10;`;
+      if (type==='end')      return `ellipse;fillColor=#F8D7DA;strokeColor=#DC3545;fontColor=#721C24;fontStyle=1;fontSize=10;`;
+      if (type==='decision') return `rhombus;fillColor=#FFF3CD;strokeColor=#D4A000;fontColor=#664D03;fontStyle=1;fontSize=10;`;
+      return `rounded=1;arcSize=12;fillColor=#D1ECF1;strokeColor=#0C7A9D;fontColor=#0C5460;fontStyle=1;fontSize=10;`;
+    };
+
     const containerId = nextId();
-    cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#141628;strokeColor=#3a3f5c;fontColor=#c9a355;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
+    cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#FFFFFF;strokeColor=#CCCCCC;fontColor=#333333;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
 
     lanes.forEach((l, i) => {
       const lid = nextId(); laneIds[l.id] = lid;
-      cells += `<mxCell id="${lid}" value="${esc(l.name||'Lane '+(i+1))}" style="swimlane;startSize=${LANE_STRIP};horizontal=0;fillColor=#1a1f35;strokeColor=#3a3f5c;fontColor=#9496b8;fontStyle=1;fontSize=11;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="${PROC_HDR+i*LANE_H}" width="${totalW}" height="${LANE_H}" as="geometry"/></mxCell>\n`;
+      const laneColor = DX_LANE_COLORS[i % DX_LANE_COLORS.length];
+      cells += `<mxCell id="${lid}" value="${esc(l.name||'Lane '+(i+1))}" style="swimlane;startSize=${LANE_STRIP};horizontal=0;fillColor=${laneColor};strokeColor=#CCCCCC;fontColor=#444444;fontStyle=1;fontSize=11;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="${PROC_HDR+i*LANE_H}" width="${totalW}" height="${LANE_H}" as="geometry"/></mxCell>\n`;
     });
 
     steps.forEach(s => {
@@ -4099,12 +4113,7 @@ function exportDrawio() {
       const sx=MARGIN+col*COL_W+(isRound?(STEP_W-sw)/2:0), sy=(LANE_H-sh)/2;
       const sid=nextId(); stepIds[s.id]=sid;
       const parentId=lanes.length?(laneIds[s.laneId]||containerId):containerId;
-      let style;
-      if(s.type==='start')    style=`ellipse;fillColor=#1d4a2e;strokeColor=#50d482;fontColor=#50d482;fontStyle=1;fontSize=10;`;
-      else if(s.type==='end') style=`ellipse;fillColor=#4a1d1d;strokeColor=#ef6060;fontColor=#ef6060;fontStyle=1;fontSize=10;`;
-      else if(s.type==='decision') style=`rhombus;fillColor=#2d2810;strokeColor=#c9a355;fontColor=#c9a355;fontStyle=1;fontSize=10;`;
-      else                    style=`rounded=1;arcSize=12;fillColor=#0d1e2d;strokeColor=#5aabdd;fontColor=#5aabdd;fontStyle=1;fontSize=10;`;
-      cells+=`<mxCell id="${sid}" value="${esc(s.label||s.type)}" style="${style}" vertex="1" parent="${parentId}"><mxGeometry x="${sx}" y="${sy}" width="${sw}" height="${sh}" as="geometry"/></mxCell>\n`;
+      cells+=`<mxCell id="${sid}" value="${esc(s.label||s.type)}" style="${dxStepStyle(s.type)}" vertex="1" parent="${parentId}"><mxGeometry x="${sx}" y="${sy}" width="${sw}" height="${sh}" as="geometry"/></mxCell>\n`;
     });
   }
 
