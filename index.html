@@ -819,7 +819,7 @@
 <header class="app-header">
   <div class="header-left">
     <img src="Logo Huisstijl geel.png" alt="Arnold Ruijter IT" class="ar-logo ar-logo-header">
-    <div class="app-logo">⬡ ArchiMate Engine <span>by <span class="logo-name">Arnold</span> <strong class="logo-gold">Ruijter IT</strong></span></div>
+    <div class="app-logo">⬡ Architise <span>by <span class="logo-name">Arnold</span> <strong class="logo-gold">Ruijter IT</strong></span></div>
     <input type="text" id="modelName" class="model-name-input"
            value="My Architecture Model" placeholder="Model name…"
            oninput="model.name = this.value">
@@ -1001,7 +1001,7 @@ const STRINGS = {
     'wiz-s5-t':    'Any additional notes? (optional)',
     'wiz-s5-ph':   'Optional context about this architecture…',
     // Onboarding modal (static HTML — updated by applyTranslations)
-    'ob-title':    '⬡ Welcome to the ArchiMate Engine',
+    'ob-title':    '⬡ Welcome to Architise',
     'ob-sub':      'This tool helps you create <strong style="color:var(--white)">architecture models</strong> — structured diagrams showing how an organisation works, what software supports it, and what technology runs underneath. You don\'t need to be a technical expert.',
     'ob-floors':   'Think of it as three floors of a building:',
     'ob-biz-name': 'Business Layer',
@@ -1122,7 +1122,7 @@ const STRINGS = {
     'wiz-s5-t':    'Aanvullende opmerkingen? (optioneel)',
     'wiz-s5-ph':   'Optionele context over deze architectuur…',
     // Onboarding modal
-    'ob-title':    '⬡ Welkom bij de ArchiMate Engine',
+    'ob-title':    '⬡ Welkom bij Architise',
     'ob-sub':      'Dit hulpmiddel helpt u <strong style="color:var(--white)">architectuurmodellen</strong> te maken — gestructureerde diagrammen die laten zien hoe een organisatie werkt, welke software het ondersteunt en welke technologie eronder draait. U hoeft geen technisch expert te zijn.',
     'ob-floors':   'Beschouw het als drie verdiepingen van een gebouw:',
     'ob-biz-name': 'Bedrijfslaag',
@@ -3038,15 +3038,15 @@ const LICENSE = {
   }
 
   if (!LICENSE.key || !LICENSE.domain) {
-    banner('<strong style="color:#f5a050">ArchiMate Engine — unlicensed installation.</strong>');
+    banner('<strong style="color:#f5a050">Architise — unlicensed installation.</strong>');
     return;
   }
   if (host !== LICENSE.domain && !host.endsWith('.' + LICENSE.domain)) {
-    banner('<strong style="color:#f5a050">ArchiMate Engine — running on an unlicensed domain.</strong>');
+    banner('<strong style="color:#f5a050">Architise — running on an unlicensed domain.</strong>');
     return;
   }
   if (LICENSE.expires && new Date(LICENSE.expires) < new Date()) {
-    banner('<strong style="color:#f5a050">ArchiMate Engine — license expired ' + LICENSE.expires + '.</strong>');
+    banner('<strong style="color:#f5a050">Architise — license expired ' + LICENSE.expires + '.</strong>');
     return;
   }
   // Valid license — show company badge
