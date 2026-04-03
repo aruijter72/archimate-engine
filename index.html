@@ -2085,7 +2085,56 @@ function buildElemXml(el) {
   return `    <element ${a}>${doc}${props}\n    </element>\n`;
 }
 
-function generateArchimateXML() {
+// ── Dagre Auto Layout ────────────────────────────────────────────────────────
+let _autoLayout = false;
+
+function toggleAutoLayout(btn) {
+  _autoLayout = !_autoLayout;
+  btn.classList.toggle('active', _autoLayout);
+  btn.textContent = _autoLayout ? '⚡ Auto Layout: ON' : '⚡ Auto Layout: OFF';
+}
+
+function computeDagreLayout() {
+  if (typeof dagre === 'undefined') {
+    alert('Dagre layout library not loaded — check your internet connection.');
+    return null;
+  }
+  const EW = 150, EH = 58;
+  const g = new dagre.graphlib.Graph();
+  g.setGraph({ rankdir: 'TB', ranksep: 120, nodesep: 50, marginx: 40, marginy: 70 });
+  g.setDefaultEdgeLabel(() => ({}));
+  for (const el of model.elements) {
+    g.setNode(el.id, { label: el.name, width: EW, height: EH });
+  }
+  // Enforce layer ordering: Business above Application above Technology
+  const layerOrder = ['business', 'application', 'technology'];
+  let prevLastElem = null;
+  for (const key of layerOrder) {
+    const elems = model.elements.filter(e => e.layer === key);
+    if (!elems.length) continue;
+    if (prevLastElem) g.setEdge(prevLastElem.id, elems[0].id, { minlen: 3, weight: 100 });
+    prevLastElem = elems[elems.length - 1];
+  }
+  // Add actual relationships as directed edges
+  const added = new Set();
+  for (const r of model.relationships) {
+    if (!r.sourceId || !r.targetId) continue;
+    if (!g.hasNode(r.sourceId) || !g.hasNode(r.targetId)) continue;
+    const k = r.sourceId + '>' + r.targetId;
+    if (!added.has(k)) { g.setEdge(r.sourceId, r.targetId, { weight: 1 }); added.add(k); }
+  }
+  try { dagre.layout(g); } catch (e) { console.error('Dagre layout error:', e); return null; }
+  const layout = {};
+  for (const el of model.elements) {
+    const n = g.node(el.id);
+    if (n && !isNaN(n.x)) {
+      layout[el.id] = { diagId: genId(), x: Math.round(n.x - EW / 2), y: Math.round(n.y - EH / 2), w: EW, h: EH };
+    }
+  }
+  return Object.keys(layout).length ? layout : null;
+}
+
+function generateArchimateXML(extLayout = null) {
   const mid  = genId(), bfId = genId(), afId = genId(), tfId = genId();
   const rfId = genId(), vfId = genId(), viewId = genId();
 
