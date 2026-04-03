@@ -3166,14 +3166,16 @@ let _activeProcId = null;
 
 function getActiveProc() {
   if (!model.processes) model.processes = [];
-  return model.processes.find(p => p.id === _activeProcId) || null;
+  const p = model.processes.find(p => p.id === _activeProcId) || null;
+  if (p && !p.columns) p.columns = []; // backward compat
+  return p;
 }
 
 // ── Data mutations ────────────────────────────────────────────
 function addProcess() {
   if (!model.processes) model.processes = [];
   const id = genId();
-  model.processes.push({ id, name: 'New Process', lanes: [], steps: [], flows: [] });
+  model.processes.push({ id, name: 'New Process', columns: [], lanes: [], steps: [], flows: [] });
   _activeProcId = id;
   renderProcTab();
 }
