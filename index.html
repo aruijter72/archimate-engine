@@ -2283,19 +2283,6 @@ function generateArchimateXML(extLayout = null) {
     }
   }
 
-  // ── Layer group background boxes (default layout only — dagre positions don't align to neat bands) ──
-  if (!extLayout) {
-    for (const {key} of layers) {
-      const ext = layerExtents[key];
-      if (!ext) continue;
-      const m = LAYER_META[key];
-      xml += `      <child xsi:type="archimate:Group" id="${genId()}" name="${m.label}">\n`;
-      xml += `        <bounds x="${ext.boxX}" y="${ext.startY - PAD}" width="${ext.boxW}" height="${ext.height + PAD * 2}"/>\n`;
-      xml += `        <fillColor r="${m.r}" g="${m.g}" b="${m.b}" a="${m.a}"/>\n`;
-      xml += `        <lineColor r="${m.lr}" g="${m.lg}" b="${m.lb}" a="180"/>\n`;
-      xml += `      </child>\n`;
-    }
-  }
 
   // ── Element diagram objects (rendered after groups = appear on top) ──
   for (const el of model.elements) {
