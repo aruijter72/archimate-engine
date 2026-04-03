@@ -1595,6 +1595,53 @@ function initTipData() {
     'The value corresponding to the key. Can be free text, a number, a date, or a code. Keep values concise.',
     'CC-4200 · John Smith · Active · SAP-ERP-01 · Gold · 2026-12-31'
   );
+
+  // ── Process tab tooltips ──────────────────────────────────────
+  _tipData['proc-processes'] = _buildTipHtml(
+    'Process',
+    'A process describes how a specific goal is achieved — who does what, in what order. You can define multiple processes per model.',
+    'Customer Onboarding · Invoice Approval · Incident Response · Product Return'
+  );
+  _tipData['proc-columns'] = _buildTipHtml(
+    'Columns (optional)',
+    'Columns add a second dimension to your swimlane — perpendicular to the lanes. Use them for phases, time periods, locations, or external partners. When no columns are defined, steps flow left-to-right automatically based on the flows you draw.',
+    'Phase 1 · Phase 2 · Phase 3   —   or—   HQ · Amsterdam · London'
+  );
+  _tipData['proc-lanes'] = _buildTipHtml(
+    'Lanes',
+    'A lane represents a single participant in the process — a person, team, system, or role. Each lane shows which steps that participant is responsible for. Import directly from your Architecture model\'s Business layer to avoid re-entering names.',
+    'Customer · Sales Rep · Finance Team · ERP System'
+  );
+  _tipData['proc-steps'] = _buildTipHtml(
+    'Steps',
+    'Steps are the individual actions or events that make up the process. Assign each step to a lane (and a column if you\'re using grid mode). Use Start and End to mark the process boundaries, Tasks for work, and Decisions for branching points.',
+    'Submit request → Validate data → Approve? → Yes: Ship order · No: Notify customer'
+  );
+  _tipData['proc-flows'] = _buildTipHtml(
+    'Flows',
+    'Flows connect steps to define the sequence of execution. Add a label to a flow coming out of a Decision step to describe the condition (e.g. Yes / No, Approved / Rejected).',
+    'Order received → Validate → In stock? → Yes: Pick & Pack → Ship'
+  );
+  _tipData['proc-step-start'] = _buildTipHtml(
+    '▶ Start',
+    'The event that triggers the process. Every process should have at least one. Shown as a filled circle.',
+    'Order received · Customer submits form · Alarm triggered · New hire joins'
+  );
+  _tipData['proc-step-task'] = _buildTipHtml(
+    '□ Task',
+    'A unit of work performed by the actor in that lane. Most steps in a process are tasks. Shown as a rounded rectangle.',
+    'Validate data · Review application · Send invoice · Schedule delivery'
+  );
+  _tipData['proc-step-decision'] = _buildTipHtml(
+    '◇ Decision',
+    'A branching point where the flow takes different paths based on a condition. Add Yes/No (or other) labels to the outgoing flows. Shown as a diamond.',
+    'In stock? · Approved? · Credit check passed? · Under threshold?'
+  );
+  _tipData['proc-step-end'] = _buildTipHtml(
+    '● End',
+    'The outcome or completion of the process. A process can have multiple end events for different outcomes. Shown as a double circle.',
+    'Order shipped · Application rejected · Incident resolved · Payment confirmed'
+  );
 }
 
 function tipBtn(type) {
@@ -3680,7 +3727,7 @@ function renderProcTab() {
         <!-- Process selector -->
         <div class="proc-section">
           <div class="proc-section-header">
-            <span class="proc-section-title">Processes</span>
+            <span class="proc-section-title">Processes <i class="tip-icon" onmouseenter="showTipById(this,'proc-processes')" onmouseleave="hideTip()">?</i></span>
             <button class="btn-add proc" onclick="addProcess()">+ New Process</button>
           </div>
           ${!model.processes.length
