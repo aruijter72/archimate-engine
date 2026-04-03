@@ -2289,7 +2289,7 @@ function generateArchimateXML(extLayout = null) {
     if (!ext) continue;
     const m = LAYER_META[key];
     xml += `      <child xsi:type="archimate:Group" id="${genId()}" name="${m.label}">\n`;
-    xml += `        <bounds x="${OX - PAD}" y="${ext.startY - PAD}" width="${TOTAL_W + PAD * 2}" height="${ext.height + PAD * 2}"/>\n`;
+    xml += `        <bounds x="${ext.boxX}" y="${ext.startY - PAD}" width="${ext.boxW}" height="${ext.height + PAD * 2}"/>\n`;
     xml += `        <fillColor r="${m.r}" g="${m.g}" b="${m.b}" a="${m.a}"/>\n`;
     xml += `        <lineColor r="${m.lr}" g="${m.lg}" b="${m.lb}" a="180"/>\n`;
     xml += `      </child>\n`;
