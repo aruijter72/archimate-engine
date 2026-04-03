@@ -3205,9 +3205,35 @@ function deleteLane(laneId) {
   renderProcTab();
 }
 
+// ── Column mutations ──────────────────────────────────────────
+function addColumn() {
+  const proc = getActiveProc(); if (!proc) return;
+  if (!proc.columns) proc.columns = [];
+  proc.columns.push({ id: genId(), name: '' });
+  renderProcTab();
+}
+
+function deleteColumn(colId) {
+  const proc = getActiveProc(); if (!proc) return;
+  proc.columns = proc.columns.filter(c => c.id !== colId);
+  proc.steps.forEach(s => { if (s.columnId === colId) s.columnId = ''; });
+  renderProcTab();
+}
+
+function updateColumnName(colId, val) {
+  const proc = getActiveProc(); if (!proc) return;
+  const c = proc.columns.find(x => x.id === colId);
+  if (c) { c.name = val; renderProcPreview(); }
+}
+
 function addStep() {
   const proc = getActiveProc(); if (!proc) return;
-  proc.steps.push({ id: genId(), laneId: proc.lanes[0]?.id || '', type: 'task', label: '' });
+  proc.steps.push({
+    id: genId(),
+    laneId:   proc.lanes[0]?.id   || '',
+    columnId: proc.columns[0]?.id || '',
+    type: 'task', label: ''
+  });
   renderProcTab();
 }
 
