@@ -3158,6 +3158,534 @@ const LICENSE = {
 })();
 
 // ══════════════════════════════════════════════════════════════
+// PROCESS / SWIMLANE TAB
+// ══════════════════════════════════════════════════════════════
+
+let _activeProcId = null;
+
+function getActiveProc() {
+  if (!model.processes) model.processes = [];
+  return model.processes.find(p => p.id === _activeProcId) || null;
+}
+
+// ── Data mutations ────────────────────────────────────────────
+function addProcess() {
+  if (!model.processes) model.processes = [];
+  const id = genId();
+  model.processes.push({ id, name: 'New Process', lanes: [], steps: [], flows: [] });
+  _activeProcId = id;
+  renderProcTab();
+}
+
+function deleteProcess(id) {
+  model.processes = model.processes.filter(p => p.id !== id);
+  if (_activeProcId === id)
+    _activeProcId = model.processes.length ? model.processes[0].id : null;
+  renderProcTab();
+}
+
+function selectProcess(id) {
+  _activeProcId = id;
+  renderProcTab();
+}
+
+function addLane() {
+  const proc = getActiveProc(); if (!proc) return;
+  proc.lanes.push({ id: genId(), name: '' });
+  renderProcTab();
+}
+
+function deleteLane(laneId) {
+  const proc = getActiveProc(); if (!proc) return;
+  proc.lanes = proc.lanes.filter(l => l.id !== laneId);
+  proc.steps.forEach(s => { if (s.laneId === laneId) s.laneId = ''; });
+  renderProcTab();
+}
+
+function addStep() {
+  const proc = getActiveProc(); if (!proc) return;
+  proc.steps.push({ id: genId(), laneId: proc.lanes[0]?.id || '', type: 'task', label: '' });
+  renderProcTab();
+}
+
+function deleteStep(stepId) {
+  const proc = getActiveProc(); if (!proc) return;
+  proc.steps = proc.steps.filter(s => s.id !== stepId);
+  proc.flows = proc.flows.filter(f => f.from !== stepId && f.to !== stepId);
+  renderProcTab();
+}
+
+function addFlow() {
+  const proc = getActiveProc(); if (!proc) return;
+  if (proc.steps.length < 2) { alert('Add at least two steps first.'); return; }
+  proc.flows.push({ id: genId(), from: proc.steps[0].id, to: proc.steps[proc.steps.length-1].id, label: '' });
+  renderProcTab();
+}
+
+function deleteFlow(flowId) {
+  const proc = getActiveProc(); if (!proc) return;
+  proc.flows = proc.flows.filter(f => f.id !== flowId);
+  renderProcPreview();
+}
+
+// ── Live field updates ────────────────────────────────────────
+function updateProcName(id, val) {
+  const p = model.processes.find(x => x.id === id);
+  if (p) {
+    p.name = val;
+    const btn = document.querySelector(`.proc-row.selected .proc-select-btn`);
+    if (btn) btn.textContent = val || '(unnamed process)';
+    renderProcPreview();
+  }
+}
+
+function updateLaneName(laneId, val) {
+  const proc = getActiveProc(); if (!proc) return;
+  const l = proc.lanes.find(x => x.id === laneId);
+  if (l) { l.name = val; renderProcPreview(); }
+}
+
+function updateStepField(stepId, field, val) {
+  const proc = getActiveProc(); if (!proc) return;
+  const s = proc.steps.find(x => x.id === stepId);
+  if (s) { s[field] = val; renderProcPreview(); }
+}
+
+function updateFlowField(flowId, field, val) {
+  const proc = getActiveProc(); if (!proc) return;
+  const f = proc.flows.find(x => x.id === flowId);
+  if (f) { f[field] = val; renderProcPreview(); }
+}
+
+// ── Role picker (import from Architecture) ────────────────────
+function showRolePicker() {
+  const proc = getActiveProc(); if (!proc) return;
+  const roles = (model.elements || []).filter(e => e.layer === 'business');
+  if (!roles.length) {
+    alert('No Business layer elements found.\nAdd roles or actors in the Business Layer tab first, or add lanes manually.');
+    return;
+  }
+  document.getElementById('role-picker-overlay')?.remove();
+  const existingSourceIds = proc.lanes.filter(l => l.sourceId).map(l => l.sourceId);
+  const overlay = document.createElement('div');
+  overlay.id = 'role-picker-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:2000;display:flex;align-items:center;justify-content:center';
+  overlay.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.3rem;min-width:320px;max-width:460px;max-height:72vh;overflow-y:auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
+        <strong style="color:var(--white);font-size:.92rem">Import from Architecture</strong>
+        <button onclick="document.getElementById('role-picker-overlay').remove()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;line-height:1">×</button>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:.85rem">Select Business layer elements to add as lanes:</p>
+      <div id="role-picker-list">
+        ${roles.map(r => `
+          <label style="display:flex;align-items:center;gap:.55rem;padding:.32rem .2rem;cursor:pointer;border-radius:4px" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background=''">
+            <input type="checkbox" value="${esc(r.id)}" ${existingSourceIds.includes(r.id) ? 'checked disabled' : ''} style="accent-color:var(--proc);flex-shrink:0">
+            <span style="font-size:.84rem;color:var(--white)">${esc(r.name) || '(unnamed)'}</span>
+            <span style="font-size:.7rem;color:var(--muted);margin-left:auto;flex-shrink:0">${esc(r.type)}</span>
+          </label>`).join('')}
+      </div>
+      <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem">
+        <button onclick="document.getElementById('role-picker-overlay').remove()" class="btn-add" style="padding:.32rem .8rem">Cancel</button>
+        <button onclick="importSelectedRoles()" class="btn-add proc" style="padding:.32rem .8rem">+ Add Selected</button>
+      </div>
+    </div>`;
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+
+function importSelectedRoles() {
+  const proc = getActiveProc(); if (!proc) return;
+  const checked = [...document.querySelectorAll('#role-picker-list input[type=checkbox]:checked:not(:disabled)')];
+  for (const cb of checked) {
+    const el = (model.elements || []).find(e => e.id === cb.value);
+    if (el) proc.lanes.push({ id: genId(), name: el.name || '', sourceId: el.id });
+  }
+  document.getElementById('role-picker-overlay')?.remove();
+  renderProcTab();
+}
+
+// ── Topo-sort helper (shared by preview & export) ─────────────
+function procColMap(steps, flows) {
+  const inDeg = {}, adj = {};
+  for (const s of steps) { inDeg[s.id] = 0; adj[s.id] = []; }
+  for (const f of flows) {
+    if (adj[f.from] !== undefined && inDeg[f.to] !== undefined) {
+      adj[f.from].push(f.to); inDeg[f.to]++;
+    }
+  }
+  const colMap = {};
+  const queue = steps.filter(s => inDeg[s.id] === 0).map(s => s.id);
+  queue.forEach(id => colMap[id] = 0);
+  const visited = new Set();
+  while (queue.length) {
+    const curr = queue.shift();
+    if (visited.has(curr)) continue;
+    visited.add(curr);
+    for (const next of (adj[curr] || [])) {
+      colMap[next] = Math.max(colMap[next] || 0, (colMap[curr] || 0) + 1);
+      if (--inDeg[next] <= 0) queue.push(next);
+    }
+  }
+  let nextCol = Object.keys(colMap).length ? Math.max(...Object.values(colMap)) + 1 : 0;
+  for (const s of steps) { if (colMap[s.id] === undefined) colMap[s.id] = nextCol++; }
+  return colMap;
+}
+
+// ── SVG Preview ───────────────────────────────────────────────
+function renderProcPreview() {
+  const wrap = document.getElementById('proc-svg-wrap');
+  if (!wrap) return;
+  const proc = getActiveProc();
+  if (!proc) { wrap.innerHTML = '<div class="proc-svg-empty">Select or create a process to see the preview.</div>'; return; }
+
+  const LANE_STRIP = 130, LANE_H = 110, PROC_HDR = 34;
+  const STEP_W = 120, STEP_H = 44, STEP_R = 21;
+  const COL_W = 162, MARGIN = 22;
+
+  const { lanes, steps, flows } = proc;
+  if (!lanes.length && !steps.length) {
+    wrap.innerHTML = '<div class="proc-svg-empty">Add lanes and steps to see the preview.</div>';
+    return;
+  }
+
+  const colMap  = procColMap(steps, flows);
+  const maxCol  = steps.length ? Math.max(...steps.map(s => colMap[s.id])) : 0;
+  const laneIdx = {}; lanes.forEach((l, i) => laneIdx[l.id] = i);
+  const numLanes = Math.max(1, lanes.length);
+
+  const svgW = LANE_STRIP + MARGIN + (maxCol + 1) * COL_W + MARGIN;
+  const svgH = PROC_HDR + numLanes * LANE_H;
+
+  // Step centre positions
+  const sPos = {};
+  for (const s of steps) {
+    const col  = colMap[s.id];
+    const li   = laneIdx[s.laneId] ?? 0;
+    sPos[s.id] = {
+      cx: LANE_STRIP + MARGIN + col * COL_W + STEP_W / 2,
+      cy: PROC_HDR + li * LANE_H + LANE_H / 2
+    };
+  }
+
+  const LANE_COLORS = [
+    'rgba(90,171,221,.11)','rgba(201,163,85,.09)','rgba(122,245,160,.08)',
+    'rgba(245,160,122,.09)','rgba(167,138,245,.10)','rgba(122,218,245,.09)'
+  ];
+  const STEP_C = { start:'#50d482', task:'#5aabdd', decision:'#c9a355', end:'#ef6060' };
+  const PROC_C = '#a78af5';
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgW}" height="${svgH}" style="font-family:'Catamaran',system-ui,sans-serif;display:block">
+  <defs>
+    <marker id="pa" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="${PROC_C}" opacity=".8"/>
+    </marker>
+  </defs>
+  <rect width="${svgW}" height="${svgH}" fill="#141628"/>
+  <rect width="${svgW}" height="${PROC_HDR}" fill="#1e2236"/>
+  <text x="${svgW/2}" y="${PROC_HDR/2+5}" text-anchor="middle" font-size="12" font-weight="700" fill="#c9a355">${esc(proc.name||'Unnamed Process')}</text>`;
+
+  // Lane rows
+  for (let i = 0; i < numLanes; i++) {
+    const y = PROC_HDR + i * LANE_H;
+    svg += `<rect x="0" y="${y}" width="${svgW}" height="${LANE_H}" fill="${LANE_COLORS[i % LANE_COLORS.length]}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>`;
+    svg += `<rect x="0" y="${y}" width="${LANE_STRIP}" height="${LANE_H}" fill="#1a1f35" stroke="rgba(255,255,255,.07)" stroke-width="1"/>`;
+    const lname = lanes[i]?.name || `Lane ${i+1}`;
+    svg += `<text transform="translate(${LANE_STRIP/2},${y+LANE_H/2}) rotate(-90)" text-anchor="middle" font-size="10" font-weight="600" fill="#9496b8">${esc(lname)}</text>`;
+  }
+  svg += `<line x1="${LANE_STRIP}" y1="${PROC_HDR}" x2="${LANE_STRIP}" y2="${svgH}" stroke="rgba(255,255,255,.1)" stroke-width="1"/>`;
+
+  // Flows (behind steps)
+  for (const f of flows) {
+    const a = sPos[f.from], b = sPos[f.to];
+    if (!a || !b) continue;
+    const sameLane = Math.abs(a.cy - b.cy) < 5;
+    const d = sameLane
+      ? `M${a.cx} ${a.cy} L${b.cx} ${b.cy}`
+      : `M${a.cx} ${a.cy} C${(a.cx+b.cx)/2} ${a.cy} ${(a.cx+b.cx)/2} ${b.cy} ${b.cx} ${b.cy}`;
+    svg += `<path d="${d}" fill="none" stroke="${PROC_C}" stroke-width="1.5" opacity=".65" marker-end="url(#pa)"/>`;
+    if (f.label) {
+      svg += `<text x="${(a.cx+b.cx)/2}" y="${(a.cy+b.cy)/2-5}" text-anchor="middle" font-size="9" fill="#c9a355" opacity=".9">${esc(f.label)}</text>`;
+    }
+  }
+
+  // Steps
+  for (const s of steps) {
+    const { cx, cy } = sPos[s.id];
+    const col = STEP_C[s.type] || '#9496b8';
+    const lbl = s.label || s.type;
+    // Word-wrap helper
+    const wrap2 = (text, maxLen) => {
+      const words = String(text).split(' '), lines = []; let line = '';
+      for (const w of words) { if ((line+w).length > maxLen) { if (line) lines.push(line.trim()); line = w+' '; } else line += w+' '; }
+      if (line.trim()) lines.push(line.trim());
+      return lines.length ? lines : [text];
+    };
+
+    if (s.type === 'start' || s.type === 'end') {
+      svg += `<circle cx="${cx}" cy="${cy}" r="${STEP_R}" fill="${col}" opacity=".85"/>`;
+      if (s.type === 'end') svg += `<circle cx="${cx}" cy="${cy}" r="${STEP_R-7}" fill="rgba(0,0,0,.3)"/>`;
+      const lines = wrap2(lbl, 10);
+      lines.forEach((ln, li) => {
+        svg += `<text x="${cx}" y="${cy+(li-(lines.length-1)/2)*11+4}" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">${esc(ln)}</text>`;
+      });
+    } else if (s.type === 'decision') {
+      const hw = STEP_W/2-5, hh = STEP_H/2-2;
+      svg += `<polygon points="${cx},${cy-hh} ${cx+hw},${cy} ${cx},${cy+hh} ${cx-hw},${cy}" fill="${col}" opacity=".2" stroke="${col}" stroke-width="1.5"/>`;
+      const lines = wrap2(lbl, 11);
+      lines.forEach((ln, li) => {
+        svg += `<text x="${cx}" y="${cy+(li-(lines.length-1)/2)*11+4}" text-anchor="middle" font-size="9" font-weight="600" fill="${col}">${esc(ln)}</text>`;
+      });
+    } else {
+      svg += `<rect x="${cx-STEP_W/2}" y="${cy-STEP_H/2}" width="${STEP_W}" height="${STEP_H}" rx="5" fill="${col}" opacity=".18" stroke="${col}" stroke-width="1.5"/>`;
+      const lines = wrap2(lbl, 13);
+      lines.forEach((ln, li) => {
+        svg += `<text x="${cx}" y="${cy+(li-(lines.length-1)/2)*12+4}" text-anchor="middle" font-size="10" font-weight="600" fill="${col}">${esc(ln)}</text>`;
+      });
+    }
+  }
+
+  svg += '</svg>';
+  wrap.innerHTML = svg;
+}
+
+// ── Full Process Tab Render ───────────────────────────────────
+function renderProcTab() {
+  if (!model.processes) model.processes = [];
+  const proc = getActiveProc();
+  const panel = document.getElementById('tab-process');
+  if (!panel) return;
+  const hasArchiRoles = (model.elements || []).some(e => e.layer === 'business');
+
+  panel.innerHTML = `
+    <div class="layer-intro">
+      <span class="layer-badge proc">PROCESS</span>
+      <span class="layer-desc">Build swimlane diagrams — standalone or linked to your Architecture model. Export to draw.io for editing in Confluence, Visio, Lucidchart, and more.</span>
+    </div>
+    <div class="proc-layout">
+
+      <!-- LEFT: Form panels -->
+      <div class="proc-form">
+
+        <!-- Process selector -->
+        <div class="proc-section">
+          <div class="proc-section-header">
+            <span class="proc-section-title">Processes</span>
+            <button class="btn-add proc" onclick="addProcess()">+ New Process</button>
+          </div>
+          ${!model.processes.length
+            ? `<div class="proc-empty">No processes yet — click <em>New Process</em> to start.</div>`
+            : model.processes.map(p => `
+              <div class="proc-row ${p.id === _activeProcId ? 'selected' : ''}">
+                <button class="proc-select-btn" onclick="selectProcess('${p.id}')">${esc(p.name) || '(unnamed process)'}</button>
+                ${p.id === _activeProcId
+                  ? `<input class="elem-input" style="max-width:170px;font-size:.82rem" value="${esc(p.name)}" oninput="updateProcName('${p.id}',this.value)" placeholder="Process name…">`
+                  : ''}
+                <button class="btn-del-sm" onclick="deleteProcess('${p.id}')" title="Delete process">×</button>
+              </div>`).join('')}
+        </div>
+
+        ${proc ? `
+        <!-- Lanes -->
+        <div class="proc-section">
+          <div class="proc-section-header">
+            <span class="proc-section-title">Lanes</span>
+            <div class="add-buttons">
+              ${hasArchiRoles ? `<button class="btn-add proc" onclick="showRolePicker()" title="Pick from Business layer">+ From Architecture</button>` : ''}
+              <button class="btn-add" onclick="addLane()">+ Add Lane</button>
+            </div>
+          </div>
+          ${!proc.lanes.length
+            ? `<div class="proc-empty">No lanes yet — add actors or roles that participate in this process.</div>`
+            : proc.lanes.map((l, i) => `
+              <div class="proc-row">
+                <span style="font-size:.68rem;color:var(--muted);width:16px;text-align:right;flex-shrink:0">${i+1}</span>
+                <input class="elem-input" value="${esc(l.name)}" oninput="updateLaneName('${l.id}',this.value)" placeholder="Lane name…" style="flex:1">
+                <button class="btn-del-sm" onclick="deleteLane('${l.id}')" title="Remove lane">×</button>
+              </div>`).join('')}
+        </div>
+
+        <!-- Steps -->
+        <div class="proc-section">
+          <div class="proc-section-header">
+            <span class="proc-section-title">Steps</span>
+            <button class="btn-add proc" onclick="addStep()">+ Add Step</button>
+          </div>
+          ${!proc.steps.length
+            ? `<div class="proc-empty">No steps yet — add tasks, decisions, and start/end events.</div>`
+            : `<table class="elem-table" style="font-size:.8rem">
+                <thead><tr>
+                  <th style="width:90px">Type</th>
+                  <th>Label</th>
+                  <th style="width:110px">Lane</th>
+                  <th style="width:28px"></th>
+                </tr></thead>
+                <tbody>
+                  ${proc.steps.map(s => `
+                    <tr>
+                      <td>
+                        <select class="elem-input" style="font-size:.75rem;padding:.17rem .3rem" onchange="updateStepField('${s.id}','type',this.value)">
+                          <option value="start"    ${s.type==='start'    ?'selected':''}>▶ Start</option>
+                          <option value="task"     ${s.type==='task'     ?'selected':''}>□ Task</option>
+                          <option value="decision" ${s.type==='decision' ?'selected':''}>◇ Decision</option>
+                          <option value="end"      ${s.type==='end'      ?'selected':''}>● End</option>
+                        </select>
+                      </td>
+                      <td><input class="elem-input" value="${esc(s.label)}" oninput="updateStepField('${s.id}','label',this.value)" placeholder="Step label…"></td>
+                      <td>
+                        <select class="elem-input" style="font-size:.75rem;padding:.17rem .3rem" onchange="updateStepField('${s.id}','laneId',this.value)">
+                          <option value="">— none —</option>
+                          ${proc.lanes.map(l => `<option value="${l.id}" ${s.laneId===l.id?'selected':''}>${esc(l.name)||'(unnamed)'}</option>`).join('')}
+                        </select>
+                      </td>
+                      <td><button class="btn-del-sm" onclick="deleteStep('${s.id}')">×</button></td>
+                    </tr>`).join('')}
+                </tbody>
+              </table>`}
+        </div>
+
+        <!-- Flows -->
+        <div class="proc-section">
+          <div class="proc-section-header">
+            <span class="proc-section-title">Flows</span>
+            <button class="btn-add proc" onclick="addFlow()">+ Add Flow</button>
+          </div>
+          ${!proc.flows.length
+            ? `<div class="proc-empty">No flows yet — connect steps to define the sequence.</div>`
+            : `<table class="elem-table" style="font-size:.8rem">
+                <thead><tr>
+                  <th>From</th>
+                  <th>To</th>
+                  <th style="width:90px">Label</th>
+                  <th style="width:28px"></th>
+                </tr></thead>
+                <tbody>
+                  ${proc.flows.map(f => `
+                    <tr>
+                      <td>
+                        <select class="elem-input" style="font-size:.75rem;padding:.17rem .3rem" onchange="updateFlowField('${f.id}','from',this.value)">
+                          ${proc.steps.map(s => `<option value="${s.id}" ${f.from===s.id?'selected':''}>${esc(s.label)||(s.type)}</option>`).join('')}
+                        </select>
+                      </td>
+                      <td>
+                        <select class="elem-input" style="font-size:.75rem;padding:.17rem .3rem" onchange="updateFlowField('${f.id}','to',this.value)">
+                          ${proc.steps.map(s => `<option value="${s.id}" ${f.to===s.id?'selected':''}>${esc(s.label)||(s.type)}</option>`).join('')}
+                        </select>
+                      </td>
+                      <td><input class="elem-input" value="${esc(f.label)}" oninput="updateFlowField('${f.id}','label',this.value)" placeholder="Yes / No…" style="font-size:.75rem"></td>
+                      <td><button class="btn-del-sm" onclick="deleteFlow('${f.id}')">×</button></td>
+                    </tr>`).join('')}
+                </tbody>
+              </table>`}
+        </div>
+        ` : ''}
+      </div><!-- /proc-form -->
+
+      <!-- RIGHT: Preview + Export -->
+      <div class="proc-preview-pane">
+        <div class="proc-preview-header">
+          <span class="proc-preview-label">Preview</span>
+          <button class="btn-export-proc" onclick="exportDrawio()" ${!proc?'disabled':''}>⬇ Export draw.io XML</button>
+        </div>
+        <div class="proc-svg-wrap" id="proc-svg-wrap">
+          ${!proc ? '<div class="proc-svg-empty">Select or create a process to see the preview.</div>' : ''}
+        </div>
+      </div>
+
+    </div><!-- /proc-layout -->
+  `;
+
+  if (proc) renderProcPreview();
+}
+
+// ── draw.io XML Export ────────────────────────────────────────
+function exportDrawio() {
+  const proc = getActiveProc(); if (!proc) return;
+
+  const LANE_STRIP = 150, LANE_H = 130, PROC_HDR = 40;
+  const STEP_W = 130, STEP_H = 54, STEP_R = 27;
+  const COL_W = 190, MARGIN = 30;
+
+  const { lanes, steps, flows } = proc;
+  const colMap  = procColMap(steps, flows);
+  const maxCol  = steps.length ? Math.max(...steps.map(s => colMap[s.id])) : 0;
+  const laneIdx = {}; lanes.forEach((l, i) => laneIdx[l.id] = i);
+  const numLanes = Math.max(1, lanes.length);
+
+  const totalW = LANE_STRIP + MARGIN + (maxCol + 1) * COL_W + MARGIN;
+  const totalH = PROC_HDR + numLanes * LANE_H;
+
+  let dxId = 2;
+  const nextId = () => String(dxId++);
+  const containerId = nextId();
+  const laneIds = {}, stepIds = {};
+
+  let cells = '';
+
+  // Pool
+  cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#141628;strokeColor=#3a3f5c;fontColor=#c9a355;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
+
+  // Lanes
+  if (lanes.length) {
+    for (let i = 0; i < lanes.length; i++) {
+      const lid = nextId();
+      laneIds[lanes[i].id] = lid;
+      cells += `<mxCell id="${lid}" value="${esc(lanes[i].name||'Lane '+(i+1))}" style="swimlane;startSize=${LANE_STRIP};horizontal=0;fillColor=#1a1f35;strokeColor=#3a3f5c;fontColor=#9496b8;fontStyle=1;fontSize=11;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="${PROC_HDR + i * LANE_H}" width="${totalW}" height="${LANE_H}" as="geometry"/></mxCell>\n`;
+    }
+  }
+
+  // Steps
+  for (const s of steps) {
+    const col   = colMap[s.id];
+    const lIdx  = laneIdx[s.laneId] ?? 0;
+    const sid   = nextId();
+    stepIds[s.id] = sid;
+
+    const isRound = s.type === 'start' || s.type === 'end';
+    const sw = isRound ? STEP_R*2 : STEP_W;
+    const sh = isRound ? STEP_R*2 : STEP_H;
+    const sx = MARGIN + col * COL_W + (isRound ? (STEP_W - sw) / 2 : 0);
+    const sy = (LANE_H - sh) / 2;
+
+    const parentId = lanes.length ? (laneIds[s.laneId] || containerId) : containerId;
+
+    let style;
+    if (s.type === 'start')    style = `ellipse;fillColor=#1d4a2e;strokeColor=#50d482;fontColor=#50d482;fontStyle=1;fontSize=10;`;
+    else if (s.type === 'end') style = `ellipse;fillColor=#4a1d1d;strokeColor=#ef6060;fontColor=#ef6060;fontStyle=1;fontSize=10;`;
+    else if (s.type === 'decision') style = `rhombus;fillColor=#2d2810;strokeColor=#c9a355;fontColor=#c9a355;fontStyle=1;fontSize=10;`;
+    else                       style = `rounded=1;arcSize=12;fillColor=#0d1e2d;strokeColor=#5aabdd;fontColor=#5aabdd;fontStyle=1;fontSize=10;`;
+
+    cells += `<mxCell id="${sid}" value="${esc(s.label||s.type)}" style="${style}" vertex="1" parent="${parentId}"><mxGeometry x="${sx}" y="${sy}" width="${sw}" height="${sh}" as="geometry"/></mxCell>\n`;
+  }
+
+  // Flows
+  for (const f of flows) {
+    const eid = nextId();
+    const src = stepIds[f.from], tgt = stepIds[f.to];
+    if (!src || !tgt) continue;
+    cells += `<mxCell id="${eid}" value="${esc(f.label||'')}" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#a78af5;fontColor=#c9a355;fontSize=9;fontStyle=1;" edge="1" source="${src}" target="${tgt}" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>\n`;
+  }
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    ${cells}
+  </root>
+</mxGraphModel>`;
+
+  const blob = new Blob([xml], { type: 'application/xml' });
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), {
+    href: url,
+    download: (proc.name || 'process').replace(/[^\w-]/g,'_') + '.drawio'
+  });
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════════
 initTipData();
