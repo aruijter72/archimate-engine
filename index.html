@@ -2408,7 +2408,8 @@ function exportAMEFF() {
   let msg = '';
   if (broken.length) msg += t('exp-broken')(broken.length);
   if (msg && !confirm(msg + t('exp-anyway'))) return;
-  const xml  = generateAMEFF();
+  const extLayout = _autoLayout ? computeDagreLayout() : null;
+  const xml  = generateAMEFF(extLayout);
   const blob = new Blob([xml],{type:'application/xml;charset=UTF-8'});
   const url  = URL.createObjectURL(blob);
   Object.assign(document.createElement('a'),{href:url,download:(model.name||'model').replace(/[^\w-]/g,'_')+'_ameff.xml'}).click();
@@ -2424,7 +2425,8 @@ function exportArchimate() {
   if (broken.length)  warn += t('exp-broken')(broken.length);
   if (warn && !confirm(warn + t('exp-anyway'))) return;
 
-  const xml  = generateArchimateXML();
+  const extLayout = _autoLayout ? computeDagreLayout() : null;
+  const xml  = generateArchimateXML(extLayout);
   const blob = new Blob([xml], {type:'application/xml;charset=UTF-8'});
   const url  = URL.createObjectURL(blob);
   const a    = Object.assign(document.createElement('a'), {href:url, download:(model.name||'model').replace(/[^\w-]/g,'_')+'.archimate'});
