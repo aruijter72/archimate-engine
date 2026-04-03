@@ -54,6 +54,7 @@
       gap: 1rem;
     }
     .header-left  { display: flex; align-items: center; gap: 1.25rem; }
+    .header-logo-group { display: flex; align-items: center; gap: .45rem; }
     .header-right { display: flex; gap: .5rem; flex-shrink: 0; }
     .app-logo {
       font-size: 1rem; font-weight: 800; color: var(--gold);
@@ -820,8 +821,11 @@
 <!-- ── App Header ───────────────────────────────────────────── -->
 <header class="app-header">
   <div class="header-left">
-    <img src="Architise-Logo-A.png" alt="Architise" class="architise-a-header">
-    <div class="app-logo"><strong class="logo-gold">Architise</strong> <span class="logo-blue">by Arnold <strong class="logo-gold">Ruijter IT</strong></span></div>
+    <div class="header-logo-group">
+      <img src="Architise-Logo-A.png" alt="Architise" class="architise-a-header">
+      <div class="app-logo"><strong class="logo-gold">Architise</strong></div>
+    </div>
+    <div class="app-logo" style="font-weight:400"><span class="logo-blue">by Arnold Ruijter IT</span></div>
     <input type="text" id="modelName" class="model-name-input"
            value="My Architecture Model" placeholder="Model name…"
            oninput="model.name = this.value">
