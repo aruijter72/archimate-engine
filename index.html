@@ -3240,41 +3240,41 @@ function renderHelp() {
   if (NL) {
     html += `
     <div class="ml-card">
-      <div class="ml-card-head"><span class="ml-card-head-icon">⟳</span> Handleiding Zwembaan (Swimlane)</div>
+      <div class="ml-card-head"><span class="ml-card-head-icon">⟳</span> Handleiding Swimlane</div>
       <div class="ml-card-body">
         <div class="manual-steps">
           <div class="step"><div class="step-num">1</div><div class="step-body">
             <div class="step-title">Een nieuw proces aanmaken</div>
-            <div class="step-desc">Ga naar het tabblad <strong>Zwembaan</strong>. Klik op <code>+ Proces</code> of kies een kant-en-klaar sjabloon via de knop <code>📋 Sjablonen</code>. Geef het proces een naam via het naamveld linksboven in het formulier.</div>
-            <div class="step-tip">💡 U kunt meerdere processen per model aanmaken. Gebruik de processenlijst links om te wisselen.</div>
+            <div class="step-desc">Ga naar het tabblad <strong>Swimlane</strong>. Klik op <code>+ Process</code> of kies een kant-en-klaar sjabloon via de knop <code>📋 Templates</code>. Geef het proces een naam via het naamveld linksboven in het formulier.</div>
+            <div class="step-tip">💡 U kunt meerdere processen per model aanmaken. Gebruik de proceslijst links om te wisselen.</div>
           </div></div>
           <div class="step"><div class="step-num">2</div><div class="step-body">
-            <div class="step-title">Zwembanen (deelnemers) toevoegen</div>
-            <div class="step-desc">Klik op <code>+ Baan</code> om een zwembaan toe te voegen. Een baan vertegenwoordigt één deelnemer in het proces — een persoon, team, systeem of rol. Geef elke baan een beschrijvende naam. U kunt deelnemers ook rechtstreeks importeren vanuit de Bedrijfslaag van uw architectuurmodel via de knop <code>⬇ Importeer uit architectuur</code>.</div>
+            <div class="step-title">Lanes (deelnemers) toevoegen</div>
+            <div class="step-desc">Klik op <code>+ Lane</code> om een swimlane toe te voegen. Een lane vertegenwoordigt één deelnemer in het proces — een persoon, team, systeem of rol. Geef elke lane een beschrijvende naam. U kunt deelnemers ook rechtstreeks importeren vanuit de Business Layer van uw architectuurmodel via de knop <code>⬇ Import from Architecture</code>.</div>
           </div></div>
           <div class="step"><div class="step-num">3</div><div class="step-body">
-            <div class="step-title">Stappen toevoegen</div>
-            <div class="step-desc">Klik op <code>+ Stap</code> om een processtap toe te voegen. Wijs elke stap toe aan een baan. Er zijn vier staptypen:</div>
+            <div class="step-title">Steps toevoegen</div>
+            <div class="step-desc">Klik op <code>+ Step</code> om een processtap toe te voegen. Wijs elke step toe aan een lane. Er zijn vier step types:</div>
             <ul style="margin:.4rem 0 0 1rem;font-size:.82rem;color:var(--muted);line-height:1.8">
               <li><strong style="color:#155724">Start</strong> — het triggerende event dat het proces op gang brengt (groene cirkel).</li>
-              <li><strong style="color:#0C5460">Taak</strong> — een werkeenheid uitgevoerd door de actor in die baan (blauwe afgeronde rechthoek).</li>
-              <li><strong style="color:#664D03">Beslissing</strong> — een vertakkingspunt met meerdere uitkomsten (amber ruit).</li>
-              <li><strong style="color:#721C24">Einde</strong> — de afronding of uitkomst van het proces (rode dubbele cirkel).</li>
+              <li><strong style="color:#0C5460">Task</strong> — een werkeenheid uitgevoerd door de actor in die lane (blauwe afgeronde rechthoek).</li>
+              <li><strong style="color:#664D03">Decision</strong> — een vertakkingspunt met meerdere uitkomsten (amber ruit).</li>
+              <li><strong style="color:#721C24">End</strong> — de afronding of uitkomst van het proces (rode dubbele cirkel).</li>
             </ul>
           </div></div>
           <div class="step"><div class="step-num">4</div><div class="step-body">
-            <div class="step-title">Stromen (pijlen) verbinden</div>
-            <div class="step-desc">Klik op <code>+ Stroom</code> om stappen aan elkaar te koppelen. Selecteer een <strong>Van</strong>-stap en een <strong>Naar</strong>-stap. Voeg optioneel een label toe om een conditie of uitkomst te beschrijven (bijv. "Goedgekeurd" of "Afgewezen" bij een beslissingsstap).</div>
-            <div class="step-tip">💡 Stromen worden automatisch getekend in de voorbeeldweergave. Het diagram past de volgorde aan op basis van de verbindingen die u definieert.</div>
+            <div class="step-title">Flows (pijlen) verbinden</div>
+            <div class="step-desc">Klik op <code>+ Flow</code> om steps aan elkaar te koppelen. Selecteer een <strong>From</strong>-step en een <strong>To</strong>-step. Voeg optioneel een label toe om een conditie of uitkomst te beschrijven (bijv. "Goedgekeurd" of "Afgewezen" bij een Decision-step).</div>
+            <div class="step-tip">💡 Flows worden automatisch getekend in de voorbeeldweergave. Het diagram past de volgorde aan op basis van de verbindingen die u definieert.</div>
           </div></div>
           <div class="step"><div class="step-num">5</div><div class="step-body">
-            <div class="step-title">Rasterweergave (kolommen) gebruiken</div>
-            <div class="step-desc">Klik op <code>+ Kolom</code> om een tweede dimensie toe te voegen — loodrecht op de banen. Gebruik kolommen voor fases, tijdvakken, locaties of externe partners. Wanneer kolommen zijn ingesteld, kunt u elke stap aan zowel een baan als een kolom toewijzen, wat een rasterlayout (matrix) oplevert in het voorbeeld.</div>
+            <div class="step-title">Grid mode (Columns) gebruiken</div>
+            <div class="step-desc">Klik op <code>+ Column</code> om een tweede dimensie toe te voegen — loodrecht op de lanes. Gebruik columns voor fases, tijdvakken, locaties of externe partners. Wanneer columns zijn ingesteld, kunt u elke step aan zowel een lane als een column toewijzen, wat een grid (matrix) oplevert in het voorbeeld.</div>
           </div></div>
           <div class="step"><div class="step-num">6</div><div class="step-body">
             <div class="step-title">Opslaan en exporteren</div>
-            <div class="step-desc">Gebruik <code>💾 Opslaan</code> om het actieve proces op te slaan als een <code>.swimlane.json</code>-bestand. Laad het later opnieuw via <code>📂 Laden</code>. Klik op <code>⬇ Exporteer draw.io XML</code> om een bestand te genereren dat u direct kunt openen in <a href="https://app.diagrams.net" target="_blank" rel="noopener" style="color:var(--gold)">draw.io / diagrams.net</a> voor verdere bewerking en opmaak.</div>
-            <div class="step-tip">💡 De draw.io-export gebruikt een wit achtergrond met lichte kleuren per baan — klaar om af te drukken of te delen.</div>
+            <div class="step-desc">Gebruik <code>💾 Save</code> om het actieve proces op te slaan als een <code>.swimlane.json</code>-bestand. Laad het later opnieuw via <code>📂 Load</code>. Klik op <code>⬇ Export draw.io XML</code> om een bestand te genereren dat u direct kunt openen in <a href="https://app.diagrams.net" target="_blank" rel="noopener" style="color:var(--gold)">draw.io / diagrams.net</a> voor verdere bewerking en opmaak.</div>
+            <div class="step-tip">💡 De draw.io-export gebruikt een witte achtergrond met lichte kleuren per lane — klaar om af te drukken of te delen.</div>
           </div></div>
         </div>
       </div>
