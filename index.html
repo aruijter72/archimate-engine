@@ -3371,7 +3371,6 @@ function renderHelp() {
     </div>`;
 
   // Element types by layer
-  const SECTION_LABELS_NL = { 'Active Structure':'Actieve Structuur', 'Behaviour':'Gedrag', 'Passive Structure':'Passieve Structuur' };
   html += `
     <div class="ml-card" style="margin-bottom:1.25rem">
       <div class="ml-card-head"><span class="ml-card-head-icon">⬡</span> ${legendElemTitle}</div>
@@ -3379,14 +3378,11 @@ function renderHelp() {
 
   for (const [layerKey, config] of Object.entries(LAYER_CONFIG)) {
     const cc = config.colorClass;
-    const layerLabel = NL
-      ? ({'business':'Bedrijfs','application':'Applicatie','technology':'Technologie'}[layerKey]||config.label)
-      : config.label;
-    html += `<div style="margin-bottom:1rem"><div style="font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--${cc}-text);margin-bottom:.5rem;padding:.2rem .5rem;background:var(--${cc}-bg);border-radius:4px;display:inline-block">${layerLabel} ${layerLayerSuffix}</div>`;
+    html += `<div style="margin-bottom:1rem"><div style="font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--${cc}-text);margin-bottom:.5rem;padding:.2rem .5rem;background:var(--${cc}-bg);border-radius:4px;display:inline-block">${config.label} ${layerLayerSuffix}</div>`;
     for (const [secName, types] of Object.entries(config.sections)) {
       const scls = SECTION_CLS[secName] || 'active-struct';
       const scls2 = secName === 'Passive Structure' ? 'passive' : scls;
-      const secLabel = NL ? (SECTION_LABELS_NL[secName]||secName) : secName;
+      const secLabel = secName;
       html += `<div class="legend-elem-group"><div class="legend-group-title ${scls2}">${secLabel}</div><div class="legend-elem-list">`;
       for (const t of types) {
         html += `
