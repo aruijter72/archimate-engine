@@ -3012,9 +3012,17 @@ const REL_RULES = {
 
 function renderHelp() {
   const panel = document.getElementById('tab-help');
+  const NL = currentLang === 'nl';
 
   // ── Layer descriptions ──────────────────────────────────────
-  const layerRows = [
+  const layerRows = NL ? [
+    { cc:'biz',  name:'Bedrijfslaag',       color:'#f5e67a',
+      desc:'Vertegenwoordigt het bedrijfsdomein — actoren, rollen, processen, services en objecten op organisatieniveau. Traditioneel weergegeven in <strong>geel</strong>.' },
+    { cc:'app',  name:'Applicatielaag',     color:'#7adaf5',
+      desc:'Vertegenwoordigt softwarecomponenten, hun gedrag (functies, services) en de gegevens die ze verwerken. Traditioneel weergegeven in <strong>lichtblauw / cyaan</strong>.' },
+    { cc:'tech', name:'Technologielaag',    color:'#7af5a0',
+      desc:'Vertegenwoordigt infrastructuur — hardware, systeemsoftware, netwerken en fysieke middelen die de applicatie- en bedrijfslagen ondersteunen. Traditioneel weergegeven in <strong>lichtgroen</strong>.' }
+  ] : [
     { cc:'biz',  name:'Business Layer',     color:'#f5e67a',
       desc:'Represents the business domain — actors, roles, processes, services, and objects at the organisational level. Traditionally shown in <strong>yellow</strong>.' },
     { cc:'app',  name:'Application Layer',  color:'#7adaf5',
@@ -3024,7 +3032,14 @@ function renderHelp() {
   ];
 
   // ── Aspect descriptions ─────────────────────────────────────
-  const aspectRows = [
+  const aspectRows = NL ? [
+    { cls:'active-struct', color:'var(--blue)',  name:'Actieve Structuur',
+      desc:'Entiteiten die gedrag uitvoeren — actoren, componenten, knooppunten, enz. Zij "doen" dingen.' },
+    { cls:'behaviour',     color:'var(--gold)',  name:'Gedrag',
+      desc:'Acties of processen uitgevoerd door actieve structuur — processen, functies, services, gebeurtenissen.' },
+    { cls:'passive',       color:'var(--muted)', name:'Passieve Structuur',
+      desc:'Objecten waarop wordt gehandeld — bedrijfsobjecten, gegevensobjecten, artefacten. Ze worden "gebruikt" of "geproduceerd".' }
+  ] : [
     { cls:'active-struct', color:'var(--blue)',  name:'Active Structure',
       desc:'Entities that perform behaviour — actors, components, nodes, etc. They "do" things.' },
     { cls:'behaviour',     color:'var(--gold)',  name:'Behaviour',
@@ -3038,141 +3053,277 @@ function renderHelp() {
   // ═══════════════════════════════════════════════════════════
   // LEFT COLUMN — Manual
   // ═══════════════════════════════════════════════════════════
-  html += `
-  <div>
+  html += `<div>`;
+
+  // ── ArchiMate Quick Start ──────────────────────────────────
+  if (NL) {
+    html += `
     <div class="ml-card" style="margin-bottom:1.25rem">
-      <div class="ml-card-head"><span class="ml-card-head-icon">📖</span> Quick Start Guide</div>
+      <div class="ml-card-head"><span class="ml-card-head-icon">📖</span> Snelstartgids ArchiMate</div>
       <div class="ml-card-body">
         <div class="manual-steps">
-          <div class="step">
-            <div class="step-num">1</div>
-            <div class="step-body">
-              <div class="step-title">Name your model</div>
-              <div class="step-desc">Enter a name in the <code>Model name</code> field in the header, and optionally a description in the bar below it. Both appear in the exported file.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">2</div>
-            <div class="step-body">
-              <div class="step-title">Add elements per layer</div>
-              <div class="step-desc">Navigate to the <strong>Business</strong>, <strong>Application</strong>, or <strong>Technology</strong> tab. Each tab is divided into three ArchiMate aspects: Active Structure, Behaviour, and Passive Structure. Click <code>+ [Type]</code> to add an element of that type.</div>
-              <div class="step-tip">💡 You can add as many elements as needed. Each element supports a <strong>Name</strong>, free-text <strong>Documentation</strong>, and unlimited custom <strong>Properties</strong> (key / value pairs).</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">3</div>
-            <div class="step-body">
-              <div class="step-title">Fill in element details</div>
-              <div class="step-desc">For every element, enter at minimum a clear <strong>Name</strong>. The Documentation field accepts free-form text. Use Properties for any custom attributes (e.g. <code>owner</code>, <code>system</code>, <code>version</code>).</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">4</div>
-            <div class="step-body">
-              <div class="step-title">Define relationships</div>
-              <div class="step-desc">Go to the <strong>Relationships</strong> tab. Click <code>+ Add Relationship</code>, then select a <strong>Source</strong>, a <strong>Relationship Type</strong>, and a <strong>Target</strong>. Each type has specific ArchiMate semantics — consult the reference card or the Legend below.</div>
-              <div class="step-tip">💡 Some types have extra options: <em>Association</em> can be directed; <em>Access</em> requires a Read/Write direction; <em>Influence</em> accepts a strength value.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">5</div>
-            <div class="step-body">
-              <div class="step-title">Save your work (JSON)</div>
-              <div class="step-desc">Click <code>💾 Save JSON</code> to download your model as a <code>.json</code> file. Reload it at any time with <code>📂 Load JSON</code>. The JSON preserves all elements, relationships, properties, and documentation.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">6</div>
-            <div class="step-body">
-              <div class="step-title">Export to Archi</div>
-              <div class="step-desc">Click <code>⬇ Export .archimate</code>. Open the downloaded file in <a href="https://www.archimatetool.com" target="_blank" rel="noopener" style="color:var(--gold)">Archi</a> (free tool). All elements appear in the correct folders with their ArchiMate icons, shapes, and a default diagram view with all connections.</div>
-              <div class="step-tip">💡 In Archi you can rearrange the diagram, add colours, create multiple views, and apply the full ArchiMate notation including icons specific to each element type.</div>
-            </div>
-          </div>
+          <div class="step"><div class="step-num">1</div><div class="step-body">
+            <div class="step-title">Geef uw model een naam</div>
+            <div class="step-desc">Voer een naam in het veld <code>Modelnaam</code> in de koptekst in, en optioneel een beschrijving in de balk eronder. Beide verschijnen in het geëxporteerde bestand.</div>
+          </div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body">
+            <div class="step-title">Elementen per laag toevoegen</div>
+            <div class="step-desc">Navigeer naar het tabblad <strong>Bedrijfslaag</strong>, <strong>Applicatielaag</strong> of <strong>Technologielaag</strong>. Elk tabblad is verdeeld in drie ArchiMate-aspecten: Actieve Structuur, Gedrag en Passieve Structuur. Klik op <code>+ [Type]</code> om een element van dat type toe te voegen.</div>
+            <div class="step-tip">💡 U kunt zoveel elementen toevoegen als nodig. Elk element ondersteunt een <strong>Naam</strong>, vrije tekst <strong>Documentatie</strong> en onbeperkte aangepaste <strong>Eigenschappen</strong> (sleutel/waarde-paren).</div>
+          </div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body">
+            <div class="step-title">Elementdetails invullen</div>
+            <div class="step-desc">Voer voor elk element minimaal een duidelijke <strong>Naam</strong> in. Het documentatieveld accepteert vrije tekst. Gebruik Eigenschappen voor aangepaste attributen (bijv. <code>eigenaar</code>, <code>systeem</code>, <code>versie</code>).</div>
+          </div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body">
+            <div class="step-title">Relaties definiëren</div>
+            <div class="step-desc">Ga naar het tabblad <strong>Relaties</strong>. Klik op <code>+ Relatie toevoegen</code>, selecteer een <strong>Bron</strong>, een <strong>Relatietype</strong> en een <strong>Doel</strong>. Elk type heeft specifieke ArchiMate-semantiek — raadpleeg de referentiekaart of de Legenda hieronder.</div>
+            <div class="step-tip">💡 Sommige typen hebben extra opties: <em>Associatie</em> kan gericht zijn; <em>Toegang</em> vereist een lees/schrijf-richting; <em>Invloed</em> accepteert een sterkte-waarde.</div>
+          </div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body">
+            <div class="step-title">Werk opslaan (JSON)</div>
+            <div class="step-desc">Klik op <code>💾 Opslaan JSON</code> om uw model te downloaden als een <code>.json</code>-bestand. Laad het op elk moment opnieuw met <code>📂 Laden JSON</code>. De JSON bewaart alle elementen, relaties, eigenschappen en documentatie.</div>
+          </div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-body">
+            <div class="step-title">Exporteren naar Archi</div>
+            <div class="step-desc">Klik op <code>⬇ Exporteer .archimate</code>. Open het gedownloade bestand in <a href="https://www.archimatetool.com" target="_blank" rel="noopener" style="color:var(--gold)">Archi</a> (gratis tool). Alle elementen verschijnen in de juiste mappen met hun ArchiMate-iconen, vormen en een standaard diagramweergave met alle verbindingen.</div>
+            <div class="step-tip">💡 In Archi kunt u het diagram herschikken, kleuren toevoegen, meerdere weergaven aanmaken en de volledige ArchiMate-notatie toepassen inclusief iconen specifiek voor elk elementtype.</div>
+          </div></div>
         </div>
       </div>
     </div>
 
-    <div class="ml-card">
+    <div class="ml-card" style="margin-bottom:1.25rem">
       <div class="ml-card-head"><span class="ml-card-head-icon">💡</span> Tips &amp; Best Practices</div>
       <div class="ml-card-body">
         <div class="manual-steps">
-          <div class="step">
-            <div class="step-num">▸</div>
-            <div class="step-body">
-              <div class="step-title">Start with the Business layer</div>
-              <div class="step-desc">Model actors, roles, and processes first. Then identify the applications that support them (Application layer), and the infrastructure that runs the applications (Technology layer).</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">▸</div>
-            <div class="step-body">
-              <div class="step-title">Use Serving for cross-layer support</div>
-              <div class="step-desc">The <em>Serving</em> relationship is the standard way to show that an Application Component supports a Business Process, or a Node hosts an Application Component.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">▸</div>
-            <div class="step-body">
-              <div class="step-title">Assignment links actors to behaviour</div>
-              <div class="step-desc">Use <em>Assignment</em> to connect a Business Actor or Role to the Business Process or Function they perform. Similarly, use it to assign an Application Component to its Application Function.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">▸</div>
-            <div class="step-body">
-              <div class="step-title">Realization for services</div>
-              <div class="step-desc">A Business Process <em>realizes</em> a Business Service. An Application Function <em>realizes</em> an Application Service. This separates the "what" (service) from the "how" (process/function).</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">▸</div>
-            <div class="step-body">
-              <div class="step-title">Use Documentation and Properties</div>
-              <div class="step-desc">Documentation supports free-text descriptions and is exported to Archi's element documentation field. Custom properties appear as key-value pairs and are searchable/filterable in Archi.</div>
-            </div>
-          </div>
+          <div class="step"><div class="step-num">▸</div><div class="step-body">
+            <div class="step-title">Begin met de Bedrijfslaag</div>
+            <div class="step-desc">Modelleer eerst actoren, rollen en processen. Identificeer vervolgens de applicaties die hen ondersteunen (Applicatielaag) en de infrastructuur die de applicaties uitvoert (Technologielaag).</div>
+          </div></div>
+          <div class="step"><div class="step-num">▸</div><div class="step-body">
+            <div class="step-title">Gebruik Dienstverlening voor laagdoorsnijdende ondersteuning</div>
+            <div class="step-desc">De <em>Dienstverlening</em>-relatie is de standaardmanier om aan te geven dat een Applicatiecomponent een Bedrijfsproces ondersteunt, of dat een Knooppunt een Applicatiecomponent host.</div>
+          </div></div>
+          <div class="step"><div class="step-num">▸</div><div class="step-body">
+            <div class="step-title">Toewijzing koppelt actoren aan gedrag</div>
+            <div class="step-desc">Gebruik <em>Toewijzing</em> om een Bedrijfsactor of Rol te koppelen aan het Bedrijfsproces of de Functie die zij uitvoeren. Gebruik het eveneens om een Applicatiecomponent aan zijn Applicatiefunctie toe te wijzen.</div>
+          </div></div>
+          <div class="step"><div class="step-num">▸</div><div class="step-body">
+            <div class="step-title">Realisatie voor services</div>
+            <div class="step-desc">Een Bedrijfsproces <em>realiseert</em> een Bedrijfsservice. Een Applicatiefunctie <em>realiseert</em> een Applicatieservice. Dit scheidt het "wat" (service) van het "hoe" (proces/functie).</div>
+          </div></div>
+          <div class="step"><div class="step-num">▸</div><div class="step-body">
+            <div class="step-title">Gebruik Documentatie en Eigenschappen</div>
+            <div class="step-desc">Documentatie ondersteunt vrije-tekst beschrijvingen en wordt geëxporteerd naar het documentatieveld van Archi. Aangepaste eigenschappen verschijnen als sleutel-waarde-paren en zijn doorzoekbaar/filterbaar in Archi.</div>
+          </div></div>
         </div>
       </div>
     </div>
 
-    <div class="ml-card" style="margin-top:1.25rem">
-      <div class="ml-card-head"><span class="ml-card-head-icon">🔗</span> Connectors in Archi — Constraints &amp; Customisation</div>
+    <div class="ml-card" style="margin-bottom:1.25rem">
+      <div class="ml-card-head"><span class="ml-card-head-icon">🔗</span> Verbindingen in Archi — Beperkingen &amp; Aanpassing</div>
       <div class="ml-card-body">
         <div class="manual-steps">
-          <div class="step">
-            <div class="step-num">!</div>
-            <div class="step-body">
-              <div class="step-title">Why can I only use certain connectors?</div>
-              <div class="step-desc">ArchiMate defines a <strong>metamodel</strong> — a formal set of rules specifying which relationship types are valid between which element types. For example, an <em>Access</em> relationship is only valid from a behaviour element (such as a Process or Function) to a passive structure element (such as a Data Object). Archi enforces these rules and will not let you draw connections that violate the metamodel.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">!</div>
-            <div class="step-body">
-              <div class="step-title">Adjusting visible connectors in Archi</div>
-              <div class="step-desc">In Archi, navigate to <code>Edit → Preferences → Connections</code>. Here you can toggle which relationship types are shown or hidden for each source/target element combination. This simplifies a busy diagram without removing the underlying relationships from the model.</div>
-              <div class="step-tip">💡 Hiding a connector type in Preferences only affects what is drawn on screen — the relationship is still stored in the model and included in any export.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">!</div>
-            <div class="step-body">
-              <div class="step-title">Derived relationships</div>
-              <div class="step-desc">ArchiMate allows certain relationships to be <em>derived</em> — automatically inferred from a chain of existing direct relationships. Archi can display these as dashed connectors in a view. Whether a derived relationship is valid is determined solely by the metamodel and cannot be customised by the user.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num">!</div>
-            <div class="step-body">
-              <div class="step-title">Use Association when unsure</div>
-              <div class="step-desc">The <em>Association</em> relationship is always valid between any two elements in any layer and can optionally be directed. When you are unsure which precise relationship type applies, Association is the safe default. You can always refine it to a more specific type once the intent is clear.</div>
-            </div>
-          </div>
+          <div class="step"><div class="step-num">!</div><div class="step-body">
+            <div class="step-title">Waarom kan ik alleen bepaalde verbindingen gebruiken?</div>
+            <div class="step-desc">ArchiMate definieert een <strong>metamodel</strong> — een formele set regels die bepaalt welke relatietypen geldig zijn tussen welke elementtypen. Archi handhaaft deze regels en laat u geen verbindingen tekenen die het metamodel schenden.</div>
+          </div></div>
+          <div class="step"><div class="step-num">!</div><div class="step-body">
+            <div class="step-title">Zichtbare verbindingen aanpassen in Archi</div>
+            <div class="step-desc">Navigeer in Archi naar <code>Bewerken → Voorkeuren → Verbindingen</code>. Hier kunt u per bron/doel-combinatie instellen welke relatietypen worden getoond of verborgen. Dit vereenvoudigt een druk diagram zonder de onderliggende relaties uit het model te verwijderen.</div>
+            <div class="step-tip">💡 Het verbergen van een verbindingstype in Voorkeuren beïnvloedt alleen wat op het scherm wordt getekend — de relatie wordt nog steeds opgeslagen in het model en meegenomen in elke export.</div>
+          </div></div>
+          <div class="step"><div class="step-num">!</div><div class="step-body">
+            <div class="step-title">Afgeleide relaties</div>
+            <div class="step-desc">ArchiMate staat toe dat bepaalde relaties worden <em>afgeleid</em> — automatisch geconcludeerd uit een keten van bestaande directe relaties. Archi kan deze weergeven als gestippelde verbindingen in een weergave. Of een afgeleide relatie geldig is, wordt uitsluitend bepaald door het metamodel.</div>
+          </div></div>
+          <div class="step"><div class="step-num">!</div><div class="step-body">
+            <div class="step-title">Gebruik Associatie bij twijfel</div>
+            <div class="step-desc">De <em>Associatie</em>-relatie is altijd geldig tussen twee willekeurige elementen in elke laag en kan optioneel gericht zijn. Wanneer u niet zeker weet welk precieze relatietype van toepassing is, is Associatie de veilige standaard.</div>
+          </div></div>
+        </div>
+      </div>
+    </div>`;
+  } else {
+    html += `
+    <div class="ml-card" style="margin-bottom:1.25rem">
+      <div class="ml-card-head"><span class="ml-card-head-icon">📖</span> Quick Start Guide — ArchiMate</div>
+      <div class="ml-card-body">
+        <div class="manual-steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body">
+            <div class="step-title">Name your model</div>
+            <div class="step-desc">Enter a name in the <code>Model name</code> field in the header, and optionally a description in the bar below it. Both appear in the exported file.</div>
+          </div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body">
+            <div class="step-title">Add elements per layer</div>
+            <div class="step-desc">Navigate to the <strong>Business</strong>, <strong>Application</strong>, or <strong>Technology</strong> tab. Each tab is divided into three ArchiMate aspects: Active Structure, Behaviour, and Passive Structure. Click <code>+ [Type]</code> to add an element of that type.</div>
+            <div class="step-tip">💡 You can add as many elements as needed. Each element supports a <strong>Name</strong>, free-text <strong>Documentation</strong>, and unlimited custom <strong>Properties</strong> (key / value pairs).</div>
+          </div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body">
+            <div class="step-title">Fill in element details</div>
+            <div class="step-desc">For every element, enter at minimum a clear <strong>Name</strong>. The Documentation field accepts free-form text. Use Properties for any custom attributes (e.g. <code>owner</code>, <code>system</code>, <code>version</code>).</div>
+          </div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body">
+            <div class="step-title">Define relationships</div>
+            <div class="step-desc">Go to the <strong>Relationships</strong> tab. Click <code>+ Add Relationship</code>, then select a <strong>Source</strong>, a <strong>Relationship Type</strong>, and a <strong>Target</strong>. Each type has specific ArchiMate semantics — consult the reference card or the Legend below.</div>
+            <div class="step-tip">💡 Some types have extra options: <em>Association</em> can be directed; <em>Access</em> requires a Read/Write direction; <em>Influence</em> accepts a strength value.</div>
+          </div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body">
+            <div class="step-title">Save your work (JSON)</div>
+            <div class="step-desc">Click <code>💾 Save JSON</code> to download your model as a <code>.json</code> file. Reload it at any time with <code>📂 Load JSON</code>. The JSON preserves all elements, relationships, properties, and documentation.</div>
+          </div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-body">
+            <div class="step-title">Export to Archi</div>
+            <div class="step-desc">Click <code>⬇ Export .archimate</code>. Open the downloaded file in <a href="https://www.archimatetool.com" target="_blank" rel="noopener" style="color:var(--gold)">Archi</a> (free tool). All elements appear in the correct folders with their ArchiMate icons, shapes, and a default diagram view with all connections.</div>
+            <div class="step-tip">💡 In Archi you can rearrange the diagram, add colours, create multiple views, and apply the full ArchiMate notation including icons specific to each element type.</div>
+          </div></div>
         </div>
       </div>
     </div>
-  </div>`;
+
+    <div class="ml-card" style="margin-bottom:1.25rem">
+      <div class="ml-card-head"><span class="ml-card-head-icon">💡</span> Tips &amp; Best Practices</div>
+      <div class="ml-card-body">
+        <div class="manual-steps">
+          <div class="step"><div class="step-num">▸</div><div class="step-body">
+            <div class="step-title">Start with the Business layer</div>
+            <div class="step-desc">Model actors, roles, and processes first. Then identify the applications that support them (Application layer), and the infrastructure that runs the applications (Technology layer).</div>
+          </div></div>
+          <div class="step"><div class="step-num">▸</div><div class="step-body">
+            <div class="step-title">Use Serving for cross-layer support</div>
+            <div class="step-desc">The <em>Serving</em> relationship is the standard way to show that an Application Component supports a Business Process, or a Node hosts an Application Component.</div>
+          </div></div>
+          <div class="step"><div class="step-num">▸</div><div class="step-body">
+            <div class="step-title">Assignment links actors to behaviour</div>
+            <div class="step-desc">Use <em>Assignment</em> to connect a Business Actor or Role to the Business Process or Function they perform. Similarly, use it to assign an Application Component to its Application Function.</div>
+          </div></div>
+          <div class="step"><div class="step-num">▸</div><div class="step-body">
+            <div class="step-title">Realization for services</div>
+            <div class="step-desc">A Business Process <em>realizes</em> a Business Service. An Application Function <em>realizes</em> an Application Service. This separates the "what" (service) from the "how" (process/function).</div>
+          </div></div>
+          <div class="step"><div class="step-num">▸</div><div class="step-body">
+            <div class="step-title">Use Documentation and Properties</div>
+            <div class="step-desc">Documentation supports free-text descriptions and is exported to Archi's element documentation field. Custom properties appear as key-value pairs and are searchable/filterable in Archi.</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ml-card" style="margin-bottom:1.25rem">
+      <div class="ml-card-head"><span class="ml-card-head-icon">🔗</span> Connectors in Archi — Constraints &amp; Customisation</div>
+      <div class="ml-card-body">
+        <div class="manual-steps">
+          <div class="step"><div class="step-num">!</div><div class="step-body">
+            <div class="step-title">Why can I only use certain connectors?</div>
+            <div class="step-desc">ArchiMate defines a <strong>metamodel</strong> — a formal set of rules specifying which relationship types are valid between which element types. For example, an <em>Access</em> relationship is only valid from a behaviour element (such as a Process or Function) to a passive structure element (such as a Data Object). Archi enforces these rules and will not let you draw connections that violate the metamodel.</div>
+          </div></div>
+          <div class="step"><div class="step-num">!</div><div class="step-body">
+            <div class="step-title">Adjusting visible connectors in Archi</div>
+            <div class="step-desc">In Archi, navigate to <code>Edit → Preferences → Connections</code>. Here you can toggle which relationship types are shown or hidden for each source/target element combination. This simplifies a busy diagram without removing the underlying relationships from the model.</div>
+            <div class="step-tip">💡 Hiding a connector type in Preferences only affects what is drawn on screen — the relationship is still stored in the model and included in any export.</div>
+          </div></div>
+          <div class="step"><div class="step-num">!</div><div class="step-body">
+            <div class="step-title">Derived relationships</div>
+            <div class="step-desc">ArchiMate allows certain relationships to be <em>derived</em> — automatically inferred from a chain of existing direct relationships. Archi can display these as dashed connectors in a view. Whether a derived relationship is valid is determined solely by the metamodel and cannot be customised by the user.</div>
+          </div></div>
+          <div class="step"><div class="step-num">!</div><div class="step-body">
+            <div class="step-title">Use Association when unsure</div>
+            <div class="step-desc">The <em>Association</em> relationship is always valid between any two elements in any layer and can optionally be directed. When you are unsure which precise relationship type applies, Association is the safe default. You can always refine it to a more specific type once the intent is clear.</div>
+          </div></div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ── Swimlane Manual ────────────────────────────────────────
+  if (NL) {
+    html += `
+    <div class="ml-card">
+      <div class="ml-card-head"><span class="ml-card-head-icon">⟳</span> Handleiding Zwembaan (Swimlane)</div>
+      <div class="ml-card-body">
+        <div class="manual-steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body">
+            <div class="step-title">Een nieuw proces aanmaken</div>
+            <div class="step-desc">Ga naar het tabblad <strong>Zwembaan</strong>. Klik op <code>+ Proces</code> of kies een kant-en-klaar sjabloon via de knop <code>📋 Sjablonen</code>. Geef het proces een naam via het naamveld linksboven in het formulier.</div>
+            <div class="step-tip">💡 U kunt meerdere processen per model aanmaken. Gebruik de processenlijst links om te wisselen.</div>
+          </div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body">
+            <div class="step-title">Zwembanen (deelnemers) toevoegen</div>
+            <div class="step-desc">Klik op <code>+ Baan</code> om een zwembaan toe te voegen. Een baan vertegenwoordigt één deelnemer in het proces — een persoon, team, systeem of rol. Geef elke baan een beschrijvende naam. U kunt deelnemers ook rechtstreeks importeren vanuit de Bedrijfslaag van uw architectuurmodel via de knop <code>⬇ Importeer uit architectuur</code>.</div>
+          </div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body">
+            <div class="step-title">Stappen toevoegen</div>
+            <div class="step-desc">Klik op <code>+ Stap</code> om een processtap toe te voegen. Wijs elke stap toe aan een baan. Er zijn vier staptypen:</div>
+            <ul style="margin:.4rem 0 0 1rem;font-size:.82rem;color:var(--muted);line-height:1.8">
+              <li><strong style="color:#155724">Start</strong> — het triggerende event dat het proces op gang brengt (groene cirkel).</li>
+              <li><strong style="color:#0C5460">Taak</strong> — een werkeenheid uitgevoerd door de actor in die baan (blauwe afgeronde rechthoek).</li>
+              <li><strong style="color:#664D03">Beslissing</strong> — een vertakkingspunt met meerdere uitkomsten (amber ruit).</li>
+              <li><strong style="color:#721C24">Einde</strong> — de afronding of uitkomst van het proces (rode dubbele cirkel).</li>
+            </ul>
+          </div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body">
+            <div class="step-title">Stromen (pijlen) verbinden</div>
+            <div class="step-desc">Klik op <code>+ Stroom</code> om stappen aan elkaar te koppelen. Selecteer een <strong>Van</strong>-stap en een <strong>Naar</strong>-stap. Voeg optioneel een label toe om een conditie of uitkomst te beschrijven (bijv. "Goedgekeurd" of "Afgewezen" bij een beslissingsstap).</div>
+            <div class="step-tip">💡 Stromen worden automatisch getekend in de voorbeeldweergave. Het diagram past de volgorde aan op basis van de verbindingen die u definieert.</div>
+          </div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body">
+            <div class="step-title">Rasterweergave (kolommen) gebruiken</div>
+            <div class="step-desc">Klik op <code>+ Kolom</code> om een tweede dimensie toe te voegen — loodrecht op de banen. Gebruik kolommen voor fases, tijdvakken, locaties of externe partners. Wanneer kolommen zijn ingesteld, kunt u elke stap aan zowel een baan als een kolom toewijzen, wat een rasterlayout (matrix) oplevert in het voorbeeld.</div>
+          </div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-body">
+            <div class="step-title">Opslaan en exporteren</div>
+            <div class="step-desc">Gebruik <code>💾 Opslaan</code> om het actieve proces op te slaan als een <code>.swimlane.json</code>-bestand. Laad het later opnieuw via <code>📂 Laden</code>. Klik op <code>⬇ Exporteer draw.io XML</code> om een bestand te genereren dat u direct kunt openen in <a href="https://app.diagrams.net" target="_blank" rel="noopener" style="color:var(--gold)">draw.io / diagrams.net</a> voor verdere bewerking en opmaak.</div>
+            <div class="step-tip">💡 De draw.io-export gebruikt een wit achtergrond met lichte kleuren per baan — klaar om af te drukken of te delen.</div>
+          </div></div>
+        </div>
+      </div>
+    </div>`;
+  } else {
+    html += `
+    <div class="ml-card">
+      <div class="ml-card-head"><span class="ml-card-head-icon">⟳</span> Swimlane Module Guide</div>
+      <div class="ml-card-body">
+        <div class="manual-steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body">
+            <div class="step-title">Create a new process</div>
+            <div class="step-desc">Go to the <strong>Swimlane</strong> tab. Click <code>+ Process</code> or pick a ready-made starting point via the <code>📋 Templates</code> button. Give the process a name using the name field at the top-left of the form.</div>
+            <div class="step-tip">💡 You can create multiple processes per model. Use the process list on the left to switch between them.</div>
+          </div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body">
+            <div class="step-title">Add lanes (participants)</div>
+            <div class="step-desc">Click <code>+ Lane</code> to add a swimlane. A lane represents a single participant in the process — a person, team, system, or role. Give each lane a descriptive name. You can also import participants directly from your architecture model's Business layer via the <code>⬇ Import from Architecture</code> button.</div>
+          </div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body">
+            <div class="step-title">Add steps</div>
+            <div class="step-desc">Click <code>+ Step</code> to add a process step. Assign each step to a lane. There are four step types:</div>
+            <ul style="margin:.4rem 0 0 1rem;font-size:.82rem;color:var(--muted);line-height:1.8">
+              <li><strong style="color:#155724">Start</strong> — the triggering event that initiates the process (green circle).</li>
+              <li><strong style="color:#0C5460">Task</strong> — a unit of work performed by the actor in that lane (blue rounded rectangle).</li>
+              <li><strong style="color:#664D03">Decision</strong> — a branching point with multiple possible outcomes (amber diamond).</li>
+              <li><strong style="color:#721C24">End</strong> — the completion or outcome of the process (red double circle).</li>
+            </ul>
+          </div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body">
+            <div class="step-title">Connect flows (arrows)</div>
+            <div class="step-desc">Click <code>+ Flow</code> to link steps together. Select a <strong>From</strong> step and a <strong>To</strong> step. Optionally add a label to describe a condition or outcome (e.g. "Approved" or "Rejected" on a decision step).</div>
+            <div class="step-tip">💡 Flows are drawn automatically in the preview. The diagram adjusts ordering based on the connections you define.</div>
+          </div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body">
+            <div class="step-title">Use grid mode (columns)</div>
+            <div class="step-desc">Click <code>+ Column</code> to add a second dimension — perpendicular to the lanes. Use columns for phases, time periods, locations, or external partners. When columns are set up, you can assign each step to both a lane and a column, producing a grid (matrix) layout in the preview.</div>
+          </div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-body">
+            <div class="step-title">Save and export</div>
+            <div class="step-desc">Use <code>💾 Save</code> to save the active process as a <code>.swimlane.json</code> file. Reload it later via <code>📂 Load</code>. Click <code>⬇ Export draw.io XML</code> to generate a file you can open directly in <a href="https://app.diagrams.net" target="_blank" rel="noopener" style="color:var(--gold)">draw.io / diagrams.net</a> for further editing and formatting.</div>
+            <div class="step-tip">💡 The draw.io export uses a white background with light pastel lane colours — ready to print or share.</div>
+          </div></div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  html += `</div>`; // close left column
 
   // ═══════════════════════════════════════════════════════════
   // RIGHT COLUMN — Legend
