@@ -256,9 +256,10 @@
       text-transform: uppercase; color: var(--muted);
     }
     .proc-svg-wrap {
-      background: var(--surface); border: 1px solid var(--border);
+      background: #ffffff; border: 1px solid var(--border);
       border-radius: var(--radius); overflow: auto;
       min-height: 260px; max-height: 72vh;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
     }
     .proc-svg-empty {
       display: flex; align-items: center; justify-content: center;
@@ -3782,8 +3783,8 @@ function renderProcPreview() {
       const a = sPos[f.from], b = sPos[f.to]; if (!a||!b) continue;
       const d = Math.abs(a.cy-b.cy)<5 ? `M${a.cx} ${a.cy} L${b.cx} ${b.cy}`
         : `M${a.cx} ${a.cy} C${(a.cx+b.cx)/2} ${a.cy} ${(a.cx+b.cx)/2} ${b.cy} ${b.cx} ${b.cy}`;
-      svg += `<path d="${d}" fill="none" stroke="${PROC_C}" stroke-width="1.5" opacity=".65" marker-end="url(#pa)"/>`;
-      if (f.label) svg += `<text x="${(a.cx+b.cx)/2}" y="${(a.cy+b.cy)/2-5}" text-anchor="middle" font-size="9" fill="#c9a355" opacity=".9">${esc(f.label)}</text>`;
+      svg += `<path d="${d}" fill="none" stroke="#7c5cbf" stroke-width="1.5" marker-end="url(#pa)"/>`;
+      if (f.label) svg += `<text x="${(a.cx+b.cx)/2}" y="${(a.cy+b.cy)/2-5}" text-anchor="middle" font-size="9" fill="#7c5cbf">${esc(f.label)}</text>`;
     }
 
     svg += _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww);
