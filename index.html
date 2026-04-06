@@ -2360,6 +2360,99 @@ function updateStats() {
 }
 
 // ══════════════════════════════════════════════════════════════
+// TOAST NOTIFICATION
+// ══════════════════════════════════════════════════════════════
+function showToast(msg, type) {
+  const t = document.createElement('div');
+  t.innerHTML = msg;
+  const border = type === 'gold' ? 'var(--gold)'
+               : type === 'proc' ? 'var(--proc-border)'
+               : type === 'err'  ? 'rgba(239,68,68,.6)'
+               : 'var(--border)';
+  const color  = type === 'gold' ? 'var(--gold)'
+               : type === 'proc' ? 'var(--proc-text)'
+               : type === 'err'  ? '#ef8888'
+               : 'var(--white)';
+  Object.assign(t.style, {
+    position:'fixed', bottom:'1.5rem', left:'50%', transform:'translateX(-50%)',
+    background:'var(--surface2)', border:`1px solid ${border}`, color,
+    padding:'.55rem 1.25rem', borderRadius:'7px', fontSize:'.82rem', fontWeight:'600',
+    zIndex:'9999', pointerEvents:'none', boxShadow:'0 4px 16px rgba(0,0,0,.4)',
+    whiteSpace:'nowrap', transition:'opacity .3s'
+  });
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 320); }, 2700);
+}
+
+// ══════════════════════════════════════════════════════════════
+// MENU BAR
+// ══════════════════════════════════════════════════════════════
+function toggleMenu(name) {
+  const dd  = document.getElementById('menu-' + name + '-dd');
+  const btn = document.getElementById('menu-' + name + '-btn');
+  if (!dd) return;
+  const wasOpen = dd.classList.contains('open');
+  closeMenus();
+  if (!wasOpen) { dd.classList.add('open'); btn.classList.add('open'); }
+}
+function closeMenus() {
+  document.querySelectorAll('.menu-dropdown.open').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.menu-trigger.open').forEach(b => b.classList.remove('open'));
+}
+document.addEventListener('click', e => { if (!e.target.closest('.menu-item')) closeMenus(); });
+
+// ══════════════════════════════════════════════════════════════
+// NEW MODEL
+// ══════════════════════════════════════════════════════════════
+function newModel() {
+  const NL = currentLang === 'nl';
+  const msg = NL
+    ? 'Nieuw model aanmaken? Niet-opgeslagen wijzigingen gaan verloren.'
+    : 'Start a new model? Unsaved changes will be lost.';
+  if (!confirm(msg)) return;
+  model = { name: NL ? 'Nieuw Model' : 'New Model', documentation: '', elements: [], relationships: [] };
+  document.getElementById('modelName').value = model.name;
+  document.getElementById('modelDoc').value  = '';
+  renderAll(); updateStats();
+  showToast(NL ? '🆕 Nieuw model aangemaakt' : '🆕 New model created');
+}
+
+// ══════════════════════════════════════════════════════════════
+// SAVE AS
+// ══════════════════════════════════════════════════════════════
+async function saveModelAs() {
+  const NL          = currentLang === 'nl';
+  const defaultName = (model.name || 'model').replace(/[^\w\- ]/g, '_') + '.json';
+  const json        = JSON.stringify(model, null, 2);
+
+  // Modern browser: native Save dialog with chosen folder + filename
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: defaultName,
+        types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(json);
+      await writable.close();
+      showToast(NL ? '💾 Bestand opgeslagen' : '💾 File saved', 'gold');
+      return;
+    } catch(e) { if (e.name === 'AbortError') return; }
+  }
+
+  // Fallback: prompt for name then trigger download
+  const name = prompt(NL ? 'Bestandsnaam:' : 'File name:', defaultName);
+  if (!name) return;
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), {
+    href: url, download: name.endsWith('.json') ? name : name + '.json'
+  });
+  a.click(); URL.revokeObjectURL(url);
+  showToast(NL ? '💾 Bestand opgeslagen' : '💾 File saved', 'gold');
+}
+
+// ══════════════════════════════════════════════════════════════
 // TAB NAVIGATION
 // ══════════════════════════════════════════════════════════════
 function showTab(tab) {
