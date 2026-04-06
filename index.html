@@ -847,6 +847,42 @@
     }
     .notation-label { color: var(--white); font-weight: 600; min-width: 90px; }
     .notation-desc  { color: var(--muted); }
+
+    /* ── Menu bar ─────────────────────────────────────────────── */
+    .menu-bar { display: flex; align-items: center; gap: .25rem; }
+    .menu-item { position: relative; }
+    .menu-trigger {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--muted); font-size: .8rem; font-weight: 600;
+      padding: .32rem .72rem; border-radius: var(--radius);
+      cursor: pointer; font-family: inherit; transition: all .18s;
+      display: flex; align-items: center; gap: .35rem; white-space: nowrap;
+    }
+    .menu-trigger:hover, .menu-trigger.open {
+      background: rgba(255,255,255,.06); color: var(--white);
+      border-color: rgba(255,255,255,.25);
+    }
+    .menu-dropdown {
+      display: none; position: absolute; top: calc(100% + 5px); left: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 9px; min-width: 195px; padding: 4px; z-index: 600;
+      box-shadow: 0 10px 30px rgba(0,0,0,.55);
+    }
+    .menu-dropdown.open { display: block; }
+    .mi-btn {
+      display: flex; align-items: center; gap: .6rem; width: 100%;
+      padding: .43rem .82rem; background: transparent; border: none;
+      color: var(--muted); font-size: .8rem; font-weight: 600;
+      font-family: inherit; cursor: pointer; border-radius: 5px;
+      transition: background .12s, color .12s; text-align: left; white-space: nowrap;
+    }
+    .mi-btn:hover { background: rgba(255,255,255,.07); color: var(--white); }
+    .mi-btn.gold  { color: var(--gold); }
+    .mi-btn.gold:hover { background: rgba(201,163,85,.1); color: var(--white); }
+    .mi-btn.danger { color: #ef8888; }
+    .mi-btn.danger:hover { background: rgba(239,68,68,.1); color: #ef4444; }
+    .mi-sep { height: 1px; background: var(--border); margin: 3px 5px; }
+    .mi-kbd { margin-left: auto; font-size: .67rem; color: rgba(148,150,184,.45); font-weight:400; }
   </style>
 </head>
 <body>
