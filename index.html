@@ -1041,6 +1041,7 @@ let model = {
 // INTERNATIONALISATION (i18n)
 // ══════════════════════════════════════════════════════════════
 let currentLang = (function(){ try{ return localStorage.getItem('architise-lang')||'en'; }catch(e){ return 'en'; } })();
+let currentMode = (function(){ try{ return localStorage.getItem('architise-mode')||'archimate'; }catch(e){ return 'archimate'; } })();
 
 const STRINGS = {
   en: {
