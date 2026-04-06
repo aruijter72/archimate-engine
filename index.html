@@ -4645,7 +4645,7 @@ function renderProcTab() {
       <div class="proc-preview-pane">
         <div class="proc-preview-header">
           <span class="proc-preview-label">Preview ${hasCols ? '<span style="font-size:.65rem;color:var(--proc-text);margin-left:.3rem">grid mode</span>' : ''}</span>
-          <button class="btn-export-proc" onclick="exportDrawio()" ${!proc?'disabled':''}>⬇ Export draw.io XML</button>
+          <button class="btn btn-primary" onclick="exportDrawio()" ${!proc?'disabled':''}>⬇ ${NL ? 'Exporteer draw.io XML' : 'Export draw.io XML'}</button>
         </div>
         <div class="proc-svg-wrap" id="proc-svg-wrap">
           ${!proc ? '<div class="proc-svg-empty">Select or create a process to see the preview.</div>' : ''}
