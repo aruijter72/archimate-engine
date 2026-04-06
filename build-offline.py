@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
 build-offline.py — Architise offline build script
-Fetches the Catamaran font from Google Fonts, inlines it as base64,
-and writes index-offline.html — a fully self-contained, 100% offline file.
+Fetches Catamaran font (Google Fonts) and Dagre layout library (cdnjs),
+inlines everything as base64 / inline JS, and writes index-offline.html —
+a fully self-contained, 100% offline file.
 
 Run once from the Archimate-engine directory:
     python3 build-offline.py
@@ -12,6 +13,7 @@ Requirements: Python 3.7+, requests library
 """
 
 import re, sys, base64, pathlib
+
 try:
     import requests
 except ImportError:
@@ -21,53 +23,81 @@ except ImportError:
 SRC  = pathlib.Path("index.html")
 DEST = pathlib.Path("index-offline.html")
 
-WEIGHTS = [400, 500, 600, 700, 800, 900]
-FONT_CSS_URL = (
+if not SRC.exists():
+    print(f"Could not find {SRC}. Run this script from the Archimate-engine folder.")
+    sys.exit(1)
+
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; Architise-build/1.0)"}
+
+# ── Step 1: Catamaran font ─────────────────────────────────────────────────
+WEIGHTS       = [400, 500, 600, 700, 800, 900]
+FONT_CSS_URL  = (
     "https://fonts.googleapis.com/css2?"
     "family=Catamaran:wght@" + ";".join(map(str, WEIGHTS)) + "&display=swap"
 )
-HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; Architise-build/1.0)"}
 
-print("Fetching Catamaran font CSS from Google Fonts…")
+print("1/3  Fetching Catamaran font CSS…")
 try:
-    r = requests.get(FONT_CSS_URL, headers=HEADERS, timeout=15)
+    r = requests.get(FONT_CSS_URL, headers=HEADERS, timeout=20)
     r.raise_for_status()
 except Exception as e:
-    print(f"Could not fetch font CSS: {e}")
+    print(f"     ERROR: {e}")
     sys.exit(1)
 
-font_css = r.text
+font_css  = r.text
 woff2_urls = re.findall(r"url\((https://fonts\.gstatic\.com/[^)]+)\)", font_css)
-print(f"Found {len(woff2_urls)} woff2 font file(s).")
+print(f"     Found {len(woff2_urls)} woff2 font file(s).")
 
-def fetch_b64(url):
-    resp = requests.get(url, timeout=15)
-    resp.raise_for_status()
-    return base64.b64encode(resp.content).decode()
-
-# Build inline @font-face blocks
-inline_faces = []
 for url in woff2_urls:
-    print(f"  Downloading {url.split('/')[-1][:40]}…")
-    b64 = fetch_b64(url)
-    # Replace the remote URL reference with a data URI in the CSS block
-    font_css = font_css.replace(url, f"data:font/woff2;base64,{b64}")
+    print(f"     Downloading {url.split('/')[-1][:50]}…")
+    try:
+        data = requests.get(url, timeout=20)
+        data.raise_for_status()
+        b64 = base64.b64encode(data.content).decode()
+        font_css = font_css.replace(url, f"data:font/woff2;base64,{b64}")
+    except Exception as e:
+        print(f"     WARNING: could not inline {url}: {e}")
 
-inline_css = f"<style>\n/* Catamaran — inlined for offline use */\n{font_css}\n</style>"
+inline_font = (
+    "  <style>\n"
+    "/* Catamaran — inlined for offline use */\n"
+    f"{font_css}\n"
+    "  </style>"
+)
 
-# Read source HTML
+# ── Step 2: Dagre library ─────────────────────────────────────────────────
+DAGRE_URL = "https://cdnjs.cloudflare.com/ajax/libs/dagre/0.8.5/dagre.min.js"
+print("2/3  Fetching Dagre layout library…")
+try:
+    dagre_js = requests.get(DAGRE_URL, timeout=20).text
+    inline_dagre = f"  <script>\n/* dagre 0.8.5 — inlined for offline use */\n{dagre_js}\n  </script>"
+    print(f"     OK ({round(len(dagre_js)/1024)} KB)")
+except Exception as e:
+    print(f"     WARNING: could not inline Dagre: {e}")
+    inline_dagre = None
+
+# ── Step 3: Patch HTML ───────────────────────────────────────────────────
+print("3/3  Patching HTML…")
 html = SRC.read_text(encoding="utf-8")
 
-# Remove the three Google Fonts link tags and replace with inline CSS
+# Replace the 3 Google Fonts link tags with inline CSS
 html = re.sub(
-    r'<link[^>]+fonts\.googleapis\.com[^>]*>\s*\n?'
-    r'<link[^>]+fonts\.gstatic\.com[^>]*>\s*\n?'
-    r'<link[^>]+fonts\.googleapis\.com/css2[^>]*>\s*\n?',
-    inline_css + "\n",
+    r'[ \t]*<link[^>]+fonts\.googleapis\.com[^>]*>\s*\n'
+    r'[ \t]*<link[^>]+fonts\.gstatic\.com[^>]*>\s*\n'
+    r'[ \t]*<link[^>]+fonts\.googleapis\.com/css2[^>]*>',
+    inline_font,
     html, count=1
 )
 
+# Replace the cdnjs dagre <script src=…> tag with inline script
+if inline_dagre:
+    html = re.sub(
+        r'[ \t]*<script[^>]+dagre[^>]*></script>',
+        inline_dagre,
+        html, count=1
+    )
+
 DEST.write_text(html, encoding="utf-8")
 size_kb = round(DEST.stat().st_size / 1024)
-print(f"\nDone! Offline build written to: {DEST}  ({size_kb} KB)")
+print(f"\nDone!  Written to: {DEST}  ({size_kb} KB)")
 print("Open index-offline.html in any browser — no internet required.")
