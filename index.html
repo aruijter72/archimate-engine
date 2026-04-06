@@ -4048,6 +4048,36 @@ function saveProcJSON() {
   URL.revokeObjectURL(url);
 }
 
+async function saveProcJSONAs() {
+  const NL = currentLang === 'nl';
+  const proc = getActiveProc();
+  if (!proc) { alert(NL ? 'Selecteer eerst een proces.' : 'Select a process first.'); return; }
+  const defaultName = (proc.name || 'process').replace(/[^\w\- ]/g, '_') + '.swimlane.json';
+  const json = JSON.stringify(proc, null, 2);
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: defaultName,
+        types: [{ description: 'Swimlane JSON', accept: { 'application/json': ['.json'] } }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(json);
+      await writable.close();
+      showToast(NL ? '💾 Bestand opgeslagen' : '💾 File saved', 'gold');
+      return;
+    } catch(e) { if (e.name === 'AbortError') return; }
+  }
+  const name = prompt(NL ? 'Bestandsnaam:' : 'File name:', defaultName);
+  if (!name) return;
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'), {
+    href: url, download: name.endsWith('.json') ? name : name + '.json'
+  });
+  a.click(); URL.revokeObjectURL(url);
+  showToast(NL ? '💾 Bestand opgeslagen' : '💾 File saved', 'gold');
+}
+
 function triggerLoadProc() {
   document.getElementById('procLoadFile').click();
 }
