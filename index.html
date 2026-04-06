@@ -2300,10 +2300,41 @@ function updateStats() {
 // TAB NAVIGATION
 // ══════════════════════════════════════════════════════════════
 function showTab(tab) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#archimate-main .tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`tab-${tab}`).classList.add('active');
-  document.getElementById(`tab-btn-${tab}`).classList.add('active');
+  const panel = document.getElementById(`tab-${tab}`);
+  if (panel) panel.classList.add('active');
+  const btn = document.getElementById(`tab-btn-${tab}`);
+  if (btn) btn.classList.add('active');
+}
+
+function switchMode(mode) {
+  currentMode = mode;
+  try { localStorage.setItem('architise-mode', mode); } catch(e) {}
+  applyMode();
+}
+
+function applyMode() {
+  const isArchi = currentMode === 'archimate';
+  // Mode buttons
+  document.getElementById('mode-btn-archimate').classList.toggle('active', isArchi);
+  document.getElementById('mode-btn-swimlane').classList.toggle('active', !isArchi);
+  // Header controls
+  document.getElementById('archimate-header-controls').style.display = isArchi ? 'flex' : 'none';
+  // Model name input
+  const mn = document.getElementById('modelName');
+  if (mn) mn.style.display = isArchi ? '' : 'none';
+  // Doc bar & stats bar
+  document.getElementById('archimate-doc-bar').style.display  = isArchi ? '' : 'none';
+  document.getElementById('archimate-stats-bar').style.display = isArchi ? '' : 'none';
+  // Tab nav & main panels
+  document.getElementById('archimate-tab-nav').style.display = isArchi ? '' : 'none';
+  document.getElementById('archimate-main').style.display    = isArchi ? '' : 'none';
+  document.getElementById('swimlane-main').style.display     = isArchi ? 'none' : '';
+  // Re-render swimlane panel when switching in
+  if (!isArchi) {
+    renderProcTab();
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
