@@ -2327,6 +2327,49 @@ function switchMode(mode) {
   applyMode();
 }
 
+function openAsSwimlane() {
+  const NL = currentLang === 'nl';
+  // Collect Business Actors and Business Roles as lane candidates
+  const bizActors = (model.elements || []).filter(e =>
+    e.layer === 'business' && (e.type === 'BusinessActor' || e.type === 'BusinessRole') && e.name
+  );
+  if (!model.processes) model.processes = [];
+
+  // Create a new process pre-populated from the Business Layer
+  const procName = model.name
+    ? (NL ? `${model.name} — Swimlane` : `${model.name} — Swimlane`)
+    : (NL ? 'Nieuw Swimlane-diagram' : 'New Swimlane Diagram');
+
+  const lanes = bizActors.map(e => ({ id: genId(), name: e.name, sourceId: e.id }));
+  // If no actors, start with two blank lanes so the canvas isn't completely empty
+  if (!lanes.length) {
+    lanes.push({ id: genId(), name: NL ? 'Baan 1' : 'Lane 1' });
+    lanes.push({ id: genId(), name: NL ? 'Baan 2' : 'Lane 2' });
+  }
+
+  const newProc = { id: genId(), name: procName, lanes, steps: [], flows: [], columns: [] };
+  model.processes.push(newProc);
+  _activeProcId = newProc.id;
+
+  // Switch to Swimlane mode
+  switchMode('swimlane');
+
+  const msg = NL
+    ? `Swimlane aangemaakt${bizActors.length ? ` met ${bizActors.length} banen vanuit de Business Layer` : ' met lege banen'}.`
+    : `Swimlane created${bizActors.length ? ` with ${bizActors.length} lanes from the Business Layer` : ' with blank lanes'}.`;
+  // Brief toast confirmation
+  const toast = document.createElement('div');
+  toast.textContent = msg;
+  Object.assign(toast.style, {
+    position:'fixed', bottom:'1.5rem', left:'50%', transform:'translateX(-50%)',
+    background:'var(--surface2)', border:'1px solid var(--proc-border)', color:'var(--proc-text)',
+    padding:'.55rem 1.1rem', borderRadius:'6px', fontSize:'.82rem', fontWeight:'600',
+    zIndex:'9999', pointerEvents:'none', boxShadow:'0 4px 12px rgba(0,0,0,.4)'
+  });
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
 function applyMode() {
   const isArchi = currentMode === 'archimate';
   // Mode buttons
