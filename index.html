@@ -989,8 +989,8 @@
   <span class="stat-item" style="margin-left:auto"><span id="stat-total-lbl">Total elements</span>: <span class="stat-count" id="statTotal">0</span></span>
 </div>
 
-<!-- ── Tab Navigation ───────────────────────────────────────── -->
-<nav class="tab-nav">
+<!-- ── Tab Navigation (ArchiMate mode) ─────────────────────── -->
+<nav class="tab-nav" id="archimate-tab-nav">
   <button class="tab-btn active biz" id="tab-btn-business"     onclick="showTab('business')">
     <span class="tab-icon biz">B</span> Business Layer</button>
   <button class="tab-btn app"         id="tab-btn-application"  onclick="showTab('application')">
@@ -1001,19 +1001,21 @@
     <span class="tab-icon rel">R</span> Relationships</button>
   <button class="tab-btn help"        id="tab-btn-help"          onclick="showTab('help')">
     <span class="tab-icon help">?</span> Manual &amp; Legend</button>
-  <button class="tab-btn proc"        id="tab-btn-process"       onclick="showTab('process')">
-    <span class="tab-icon proc">⟳</span> Swimlane</button>
 </nav>
 
-<!-- ── Tab Panels ───────────────────────────────────────────── -->
-<main>
+<!-- ── Tab Panels (ArchiMate mode) ─────────────────────────── -->
+<main id="archimate-main">
   <div id="tab-business"      class="tab-panel active"></div>
   <div id="tab-application"   class="tab-panel"></div>
   <div id="tab-technology"    class="tab-panel"></div>
   <div id="tab-relationships" class="tab-panel"></div>
   <div id="tab-help"          class="tab-panel"></div>
-  <div id="tab-process"       class="tab-panel"></div>
 </main>
+
+<!-- ── Swimlane Mode Panel ──────────────────────────────────── -->
+<div id="swimlane-main" style="display:none">
+  <div id="tab-process" class="tab-panel active"></div>
+</div>
 <input type="file" id="procLoadFile" accept=".json,.swimlane.json" style="display:none" onchange="handleLoadProcFile(event)">
 
 <footer class="app-footer">
