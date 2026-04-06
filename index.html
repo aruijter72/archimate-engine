@@ -1577,75 +1577,139 @@ function _buildTipHtml(title, desc, example) {
          (example ? `<span class="tp-ex">${example}</span>` : '');
 }
 
-// Pre-register all element-type tooltips once at startup
+// Pre-register all element-type tooltips — call again after language change
 function initTipData() {
+  const NL = currentLang === 'nl';
+  const descs    = NL ? ELEM_DESCS_NL    : ELEM_DESCS;
+  const examples = NL ? TYPE_EXAMPLES_NL : TYPE_EXAMPLES;
+  const secDescs = NL ? SECTION_DESCS_NL : SECTION_DESCS;
+
   for (const type of Object.keys(TYPE_LABELS)) {
     _tipData['type-' + type] = _buildTipHtml(
       TYPE_LABELS[type],
-      ELEM_DESCS[type]    || '',
-      TYPE_EXAMPLES[type] || ''
+      descs[type]    || '',
+      examples[type] || ''
     );
   }
-  for (const [sec, s] of Object.entries(SECTION_DESCS)) {
+  for (const [sec, s] of Object.entries(secDescs)) {
     _tipData['sec-' + sec] = _buildTipHtml(s.title || sec, s.desc || '', s.ex || '');
   }
-  _tipData['prop-key'] = _buildTipHtml(
-    'Property Key',
-    'A short identifier for this property. Use consistent names across your model — Archi and other tools display these as-is.',
-    'cost-centre · owner · status · system-id · sla-tier · criticality'
-  );
-  _tipData['prop-val'] = _buildTipHtml(
-    'Property Value',
-    'The value corresponding to the key. Can be free text, a number, a date, or a code. Keep values concise.',
-    'CC-4200 · John Smith · Active · SAP-ERP-01 · Gold · 2026-12-31'
-  );
 
-  // ── Process tab tooltips ──────────────────────────────────────
-  _tipData['proc-processes'] = _buildTipHtml(
-    'Process',
-    'A process describes how a specific goal is achieved — who does what, in what order. You can define multiple processes per model.',
-    'Customer Onboarding · Invoice Approval · Incident Response · Product Return'
-  );
-  _tipData['proc-columns'] = _buildTipHtml(
-    'Columns (optional)',
-    'Columns add a second dimension to your swimlane — perpendicular to the lanes. Use them for phases, time periods, locations, or external partners. When no columns are defined, steps flow left-to-right automatically based on the flows you draw.',
-    'Phase 1 · Phase 2 · Phase 3   —   or—   HQ · Amsterdam · London'
-  );
-  _tipData['proc-lanes'] = _buildTipHtml(
-    'Lanes',
-    'A lane represents a single participant in the process — a person, team, system, or role. Each lane shows which steps that participant is responsible for. Import directly from your Architecture model\'s Business layer to avoid re-entering names.',
-    'Customer · Sales Rep · Finance Team · ERP System'
-  );
-  _tipData['proc-steps'] = _buildTipHtml(
-    'Steps',
-    'Steps are the individual actions or events that make up the process. Assign each step to a lane (and a column if you\'re using grid mode). Use Start and End to mark the process boundaries, Tasks for work, and Decisions for branching points.',
-    'Submit request → Validate data → Approve? → Yes: Ship order · No: Notify customer'
-  );
-  _tipData['proc-flows'] = _buildTipHtml(
-    'Flows',
-    'Flows connect steps to define the sequence of execution. Add a label to a flow coming out of a Decision step to describe the condition (e.g. Yes / No, Approved / Rejected).',
-    'Order received → Validate → In stock? → Yes: Pick & Pack → Ship'
-  );
-  _tipData['proc-step-start'] = _buildTipHtml(
-    '▶ Start',
-    'The event that triggers the process. Every process should have at least one. Shown as a filled circle.',
-    'Order received · Customer submits form · Alarm triggered · New hire joins'
-  );
-  _tipData['proc-step-task'] = _buildTipHtml(
-    '□ Task',
-    'A unit of work performed by the actor in that lane. Most steps in a process are tasks. Shown as a rounded rectangle.',
-    'Validate data · Review application · Send invoice · Schedule delivery'
-  );
-  _tipData['proc-step-decision'] = _buildTipHtml(
-    '◇ Decision',
-    'A branching point where the flow takes different paths based on a condition. Add Yes/No (or other) labels to the outgoing flows. Shown as a diamond.',
-    'In stock? · Approved? · Credit check passed? · Under threshold?'
-  );
-  _tipData['proc-step-end'] = _buildTipHtml(
-    '● End',
-    'The outcome or completion of the process. A process can have multiple end events for different outcomes. Shown as a double circle.',
-    'Order shipped · Application rejected · Incident resolved · Payment confirmed'
-  );
+  if (NL) {
+    _tipData['prop-key'] = _buildTipHtml(
+      'Property Key',
+      'Een korte identificator voor deze eigenschap. Gebruik consistente namen in uw model — Archi en andere tools tonen deze ongewijzigd.',
+      'kostenplaats · eigenaar · status · systeem-id · sla-niveau · kritisch'
+    );
+    _tipData['prop-val'] = _buildTipHtml(
+      'Property Value',
+      'De waarde behorend bij de sleutel. Kan vrije tekst, een getal, een datum of een code zijn. Houd waarden beknopt.',
+      'KP-4200 · Jan de Vries · Actief · SAP-ERP-01 · Goud · 2026-12-31'
+    );
+    // ── Swimlane tab tooltips (NL) ──────────────────────────────
+    _tipData['proc-processes'] = _buildTipHtml(
+      'Process',
+      'Een process beschrijft hoe een specifiek doel wordt bereikt — wie doet wat, in welke volgorde. U kunt meerdere processen per model definiëren.',
+      'Klant Onboarding · Factuurgoedkeuring · Incident Response · Productretour'
+    );
+    _tipData['proc-columns'] = _buildTipHtml(
+      'Columns (optioneel)',
+      'Columns voegen een tweede dimensie toe aan uw swimlane — loodrecht op de lanes. Gebruik ze voor fases, tijdvakken, locaties of externe partners. Zonder columns stromen steps automatisch van links naar rechts op basis van de flows die u tekent.',
+      'Fase 1 · Fase 2 · Fase 3   —   of—   HQ · Amsterdam · Londen'
+    );
+    _tipData['proc-lanes'] = _buildTipHtml(
+      'Lanes',
+      'Een lane vertegenwoordigt één deelnemer in het process — een persoon, team, systeem of rol. Elke lane toont voor welke steps die deelnemer verantwoordelijk is. Importeer rechtstreeks vanuit de Business Layer van uw architectuurmodel om namen niet opnieuw in te hoeven typen.',
+      'Klant · Sales Representative · Finance Team · ERP System'
+    );
+    _tipData['proc-steps'] = _buildTipHtml(
+      'Steps',
+      'Steps zijn de individuele acties of events die het process vormen. Wijs elke step toe aan een lane (en een column bij grid mode). Gebruik Start en End voor de procesgrenzen, Tasks voor werk en Decisions voor vertakkingspunten.',
+      'Verzoek indienen → Gegevens valideren → Goedkeuren? → Ja: Order verzenden · Nee: Klant informeren'
+    );
+    _tipData['proc-flows'] = _buildTipHtml(
+      'Flows',
+      'Flows verbinden steps om de uitvoeringsvolgorde te bepalen. Voeg een label toe aan een flow vanuit een Decision-step om de conditie te beschrijven (bijv. Ja / Nee, Goedgekeurd / Afgewezen).',
+      'Order ontvangen → Valideren → Op voorraad? → Ja: Picken & Verpakken → Verzenden'
+    );
+    _tipData['proc-step-start'] = _buildTipHtml(
+      '▶ Start',
+      'Het event dat het process op gang brengt. Elk process heeft minimaal één Start. Weergegeven als gevulde cirkel.',
+      'Order ontvangen · Klant dient formulier in · Alarm geactiveerd · Nieuwe medewerker gestart'
+    );
+    _tipData['proc-step-task'] = _buildTipHtml(
+      '□ Task',
+      'Een werkeenheid uitgevoerd door de actor in die lane. De meeste steps in een process zijn Tasks. Weergegeven als afgeronde rechthoek.',
+      'Gegevens valideren · Aanvraag beoordelen · Factuur verzenden · Levering plannen'
+    );
+    _tipData['proc-step-decision'] = _buildTipHtml(
+      '◇ Decision',
+      'Een vertakkingspunt waarbij de flow verschillende paden neemt op basis van een conditie. Voeg Ja/Nee (of andere) labels toe aan de uitgaande flows. Weergegeven als ruit.',
+      'Op voorraad? · Goedgekeurd? · Kredietcheck geslaagd? · Onder drempelwaarde?'
+    );
+    _tipData['proc-step-end'] = _buildTipHtml(
+      '● End',
+      'De uitkomst of afronding van het process. Een process kan meerdere End-events hebben voor verschillende uitkomsten. Weergegeven als dubbele cirkel.',
+      'Order verzonden · Aanvraag afgewezen · Incident opgelost · Betaling bevestigd'
+    );
+  } else {
+    _tipData['prop-key'] = _buildTipHtml(
+      'Property Key',
+      'A short identifier for this property. Use consistent names across your model — Archi and other tools display these as-is.',
+      'cost-centre · owner · status · system-id · sla-tier · criticality'
+    );
+    _tipData['prop-val'] = _buildTipHtml(
+      'Property Value',
+      'The value corresponding to the key. Can be free text, a number, a date, or a code. Keep values concise.',
+      'CC-4200 · John Smith · Active · SAP-ERP-01 · Gold · 2026-12-31'
+    );
+    // ── Swimlane tab tooltips (EN) ──────────────────────────────
+    _tipData['proc-processes'] = _buildTipHtml(
+      'Process',
+      'A process describes how a specific goal is achieved — who does what, in what order. You can define multiple processes per model.',
+      'Customer Onboarding · Invoice Approval · Incident Response · Product Return'
+    );
+    _tipData['proc-columns'] = _buildTipHtml(
+      'Columns (optional)',
+      'Columns add a second dimension to your swimlane — perpendicular to the lanes. Use them for phases, time periods, locations, or external partners. When no columns are defined, steps flow left-to-right automatically based on the flows you draw.',
+      'Phase 1 · Phase 2 · Phase 3   —   or—   HQ · Amsterdam · London'
+    );
+    _tipData['proc-lanes'] = _buildTipHtml(
+      'Lanes',
+      'A lane represents a single participant in the process — a person, team, system, or role. Each lane shows which steps that participant is responsible for. Import directly from your Architecture model\'s Business layer to avoid re-entering names.',
+      'Customer · Sales Rep · Finance Team · ERP System'
+    );
+    _tipData['proc-steps'] = _buildTipHtml(
+      'Steps',
+      'Steps are the individual actions or events that make up the process. Assign each step to a lane (and a column if you\'re using grid mode). Use Start and End to mark the process boundaries, Tasks for work, and Decisions for branching points.',
+      'Submit request → Validate data → Approve? → Yes: Ship order · No: Notify customer'
+    );
+    _tipData['proc-flows'] = _buildTipHtml(
+      'Flows',
+      'Flows connect steps to define the sequence of execution. Add a label to a flow coming out of a Decision step to describe the condition (e.g. Yes / No, Approved / Rejected).',
+      'Order received → Validate → In stock? → Yes: Pick & Pack → Ship'
+    );
+    _tipData['proc-step-start'] = _buildTipHtml(
+      '▶ Start',
+      'The event that triggers the process. Every process should have at least one. Shown as a filled circle.',
+      'Order received · Customer submits form · Alarm triggered · New hire joins'
+    );
+    _tipData['proc-step-task'] = _buildTipHtml(
+      '□ Task',
+      'A unit of work performed by the actor in that lane. Most steps in a process are tasks. Shown as a rounded rectangle.',
+      'Validate data · Review application · Send invoice · Schedule delivery'
+    );
+    _tipData['proc-step-decision'] = _buildTipHtml(
+      '◇ Decision',
+      'A branching point where the flow takes different paths based on a condition. Add Yes/No (or other) labels to the outgoing flows. Shown as a diamond.',
+      'In stock? · Approved? · Credit check passed? · Under threshold?'
+    );
+    _tipData['proc-step-end'] = _buildTipHtml(
+      '● End',
+      'The outcome or completion of the process. A process can have multiple end events for different outcomes. Shown as a double circle.',
+      'Order shipped · Application rejected · Incident resolved · Payment confirmed'
+    );
+  }
 }
 
 function tipBtn(type) {
