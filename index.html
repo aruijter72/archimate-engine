@@ -1115,7 +1115,7 @@ let model = {
 // ══════════════════════════════════════════════════════════════
 // INTERNATIONALISATION (i18n)
 // ══════════════════════════════════════════════════════════════
-let currentLang = (function(){ try{ return localStorage.getItem('architise-lang')||'en'; }catch(e){ return 'en'; } })();
+let currentLang = (function(){ try{ return localStorage.getItem('architise-lang')||localStorage.getItem('arit-lang')||'nl'; }catch(e){ return 'nl'; } })();
 let currentMode = (function(){ try{ return localStorage.getItem('architise-mode')||'archimate'; }catch(e){ return 'archimate'; } })();
 
 const STRINGS = {
@@ -1396,7 +1396,7 @@ const LAYER_DESC_KEY = {
 function setLanguage(lang) {
   currentLang = lang;
   initTipData(); // rebuild tooltips in the new language
-  try { localStorage.setItem('architise-lang', lang); } catch(e) {}
+  try { localStorage.setItem('architise-lang', lang); localStorage.setItem('arit-lang', lang); } catch(e) {}
   applyTranslations();
   renderAll();
   renderHelp();
