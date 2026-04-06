@@ -936,6 +936,16 @@
       <div class="app-logo"><strong class="logo-gold">Architise</strong></div>
     </div>
     <div class="app-logo" style="font-weight:400"><span class="logo-blue">by Arnold Ruijter IT</span></div>
+    <!-- Mode switcher -->
+    <div class="mode-switcher">
+      <button class="mode-btn archimate active" id="mode-btn-archimate" onclick="switchMode('archimate')" title="ArchiMate modelling">
+        ⬡ ArchiMate
+      </button>
+      <button class="mode-btn swimlane" id="mode-btn-swimlane" onclick="switchMode('swimlane')" title="Swimlane / process diagrams">
+        ⟳ Swimlane
+      </button>
+    </div>
+    <!-- Model name — ArchiMate mode only -->
     <input type="text" id="modelName" class="model-name-input"
            value="My Architecture Model" placeholder="Model name…"
            oninput="model.name = this.value">
@@ -944,18 +954,21 @@
     <button class="lang-btn active" data-lang="en" onclick="setLanguage('en')">EN</button>
     <button class="lang-btn" data-lang="nl" onclick="setLanguage('nl')">NL</button>
   </div>
-  <button id="btn-autolayout" class="btn-layout-toggle" onclick="toggleAutoLayout(this)"
-    title="Auto Layout uses the Dagre/Sugiyama algorithm to minimise edge crossings in the Archi export">
-    ⚡ Auto Layout: OFF
-  </button>
-  <div class="header-right">
-    <button class="btn btn-secondary" id="btn-wizard-el" onclick="showWizard()">🪄 Guided Start</button>
-    <button class="btn btn-secondary" id="btn-templates-el" onclick="showTemplates()">📋 Templates</button>
-    <button class="btn btn-secondary" id="btn-save-el" onclick="saveModel()">💾 Save JSON</button>
-    <button class="btn btn-secondary" id="btn-load-el" onclick="triggerLoad()">📂 Load JSON</button>
-    <input type="file" id="loadFile" accept=".json" style="display:none" onchange="handleLoadFile(event)">
-    <button class="btn btn-primary" id="btn-export-arc-el" onclick="exportArchimate()">⬇ Export .archimate</button>
-    <button class="btn btn-secondary" id="btn-export-ameff-el" onclick="exportAMEFF()" title="Export Open Group AMEFF format (archimodel.app compatible)">⬇ Export AMEFF</button>
+  <!-- ArchiMate-mode buttons -->
+  <div id="archimate-header-controls" style="display:flex;align-items:center;gap:.5rem">
+    <button id="btn-autolayout" class="btn-layout-toggle" onclick="toggleAutoLayout(this)"
+      title="Auto Layout uses the Dagre/Sugiyama algorithm to minimise edge crossings in the Archi export">
+      ⚡ Auto Layout: OFF
+    </button>
+    <div class="header-right">
+      <button class="btn btn-secondary" id="btn-wizard-el" onclick="showWizard()">🪄 Guided Start</button>
+      <button class="btn btn-secondary" id="btn-templates-el" onclick="showTemplates()">📋 Templates</button>
+      <button class="btn btn-secondary" id="btn-save-el" onclick="saveModel()">💾 Save JSON</button>
+      <button class="btn btn-secondary" id="btn-load-el" onclick="triggerLoad()">📂 Load JSON</button>
+      <input type="file" id="loadFile" accept=".json" style="display:none" onchange="handleLoadFile(event)">
+      <button class="btn btn-primary" id="btn-export-arc-el" onclick="exportArchimate()">⬇ Export .archimate</button>
+      <button class="btn btn-secondary" id="btn-export-ameff-el" onclick="exportAMEFF()" title="Export Open Group AMEFF format (archimodel.app compatible)">⬇ Export AMEFF</button>
+    </div>
   </div>
 </header>
 
