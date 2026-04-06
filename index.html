@@ -998,6 +998,9 @@
         📁 File <span style="font-size:.62rem;opacity:.65">▾</span>
       </button>
       <div class="menu-dropdown" id="menu-file-dd">
+        <button class="mi-btn" id="btn-wizard-el" onclick="showWizard();closeMenus()">🪄 Guided Start</button>
+        <button class="mi-btn" id="btn-templates-el" onclick="showTemplates();closeMenus()">📋 Templates</button>
+        <div class="mi-sep"></div>
         <button class="mi-btn danger" onclick="newModel();closeMenus()">🆕 New Model</button>
         <div class="mi-sep"></div>
         <button class="mi-btn" onclick="triggerLoad();closeMenus()">📂 Open JSON…</button>
@@ -1006,9 +1009,6 @@
         <div class="mi-sep"></div>
         <button class="mi-btn gold" onclick="exportArchimate();closeMenus()">⬇ Export .archimate</button>
         <button class="mi-btn" onclick="exportAMEFF();closeMenus()" title="Open Group AMEFF XML">⬇ Export AMEFF XML</button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn" id="btn-wizard-el" onclick="showWizard();closeMenus()">🪄 Guided Start</button>
-        <button class="mi-btn" id="btn-templates-el" onclick="showTemplates();closeMenus()">📋 Templates</button>
       </div>
     </div>
     <input type="file" id="loadFile" accept=".json" style="display:none" onchange="handleLoadFile(event)">
