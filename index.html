@@ -4511,26 +4511,16 @@ function renderProcTab() {
   const hasCols = proc && proc.columns && proc.columns.length > 0;
   const NL = currentLang === 'nl';
 
+  // Update disabled state of proc-dependent header buttons
+  ['proc-mi-save','proc-mi-saveas','proc-mi-drawio','btn-export-drawio-el'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = !proc;
+  });
+
   panel.innerHTML = `
-    <div class="layer-intro" style="justify-content:space-between;flex-wrap:wrap;gap:.5rem">
-      <div style="display:flex;align-items:center;gap:.75rem">
-        <span class="layer-badge proc">PROCESS</span>
-        <span class="layer-desc">${NL ? 'Bouw swimlane-diagrammen — zelfstandig of gekoppeld aan uw architectuurmodel. Exporteer naar draw.io.' : 'Build swimlane diagrams — standalone or linked to your Architecture model. Export to draw.io.'}</span>
-      </div>
-      <div class="menu-item" id="menu-proc-file-item">
-        <button class="menu-trigger" id="menu-proc-file-btn" onclick="toggleMenu('proc-file')">
-          📁 ${NL ? 'Bestand' : 'File'} <span style="font-size:.62rem;opacity:.65">▾</span>
-        </button>
-        <div class="menu-dropdown" id="menu-proc-file-dd">
-          <button class="mi-btn" onclick="showProcTemplates();closeMenus()">📋 ${NL ? 'Sjablonen' : 'Templates'}</button>
-          <div class="mi-sep"></div>
-          <button class="mi-btn" onclick="triggerLoadProc();closeMenus()">📂 ${NL ? 'Openen…' : 'Open…'}</button>
-          <button class="mi-btn" onclick="saveProcJSON();closeMenus()" ${!proc?'disabled':''}>💾 ${NL ? 'Opslaan' : 'Save'}</button>
-          <button class="mi-btn" onclick="saveProcJSONAs();closeMenus()" ${!proc?'disabled':''}>💾 ${NL ? 'Opslaan als…' : 'Save As…'}</button>
-          <div class="mi-sep"></div>
-          <button class="mi-btn gold" onclick="exportDrawio();closeMenus()" ${!proc?'disabled':''}>⬇ ${NL ? 'Exporteer draw.io XML' : 'Export draw.io XML'}</button>
-        </div>
-      </div>
+    <div class="layer-intro">
+      <span class="layer-badge proc">PROCESS</span>
+      <span class="layer-desc">${NL ? 'Bouw swimlane-diagrammen — zelfstandig of gekoppeld aan uw architectuurmodel. Exporteer naar draw.io.' : 'Build swimlane diagrams — standalone or linked to your Architecture model. Export to draw.io.'}</span>
     </div>
     <div class="proc-layout">
 
@@ -4679,7 +4669,6 @@ function renderProcTab() {
       <div class="proc-preview-pane">
         <div class="proc-preview-header">
           <span class="proc-preview-label">Preview ${hasCols ? '<span style="font-size:.65rem;color:var(--proc-text);margin-left:.3rem">grid mode</span>' : ''}</span>
-          <button class="btn btn-primary" onclick="exportDrawio()" ${!proc?'disabled':''}>⬇ ${NL ? 'Exporteer draw.io XML' : 'Export draw.io XML'}</button>
         </div>
         <div class="proc-svg-wrap" id="proc-svg-wrap">
           ${!proc ? '<div class="proc-svg-empty">Select or create a process to see the preview.</div>' : ''}
