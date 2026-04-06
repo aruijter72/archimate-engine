@@ -1279,6 +1279,7 @@ const LAYER_DESC_KEY = {
 
 function setLanguage(lang) {
   currentLang = lang;
+  initTipData(); // rebuild tooltips in the new language
   try { localStorage.setItem('architise-lang', lang); } catch(e) {}
   applyTranslations();
   renderAll();
@@ -2060,7 +2061,8 @@ function renderLayer(layer) {
     html += `</div></div>`;
 
     if (elems.length === 0) {
-      html += `<div class="empty-state">No <em>${secName.toLowerCase()}</em> elements yet — use the buttons above to add them.</div>`;
+      const emptyKey = secName === 'Active Structure' ? 'empty-active' : secName === 'Behaviour' ? 'empty-behav' : 'empty-passive';
+      html += `<div class="empty-state">${t(emptyKey)}</div>`;
     } else {
       html += `
       <table class="elem-table">
