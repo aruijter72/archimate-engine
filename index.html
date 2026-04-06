@@ -2682,6 +2682,112 @@ const SECTION_DESCS = {
   }
 };
 
+// ── Dutch tooltip data ────────────────────────────────────────────────────────
+const ELEM_DESCS_NL = {
+  // Business Active Structure
+  BusinessActor:           'Een persoon, organisatie of organisatorische eenheid die een rol heeft in het uitvoeren van gedrag.',
+  BusinessRole:            'Een verantwoordelijkheid voor het uitvoeren van specifiek gedrag, waaraan een actor kan worden toegewezen.',
+  BusinessCollaboration:   'Een aggregaat van twee of meer bedrijfsrollen die samenwerken om gedrag uit te voeren.',
+  BusinessInterface:       'Een toegangspunt waar een bedrijfsservice beschikbaar wordt gesteld aan de omgeving.',
+  // Business Behaviour
+  BusinessProcess:         'Een reeks bedrijfsactiviteiten die gezamenlijk een gedefinieerde uitkomst produceren.',
+  BusinessFunction:        'Een verzameling bedrijfsgedrag op basis van specifieke criteria (groepering op vaardigheid of afdeling).',
+  BusinessInteraction:     'Een eenheid van collectief gedrag uitgevoerd door twee of meer bedrijfsrollen of actoren.',
+  BusinessEvent:           'Een organisatorische toestandsverandering die gedrag triggert of voortkomt uit gedrag.',
+  BusinessService:         'Expliciet gedefinieerd gedrag dat een bedrijfsbehoefte vervult voor een interne of externe klant.',
+  // Business Passive Structure
+  BusinessObject:          'Een passief element met relevantie vanuit bedrijfsperspectief (documenten, contracten, gegevens).',
+  Contract:                'Een formele of informele specificatie van een overeenkomst tussen aanbieder en afnemer.',
+  Representation:          'Een waarneembare vorm van de informatie die een bedrijfsobject draagt (bijv. een rapport of formulier).',
+  Product:                 'Een samenhangend geheel van services of waarde aangeboden aan klanten of de markt.',
+  // Application Active Structure
+  ApplicationComponent:    'Een inkapseling van applicatiefunctionaliteit, afgestemd op een implementatiestructuur.',
+  ApplicationCollaboration:'Een aggregaat van twee of meer applicatiecomponenten die samenwerken.',
+  ApplicationInterface:    'Een toegangspunt waar applicatieservices beschikbaar worden gesteld (API, UI, endpoint).',
+  // Application Behaviour
+  ApplicationFunction:     'Geautomatiseerd gedrag uitgevoerd door een applicatiecomponent.',
+  ApplicationInteraction:  'Een eenheid van collectief geautomatiseerd gedrag uitgevoerd door twee of meer componenten.',
+  ApplicationProcess:      'Een reeks applicatieacties die gezamenlijk een gedefinieerd resultaat produceren.',
+  ApplicationEvent:        'Een applicatietoestandsverandering die gedrag triggert of voortkomt uit gedrag.',
+  ApplicationService:      'Expliciet gedefinieerd applicatiegedrag dat een behoefte van een gebruiker of component vervult.',
+  // Application Passive Structure
+  DataObject:              'Gegevens gestructureerd voor geautomatiseerde verwerking (records, datasets, berichten, bestanden).',
+  // Technology Active Structure
+  Node:                    'Een reken- of fysieke resource die gegevens host, verwerkt of communiceert.',
+  Device:                  'Een fysieke IT-resource (server, netwerkapparaat, mobiel apparaat) die software uitvoert.',
+  SystemSoftware:          'Software die een omgeving voor andere software biedt of beheert (OS, middleware, DBMS).',
+  TechnologyCollaboration: 'Een aggregaat van twee of meer technologie-elementen die samenwerken.',
+  TechnologyInterface:     'Een toegangspunt waar technologieservices beschikbaar worden gesteld (poort, socket, protocol-endpoint).',
+  Path:                    'Een koppeling tussen twee of meer knooppunten waarover informatie wordt uitgewisseld.',
+  CommunicationNetwork:    'Een set van structuren die knooppunten verbindt voor gegevensoverdracht (LAN, WAN, Internet).',
+  // Technology Behaviour
+  TechnologyFunction:      'Een verzameling technologiegedrag uitgevoerd door een knooppunt.',
+  TechnologyProcess:       'Een reeks technologieacties die een gedefinieerd resultaat produceren.',
+  TechnologyInteraction:   'Collectief gedrag uitgevoerd door twee of meer knooppunten.',
+  TechnologyEvent:         'Een technologietoestandsverandering die gedrag triggert of voortkomt uit gedrag.',
+  TechnologyService:       'Expliciet gedefinieerd technologiegedrag dat een behoefte van een knooppunt of component vervult.',
+  // Technology Passive Structure
+  Artifact:                'Een stuk gegevens gebruikt of geproduceerd in een software- of operationeel proces (bestand, DB, image).',
+  TechnologyObject:        'Een passief element gebruikt of geproduceerd door technologiegedrag.'
+};
+
+const TYPE_EXAMPLES_NL = {
+  BusinessActor:           'Financiën Team, Klantenservice NL, Externe Accountant',
+  BusinessRole:            'Accountmanager, Goedkeurder, Inkoper, HR-medewerker',
+  BusinessCollaboration:   'Gezamenlijke Inkoopcommissie, Crisisteam',
+  BusinessInterface:       'Helpdesk Telefoonlijn, Partner Webportaal, EDI-gateway',
+  BusinessProcess:         'Factuurgoedkeuring, Orderintake, Onboarding medewerker',
+  BusinessFunction:        'Kredietrisicobeoordelingsteam, Productcatalogisering',
+  BusinessInteraction:     'Gezamenlijke Bestuursvergadering, Cross-team Escalatie',
+  BusinessEvent:           'Contract Ondertekend, Deadline Bereikt, Betaling Ontvangen',
+  BusinessService:         'Facturatieservice, Klantenondersteuningsservice',
+  BusinessObject:          'Inkooporder, Contract, Medewerkersdossier, Rapport',
+  Contract:                'Service Level Agreement, Raamcontract, NDA',
+  Representation:          'Factuur PDF, Statusrapport, Aanvraagformulier',
+  Product:                 'Verzekeringspakket, Softwareabonnement, Servicebundel',
+  ApplicationComponent:    'SAP ERP, Salesforce CRM, Microsoft Outlook, SharePoint',
+  ApplicationCollaboration:'Geïntegreerd Logistiek Platform, Gedeelde API-laag',
+  ApplicationInterface:    'REST API, Inlogscherm, EDI-poort, SFTP-endpoint',
+  ApplicationFunction:     'PDF-generatie, Gegevensvalidatie, Belastingberekening',
+  ApplicationInteraction:  'Real-time datasynchronisatie tussen CRM en ERP',
+  ApplicationProcess:      'Orderverwerkingsworkflow, Salarisverwerking',
+  ApplicationEvent:        'Nieuwe Order Ontvangen, Bestandsupload Voltooid, Time-out',
+  ApplicationService:      'Factuurgeneratieservice, Zoekservice, Auth-service',
+  DataObject:              'Klantrecord, Productcatalogus, Orderbestand, Logvermelding',
+  Node:                    'Applicatieserver, Cloud VM, Mainframe, Kubernetes-cluster',
+  Device:                  'Barcodescanner, Netwerkswitch, Printer, Laptop',
+  SystemSoftware:          'Windows Server, Oracle DB, Docker, Kubernetes, Nginx',
+  TechnologyCollaboration: 'Redundant Servercluster, Actief-actief Databasepaar',
+  TechnologyInterface:     'TCP-poort 443, USB-aansluiting, AS2-communicatiepunt',
+  Path:                    'Netwerklink tussen datacenters, VPN-tunnel',
+  CommunicationNetwork:    'Bedrijfs-LAN, Internet, Peppol Netwerk, VAN',
+  TechnologyFunction:      'Load Balancing, Encryptie, Logrotatie',
+  TechnologyProcess:       'Nachtelijke Back-up, Certificaatvernieuwing, Patching',
+  TechnologyInteraction:   'Cluster Failover, Replicatiesynchronisatie',
+  TechnologyEvent:         'Servercrash, Certificaat Verlopen, Schijf Vol',
+  TechnologyService:       'Authenticatieservice, Objectopslag, DNS',
+  Artifact:                'Gedeployde JAR, Configuratiebestand, Database Dump, Docker Image',
+  TechnologyObject:        'Fysieke Tape, VM-snapshot, Logarchief'
+};
+
+const SECTION_DESCS_NL = {
+  'Active Structure': {
+    title: 'Active Structure — de "uitvoerders"',
+    desc:  'Entiteiten die acties uitvoeren of verantwoordelijkheid dragen. Vraag: wie of wat doet hier iets?',
+    ex:    'Mensen, teams, afdelingen, softwaresystemen, servers'
+  },
+  'Behaviour': {
+    title: 'Behaviour — het "doen"',
+    desc:  'Acties, processen en services uitgevoerd door Active Structure-elementen. Vraag: wat gebeurt er eigenlijk?',
+    ex:    'Goedkeuringsstappen, orderverwerking, factuurgeneratie, API-aanroepen'
+  },
+  'Passive Structure': {
+    title: 'Passive Structure — de "objecten"',
+    desc:  'Objecten die worden aangemaakt, gebruikt of verbruikt door gedrag. Vraag: wat wordt er verwerkt of geproduceerd?',
+    ex:    'Documenten, gegevensrecords, bestanden, contracten, rapporten'
+  }
+};
+
 // ── Template models ────────────────────────────────────────────────────────────
 const TEMPLATES = [
   {
