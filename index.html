@@ -119,6 +119,31 @@
     .lang-btn.active { background: var(--gold); color: #1a1600; }
     .lang-btn:not(.active):hover { color: var(--white); background: rgba(255,255,255,.08); }
 
+    /* ── Mode switcher ────────────────────────────────────────── */
+    .mode-switcher {
+      display: flex; gap: 2px; background: rgba(255,255,255,.06);
+      border: 1px solid var(--border); border-radius: 6px; padding: 3px; flex-shrink: 0;
+    }
+    .mode-btn {
+      background: transparent; border: none; color: var(--muted);
+      font-size: .78rem; font-weight: 700; padding: .28rem .75rem;
+      border-radius: 4px; cursor: pointer; font-family: inherit;
+      transition: all .18s; display: flex; align-items: center; gap: .35rem;
+    }
+    .mode-btn.active { background: var(--surface2); color: var(--white); box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+    .mode-btn.active.archimate { border: 1px solid var(--biz-border); color: var(--biz-text); }
+    .mode-btn.active.swimlane  { border: 1px solid var(--proc-border); color: var(--proc-text); }
+    .mode-btn:not(.active):hover { color: var(--white); background: rgba(255,255,255,.07); }
+    /* ── Bridge button ───────────────────────────────────────── */
+    .btn-open-swimlane {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .38rem .9rem; border-radius: var(--radius);
+      border: 1px solid var(--proc-border); background: rgba(167,138,245,.08);
+      color: var(--proc-text); cursor: pointer; font-size: .8rem; font-weight: 600;
+      font-family: 'Catamaran', system-ui, sans-serif; transition: all .18s; white-space: nowrap;
+    }
+    .btn-open-swimlane:hover { background: rgba(167,138,245,.18); border-color: var(--proc); color: var(--white); }
+
     /* ── Model doc bar ───────────────────────────────────────── */
     .model-doc-bar {
       display: flex; align-items: center; gap: .75rem;
