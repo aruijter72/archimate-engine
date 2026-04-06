@@ -109,17 +109,20 @@
 
     /* ── Language Toggle ────────────────────────────────────────── */
     .lang-toggle {
-      display: flex; gap: 2px; background: rgba(255,255,255,.06);
-      border: 1px solid var(--border); border-radius: 5px; padding: 2px; flex-shrink: 0;
+      display: flex; align-items: center; gap: 4px;
+      border-left: 1px solid rgba(201,163,85,.2);
+      padding-left: 14px; margin-left: 4px; flex-shrink: 0;
     }
     .lang-btn {
-      background: transparent; border: none; color: var(--muted);
-      font-size: .72rem; font-weight: 700; padding: .2rem .55rem;
-      border-radius: 4px; cursor: pointer; font-family: inherit; letter-spacing: .04em;
-      transition: all .15s;
+      background: none; border: none; cursor: pointer;
+      font-size: .78rem; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted);
+      padding: 3px 5px; border-radius: 3px;
+      transition: color .2s; font-family: inherit;
     }
-    .lang-btn.active { background: var(--gold); color: #1a1600; }
-    .lang-btn:not(.active):hover { color: var(--white); background: rgba(255,255,255,.08); }
+    .lang-btn.active { color: var(--gold); }
+    .lang-btn:not(.active):hover { color: var(--white); }
+    .lang-sep { color: var(--muted); opacity: .35; font-size: .7rem; }
 
     /* ── Mode switcher ────────────────────────────────────────── */
     .mode-switcher {
