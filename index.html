@@ -972,16 +972,16 @@
   </div>
 </header>
 
-<!-- ── Model Description ────────────────────────────────────── -->
-<div class="model-doc-bar">
+<!-- ── Model Description (ArchiMate mode only) ──────────────── -->
+<div class="model-doc-bar" id="archimate-doc-bar">
   <label id="desc-label">Description:</label>
   <input type="text" id="modelDoc" class="model-doc-input"
          placeholder="Describe the purpose and scope of this architecture…"
          oninput="model.documentation = this.value">
 </div>
 
-<!-- ── Stats Bar ────────────────────────────────────────────── -->
-<div class="stats-bar">
+<!-- ── Stats Bar (ArchiMate mode only) ──────────────────────── -->
+<div class="stats-bar" id="archimate-stats-bar">
   <span class="stat-item"><span class="stat-dot biz"></span> <span id="stat-biz-lbl">Business</span>: <span class="stat-count" id="statBiz">0</span></span>
   <span class="stat-item"><span class="stat-dot app"></span> <span id="stat-app-lbl">Application</span>: <span class="stat-count" id="statApp">0</span></span>
   <span class="stat-item"><span class="stat-dot tech"></span> <span id="stat-tech-lbl">Technology</span>: <span class="stat-count" id="statTech">0</span></span>
