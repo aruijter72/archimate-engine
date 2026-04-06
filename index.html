@@ -2078,10 +2078,23 @@ function renderLayer(layer) {
   const panel  = document.getElementById(`tab-${layer}`);
   const config = LAYER_CONFIG[layer];
   const cc     = config.colorClass;
+  const NL     = currentLang === 'nl';
+  const bridgeLabel = NL
+    ? '⟳ Openen als Swimlane →'
+    : '⟳ Open as Swimlane →';
+  const bridgeTip = NL
+    ? 'Maak een Swimlane-diagram op basis van de actoren en rollen in deze laag'
+    : 'Create a Swimlane diagram pre-populated with actors and roles from this layer';
+  const bridgeBtn = layer === 'business'
+    ? `<button class="btn-open-swimlane" onclick="openAsSwimlane()" title="${bridgeTip}">${bridgeLabel}</button>`
+    : '';
   let html     = `
-    <div class="layer-intro">
-      <span class="layer-badge ${cc}">${config.label} Layer</span>
-      <span class="layer-desc">${t(LAYER_DESC_KEY[layer])}</span>
+    <div class="layer-intro" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
+      <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+        <span class="layer-badge ${cc}">${config.label} Layer</span>
+        <span class="layer-desc">${t(LAYER_DESC_KEY[layer])}</span>
+      </div>
+      ${bridgeBtn}
     </div>`;
 
   for (const [secName, types] of Object.entries(config.sections)) {
