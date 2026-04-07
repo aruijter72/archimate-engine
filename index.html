@@ -2735,6 +2735,9 @@ function handleLoadFile(ev) {
   r.onload = e => {
     try {
       model = JSON.parse(e.target.result);
+      if (!model.views)     model.views     = [];
+      if (!model.snapshots) model.snapshots = [];
+      if (!model.processes) model.processes = [];
       document.getElementById('modelName').value = model.name || '';
       document.getElementById('modelDoc').value  = model.documentation || '';
       renderAll(); updateStats();
