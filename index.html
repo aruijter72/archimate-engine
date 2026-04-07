@@ -2612,6 +2612,119 @@ function handleLoadFile(ev) {
 }
 
 // ══════════════════════════════════════════════════════════════
+// IMPORT .archimate (Archi 4.x XML)
+// ══════════════════════════════════════════════════════════════
+function triggerImportArchimate() { document.getElementById('importArchimateFile').click(); }
+
+function handleImportArchimate(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(e.target.result, 'application/xml');
+
+      // Support both Archi 4 (archimate:model) and AMEFF/Open Group format
+      const root = xmlDoc.querySelector('model');
+      if (!root) throw new Error('Not a valid ArchiMate file — no <model> root element found.');
+
+      const TYPE_TO_LAYER = {
+        BusinessActor:'business', BusinessRole:'business', BusinessCollaboration:'business',
+        BusinessInterface:'business', BusinessProcess:'business', BusinessFunction:'business',
+        BusinessInteraction:'business', BusinessEvent:'business', BusinessService:'business',
+        BusinessObject:'business', Contract:'business', Representation:'business', Product:'business',
+        ApplicationComponent:'application', ApplicationCollaboration:'application',
+        ApplicationInterface:'application', ApplicationFunction:'application',
+        ApplicationInteraction:'application', ApplicationProcess:'application',
+        ApplicationEvent:'application', ApplicationService:'application', DataObject:'application',
+        Node:'technology', Device:'technology', SystemSoftware:'technology',
+        TechnologyCollaboration:'technology', TechnologyInterface:'technology',
+        Path:'technology', CommunicationNetwork:'technology',
+        TechnologyFunction:'technology', TechnologyProcess:'technology',
+        TechnologyInteraction:'technology', TechnologyEvent:'technology',
+        TechnologyService:'technology', Artifact:'technology', TechnologyObject:'technology'
+      };
+
+      const newModel = {
+        name: root.getAttribute('name') || f.name.replace(/\.archimate$/i,''),
+        documentation: '',
+        elements: [],
+        relationships: []
+      };
+
+      const docEl = root.querySelector(':scope > documentation');
+      if (docEl) newModel.documentation = docEl.textContent || '';
+
+      // Parse elements from layer folders
+      for (const folder of root.querySelectorAll(':scope > folder')) {
+        if (folder.getAttribute('type') === 'relations') continue;
+        for (const el of folder.querySelectorAll('element')) {
+          const rawType = el.getAttributeNS('http://www.w3.org/2001/XMLSchema-instance','type')
+                       || el.getAttribute('xsi:type') || '';
+          const type = rawType.replace(/^archimate:/,'');
+          if (!TYPE_TO_LAYER[type]) continue;
+          const docChild = el.querySelector('documentation');
+          newModel.elements.push({
+            id:            el.getAttribute('id') || genId(),
+            type,
+            layer:         TYPE_TO_LAYER[type],
+            name:          el.getAttribute('name') || '',
+            documentation: docChild ? docChild.textContent : '',
+            properties:    Array.from(el.querySelectorAll('property')).map(p=>({
+              key: p.getAttribute('key')||'', value: p.getAttribute('value')||''
+            }))
+          });
+        }
+      }
+
+      // Parse relationships
+      const relFolder = root.querySelector('folder[type="relations"]');
+      if (relFolder) {
+        for (const el of relFolder.querySelectorAll('element')) {
+          const rawType = el.getAttributeNS('http://www.w3.org/2001/XMLSchema-instance','type')
+                       || el.getAttribute('xsi:type') || '';
+          const type = rawType.replace(/^archimate:/,'');
+          if (!type.endsWith('Relationship')) continue;
+          const docChild = el.querySelector('documentation');
+          newModel.relationships.push({
+            id:            el.getAttribute('id') || genId(),
+            type,
+            sourceId:      el.getAttribute('source') || '',
+            targetId:      el.getAttribute('target') || '',
+            name:          el.getAttribute('name') || '',
+            directed:      el.getAttribute('directed') === 'true',
+            accessType:    el.getAttribute('accessType') || 'ReadWrite',
+            strength:      el.getAttribute('influenceStrength') || '',
+            documentation: docChild ? docChild.textContent : ''
+          });
+        }
+      }
+
+      if (!newModel.elements.length) {
+        alert(currentLang === 'nl'
+          ? 'Geen ondersteunde elementen gevonden in dit .archimate bestand.'
+          : 'No supported elements found in this .archimate file.');
+        return;
+      }
+
+      const msg = currentLang === 'nl'
+        ? `Importeer "${newModel.name}"?\n${newModel.elements.length} elementen en ${newModel.relationships.length} relaties gevonden.\n\nDit vervangt het huidige model.`
+        : `Import "${newModel.name}"?\n${newModel.elements.length} elements and ${newModel.relationships.length} relationships found.\n\nThis will replace your current model.`;
+      if (!confirm(msg)) return;
+
+      model = newModel;
+      document.getElementById('modelName').value = model.name || '';
+      document.getElementById('modelDoc').value  = model.documentation || '';
+      renderAll(); updateStats();
+    } catch(err) {
+      alert((currentLang==='nl' ? 'Kan .archimate bestand niet laden: ' : 'Could not import .archimate file: ') + err.message);
+    }
+  };
+  r.readAsText(f);
+  ev.target.value = '';
+}
+
+// ══════════════════════════════════════════════════════════════
 // ARCHIMATE XML EXPORT
 // ══════════════════════════════════════════════════════════════
 function buildElemXml(el) {
