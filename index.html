@@ -1729,6 +1729,22 @@ const LAYER_CONFIG = {
       'Behaviour':        ['TechnologyFunction','TechnologyProcess','TechnologyInteraction','TechnologyEvent','TechnologyService'],
       'Passive Structure':['Artifact','TechnologyObject']
     }
+  },
+  motivation: {
+    label: 'Motivation', colorClass: 'mot',
+    description: 'Captures the reasons and drivers behind the architecture — stakeholder interests, goals, requirements, and constraints.',
+    sections: {
+      'Stakeholders': ['Stakeholder'],
+      'Motivations':  ['Driver','Assessment','Goal','Outcome','Principle','Requirement','Constraint','Value','Meaning']
+    }
+  },
+  strategy: {
+    label: 'Strategy', colorClass: 'str',
+    description: 'Represents the capabilities and direction of the organisation — resources, capabilities, value streams, and courses of action.',
+    sections: {
+      'Resources':  ['Resource'],
+      'Direction':  ['Capability','ValueStream','CourseOfAction']
+    }
   }
 };
 
