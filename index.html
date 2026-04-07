@@ -1783,6 +1783,17 @@ function applyTranslations() {
     : 'Create named views to control which elements appear in each diagram when exporting to Archi. If no views are defined, a single "Default View" with all elements is exported.';
   const viewsAddBtn = document.getElementById('views-add-btn');
   if (viewsAddBtn) viewsAddBtn.textContent = L === 'nl' ? '+ Weergave toevoegen' : '+ Add View';
+  // Views example label + SVG text
+  const vExLbl = document.getElementById('views-example-lbl');
+  if (vExLbl) vExLbl.textContent = L === 'nl' ? 'Voorbeeld' : 'Example';
+  const vExVa = document.getElementById('views-ex-va');
+  if (vExVa) vExVa.textContent = L === 'nl' ? 'WEERGAVE A — Business' : 'VIEW A — Business';
+  const vExVb = document.getElementById('views-ex-vb');
+  if (vExVb) vExVb.textContent = L === 'nl' ? 'WEERGAVE B — Applicatie' : 'VIEW B — Application';
+  const vExD1 = document.getElementById('views-ex-d1');
+  if (vExD1) vExD1.textContent = L === 'nl' ? '→ diagram 1 in Archi' : '→ diagram 1 in Archi';
+  const vExD2 = document.getElementById('views-ex-d2');
+  if (vExD2) vExD2.textContent = L === 'nl' ? '→ diagram 2 in Archi' : '→ diagram 2 in Archi';
   // History modal strings
   const histTitle = document.getElementById('history-title-el');
   if (histTitle) histTitle.textContent = L === 'nl' ? '📜 Versiegeschiedenis' : '📜 Version History';
