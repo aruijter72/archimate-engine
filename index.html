@@ -1113,7 +1113,9 @@ let model = {
   documentation: '',
   elements:      [],    // { id, layer, type, name, documentation, properties[] }
   relationships: [],    // { id, type, sourceId, targetId, name, documentation, directed, accessType, strength }
-  processes:     []     // { id, name, lanes:[{id,name,sourceId?}], steps:[{id,laneId,type,label}], flows:[{id,from,to,label}] }
+  processes:     [],    // { id, name, lanes:[{id,name}], steps:[{id,laneId,type,label}], flows:[{id,from,to,label}] }
+  views:         [],    // { id, name, elementIds: [] }  — named export views
+  snapshots:     []     // { id, name, timestamp, elements:[], relationships:[] }
 };
 
 // ══════════════════════════════════════════════════════════════
