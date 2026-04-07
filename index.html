@@ -1010,6 +1010,7 @@
         <button class="mi-btn danger" onclick="newModel();closeMenus()">🆕 New Model</button>
         <div class="mi-sep"></div>
         <button class="mi-btn" onclick="triggerLoad();closeMenus()">📂 Open JSON…</button>
+        <button class="mi-btn" id="btn-import-archimate-el" onclick="triggerImportArchimate();closeMenus()">📥 Import .archimate…</button>
         <button class="mi-btn" onclick="saveModel();closeMenus()">💾 Save JSON</button>
         <button class="mi-btn" onclick="saveModelAs();closeMenus()">💾 Save As…</button>
         <div class="mi-sep"></div>
@@ -1018,6 +1019,7 @@
       </div>
     </div>
     <input type="file" id="loadFile" accept=".json" style="display:none" onchange="handleLoadFile(event)">
+    <input type="file" id="importArchimateFile" accept=".archimate,.xml" style="display:none" onchange="handleImportArchimate(event)">
     <!-- ── Persistent controls ─────────────────────────────── -->
     <button id="btn-autolayout" class="btn-layout-toggle" onclick="toggleAutoLayout(this)"
       title="Auto Layout uses Dagre/Sugiyama to minimise edge crossings in the Archi export">
