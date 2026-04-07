@@ -3823,16 +3823,47 @@ function renderHelp() {
   // ═══════════════════════════════════════════════════════════
   html += `<div>`;
 
-  // Layer legend
-  const legendLayerTitle  = 'Layer Colour Coding';
-  const legendAspectTitle = 'Aspect Indicators (left border colour on section headers)';
-  const legendElemTitle   = 'Element Type Reference';
-  const legendRelTitle    = 'Relationship Type Reference';
-  const relColType        = 'Type';
-  const relColSym         = 'Symbol';
-  const relColDesc        = 'Description';
-  const relColUsage       = 'Typical usage';
-  const layerLayerSuffix  = 'Layer';
+  // Layer legend — NL-aware labels
+  const legendLayerTitle  = NL ? 'Laagkleurcodering'                                              : 'Layer Colour Coding';
+  const legendAspectTitle = NL ? 'Aspectindicatoren (linkse randkleur op sectiekoppen)'            : 'Aspect Indicators (left border colour on section headers)';
+  const legendElemTitle   = NL ? 'Elementtype Referentie'                                          : 'Element Type Reference';
+  const legendRelTitle    = NL ? 'Relatietype Referentie'                                          : 'Relationship Type Reference';
+  const relColType        = NL ? 'Type'          : 'Type';
+  const relColSym         = NL ? 'Symbool'       : 'Symbol';
+  const relColDesc        = NL ? 'Beschrijving'  : 'Description';
+  const relColUsage       = NL ? 'Typisch gebruik': 'Typical usage';
+  const layerLayerSuffix  = NL ? 'Laag'          : 'Layer';
+
+  // Relationship descriptions in Dutch
+  const REL_DESC_NL = {
+    AssociationRelationship:    'Niet-gespecificeerde (of gerichte) relatie tussen twee willekeurige concepten.',
+    RealizationRelationship:    'Concept A wordt gerealiseerd door concept B. Bijv. een process realiseert een service.',
+    AssignmentRelationship:     'Een Active Structure-element is verantwoordelijk voor een Behaviour-element, of andersom.',
+    AggregationRelationship:    'Structurele geheel-deel-relatie (niet-exclusief): een element groepeert gerelateerde onderdelen.',
+    CompositionRelationship:    'Structurele geheel-deel-relatie (exclusief/sterk): onderdelen behoren tot precies één geheel.',
+    ServingRelationship:        'Een element levert services aan of ondersteunt een ander element.',
+    AccessRelationship:         'Een Behaviour-element leest uit of schrijft naar een Passive Structure-element.',
+    InfluenceRelationship:      'Een element beïnvloedt zwak een ander element of eigenschap.',
+    TriggeringRelationship:     'Één Behaviour-element veroorzaakt of triggert de uitvoering van een ander.',
+    FlowRelationship:           'Overdracht van informatie, goederen of besturing tussen Behaviour-elementen.',
+    SpecializationRelationship: 'Eén concept is een type/subtype van een ander (generalisatie/specialisatie).'
+  };
+  const REL_RULES_NL = {
+    AssociationRelationship:    'Elk concept → elk concept',
+    RealizationRelationship:    'Behaviour / object → behaviour / object (zelfde of lagere laag)',
+    AssignmentRelationship:     'Active structure ↔ Behaviour (zelfde laag)',
+    AggregationRelationship:    'Elk concept → elk concept (zelfde type familie)',
+    CompositionRelationship:    'Elk concept → elk concept (zelfde type familie)',
+    ServingRelationship:        'Elk element → active structure of behaviour',
+    AccessRelationship:         'Behaviour → passive structure',
+    InfluenceRelationship:      'Elk concept → elk concept (motivatie / strategie aanbevolen)',
+    TriggeringRelationship:     'Behaviour → behaviour',
+    FlowRelationship:           'Behaviour → behaviour',
+    SpecializationRelationship: 'Elk concept → zelfde type'
+  };
+  const elemDescs  = NL ? ELEM_DESCS_NL  : ELEM_DESCS;
+  const relDescMap = NL ? REL_DESC_NL    : null;
+  const relRuleMap = NL ? REL_RULES_NL   : REL_RULES;
 
   html += `
     <div class="ml-card" style="margin-bottom:1.25rem">
