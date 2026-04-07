@@ -5796,7 +5796,7 @@ function deleteView(id) {
   const dlg  = document.getElementById('viewDelDialog');
   const lbl  = document.getElementById('view-del-dlg-lbl');
   const nm   = document.getElementById('view-del-name-span');
-  if (lbl) lbl.textContent = NL ? 'Deze weergave verwijderen?' : 'Delete this view?';
+  if (lbl) lbl.textContent = NL ? 'Deze view verwijderen?' : 'Delete this view?';
   if (nm)  nm.textContent  = v.name;
   if (dlg) dlg.style.display = '';
 }
@@ -5837,7 +5837,7 @@ function renderViewsModal() {
   // List panel
   const listPanel = document.getElementById('viewsListPanel');
   listPanel.innerHTML = views.length === 0
-    ? `<div class="views-placeholder">${NL ? 'Nog geen weergaven. Klik "Toevoegen".' : 'No views yet. Click "Add View".'}</div>`
+    ? `<div class="views-placeholder">${NL ? 'Nog geen views. Klik "View toevoegen".' : 'No views yet. Click "Add View".'}</div>`
     : views.map(v => `
       <div class="view-item${v.id === _activeViewId ? ' active' : ''}" data-vid="${v.id}"
            onclick="selectViewForEdit('${v.id}')">
@@ -5850,7 +5850,7 @@ function renderViewsModal() {
   const elemPanel = document.getElementById('viewsElemPanel');
   const activeView = views.find(v => v.id === _activeViewId);
   if (!activeView) {
-    elemPanel.innerHTML = `<div class="views-placeholder" id="views-placeholder-el">${NL ? 'Selecteer een weergave om elementen te beheren.' : 'Select a view to manage its elements.'}</div>`;
+    elemPanel.innerHTML = `<div class="views-placeholder" id="views-placeholder-el">${NL ? 'Selecteer een view om elementen te beheren.' : 'Select a view to manage its elements.'}</div>`;
     return;
   }
   const selIds = new Set(activeView.elementIds);
