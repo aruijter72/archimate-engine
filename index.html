@@ -1075,12 +1075,76 @@
       <button class="modal-close" onclick="hideViews()">×</button>
     </div>
     <p class="modal-sub" id="views-sub-el">Create named views to control which elements appear in each diagram when exporting to Archi. If no views are defined, a single "Default View" with all elements is exported.</p>
+
+    <!-- Visual example -->
+    <div class="views-example">
+      <div class="views-example-lbl" id="views-example-lbl">Example</div>
+      <svg width="100%" viewBox="0 0 560 68" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible" font-family="Catamaran,sans-serif">
+        <!-- Model pool -->
+        <rect x="0" y="6" width="134" height="56" rx="5" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.13)" stroke-width="1"/>
+        <text x="67" y="18" text-anchor="middle" fill="rgba(255,255,255,.35)" font-size="8.5" font-weight="700" letter-spacing=".06em" id="views-ex-model">MODEL</text>
+        <rect x="7" y="23" width="36" height="13" rx="3" fill="rgba(93,156,236,.22)" stroke="rgba(93,156,236,.5)" stroke-width=".7"/>
+        <text x="25" y="32.5" text-anchor="middle" fill="#7aadee" font-size="7.5">Actor</text>
+        <rect x="49" y="23" width="40" height="13" rx="3" fill="rgba(93,156,236,.22)" stroke="rgba(93,156,236,.5)" stroke-width=".7"/>
+        <text x="69" y="32.5" text-anchor="middle" fill="#7aadee" font-size="7.5">Process</text>
+        <rect x="95" y="23" width="32" height="13" rx="3" fill="rgba(93,156,236,.22)" stroke="rgba(93,156,236,.5)" stroke-width=".7"/>
+        <text x="111" y="32.5" text-anchor="middle" fill="#7aadee" font-size="7.5">App</text>
+        <rect x="7" y="41" width="50" height="13" rx="3" fill="rgba(93,156,236,.17)" stroke="rgba(93,156,236,.38)" stroke-width=".7"/>
+        <text x="32" y="50.5" text-anchor="middle" fill="#7aadee" font-size="7.5">Component</text>
+        <rect x="63" y="41" width="36" height="13" rx="3" fill="rgba(93,156,236,.17)" stroke="rgba(93,156,236,.38)" stroke-width=".7"/>
+        <text x="81" y="50.5" text-anchor="middle" fill="#7aadee" font-size="7.5">Service</text>
+        <rect x="105" y="41" width="22" height="13" rx="3" fill="rgba(93,156,236,.17)" stroke="rgba(93,156,236,.38)" stroke-width=".7"/>
+        <text x="116" y="50.5" text-anchor="middle" fill="#7aadee" font-size="7.5">DB</text>
+        <!-- Arrow -->
+        <text x="148" y="38" text-anchor="middle" fill="rgba(255,255,255,.25)" font-size="16">→</text>
+        <!-- View A -->
+        <rect x="163" y="1" width="178" height="66" rx="5" fill="rgba(201,163,85,.055)" stroke="rgba(201,163,85,.32)" stroke-width="1"/>
+        <text x="252" y="13" text-anchor="middle" fill="rgba(201,163,85,.85)" font-size="8" font-weight="700" letter-spacing=".07em" id="views-ex-va">VIEW A — Business</text>
+        <rect x="171" y="19" width="36" height="13" rx="3" fill="rgba(93,156,236,.22)" stroke="rgba(93,156,236,.5)" stroke-width=".7"/>
+        <text x="189" y="28.5" text-anchor="middle" fill="#7aadee" font-size="7.5">Actor</text>
+        <rect x="213" y="19" width="40" height="13" rx="3" fill="rgba(93,156,236,.22)" stroke="rgba(93,156,236,.5)" stroke-width=".7"/>
+        <text x="233" y="28.5" text-anchor="middle" fill="#7aadee" font-size="7.5">Process</text>
+        <rect x="259" y="19" width="36" height="13" rx="3" fill="rgba(93,156,236,.17)" stroke="rgba(93,156,236,.38)" stroke-width=".7"/>
+        <text x="277" y="28.5" text-anchor="middle" fill="#7aadee" font-size="7.5">Service</text>
+        <text x="252" y="55" text-anchor="middle" fill="rgba(255,255,255,.22)" font-size="8" id="views-ex-d1">→ diagram 1 in Archi</text>
+        <!-- View B -->
+        <rect x="352" y="1" width="166" height="66" rx="5" fill="rgba(201,163,85,.055)" stroke="rgba(201,163,85,.32)" stroke-width="1"/>
+        <text x="435" y="13" text-anchor="middle" fill="rgba(201,163,85,.85)" font-size="8" font-weight="700" letter-spacing=".07em" id="views-ex-vb">VIEW B — Application</text>
+        <rect x="360" y="19" width="32" height="13" rx="3" fill="rgba(93,156,236,.22)" stroke="rgba(93,156,236,.5)" stroke-width=".7"/>
+        <text x="376" y="28.5" text-anchor="middle" fill="#7aadee" font-size="7.5">App</text>
+        <rect x="398" y="19" width="50" height="13" rx="3" fill="rgba(93,156,236,.17)" stroke="rgba(93,156,236,.38)" stroke-width=".7"/>
+        <text x="423" y="28.5" text-anchor="middle" fill="#7aadee" font-size="7.5">Component</text>
+        <rect x="454" y="19" width="22" height="13" rx="3" fill="rgba(93,156,236,.17)" stroke="rgba(93,156,236,.38)" stroke-width=".7"/>
+        <text x="465" y="28.5" text-anchor="middle" fill="#7aadee" font-size="7.5">DB</text>
+        <text x="435" y="55" text-anchor="middle" fill="rgba(255,255,255,.22)" font-size="8" id="views-ex-d2">→ diagram 2 in Archi</text>
+      </svg>
+    </div>
+
     <div class="views-layout" id="viewsLayout">
       <div class="views-list-panel" id="viewsListPanel"></div>
       <div class="views-elem-panel" id="viewsElemPanel"><div class="views-placeholder" id="views-placeholder-el">Select a view to manage its elements.</div></div>
     </div>
-    <div style="margin-top:1rem;display:flex;gap:.5rem">
+    <div style="margin-top:1rem;display:flex;flex-direction:column;gap:.0rem">
       <button class="btn btn-secondary" id="views-add-btn" onclick="addView()">+ Add View</button>
+      <!-- Inline: add view name dialog -->
+      <div class="view-inline-dlg" id="viewAddDialog" style="display:none">
+        <div class="view-inline-dlg-lbl" id="view-add-dlg-lbl">Name for the new view:</div>
+        <div class="view-inline-dlg-row">
+          <input id="viewNameInput" type="text" value="New View"
+            onkeydown="if(event.key==='Enter')confirmAddView();else if(event.key==='Escape')cancelAddView()">
+          <button class="btn btn-secondary" style="padding:.28rem .75rem;font-size:.8rem" onclick="cancelAddView()">✕</button>
+          <button class="btn btn-primary" style="padding:.28rem .85rem;font-size:.8rem" onclick="confirmAddView()">OK</button>
+        </div>
+      </div>
+      <!-- Inline: delete confirm dialog -->
+      <div class="view-inline-dlg danger" id="viewDelDialog" style="display:none">
+        <div class="view-inline-dlg-lbl" id="view-del-dlg-lbl">Delete this view?</div>
+        <div class="view-inline-dlg-row">
+          <span class="view-del-name" id="view-del-name-span"></span>
+          <button class="btn btn-secondary" style="padding:.28rem .75rem;font-size:.8rem" onclick="cancelDeleteView()">✕</button>
+          <button class="btn" style="padding:.28rem .85rem;font-size:.8rem;background:#c0444e;color:#fff;border:none;border-radius:5px;cursor:pointer" onclick="confirmDeleteView()">🗑</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
