@@ -1625,9 +1625,32 @@ function applyTranslations() {
   // Swimlane header controls
   const swFileLabel = document.getElementById('proc-file-btn-label');
   if (swFileLabel) swFileLabel.textContent = L === 'nl' ? 'Bestand' : 'File';
-  // ArchiMate import button
+  // ArchiMate import / snapshot / history buttons
   const btnImpArch = document.getElementById('btn-import-archimate-el');
   if (btnImpArch) btnImpArch.textContent = L === 'nl' ? '📥 Importeer .archimate…' : '📥 Import .archimate…';
+  const btnSnap = document.getElementById('btn-snapshot-el');
+  if (btnSnap) btnSnap.textContent = L === 'nl' ? '📸 Snapshot opslaan…' : '📸 Save Snapshot…';
+  const btnHist = document.getElementById('btn-history-el');
+  if (btnHist) btnHist.textContent = L === 'nl' ? '📜 Versiegeschiedenis…' : '📜 Version History…';
+  // Views button
+  const viewsLabel = document.getElementById('btn-views-label');
+  if (viewsLabel) viewsLabel.textContent = L === 'nl' ? 'Weergaven' : 'Views';
+  // Views modal strings
+  const viewsTitle = document.getElementById('views-title-el');
+  if (viewsTitle) viewsTitle.textContent = L === 'nl' ? '📐 Weergaven' : '📐 Views';
+  const viewsSub = document.getElementById('views-sub-el');
+  if (viewsSub) viewsSub.textContent = L === 'nl'
+    ? 'Maak benoemde weergaven om te bepalen welke elementen in elk diagram verschijnen bij het exporteren naar Archi. Zonder weergaven wordt één "Standaardweergave" met alle elementen geëxporteerd.'
+    : 'Create named views to control which elements appear in each diagram when exporting to Archi. If no views are defined, a single "Default View" with all elements is exported.';
+  const viewsAddBtn = document.getElementById('views-add-btn');
+  if (viewsAddBtn) viewsAddBtn.textContent = L === 'nl' ? '+ Weergave toevoegen' : '+ Add View';
+  // History modal strings
+  const histTitle = document.getElementById('history-title-el');
+  if (histTitle) histTitle.textContent = L === 'nl' ? '📜 Versiegeschiedenis' : '📜 Version History';
+  const histSub = document.getElementById('history-sub-el');
+  if (histSub) histSub.textContent = L === 'nl'
+    ? 'Snapshots bewaren de volledige toestand van uw model. Max. 10 snapshots worden bewaard — oudste worden automatisch verwijderd.'
+    : 'Snapshots capture the full state of your model. Max 10 snapshots are kept — oldest are removed automatically.';
 
   const swMenuMap = {
     'proc-mi-templates':      L === 'nl' ? '📋 Sjablonen'               : '📋 Templates',
