@@ -1066,11 +1066,17 @@
         <div class="mi-sep"></div>
         <button class="mi-btn gold" onclick="exportArchimate();closeMenus()">⬇ Export .archimate</button>
         <button class="mi-btn" onclick="exportAMEFF();closeMenus()" title="Open Group AMEFF XML">⬇ Export AMEFF XML</button>
+        <div class="mi-sep"></div>
+        <button class="mi-btn" id="btn-snapshot-el" onclick="saveSnapshot();closeMenus()">📸 Save Snapshot…</button>
+        <button class="mi-btn" id="btn-history-el" onclick="showHistory();closeMenus()">📜 Version History…</button>
       </div>
     </div>
     <input type="file" id="loadFile" accept=".json" style="display:none" onchange="handleLoadFile(event)">
     <input type="file" id="importArchimateFile" accept=".archimate,.xml" style="display:none" onchange="handleImportArchimate(event)">
     <!-- ── Persistent controls ─────────────────────────────── -->
+    <button class="menu-trigger" id="btn-views-el" onclick="showViews()" style="gap:.35rem">
+      📐 <span id="btn-views-label">Views</span> <span style="font-size:.62rem;opacity:.65">▾</span>
+    </button>
     <button id="btn-autolayout" class="btn-layout-toggle" onclick="toggleAutoLayout(this)"
       title="Auto Layout uses Dagre/Sugiyama to minimise edge crossings in the Archi export">
       ⚡ Auto Layout: OFF
