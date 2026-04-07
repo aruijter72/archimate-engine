@@ -1302,10 +1302,19 @@ const STRINGS = {
     'ldesc-biz':   'Represents the business environment — actors, roles, processes, services, and objects handled at the organisational level.',
     'ldesc-app':   'Represents software applications and their components, interfaces, functions, and data objects that support the business.',
     'ldesc-tech':  'Represents hardware, software infrastructure, networks, and physical assets that support the application and business layers.',
+    'ldesc-mot':   'Captures the reasons and drivers behind the architecture — stakeholder interests, goals, requirements, and constraints.',
+    'ldesc-str':   'Represents the capabilities and direction of the organisation — resources, capabilities, value streams, and courses of action.',
     // Section headings (kept as display labels; keys in LAYER_CONFIG stay English)
     'sec-active':  'Active Structure',
     'sec-behav':   'Behaviour',
     'sec-passive': 'Passive Structure',
+    'sec-stakeholders': 'Stakeholders',
+    'sec-motivations':  'Motivations',
+    'sec-resources':    'Resources',
+    'sec-direction':    'Direction',
+    'tab-mot':    'Motivation',
+    'tab-str':    'Strategy',
+    'adv-toggle': 'Advanced',
     // Table columns (renderLayer)
     'col-type':    'Type',
     'col-name':    'Name *',
@@ -1546,7 +1555,9 @@ const SEC_KEY = {
 const LAYER_DESC_KEY = {
   business:    'ldesc-biz',
   application: 'ldesc-app',
-  technology:  'ldesc-tech'
+  technology:  'ldesc-tech',
+  motivation:  'ldesc-mot',
+  strategy:    'ldesc-str'
 };
 
 function setLanguage(lang) {
