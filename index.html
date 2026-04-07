@@ -888,6 +888,55 @@
     .mi-btn.danger:hover { background: rgba(239,68,68,.1); color: #ef4444; }
     .mi-sep { height: 1px; background: var(--border); margin: 3px 5px; }
     .mi-kbd { margin-left: auto; font-size: .67rem; color: rgba(148,150,184,.45); font-weight:400; }
+
+    /* ── Search overlay ──────────────────────────────────────── */
+    .search-overlay { position:fixed; inset:0; z-index:1200; background:rgba(0,0,0,.6); display:none; align-items:flex-start; justify-content:center; padding-top:80px; }
+    .search-overlay.open { display:flex; }
+    .search-box { background:var(--surface); border:1px solid var(--border); border-radius:10px; width:520px; max-width:95vw; box-shadow:0 20px 60px rgba(0,0,0,.5); overflow:hidden; }
+    .search-input-wrap { display:flex; align-items:center; gap:.6rem; padding:.75rem 1rem; border-bottom:1px solid var(--border); }
+    .search-icon-lbl { font-size:1rem; opacity:.5; flex-shrink:0; }
+    .search-input { background:none; border:none; outline:none; flex:1; font-size:.95rem; color:var(--white); font-family:inherit; }
+    .search-results { max-height:360px; overflow-y:auto; }
+    .search-result { display:flex; align-items:center; gap:.75rem; padding:.65rem 1rem; cursor:pointer; transition:background .12s; border-bottom:1px solid rgba(255,255,255,.04); }
+    .search-result:hover, .search-result.focused { background:rgba(201,163,85,.08); }
+    .search-result-info { flex:1; min-width:0; }
+    .search-result-name { font-size:.85rem; color:var(--white); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .search-result-meta { font-size:.72rem; color:var(--muted); }
+    .search-result-badge { font-size:.62rem; padding:.12rem .45rem; border-radius:3px; font-weight:700; flex-shrink:0; }
+    .search-empty { padding:1.5rem 1rem; text-align:center; color:var(--muted); font-size:.84rem; }
+    .search-hint { padding:.4rem 1rem; text-align:right; font-size:.7rem; color:var(--muted); opacity:.6; border-top:1px solid var(--border); }
+    .search-trigger { background:none; border:none; cursor:pointer; color:var(--muted); font-size:.95rem; padding:4px 7px; border-radius:5px; transition:color .15s; }
+    .search-trigger:hover { color:var(--white); }
+    tr.elem-highlight { animation:rowflash .9s ease; }
+    @keyframes rowflash { 0%,100%{ background:transparent } 30%{ background:rgba(201,163,85,.18) } }
+
+    /* ── Views modal ─────────────────────────────────────────── */
+    .views-layout { display:grid; grid-template-columns:210px 1fr; gap:1.1rem; min-height:340px; }
+    .views-list-panel { border-right:1px solid var(--border); padding-right:1rem; display:flex; flex-direction:column; gap:.3rem; }
+    .view-item { display:flex; align-items:center; gap:.4rem; padding:.4rem .55rem; border-radius:5px; cursor:pointer; transition:background .14s; }
+    .view-item:hover { background:rgba(255,255,255,.05); }
+    .view-item.active { background:rgba(201,163,85,.12); border:1px solid rgba(201,163,85,.25); }
+    .view-item-name { flex:1; font-size:.82rem; color:var(--white); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .view-item-count { font-size:.68rem; color:var(--muted); flex-shrink:0; }
+    .view-del { background:none; border:none; cursor:pointer; color:var(--muted); font-size:.8rem; padding:1px 4px; border-radius:3px; flex-shrink:0; }
+    .view-del:hover { color:#e06c75; }
+    .views-elem-panel { overflow-y:auto; max-height:360px; }
+    .views-elem-layer { margin-bottom:.9rem; }
+    .views-elem-layer-hd { font-size:.67rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:.3rem; }
+    .views-elem-row { display:flex; align-items:center; gap:.5rem; padding:.18rem 0; cursor:pointer; }
+    .views-elem-row label { font-size:.8rem; color:var(--white); cursor:pointer; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .views-placeholder { color:var(--muted); font-size:.84rem; padding:.5rem 0; }
+
+    /* ── Snapshot / Version History modal ────────────────────── */
+    .snap-row { display:flex; align-items:center; gap:.7rem; padding:.55rem .75rem; border-radius:6px; border:1px solid var(--border); margin-bottom:.45rem; background:rgba(255,255,255,.025); }
+    .snap-name { flex:1; font-size:.85rem; color:var(--white); font-weight:600; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .snap-meta { font-size:.71rem; color:var(--muted); flex-shrink:0; white-space:nowrap; }
+    .snap-actions { display:flex; gap:.35rem; flex-shrink:0; }
+    .snap-restore { font-size:.73rem; padding:.22rem .6rem; border-radius:4px; border:1px solid rgba(201,163,85,.4); background:rgba(201,163,85,.1); color:var(--gold); cursor:pointer; transition:background .14s; }
+    .snap-restore:hover { background:rgba(201,163,85,.22); }
+    .snap-del { font-size:.73rem; padding:.22rem .6rem; border-radius:4px; border:1px solid rgba(224,108,117,.3); background:transparent; color:#e06c75; cursor:pointer; transition:background .14s; }
+    .snap-del:hover { background:rgba(224,108,117,.1); }
+    .snap-empty { text-align:center; padding:2.5rem 1rem; color:var(--muted); font-size:.84rem; }
   </style>
 </head>
 <body>
