@@ -3024,39 +3024,66 @@ function generateArchimateXML(extLayout = null) {
     (tgtConns[td.diagId] = tgtConns[td.diagId]||[]).push(cid);
   }
 
-  xml += `  <folder name="Views" id="${vfId}" type="diagrams">\n`;
-  xml += `    <element xsi:type="archimate:ArchimateDiagramModel" name="Default View" id="${viewId}">\n`;
-
-  // ── Aspect column header notes (default layout only — not applicable to dagre) ──
-  if (!extLayout) {
-    const firstExt = Object.values(layerExtents)[0];
-    if (firstExt) {
-      const noteY = firstExt.startY - PAD - 22;
-      for (let asp = 0; asp < 3; asp++) {
-        const nx = OX + asp * (aspectW + ASPECT_GAP);
-        xml += `      <child xsi:type="archimate:Note" id="${genId()}">\n`;
-        xml += `        <bounds x="${nx}" y="${noteY}" width="${aspectW}" height="18"/>\n`;
-        xml += `        <content>${ASPECT_LABELS[asp]}</content>\n`;
-        xml += `        <fillColor r="0" g="0" b="0" a="0"/>\n`;
-        xml += `        <lineColor r="0" g="0" b="0" a="0"/>\n`;
-        xml += `      </child>\n`;
+  // ── Helper: render one ArchiMate diagram view ──────────────────
+  function buildDiagramView(viewName, viewId2, elemsInView) {
+    let vxml = `    <element xsi:type="archimate:ArchimateDiagramModel" name="${esc(viewName)}" id="${viewId2}">\n`;
+    if (!extLayout) {
+      const firstExt = Object.values(layerExtents)[0];
+      if (firstExt) {
+        const noteY = firstExt.startY - PAD - 22;
+        for (let asp = 0; asp < 3; asp++) {
+          const nx = OX + asp * (aspectW + ASPECT_GAP);
+          vxml += `      <child xsi:type="archimate:Note" id="${genId()}">\n`;
+          vxml += `        <bounds x="${nx}" y="${noteY}" width="${aspectW}" height="18"/>\n`;
+          vxml += `        <content>${ASPECT_LABELS[asp]}</content>\n`;
+          vxml += `        <fillColor r="0" g="0" b="0" a="0"/>\n`;
+          vxml += `        <lineColor r="0" g="0" b="0" a="0"/>\n`;
+          vxml += `      </child>\n`;
+        }
       }
     }
-  }
-
-
-  // ── Element diagram objects (rendered after groups = appear on top) ──
-  for (const el of model.elements) {
-    const d = diagMap[el.id]; if (!d) continue;
-    const tcAttr = (tgtConns[d.diagId]||[]).length ? ` targetConnections="${tgtConns[d.diagId].join(' ')}"` : '';
-    xml += `      <child xsi:type="archimate:DiagramObject" id="${d.diagId}" archimateElement="${el.id}"${tcAttr}>\n`;
-    xml += `        <bounds x="${d.x}" y="${d.y}" width="${EW}" height="${EH}"/>\n`;
-    for (const c of (srcConns[d.diagId]||[])) {
-      xml += `        <sourceConnection xsi:type="archimate:Connection" id="${c.connId}" source="${d.diagId}" target="${c.tgtDiagId}" archimateRelationship="${c.relId}"/>\n`;
+    const inViewIds = new Set(elemsInView.map(e => e.id));
+    for (const el of elemsInView) {
+      const d = diagMap[el.id]; if (!d) continue;
+      const myTgtConns = (tgtConns[d.diagId]||[]).filter(cid => {
+        // Only include connections whose source is also in this view
+        const srcEntry = Object.entries(srcConns).find(([,conns])=>conns.some(c=>c.connId===cid));
+        if (!srcEntry) return false;
+        // Find source elem
+        const srcDiagId = srcEntry[0];
+        const srcEl = model.elements.find(e2 => diagMap[e2.id]?.diagId === srcDiagId);
+        return srcEl && inViewIds.has(srcEl.id);
+      });
+      const tcAttr = myTgtConns.length ? ` targetConnections="${myTgtConns.join(' ')}"` : '';
+      vxml += `      <child xsi:type="archimate:DiagramObject" id="${d.diagId}" archimateElement="${el.id}"${tcAttr}>\n`;
+      vxml += `        <bounds x="${d.x}" y="${d.y}" width="${EW}" height="${EH}"/>\n`;
+      for (const c of (srcConns[d.diagId]||[])) {
+        if (!diagMap[model.elements.find(e2=>e2.id===model.relationships.find(r=>r.id===c.relId)?.targetId)?.id]) continue;
+        // Include connection only if target is also in view
+        const relTarget = model.relationships.find(r=>r.id===c.relId)?.targetId;
+        if (!inViewIds.has(relTarget)) continue;
+        vxml += `        <sourceConnection xsi:type="archimate:Connection" id="${c.connId}" source="${d.diagId}" target="${c.tgtDiagId}" archimateRelationship="${c.relId}"/>\n`;
+      }
+      vxml += `      </child>\n`;
     }
-    xml += `      </child>\n`;
+    vxml += `    </element>\n`;
+    return vxml;
   }
-  xml += `    </element>\n`;
+
+  xml += `  <folder name="Views" id="${vfId}" type="diagrams">\n`;
+
+  const namedViews = (model.views || []).filter(v => v.elementIds && v.elementIds.length > 0);
+  if (namedViews.length > 0) {
+    // Generate one diagram per named view
+    for (const v of namedViews) {
+      const elemsInView = model.elements.filter(e => v.elementIds.includes(e.id));
+      xml += buildDiagramView(v.name, genId(), elemsInView);
+    }
+  } else {
+    // Default: one view with all elements
+    xml += buildDiagramView('Default View', viewId, model.elements);
+  }
+
   xml += `  </folder>\n`;
   xml += `</archimate:model>\n`;
   return xml;
