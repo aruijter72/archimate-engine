@@ -188,6 +188,8 @@
     .stat-dot.app  { background: var(--app); }
     .stat-dot.tech { background: var(--tech); }
     .stat-dot.rel  { background: var(--rel); }
+    .stat-dot.mot { background: var(--mot); }
+    .stat-dot.str { background: var(--str); }
     .stat-count { font-weight: 700; color: var(--white); }
 
     /* ── Tab navigation ──────────────────────────────────────── */
@@ -1204,6 +1206,12 @@
     <span class="tab-icon rel">R</span> Relationships</button>
   <button class="tab-btn help"        id="tab-btn-help"          onclick="showTab('help')">
     <span class="tab-icon help">?</span> Manual &amp; Legend</button>
+  <div class="tab-adv-sep" id="adv-sep"></div>
+  <button class="tab-adv-toggle" id="adv-toggle-btn" onclick="toggleAdvancedLayers()">⋯ <span id="adv-toggle-label">Advanced</span> ▸</button>
+  <button class="tab-btn mot" id="tab-btn-motivation" onclick="showTab('motivation')" style="display:none">
+    <span class="tab-icon mot">M</span> <span id="tab-mot-label">Motivation</span></button>
+  <button class="tab-btn str" id="tab-btn-strategy"   onclick="showTab('strategy')" style="display:none">
+    <span class="tab-icon str">S</span> <span id="tab-str-label">Strategy</span></button>
 </nav>
 
 <!-- ── Tab Panels (ArchiMate mode) ─────────────────────────── -->
