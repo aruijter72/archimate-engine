@@ -2374,7 +2374,7 @@ function setRel(id, field, val) {
 // ══════════════════════════════════════════════════════════════
 // RENDERING
 // ══════════════════════════════════════════════════════════════
-const SECTION_CLS = { 'Active Structure':'active-struct', 'Behaviour':'behaviour', 'Passive Structure':'passive-struct' };
+const SECTION_CLS = { 'Active Structure':'active-struct', 'Behaviour':'behaviour', 'Passive Structure':'passive-struct', 'Stakeholders':'active-struct', 'Motivations':'behaviour', 'Resources':'active-struct', 'Direction':'behaviour' };
 
 function renderLayer(layer) {
   const panel  = document.getElementById(`tab-${layer}`);
@@ -3596,6 +3596,26 @@ const SECTION_DESCS_NL = {
     title: 'Passive Structure — de "objecten"',
     desc:  'Objecten die worden aangemaakt, gebruikt of verbruikt door gedrag. Vraag: wat wordt er verwerkt of geproduceerd?',
     ex:    'Documenten, gegevensrecords, bestanden, contracten, rapporten'
+  },
+  'Stakeholders': {
+    title: 'Stakeholders — de "betrokkenen"',
+    desc:  'Personen, teams of organisaties met een belang bij de uitkomsten van de architectuur.',
+    ex:    'Bestuur, klanten, toezichthouders, IT-afdeling, leveranciers'
+  },
+  'Motivations': {
+    title: 'Motivaties — het "waarom"',
+    desc:  'Drijfveren, doelen, vereisten en beperkingen die uitleggen waarom de architectuur zo is vormgegeven.',
+    ex:    'Regelgeving, kostendoelen, strategische doelen, ontwerpprincipes'
+  },
+  'Resources': {
+    title: 'Resources — de "assets"',
+    desc:  'Assets beschikbaar voor het uitvoeren van een strategie — mensen, budgetten, platformen of contracten.',
+    ex:    'Ontwikkelteam, cloudbudget, leverancierscontract, CRM-platform'
+  },
+  'Direction': {
+    title: 'Richting — "hoe we er komen"',
+    desc:  'Capabilities, waardestromen en handelingsplannen die bepalen hoe de organisatie haar doelen bereikt.',
+    ex:    'Klantanalyse-capability, order-to-cash waardestroom, cloudmigratie plan'
   }
 };
 
