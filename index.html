@@ -1015,6 +1015,53 @@
   </div>
 </div>
 
+<!-- ── Search overlay ───────────────────────────────────────── -->
+<div id="searchOverlay" class="search-overlay" onclick="if(event.target===this)closeSearch()">
+  <div class="search-box">
+    <div class="search-input-wrap">
+      <span class="search-icon-lbl">🔍</span>
+      <input id="searchInput" class="search-input" type="text" autocomplete="off"
+             placeholder="Search elements…"
+             oninput="doSearch(this.value)"
+             onkeydown="handleSearchKey(event)">
+    </div>
+    <div class="search-results" id="searchResults">
+      <div class="search-empty" id="searchEmptyMsg">Start typing to search…</div>
+    </div>
+    <div class="search-hint" id="searchHint">↑↓ navigate · Enter select · Esc close · ⌘K toggle</div>
+  </div>
+</div>
+
+<!-- ── Views modal ───────────────────────────────────────────── -->
+<div id="viewsModal" class="modal-overlay" onclick="if(event.target===this)hideViews()">
+  <div class="modal-box" style="max-width:700px">
+    <div class="modal-header">
+      <div class="modal-title" id="views-title-el">📐 Views</div>
+      <button class="modal-close" onclick="hideViews()">×</button>
+    </div>
+    <p class="modal-sub" id="views-sub-el">Create named views to control which elements appear in each diagram when exporting to Archi. If no views are defined, a single "Default View" with all elements is exported.</p>
+    <div class="views-layout" id="viewsLayout">
+      <div class="views-list-panel" id="viewsListPanel"></div>
+      <div class="views-elem-panel" id="viewsElemPanel"><div class="views-placeholder" id="views-placeholder-el">Select a view to manage its elements.</div></div>
+    </div>
+    <div style="margin-top:1rem;display:flex;gap:.5rem">
+      <button class="btn btn-secondary" id="views-add-btn" onclick="addView()">+ Add View</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Version History modal ─────────────────────────────────── -->
+<div id="historyModal" class="modal-overlay" onclick="if(event.target===this)hideHistory()">
+  <div class="modal-box" style="max-width:540px">
+    <div class="modal-header">
+      <div class="modal-title" id="history-title-el">📜 Version History</div>
+      <button class="modal-close" onclick="hideHistory()">×</button>
+    </div>
+    <p class="modal-sub" id="history-sub-el">Snapshots capture the full state of your model. Max 10 snapshots are kept — oldest are removed automatically.</p>
+    <div id="historyList"></div>
+  </div>
+</div>
+
 <!-- Floating tooltip -->
 <div id="tipPopup"></div>
 
