@@ -3913,7 +3913,7 @@ function renderHelp() {
                 <div class="legend-elem-item">
                   <div>
                     <div class="legend-elem-name"><span class="legend-elem-badge ${cc}">${TYPE_LABELS[t]}</span></div>
-                    <div class="legend-elem-desc" style="margin-top:.25rem">${ELEM_DESCS[t]||''}</div>
+                    <div class="legend-elem-desc" style="margin-top:.25rem">${elemDescs[t]||''}</div>
                   </div>
                 </div>`;
       }
@@ -3941,8 +3941,8 @@ function renderHelp() {
             <tr>
               <td style="font-weight:700;color:var(--white);white-space:nowrap">${rt.label}</td>
               <td class="rel-sym-cell">${rt.sym}</td>
-              <td style="color:var(--muted)">${rt.desc}</td>
-              <td><span class="rel-rule">${REL_RULES[rt.id]||''}</span></td>
+              <td style="color:var(--muted)">${(relDescMap && relDescMap[rt.id]) || rt.desc}</td>
+              <td><span class="rel-rule">${relRuleMap[rt.id]||''}</span></td>
             </tr>`;
   }
   html += `</tbody></table>
