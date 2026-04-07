@@ -2345,7 +2345,7 @@ function renderLayer(layer) {
         <tbody>`;
       for (const el of elems) {
         html += `
-        <tr>
+        <tr data-elem-id="${el.id}">
           <td><span class="type-badge ${cc}">${TYPE_LABELS[el.type]}</span></td>
           <td>
             <input type="text" class="elem-input" data-eid="${el.id}"
