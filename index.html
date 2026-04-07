@@ -1787,9 +1787,9 @@ function applyTranslations() {
   const vExLbl = document.getElementById('views-example-lbl');
   if (vExLbl) vExLbl.textContent = L === 'nl' ? 'Voorbeeld' : 'Example';
   const vExVa = document.getElementById('views-ex-va');
-  if (vExVa) vExVa.textContent = L === 'nl' ? 'WEERGAVE A — Business' : 'VIEW A — Business';
+  if (vExVa) vExVa.textContent = 'VIEW A — Business';
   const vExVb = document.getElementById('views-ex-vb');
-  if (vExVb) vExVb.textContent = L === 'nl' ? 'WEERGAVE B — Applicatie' : 'VIEW B — Application';
+  if (vExVb) vExVb.textContent = L === 'nl' ? 'VIEW B — Applicatie' : 'VIEW B — Application';
   const vExD1 = document.getElementById('views-ex-d1');
   if (vExD1) vExD1.textContent = L === 'nl' ? '→ diagram 1 in Archi' : '→ diagram 1 in Archi';
   const vExD2 = document.getElementById('views-ex-d2');
@@ -5765,8 +5765,8 @@ function addView() {
   const dlg = document.getElementById('viewAddDialog');
   const lbl = document.getElementById('view-add-dlg-lbl');
   const inp = document.getElementById('viewNameInput');
-  if (lbl) lbl.textContent = NL ? 'Naam voor de nieuwe weergave:' : 'Name for the new view:';
-  if (inp)  inp.value = NL ? 'Nieuwe weergave' : 'New View';
+  if (lbl) lbl.textContent = NL ? 'Naam voor de nieuwe view:' : 'Name for the new view:';
+  if (inp)  inp.value = NL ? 'Nieuwe view' : 'New View';
   if (dlg)  dlg.style.display = '';
   setTimeout(() => { if (inp) { inp.focus(); inp.select(); } }, 40);
 }
