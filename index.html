@@ -1773,16 +1773,16 @@ function applyTranslations() {
   if (btnHist) btnHist.textContent = L === 'nl' ? '📜 Versiegeschiedenis…' : '📜 Version History…';
   // Views button
   const viewsLabel = document.getElementById('btn-views-label');
-  if (viewsLabel) viewsLabel.textContent = L === 'nl' ? 'Weergaven' : 'Views';
+  if (viewsLabel) viewsLabel.textContent = 'Views';
   // Views modal strings
   const viewsTitle = document.getElementById('views-title-el');
-  if (viewsTitle) viewsTitle.textContent = L === 'nl' ? '📐 Weergaven' : '📐 Views';
+  if (viewsTitle) viewsTitle.textContent = '📐 Views';
   const viewsSub = document.getElementById('views-sub-el');
   if (viewsSub) viewsSub.textContent = L === 'nl'
-    ? 'Maak benoemde weergaven om te bepalen welke elementen in elk diagram verschijnen bij het exporteren naar Archi. Zonder weergaven wordt één "Standaardweergave" met alle elementen geëxporteerd.'
+    ? 'Maak benoemde views om te bepalen welke elementen in elk diagram verschijnen bij het exporteren naar Archi. Zonder views wordt één "Default View" met alle elementen geëxporteerd.'
     : 'Create named views to control which elements appear in each diagram when exporting to Archi. If no views are defined, a single "Default View" with all elements is exported.';
   const viewsAddBtn = document.getElementById('views-add-btn');
-  if (viewsAddBtn) viewsAddBtn.textContent = L === 'nl' ? '+ Weergave toevoegen' : '+ Add View';
+  if (viewsAddBtn) viewsAddBtn.textContent = L === 'nl' ? '+ View toevoegen' : '+ Add View';
   // Views example label + SVG text
   const vExLbl = document.getElementById('views-example-lbl');
   if (vExLbl) vExLbl.textContent = L === 'nl' ? 'Voorbeeld' : 'Example';
