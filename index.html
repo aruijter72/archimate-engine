@@ -3040,6 +3040,7 @@ function computeDagreLayout() {
 
 function generateArchimateXML(extLayout = null) {
   const mid  = genId(), bfId = genId(), afId = genId(), tfId = genId();
+  const mfId = genId(), sfId = genId();
   const rfId = genId(), vfId = genId(), viewId = genId();
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`
@@ -3053,7 +3054,9 @@ function generateArchimateXML(extLayout = null) {
   // Element folders
   const layers = [{key:'business',folder:'Business',id:bfId},
                   {key:'application',folder:'Application',id:afId},
-                  {key:'technology',folder:'Technology',id:tfId}];
+                  {key:'technology',folder:'Technology',id:tfId},
+                  {key:'motivation',folder:'Motivation',id:mfId},
+                  {key:'strategy',folder:'Strategy',id:sfId}];
   for (const {key,folder,id} of layers) {
     xml += `  <folder name="${folder}" id="${id}" type="${key}">\n`;
     for (const el of model.elements.filter(e=>e.layer===key)) xml += buildElemXml(el);
@@ -3101,7 +3104,9 @@ function generateArchimateXML(extLayout = null) {
   const LAYER_META = {
     business:    {label:'Business Layer',    r:245, g:230, b:122, a:38, lr:200, lg:190, lb:90},
     application: {label:'Application Layer', r:122, g:218, b:245, a:33, lr:90,  lg:180, lb:210},
-    technology:  {label:'Technology Layer',  r:122, g:245, b:160, a:33, lr:90,  lg:200, lb:130}
+    technology:  {label:'Technology Layer',  r:122, g:245, b:160, a:33, lr:90,  lg:200, lb:130},
+    motivation:  {label:'Motivation Layer',  r:196, g:168, b:245, a:30, lr:170, lg:140, lb:220},
+    strategy:    {label:'Strategy Layer',    r:245, g:200, b:120, a:30, lr:210, lg:170, lb:80}
   };
   const ASPECT_LABELS = ['Active Structure', 'Behaviour', 'Passive Structure'];
 
