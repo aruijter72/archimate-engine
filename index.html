@@ -5751,21 +5751,57 @@ function hideViews() { document.getElementById('viewsModal').classList.remove('o
 
 function addView() {
   const NL = currentLang === 'nl';
-  const name = prompt(NL ? 'Naam voor de nieuwe weergave:' : 'Name for the new view:', NL ? 'Nieuwe weergave' : 'New View');
+  const dlg = document.getElementById('viewAddDialog');
+  const lbl = document.getElementById('view-add-dlg-lbl');
+  const inp = document.getElementById('viewNameInput');
+  if (lbl) lbl.textContent = NL ? 'Naam voor de nieuwe weergave:' : 'Name for the new view:';
+  if (inp)  inp.value = NL ? 'Nieuwe weergave' : 'New View';
+  if (dlg)  dlg.style.display = '';
+  setTimeout(() => { if (inp) { inp.focus(); inp.select(); } }, 40);
+}
+function confirmAddView() {
+  const inp = document.getElementById('viewNameInput');
+  const name = (inp ? inp.value : '').trim();
   if (!name) return;
   if (!model.views) model.views = [];
-  const v = { id: genId(), name: name.trim(), elementIds: [] };
+  const v = { id: genId(), name, elementIds: [] };
   model.views.push(v);
   _activeViewId = v.id;
+  const dlg = document.getElementById('viewAddDialog');
+  if (dlg) dlg.style.display = 'none';
   renderViewsModal();
 }
+function cancelAddView() {
+  const dlg = document.getElementById('viewAddDialog');
+  if (dlg) dlg.style.display = 'none';
+}
 
+let _pendingDeleteViewId = null;
 function deleteView(id) {
   const NL = currentLang === 'nl';
-  if (!confirm(NL ? 'Verwijder deze weergave?' : 'Delete this view?')) return;
-  model.views = model.views.filter(v => v.id !== id);
-  if (_activeViewId === id) _activeViewId = model.views[0]?.id || null;
+  const v = (model.views||[]).find(x => x.id === id);
+  if (!v) return;
+  _pendingDeleteViewId = id;
+  const dlg  = document.getElementById('viewDelDialog');
+  const lbl  = document.getElementById('view-del-dlg-lbl');
+  const nm   = document.getElementById('view-del-name-span');
+  if (lbl) lbl.textContent = NL ? 'Deze weergave verwijderen?' : 'Delete this view?';
+  if (nm)  nm.textContent  = v.name;
+  if (dlg) dlg.style.display = '';
+}
+function confirmDeleteView() {
+  if (!_pendingDeleteViewId) return;
+  model.views = model.views.filter(v => v.id !== _pendingDeleteViewId);
+  if (_activeViewId === _pendingDeleteViewId) _activeViewId = model.views[0]?.id || null;
+  _pendingDeleteViewId = null;
+  const dlg = document.getElementById('viewDelDialog');
+  if (dlg) dlg.style.display = 'none';
   renderViewsModal();
+}
+function cancelDeleteView() {
+  _pendingDeleteViewId = null;
+  const dlg = document.getElementById('viewDelDialog');
+  if (dlg) dlg.style.display = 'none';
 }
 
 function selectViewForEdit(id) {
