@@ -1520,13 +1520,18 @@ function applyTranslations() {
   // Swimlane header controls
   const swFileLabel = document.getElementById('proc-file-btn-label');
   if (swFileLabel) swFileLabel.textContent = L === 'nl' ? 'Bestand' : 'File';
+  // ArchiMate import button
+  const btnImpArch = document.getElementById('btn-import-archimate-el');
+  if (btnImpArch) btnImpArch.textContent = L === 'nl' ? '📥 Importeer .archimate…' : '📥 Import .archimate…';
+
   const swMenuMap = {
-    'proc-mi-templates':  L === 'nl' ? '📋 Sjablonen'           : '📋 Templates',
-    'proc-mi-open':       L === 'nl' ? '📂 Openen…'             : '📂 Open…',
-    'proc-mi-save':       L === 'nl' ? '💾 Opslaan'             : '💾 Save',
-    'proc-mi-saveas':     L === 'nl' ? '💾 Opslaan als…'        : '💾 Save As…',
-    'proc-mi-drawio':     L === 'nl' ? '⬇ Exporteer draw.io XML': '⬇ Export draw.io XML',
-    'btn-export-drawio-el': L === 'nl' ? '⬇ Exporteer draw.io XML': '⬇ Export draw.io XML',
+    'proc-mi-templates':      L === 'nl' ? '📋 Sjablonen'               : '📋 Templates',
+    'proc-mi-open':           L === 'nl' ? '📂 Openen…'                 : '📂 Open…',
+    'proc-mi-import-drawio':  L === 'nl' ? '📥 Importeer draw.io XML…'  : '📥 Import draw.io XML…',
+    'proc-mi-save':           L === 'nl' ? '💾 Opslaan'                 : '💾 Save',
+    'proc-mi-saveas':         L === 'nl' ? '💾 Opslaan als…'            : '💾 Save As…',
+    'proc-mi-drawio':         L === 'nl' ? '⬇ Exporteer draw.io XML'    : '⬇ Export draw.io XML',
+    'btn-export-drawio-el':   L === 'nl' ? '⬇ Exporteer draw.io XML'    : '⬇ Export draw.io XML',
   };
   for (const [id, txt] of Object.entries(swMenuMap)) {
     const el = document.getElementById(id);
