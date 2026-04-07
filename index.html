@@ -1437,10 +1437,19 @@ const STRINGS = {
     'ldesc-biz':   'Vertegenwoordigt de bedrijfsomgeving — actoren, rollen, processen, services en objecten op organisatieniveau.',
     'ldesc-app':   'Vertegenwoordigt softwareapplicaties en hun componenten, interfaces, functies en gegevensobjecten die de bedrijfslaag ondersteunen.',
     'ldesc-tech':  'Vertegenwoordigt hardware, software-infrastructuur, netwerken en fysieke assets die de applicatie- en bedrijfslagen ondersteunen.',
+    'ldesc-mot':   'Legt de redenen en drijfveren achter de architectuur vast — stakeholderbelangen, doelen, vereisten en beperkingen.',
+    'ldesc-str':   'Vertegenwoordigt de capaciteiten en richting van de organisatie — resources, capabilities, waardestromen en handelingsplannen.',
     // Section headings
     'sec-active':  'Actieve Structuur',
     'sec-behav':   'Gedrag',
     'sec-passive': 'Passieve Structuur',
+    'sec-stakeholders': 'Stakeholders',
+    'sec-motivations':  'Motivaties',
+    'sec-resources':    'Resources',
+    'sec-direction':    'Richting',
+    'tab-mot':    'Motivatie',
+    'tab-str':    'Strategie',
+    'adv-toggle': 'Geavanceerd',
     // Table columns
     'col-type':    'Type',
     'col-name':    'Naam *',
@@ -2729,6 +2738,25 @@ function showTab(tab) {
   if (panel) panel.classList.add('active');
   const btn = document.getElementById(`tab-btn-${tab}`);
   if (btn) btn.classList.add('active');
+}
+
+let _advLayersVisible = false;
+function toggleAdvancedLayers() {
+  _advLayersVisible = !_advLayersVisible;
+  const motBtn = document.getElementById('tab-btn-motivation');
+  const strBtn = document.getElementById('tab-btn-strategy');
+  const toggleBtn = document.getElementById('adv-toggle-btn');
+  if (motBtn) motBtn.style.display = _advLayersVisible ? '' : 'none';
+  if (strBtn) strBtn.style.display = _advLayersVisible ? '' : 'none';
+  if (toggleBtn) {
+    const arrow = _advLayersVisible ? '▾' : '▸';
+    const label = document.getElementById('adv-toggle-label');
+    toggleBtn.innerHTML = `⋯ <span id="adv-toggle-label">${label ? label.textContent : 'Advanced'}</span> ${arrow}`;
+  }
+  if (!_advLayersVisible) {
+    const cur = document.querySelector('.tab-btn.mot.active, .tab-btn.str.active');
+    if (cur) showTab('business');
+  }
 }
 
 function switchMode(mode) {
