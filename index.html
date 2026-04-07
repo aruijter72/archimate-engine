@@ -4234,6 +4234,129 @@ function deleteFlow(flowId) {
 }
 
 // ── Save / Load swimlane ──────────────────────────────────────
+// ── Import draw.io XML into Swimlane ───────────────────────────
+function triggerImportDrawio() { document.getElementById('importDrawioFile').click(); }
+
+function handleImportDrawio(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(e.target.result, 'application/xml');
+
+      // draw.io files can wrap mxGraphModel in <mxfile><diagram>...</diagram></mxfile>
+      // or the content may be URL-encoded. Try to find mxGraphModel directly or decoded.
+      let graphModel = xmlDoc.querySelector('mxGraphModel');
+      if (!graphModel) {
+        // Try decoding from <diagram> element
+        const diagramEl = xmlDoc.querySelector('diagram');
+        if (diagramEl) {
+          const inner = parser.parseFromString(diagramEl.textContent, 'application/xml');
+          graphModel = inner.querySelector('mxGraphModel');
+        }
+      }
+      if (!graphModel) throw new Error('No mxGraphModel found — not a valid draw.io XML file.');
+
+      const cells = Array.from(graphModel.querySelectorAll('mxCell'));
+      const cellById = {};
+      cells.forEach(c => { cellById[c.getAttribute('id')] = c; });
+
+      // Find the process pool container
+      const poolCell = cells.find(c => {
+        const s = c.getAttribute('style') || '';
+        return s.includes('shape=pool') || s.includes('shape=table');
+      });
+      const procName = poolCell ? (poolCell.getAttribute('value') || f.name.replace(/\.(xml|drawio)$/i,'')) : f.name.replace(/\.(xml|drawio)$/i,'');
+      const poolId   = poolCell ? poolCell.getAttribute('id') : null;
+
+      // Find swimlane rows (direct children of pool, or any swimlane-style cell)
+      const laneCells = cells.filter(c => {
+        const s = c.getAttribute('style') || '';
+        const parent = c.getAttribute('parent');
+        return s.includes('swimlane') && (!poolId || parent === poolId);
+      });
+
+      const lanes = laneCells.map((l, i) => ({ id: genId(), name: l.getAttribute('value') || `Lane ${i+1}` }));
+      const laneIdMap = {};
+      laneCells.forEach((l, i) => { laneIdMap[l.getAttribute('id')] = lanes[i]?.id; });
+
+      // Determine step type from draw.io style string
+      function guessType(style) {
+        if (!style) return 'task';
+        const s = style.toLowerCase();
+        if (s.includes('rhombus') || s.includes('diamond')) return 'decision';
+        if (s.includes('ellipse') || s.includes('circle')) {
+          // Distinguish start (green) vs end (red) by fill colour hints
+          if (s.includes('dc3545') || s.includes('f8d7da')) return 'end';
+          return 'start';
+        }
+        return 'task';
+      }
+
+      // Find step cells: vertex, not pool/swimlane, not root
+      const laneIdSet = new Set(laneCells.map(l => l.getAttribute('id')));
+      const stepCells = cells.filter(c => {
+        const id = c.getAttribute('id');
+        if (id === '0' || id === '1') return false;
+        if (c.getAttribute('vertex') !== '1') return false;
+        const s = c.getAttribute('style') || '';
+        if (s.includes('swimlane') || s.includes('shape=pool')) return false;
+        if (s.includes('text;') && !c.getAttribute('value')) return false;
+        if (poolId && c.getAttribute('parent') === poolId) return false;
+        return true;
+      });
+
+      const stepIdMap = {};
+      const steps = stepCells.map(c => {
+        const newId = genId();
+        stepIdMap[c.getAttribute('id')] = newId;
+        const parent = c.getAttribute('parent');
+        return {
+          id:       newId,
+          type:     guessType(c.getAttribute('style') || ''),
+          label:    c.getAttribute('value') || '',
+          laneId:   laneIdMap[parent] || (lanes[0]?.id || ''),
+          columnId: null
+        };
+      });
+
+      // Find flows (edges)
+      const flows = cells
+        .filter(c => c.getAttribute('edge') === '1')
+        .map(c => ({
+          id:    genId(),
+          from:  stepIdMap[c.getAttribute('source')] || null,
+          to:    stepIdMap[c.getAttribute('target')]  || null,
+          label: c.getAttribute('value') || ''
+        }))
+        .filter(fl => fl.from && fl.to);
+
+      if (!steps.length && !lanes.length) {
+        alert(currentLang === 'nl'
+          ? 'Geen swimlane-inhoud gevonden in dit draw.io bestand.'
+          : 'No swimlane content found in this draw.io file.');
+        return;
+      }
+
+      const msg = currentLang === 'nl'
+        ? `Importeer "${procName}" uit draw.io?\n${lanes.length} lanes, ${steps.length} stappen, ${flows.length} verbindingen gevonden.\n\nDit voegt een nieuw proces toe aan het huidige model.`
+        : `Import "${procName}" from draw.io?\n${lanes.length} lanes, ${steps.length} steps, ${flows.length} flows found.\n\nThis will add a new process to the current model.`;
+      if (!confirm(msg)) return;
+
+      if (!model.processes) model.processes = [];
+      const newProc = { id: genId(), name: procName, columns: [], lanes, steps, flows };
+      model.processes.push(newProc);
+      _activeProcId = newProc.id;
+      renderProcTab();
+    } catch(err) {
+      alert((currentLang==='nl' ? 'Kan draw.io bestand niet laden: ' : 'Could not import draw.io file: ') + err.message);
+    }
+  };
+  r.readAsText(f);
+  ev.target.value = '';
+}
+
 function saveProcJSON() {
   const proc = getActiveProc();
   if (!proc) { alert('Select a process first.'); return; }
