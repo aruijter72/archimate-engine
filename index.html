@@ -1629,6 +1629,13 @@ function applyTranslations() {
       if (icon) btn.prepend(icon);
     }
   }
+  // Advanced layers toggle label
+  const advLabel = document.getElementById('adv-toggle-label');
+  if (advLabel) advLabel.textContent = t('adv-toggle');
+  const tabMotLbl = document.getElementById('tab-mot-label');
+  if (tabMotLbl) tabMotLbl.textContent = t('tab-mot');
+  const tabStrLbl = document.getElementById('tab-str-label');
+  if (tabStrLbl) tabStrLbl.textContent = t('tab-str');
   // Footer
   const fc = document.getElementById('footer-compat');
   if (fc) fc.textContent = t('footer-compat');
