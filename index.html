@@ -1094,6 +1094,21 @@
   </div>
 </div>
 
+<!-- ── Reusable Confirm Modal ─────────────────────────────────── -->
+<div id="confirmModal" class="modal-overlay" onclick="if(event.target===this)cancelConfirm()">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-header">
+      <div class="modal-title" id="confirm-title">Confirm</div>
+      <button class="modal-close" onclick="cancelConfirm()">×</button>
+    </div>
+    <p id="confirm-msg" style="font-size:.85rem;color:var(--muted);margin:.2rem 0 1.25rem"></p>
+    <div style="display:flex;justify-content:flex-end;gap:.5rem">
+      <button class="btn btn-secondary" id="confirm-cancel-btn" onclick="cancelConfirm()">Cancel</button>
+      <button class="btn" id="confirm-ok-btn" onclick="executeConfirm()">OK</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Guided Wizard Modal ─────────────────────────────── -->
 <div id="wizModal" class="modal-overlay">
   <div class="modal-box" style="max-width:580px">
@@ -3016,6 +3031,26 @@ function showToast(msg, type) {
   document.body.appendChild(t);
   setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 320); }, 2700);
 }
+
+// ══════════════════════════════════════════════════════════════
+// REUSABLE CONFIRM DIALOG
+// ══════════════════════════════════════════════════════════════
+let _confirmCb = null;
+function showConfirm(title, msg, okLabel, okDanger, callback) {
+  const NL = currentLang === 'nl';
+  _confirmCb = callback;
+  const titleEl   = document.getElementById('confirm-title');
+  const msgEl     = document.getElementById('confirm-msg');
+  const okBtn     = document.getElementById('confirm-ok-btn');
+  const cancelBtn = document.getElementById('confirm-cancel-btn');
+  if (titleEl)   titleEl.textContent  = title;
+  if (msgEl)     msgEl.textContent    = msg;
+  if (okBtn)     { okBtn.textContent  = okLabel; okBtn.style.background = okDanger ? '#c0444e' : 'var(--gold)'; okBtn.style.color = '#fff'; okBtn.style.border = 'none'; }
+  if (cancelBtn) cancelBtn.textContent = NL ? 'Annuleren' : 'Cancel';
+  document.getElementById('confirmModal').classList.add('open');
+}
+function cancelConfirm()  { document.getElementById('confirmModal').classList.remove('open'); _confirmCb = null; }
+function executeConfirm() { document.getElementById('confirmModal').classList.remove('open'); if (_confirmCb) { const cb = _confirmCb; _confirmCb = null; cb(); } }
 
 // ══════════════════════════════════════════════════════════════
 // MENU BAR
