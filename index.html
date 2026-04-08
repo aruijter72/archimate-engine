@@ -6272,6 +6272,8 @@ renderAll();
 renderHelp();
 updateStats();
 showOnboard();
+// Restore TOGAF state (must run after renderAll so Motivation tab panel exists)
+if (_togafVisible) _applyTogaf();
 
 // ══════════════════════════════════════════════════════════════
 // SEARCH
