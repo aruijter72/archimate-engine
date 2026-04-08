@@ -1217,21 +1217,21 @@
     <!-- ── File menu ───────────────────────────────────────── -->
     <div class="menu-item" id="menu-file-item">
       <button class="menu-trigger" id="menu-file-btn" onclick="toggleMenu('file')">
-        📁 File <span style="font-size:.62rem;opacity:.65">▾</span>
+        📁 <span id="menu-file-label">File</span> <span style="font-size:.62rem;opacity:.65">▾</span>
       </button>
       <div class="menu-dropdown" id="menu-file-dd">
         <button class="mi-btn" id="btn-wizard-el" onclick="showWizard();closeMenus()">🪄 Guided Start</button>
         <button class="mi-btn" id="btn-templates-el" onclick="showTemplates();closeMenus()">📋 Templates</button>
         <div class="mi-sep"></div>
-        <button class="mi-btn danger" onclick="newModel();closeMenus()">🆕 New Model</button>
+        <button class="mi-btn danger" id="btn-newmodel-el" onclick="newModel();closeMenus()">🆕 New Model</button>
         <div class="mi-sep"></div>
-        <button class="mi-btn" onclick="triggerLoad();closeMenus()">📂 Open JSON…</button>
+        <button class="mi-btn" id="btn-openjson-el" onclick="triggerLoad();closeMenus()">📂 Open JSON…</button>
         <button class="mi-btn" id="btn-import-archimate-el" onclick="triggerImportArchimate();closeMenus()">📥 Import .archimate…</button>
-        <button class="mi-btn" onclick="saveModel();closeMenus()">💾 Save JSON</button>
-        <button class="mi-btn" onclick="saveModelAs();closeMenus()">💾 Save As…</button>
+        <button class="mi-btn" id="btn-savejson-el" onclick="saveModel();closeMenus()">💾 Save JSON</button>
+        <button class="mi-btn" id="btn-saveas-el" onclick="saveModelAs();closeMenus()">💾 Save As…</button>
         <div class="mi-sep"></div>
-        <button class="mi-btn gold" onclick="exportArchimate();closeMenus()">⬇ Export .archimate</button>
-        <button class="mi-btn" onclick="exportAMEFF();closeMenus()" title="Open Group AMEFF XML">⬇ Export AMEFF XML</button>
+        <button class="mi-btn gold" id="btn-export-arc-menu-el" onclick="exportArchimate();closeMenus()">⬇ Export .archimate</button>
+        <button class="mi-btn" id="btn-export-ameff-menu-el" onclick="exportAMEFF();closeMenus()" title="Open Group AMEFF XML">⬇ Export AMEFF XML</button>
         <div class="mi-sep"></div>
         <button class="mi-btn" id="btn-snapshot-el" onclick="saveSnapshot();closeMenus()">📸 Save Snapshot…</button>
         <button class="mi-btn" id="btn-history-el" onclick="showHistory();closeMenus()">📜 Version History…</button>
@@ -2473,9 +2473,15 @@ function deleteElement(id) {
   updateStats();
 }
 
+let _healthTimer = null;
+function scheduleHealthUpdate() {
+  clearTimeout(_healthTimer);
+  _healthTimer = setTimeout(updateHealth, 500);
+}
+
 function setElem(id, field, val) {
   const el = model.elements.find(e => e.id === id);
-  if (el) el[field] = val;
+  if (el) { el[field] = val; scheduleHealthUpdate(); }
 }
 
 function addProp(elemId) {
