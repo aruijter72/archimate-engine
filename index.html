@@ -3053,7 +3053,8 @@ function showToast(msg, type) {
     whiteSpace:'nowrap', transition:'opacity .3s'
   });
   document.body.appendChild(t);
-  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 320); }, 2700);
+  const dur = type === 'togaf' ? 4500 : 2700;
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 320); }, dur);
 }
 
 // ══════════════════════════════════════════════════════════════
