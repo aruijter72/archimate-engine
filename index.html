@@ -761,6 +761,42 @@
     .tab-adv-toggle:hover { color:var(--white); }
     .tab-adv-sep { width:1px; height:20px; background:var(--border); margin:0 4px; flex-shrink:0; }
 
+    /* ── TOGAF toggle ───────────────────────────────────────────── */
+    .tab-togaf-toggle { background:none; border:none; cursor:pointer; font-size:.8rem; color:var(--togaf-text,#60a8dc); padding:4px 10px; border-radius:5px; transition:color .15s; white-space:nowrap; margin-left:2px; }
+    .tab-togaf-toggle:hover { color:var(--white); }
+    :root { --togaf:#60a8dc; --togaf-bg:rgba(96,168,220,.1); --togaf-border:rgba(96,168,220,.3); --togaf-text:#60a8dc; }
+
+    /* ── TOGAF phase badge on template cards ───────────────────── */
+    .tmpl-phase-badge { display:inline-flex;align-items:center;gap:.25rem;font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:99px;background:var(--togaf-bg);color:var(--togaf);border:1px solid var(--togaf-border);letter-spacing:.04em; }
+
+    /* ── Architecture Principles Workflow guide ─────────────────── */
+    .principles-guide { margin-bottom:1.25rem;background:var(--togaf-bg);border:1px solid var(--togaf-border);border-radius:var(--radius);padding:1rem 1.1rem; }
+    .principles-guide-hd { display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:700;color:var(--togaf);margin-bottom:.75rem;letter-spacing:.04em; }
+    .principles-steps { display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem; }
+    .principles-step { flex:1;min-width:120px;background:var(--surface);border:1px solid var(--togaf-border);border-radius:var(--radius);padding:.55rem .65rem;text-align:center; }
+    .principles-step-num { font-size:.6rem;font-weight:700;color:var(--togaf);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.2rem; }
+    .principles-step-type { font-size:.72rem;font-weight:700;color:var(--white);margin-bottom:.2rem; }
+    .principles-step-q { font-size:.65rem;color:var(--muted);font-style:italic;line-height:1.3; }
+    .principles-arrow { display:flex;align-items:center;color:var(--togaf);font-size:.9rem;padding-top:.3rem;flex-shrink:0; }
+    .principles-examples { border-top:1px solid var(--togaf-border);padding-top:.65rem;margin-top:.1rem; }
+    .principles-examples-lbl { font-size:.67rem;font-weight:700;color:var(--togaf);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem; }
+    .principles-ex-row { display:flex;gap:.5rem;margin-bottom:.3rem;flex-wrap:wrap; }
+    .principles-ex-item { font-size:.65rem;color:var(--muted);background:var(--surface2);border-radius:4px;padding:.15rem .45rem;line-height:1.4; }
+    .principles-ex-item strong { color:var(--white); }
+
+    /* ── Viewpoints panel inside Views modal ────────────────────── */
+    .viewpoints-section { margin-bottom:1.2rem;background:var(--togaf-bg);border:1px solid var(--togaf-border);border-radius:var(--radius);padding:1rem 1.1rem; }
+    .viewpoints-section-hd { display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:700;color:var(--togaf);margin-bottom:.75rem;letter-spacing:.04em; }
+    .viewpoints-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:.6rem; }
+    .vp-card { background:var(--surface);border:1px solid var(--togaf-border);border-radius:var(--radius);padding:.7rem .8rem;cursor:pointer;transition:all .16s; }
+    .vp-card:hover { border-color:var(--togaf);background:rgba(96,168,220,.07); }
+    .vp-card-title { font-size:.77rem;font-weight:700;color:var(--white);margin-bottom:.2rem; }
+    .vp-card-desc { font-size:.67rem;color:var(--muted);line-height:1.4;margin-bottom:.5rem; }
+    .vp-card-examples { display:flex;gap:.25rem;flex-wrap:wrap;margin-bottom:.5rem; }
+    .vp-ex-tag { font-size:.58rem;padding:.08rem .35rem;border-radius:99px;background:var(--togaf-bg);color:var(--togaf);border:1px solid var(--togaf-border); }
+    .vp-card-btn { font-size:.68rem;font-weight:600;color:var(--togaf);background:none;border:1px solid var(--togaf-border);border-radius:4px;padding:.25rem .6rem;cursor:pointer;width:100%;transition:background .15s; }
+    .vp-card-btn:hover { background:var(--togaf-bg); }
+
     .ml-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
     @media (max-width: 900px) { .ml-grid { grid-template-columns: 1fr; } }
 
@@ -1312,6 +1348,7 @@
     <span class="tab-icon mot">M</span> <span id="tab-mot-label">Motivation</span></button>
   <button class="tab-btn str" id="tab-btn-strategy"   onclick="showTab('strategy')" style="display:none">
     <span class="tab-icon str">S</span> <span id="tab-str-label">Strategy</span></button>
+  <button class="tab-togaf-toggle" id="togaf-toggle-btn" onclick="toggleTogaf()">◈ <span id="togaf-toggle-label">TOGAF</span> ▸</button>
 </nav>
 
 <!-- ── Tab Panels (ArchiMate mode) ─────────────────────────── -->
