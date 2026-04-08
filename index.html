@@ -6478,32 +6478,21 @@ function cancelAddView() {
   if (dlg) dlg.style.display = 'none';
 }
 
-let _pendingDeleteViewId = null;
 function deleteView(id) {
   const NL = currentLang === 'nl';
   const v = (model.views||[]).find(x => x.id === id);
   if (!v) return;
-  _pendingDeleteViewId = id;
-  const dlg  = document.getElementById('viewDelDialog');
-  const lbl  = document.getElementById('view-del-dlg-lbl');
-  const nm   = document.getElementById('view-del-name-span');
-  if (lbl) lbl.textContent = NL ? 'Deze view verwijderen?' : 'Delete this view?';
-  if (nm)  nm.textContent  = v.name;
-  if (dlg) dlg.style.display = '';
-}
-function confirmDeleteView() {
-  if (!_pendingDeleteViewId) return;
-  model.views = model.views.filter(v => v.id !== _pendingDeleteViewId);
-  if (_activeViewId === _pendingDeleteViewId) _activeViewId = model.views[0]?.id || null;
-  _pendingDeleteViewId = null;
-  const dlg = document.getElementById('viewDelDialog');
-  if (dlg) dlg.style.display = 'none';
-  renderViewsModal();
-}
-function cancelDeleteView() {
-  _pendingDeleteViewId = null;
-  const dlg = document.getElementById('viewDelDialog');
-  if (dlg) dlg.style.display = 'none';
+  showConfirm(
+    NL ? 'View verwijderen' : 'Delete View',
+    (NL ? 'View verwijderen: ' : 'Delete view: ') + '"' + v.name + '"?',
+    NL ? 'Verwijderen' : 'Delete',
+    true,
+    () => {
+      model.views = model.views.filter(x => x.id !== id);
+      if (_activeViewId === id) _activeViewId = model.views[0]?.id || null;
+      renderViewsModal();
+    }
+  );
 }
 
 function selectViewForEdit(id) {
