@@ -192,6 +192,15 @@
     .stat-dot.str { background: var(--str); }
     .stat-count { font-weight: 700; color: var(--white); }
 
+    /* ── Health bar ──────────────────────────────────────────────── */
+    .health-bar { display:flex; align-items:center; gap:.55rem; flex-wrap:wrap; padding:.3rem 1.25rem .3rem; background:rgba(255,255,255,.018); border-bottom:1px solid var(--border); font-size:.72rem; min-height:28px; }
+    .health-ok { color:#6dbf7e; font-size:.72rem; }
+    .health-label { color:var(--muted); font-size:.72rem; }
+    .health-pill { display:inline-flex; align-items:center; gap:.22rem; padding:.1rem .52rem; border-radius:99px; font-size:.69rem; font-weight:600; cursor:default; }
+    .health-pill.error { background:rgba(224,108,117,.18); color:#e06c75; border:1px solid rgba(224,108,117,.3); }
+    .health-pill.warn  { background:rgba(229,192,123,.15); color:#e5c07b; border:1px solid rgba(229,192,123,.28); }
+    .health-pill.info  { background:rgba(130,170,220,.13); color:#82aadc; border:1px solid rgba(130,170,220,.22); }
+
     /* ── Tab navigation ──────────────────────────────────────── */
     .tab-nav {
       display: flex; background: var(--surface);
@@ -1308,8 +1317,10 @@
 <input type="file" id="importDrawioFile" accept=".xml,.drawio" style="display:none" onchange="handleImportDrawio(event)">
 
 <footer class="app-footer">
-  <img src="Logo Huisstijl geel.png" alt="Arnold Ruijter IT" class="ar-logo ar-logo-footer">
-  &nbsp;<span class="logo-name">Arnold</span> <strong class="logo-gold">Ruijter IT</strong>
+  <a href="https://arnoldruijterit.nl" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+    <img src="Logo Huisstijl geel.png" alt="Arnold Ruijter IT" class="ar-logo ar-logo-footer">
+    &nbsp;<span class="logo-name">Arnold</span> <strong class="logo-gold">Ruijter IT</strong>
+  </a>
   &nbsp;·&nbsp;
   <a href="https://www.archimatetool.com" target="_blank" rel="noopener">Archi 5.x</a> <span id="footer-compat">compatible export</span>
 </footer>
