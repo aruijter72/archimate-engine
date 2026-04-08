@@ -3188,24 +3188,56 @@ function showTab(tab) {
 }
 
 let _advLayersVisible = false;
-let _togafVisible = false;
+let _togafVisible = (function(){ try { return localStorage.getItem('architise-togaf') === '1'; } catch(e){ return false; } })();
 
 function toggleTogaf() {
   _togafVisible = !_togafVisible;
+  try { localStorage.setItem('architise-togaf', _togafVisible ? '1' : '0'); } catch(e) {}
+  _applyTogaf();
+  // Toast feedback
+  const NL = currentLang === 'nl';
+  if (_togafVisible) {
+    showToast(NL
+      ? '◈ TOGAF modus aan — Viewpoints in Views · Principes in Motivatie · Fase-labels op Sjablonen'
+      : '◈ TOGAF mode on — Viewpoints in Views · Principles in Motivation · Phase labels on Templates',
+      'togaf');
+  } else {
+    showToast(NL ? '◈ TOGAF modus uit' : '◈ TOGAF mode off');
+  }
+}
+
+function _applyTogaf() {
   const arrow = _togafVisible ? '▾' : '▸';
   const lbl = document.getElementById('togaf-toggle-label');
   const btn = document.getElementById('togaf-toggle-btn');
   if (btn) btn.innerHTML = `◈ <span id="togaf-toggle-label">${lbl ? lbl.textContent : 'TOGAF'}</span> ${arrow}`;
-  // Show/hide viewpoints section in the Views modal
+
+  // Auto-enable Advanced layers when TOGAF is turned on (Motivation tab houses the guide)
+  if (_togafVisible && !_advLayersVisible) {
+    _advLayersVisible = true;
+    const motBtn = document.getElementById('tab-btn-motivation');
+    const strBtn = document.getElementById('tab-btn-strategy');
+    const advBtn = document.getElementById('adv-toggle-btn');
+    if (motBtn) motBtn.style.display = '';
+    if (strBtn) strBtn.style.display = '';
+    if (advBtn) {
+      const advLbl = document.getElementById('adv-toggle-label');
+      advBtn.innerHTML = `⋯ <span id="adv-toggle-label">${advLbl ? advLbl.textContent : 'Advanced'}</span> ▾`;
+    }
+  }
+
+  // Viewpoints section inside Views modal — always in DOM, just show/hide
   const vpSection = document.getElementById('viewpoints-section');
-  if (vpSection) { vpSection.style.display = _togafVisible ? '' : 'none'; if (_togafVisible) renderViewpointsGrid(); }
-  // Show/hide principles guide in motivation tab
-  const pgEl = document.getElementById('principles-guide-wrap');
-  if (pgEl) pgEl.style.display = _togafVisible ? '' : 'none';
-  // Re-render templates to show/hide phase badges
+  if (vpSection) {
+    vpSection.style.display = _togafVisible ? '' : 'none';
+    if (_togafVisible) renderViewpointsGrid();
+  }
+
+  // Re-render motivation tab so the principles guide appears/disappears
+  renderLayer('motivation');
+
+  // Re-render templates grid so phase badges appear/disappear
   if (document.getElementById('tmplGrid')) renderTemplateGrid();
-  // Re-render motivation/strategy to inject guide if just enabled
-  renderLayer('motivation'); renderLayer('strategy');
 }
 
 function toggleAdvancedLayers() {
