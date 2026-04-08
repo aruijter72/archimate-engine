@@ -2448,16 +2448,20 @@ function wizGenerate() {
   showTab('business');
 }
 function renderTemplateGrid() {
+  const NL = currentLang === 'nl';
   const grid = document.getElementById('tmplGrid');
-  grid.innerHTML = TEMPLATES.map((t, i) => {
-    const tags = t.tags.map(tag => `<span class="tmpl-meta-tag">${tag}</span>`).join('');
-    const blank = t.isBlank ? ' tmpl-blank' : '';
-    const elCount = t.isBlank ? '' : `<span class="tmpl-meta-tag">${t.model.elements.length} elements</span>`;
+  grid.innerHTML = TEMPLATES.map((tmpl, i) => {
+    const tags = tmpl.tags.map(tag => `<span class="tmpl-meta-tag">${tag}</span>`).join('');
+    const blank = tmpl.isBlank ? ' tmpl-blank' : '';
+    const elCount = tmpl.isBlank ? '' : `<span class="tmpl-meta-tag">${tmpl.model.elements.length} ${NL?'elem.':'elements'}</span>`;
+    const phaseBadge = (_togafVisible && tmpl.togafPhase)
+      ? `<span class="tmpl-phase-badge" title="TOGAF ADM ${tmpl.togafPhase}">◈ ${tmpl.togafPhase}</span>`
+      : '';
     return `
       <button class="tmpl-card${blank}" onclick="loadTemplate(${i})">
-        <div class="tmpl-card-icon">${t.icon}</div>
-        <div class="tmpl-card-name">${t.name}</div>
-        <div class="tmpl-card-desc">${t.desc}</div>
+        <div class="tmpl-card-icon">${tmpl.icon}</div>
+        <div class="tmpl-card-name">${tmpl.name}${phaseBadge ? ' ' : ''}${phaseBadge}</div>
+        <div class="tmpl-card-desc">${tmpl.desc}</div>
         <div class="tmpl-card-meta">${tags}${elCount}</div>
       </button>`;
   }).join('');
