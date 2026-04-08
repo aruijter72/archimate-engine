@@ -2776,9 +2776,7 @@ function updateHealth() {
   const elems = model.elements || [];
   const rels   = model.relationships || [];
 
-  closeHealthDrop();
-
-  if (elems.length === 0) { bar.style.display = 'none'; return; }
+  if (elems.length === 0) { bar.style.display = 'none'; closeHealthDrop(); return; }
 
   const connectedIds = new Set();
   for (const r of rels) { if (r.sourceId) connectedIds.add(r.sourceId); if (r.targetId) connectedIds.add(r.targetId); }
@@ -2796,6 +2794,52 @@ function updateHealth() {
   bar.innerHTML = pills.length === 0
     ? `<span class="health-ok">✓ ${NL?'Model ziet er goed uit':'Model looks good'}</span>`
     : `<span class="health-label">${NL?'Aandachtspunten:':'Attention:'}</span>` + pills.join('');
+
+  // Refresh open dropdown in-place rather than closing it
+  refreshHealthDrop();
+}
+
+function refreshHealthDrop() {
+  const drop = document.getElementById('healthDrop');
+  if (!drop || drop.style.display === 'none') return;
+  const type  = drop.dataset.type;
+  const items = _healthData[type] || [];
+  const NL    = currentLang === 'nl';
+
+  if (items.length === 0) { closeHealthDrop(); return; }
+
+  // Update header count
+  const hd = drop.querySelector('.health-drop-hd');
+  const hdrs = {
+    incomplete:   NL ? 'Incomplete relaties'   : 'Incomplete relationships',
+    orphaned:     NL ? 'Onverbonden elementen'  : 'Unconnected elements',
+    undocumented: NL ? 'Zonder documentatie'    : 'Undocumented elements'
+  };
+  if (hd) hd.textContent = `${hdrs[type]} (${items.length})`;
+
+  // Rebuild list
+  let html = '';
+  if (type === 'incomplete') {
+    for (const r of items) {
+      const src = model.elements.find(e => e.id === r.sourceId);
+      const tgt = model.elements.find(e => e.id === r.targetId);
+      const lbl = r.type.replace('Relationship','')
+        + (src ? ` · ${src.name}` : NL ? ' · (geen bron)' : ' · (no source)')
+        + (tgt ? ` → ${tgt.name}` : NL ? ' → (geen doel)' : ' → (no target)');
+      html += `<div class="health-drop-item" onclick="navigateToRelationship('${r.id}');closeHealthDrop()">
+        <span class="health-drop-name">${esc(lbl)}</span>
+        <span class="health-drop-arrow">→</span></div>`;
+    }
+  } else {
+    for (const el of items) {
+      html += `<div class="health-drop-item" onclick="navigateToElement('${el.id}');closeHealthDrop()">
+        <span class="health-drop-name">${esc(el.name||'—')}</span>
+        <span class="health-drop-type">${TYPE_LABELS[el.type]||el.type}</span>
+        <span class="health-drop-arrow">→</span></div>`;
+    }
+  }
+  const list = drop.querySelector('.health-drop-list');
+  if (list) list.innerHTML = html;
 }
 
 function toggleHealthDrop(type, pill) {
