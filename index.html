@@ -2501,11 +2501,23 @@ function renderTemplateGrid() {
   }).join('');
 }
 function loadTemplate(idx) {
-  const t = TEMPLATES[idx];
-  if (!t.isBlank && model.elements.length > 0) {
-    if (!confirm('Load "' + t.name + '"? Your current model will be replaced.')) return;
+  const tmpl = TEMPLATES[idx];
+  const NL   = currentLang === 'nl';
+  if (!tmpl.isBlank && model.elements.length > 0) {
+    const title = NL ? `Sjabloon laden: ${tmpl.name}` : `Load template: ${tmpl.name}`;
+    const msg   = NL ? 'Uw huidige model wordt vervangen. Sla uw werk eerst op als dat nodig is.'
+                     : 'Your current model will be replaced. Save your work first if needed.';
+    const ok    = NL ? 'Laden' : 'Load';
+    showConfirm(title, msg, ok, true, () => _doLoadTemplate(idx));
+    return;
   }
-  model = JSON.parse(JSON.stringify(t.model));
+  _doLoadTemplate(idx);
+}
+function _doLoadTemplate(idx) {
+  const tmpl = TEMPLATES[idx];
+  model = JSON.parse(JSON.stringify(tmpl.model));
+  model.views     = model.views     || [];
+  model.snapshots = model.snapshots || [];
   document.getElementById('modelName').value = model.name || '';
   document.getElementById('modelDoc').value  = model.documentation || '';
   renderAll(); updateStats();
@@ -3074,13 +3086,22 @@ document.addEventListener('click', e => { if (!e.target.closest('.menu-item')) c
 // ══════════════════════════════════════════════════════════════
 function newModel() {
   const NL = currentLang === 'nl';
-  const msg = NL
-    ? 'Nieuw model aanmaken? Niet-opgeslagen wijzigingen gaan verloren.'
-    : 'Start a new model? Unsaved changes will be lost.';
-  if (!confirm(msg)) return;
-  model = { name: NL ? 'Nieuw Model' : 'New Model', documentation: '', elements: [], relationships: [] };
+  if (model.elements.length === 0 && model.relationships.length === 0) { _doNewModel(); return; }
+  showConfirm(
+    NL ? '🆕 Nieuw model' : '🆕 New Model',
+    NL ? 'Niet-opgeslagen wijzigingen gaan verloren. Wilt u doorgaan?'
+       : 'Unsaved changes will be lost. Continue?',
+    NL ? 'Nieuw model' : 'New Model',
+    true,
+    _doNewModel
+  );
+}
+function _doNewModel() {
+  const NL = currentLang === 'nl';
+  model = { name: NL ? 'Nieuw Model' : 'New Model', documentation: '', elements: [], relationships: [], views: [], snapshots: [] };
   document.getElementById('modelName').value = model.name;
   document.getElementById('modelDoc').value  = '';
+  _modelSaveHandle = null; _modelSavedOnce = false;
   renderAll(); updateStats();
   showToast(NL ? '🆕 Nieuw model aangemaakt' : '🆕 New model created');
 }
