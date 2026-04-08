@@ -3094,6 +3094,26 @@ function showTab(tab) {
 }
 
 let _advLayersVisible = false;
+let _togafVisible = false;
+
+function toggleTogaf() {
+  _togafVisible = !_togafVisible;
+  const arrow = _togafVisible ? '▾' : '▸';
+  const lbl = document.getElementById('togaf-toggle-label');
+  const btn = document.getElementById('togaf-toggle-btn');
+  if (btn) btn.innerHTML = `◈ <span id="togaf-toggle-label">${lbl ? lbl.textContent : 'TOGAF'}</span> ${arrow}`;
+  // Show/hide viewpoints section in the Views modal
+  const vpSection = document.getElementById('viewpoints-section');
+  if (vpSection) vpSection.style.display = _togafVisible ? '' : 'none';
+  // Show/hide principles guide in motivation tab
+  const pgEl = document.getElementById('principles-guide-wrap');
+  if (pgEl) pgEl.style.display = _togafVisible ? '' : 'none';
+  // Re-render templates to show/hide phase badges
+  if (document.getElementById('tmplGrid')) renderTemplateGrid();
+  // Re-render motivation to inject guide if just enabled
+  if (_togafVisible) { renderLayer('motivation'); renderLayer('strategy'); }
+}
+
 function toggleAdvancedLayers() {
   _advLayersVisible = !_advLayersVisible;
   const motBtn = document.getElementById('tab-btn-motivation');
