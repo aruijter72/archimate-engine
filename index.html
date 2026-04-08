@@ -977,7 +977,7 @@
 <body>
 
 <!-- ── Onboarding Modal ──────────────────────────────────── -->
-<div id="onboardModal" class="modal-overlay open">
+<div id="onboardModal" class="modal-overlay">
   <div class="modal-box" style="max-width:620px">
     <div class="modal-header">
       <div class="modal-title" id="ob-title">⬡ Welcome to Architise</div>
@@ -2192,7 +2192,8 @@ function tipBtn(type) {
 // ══════════════════════════════════════════════════════════════
 function showOnboard() {
   try { if (localStorage.getItem('architise-no-onboard') === '1') return; } catch(e) {}
-  document.getElementById('onboardModal').classList.add('open');
+  const el = document.getElementById('onboardModal');
+  if (el) el.classList.add('open');
 }
 function closeOnboard() {
   document.getElementById('onboardModal').classList.remove('open');
