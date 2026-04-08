@@ -3179,8 +3179,9 @@ function generateArchimateXML(extLayout = null) {
           + `                 xmlns:archimate="http://www.archimatetool.com/archimate"\n`
           + `                 name="${esc(model.name)}" id="${mid}" version="5.0">\n`;
 
-  if (model.documentation)
-    xml += `  <documentation>${esc(model.documentation)}</documentation>\n`;
+  // Note: <documentation> is NOT valid as a direct child of <archimate:model> in Archi's EMF schema.
+  // Model-level notes are kept in the tool but not emitted in the .archimate export.
+  // Element and relationship <documentation> children are valid and are exported normally.
 
   // Element folders
   const layers = [{key:'business',folder:'Business',id:bfId},
