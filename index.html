@@ -3101,6 +3101,64 @@ function cancelConfirm()  { document.getElementById('confirmModal').classList.re
 function executeConfirm() { document.getElementById('confirmModal').classList.remove('open'); if (_confirmCb) { const cb = _confirmCb; _confirmCb = null; cb(); } }
 
 // ══════════════════════════════════════════════════════════════
+// SETTINGS MODAL
+// ══════════════════════════════════════════════════════════════
+const _APIKEY_STORE = 'architise-anthropic-key';
+
+function showSettings() {
+  const inp = document.getElementById('settings-apikey-input');
+  if (inp) {
+    const stored = (() => { try { return localStorage.getItem(_APIKEY_STORE) || ''; } catch(e) { return ''; } })();
+    inp.value = stored;
+    inp.type  = 'password';
+    const eye = document.getElementById('settings-apikey-eye');
+    if (eye) eye.textContent = '👁';
+  }
+  applySettingsTranslations();
+  document.getElementById('settingsModal').classList.add('open');
+}
+
+function hideSettings() {
+  document.getElementById('settingsModal').classList.remove('open');
+}
+
+function saveSettings() {
+  const inp = document.getElementById('settings-apikey-input');
+  const key = inp ? inp.value.trim() : '';
+  try { if (key) localStorage.setItem(_APIKEY_STORE, key); else localStorage.removeItem(_APIKEY_STORE); } catch(e) {}
+  hideSettings();
+  const NL = currentLang === 'nl';
+  showToast(NL ? 'Instellingen opgeslagen' : 'Settings saved');
+}
+
+function toggleApiKeyVisibility() {
+  const inp = document.getElementById('settings-apikey-input');
+  const eye = document.getElementById('settings-apikey-eye');
+  if (!inp) return;
+  if (inp.type === 'password') { inp.type = 'text'; if (eye) eye.textContent = '🙈'; }
+  else { inp.type = 'password'; if (eye) eye.textContent = '👁'; }
+}
+
+function getApiKey() {
+  try { return localStorage.getItem(_APIKEY_STORE) || ''; } catch(e) { return ''; }
+}
+
+function applySettingsTranslations() {
+  const NL = currentLang === 'nl';
+  const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  set('settings-title-el',    NL ? '⚙ Instellingen'       : '⚙ Settings');
+  set('settings-apikey-hd',   NL ? 'AI — Anthropic API-sleutel' : 'AI — Anthropic API Key');
+  set('settings-apikey-desc', NL ? 'Gebruikt voor AI-gestuurde Start in de wizard. Uw sleutel wordt alleen in deze browser opgeslagen (localStorage) en direct naar Anthropic gestuurd — nooit naar een server van derden.'
+                                 : 'Used for AI-Guided Start inside the wizard. Your key is stored only in this browser (localStorage) and sent directly to Anthropic — never to any third-party server.');
+  const inp = document.getElementById('settings-apikey-input');
+  if (inp) inp.placeholder = 'sk-ant-…';
+  set('settings-apikey-note', NL ? 'Sleutel is opgeslagen per browserprofiel. Browserdata wissen verwijdert de sleutel.'
+                                 : 'Key is saved per browser profile. Clear browser data to remove it.');
+  set('settings-cancel-btn', NL ? 'Annuleren' : 'Cancel');
+  set('settings-save-btn',   NL ? 'Opslaan'   : 'Save');
+}
+
+// ══════════════════════════════════════════════════════════════
 // MENU BAR
 // ══════════════════════════════════════════════════════════════
 function toggleMenu(name) {
