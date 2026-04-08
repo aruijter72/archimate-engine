@@ -2761,32 +2761,110 @@ function updateStats() {
   updateHealth();
 }
 
+let _healthData = { incomplete:[], orphaned:[], undocumented:[] };
+
 function updateHealth() {
   const bar = document.getElementById('health-bar');
   if (!bar) return;
   const NL = currentLang === 'nl';
   const elems = model.elements || [];
   const rels   = model.relationships || [];
+
+  closeHealthDrop();
+
   if (elems.length === 0) { bar.style.display = 'none'; return; }
 
   const connectedIds = new Set();
   for (const r of rels) { if (r.sourceId) connectedIds.add(r.sourceId); if (r.targetId) connectedIds.add(r.targetId); }
 
-  const orphaned     = elems.filter(e => !connectedIds.has(e.id)).length;
-  const undocumented = elems.filter(e => !(e.documentation||'').trim()).length;
-  const incomplete   = rels.filter(r  => !r.sourceId || !r.targetId).length;
+  _healthData.incomplete   = rels.filter(r  => !r.sourceId || !r.targetId);
+  _healthData.orphaned     = elems.filter(e => !connectedIds.has(e.id));
+  _healthData.undocumented = elems.filter(e => !(e.documentation||'').trim());
 
   const pills = [];
-  if (incomplete   > 0) pills.push(`<span class="health-pill error" title="${NL ? 'Relaties zonder bron of doel' : 'Relationships missing source or target'}">⚠ ${incomplete} ${NL ? 'incomplete rel.' : 'incomplete rel.'}</span>`);
-  if (orphaned     > 0) pills.push(`<span class="health-pill warn"  title="${NL ? 'Elementen zonder relaties' : 'Elements with no relationships'}">◎ ${orphaned} ${NL ? 'onverbonden' : 'unconnected'}</span>`);
-  if (undocumented > 0) pills.push(`<span class="health-pill info"  title="${NL ? 'Elementen zonder documentatie' : 'Elements without documentation'}">✎ ${undocumented} ${NL ? 'zonder documentatie' : 'undocumented'}</span>`);
+  if (_healthData.incomplete.length   > 0) pills.push(`<button class="health-pill error" onclick="toggleHealthDrop('incomplete',this)">⚠ ${_healthData.incomplete.length} ${NL?'incomplete rel.':'incomplete rel.'}</button>`);
+  if (_healthData.orphaned.length     > 0) pills.push(`<button class="health-pill warn"  onclick="toggleHealthDrop('orphaned',this)">◎ ${_healthData.orphaned.length} ${NL?'onverbonden':'unconnected'}</button>`);
+  if (_healthData.undocumented.length > 0) pills.push(`<button class="health-pill info"  onclick="toggleHealthDrop('undocumented',this)">✎ ${_healthData.undocumented.length} ${NL?'zonder doc.':'undocumented'}</button>`);
 
   bar.style.display = '';
-  if (pills.length === 0) {
-    bar.innerHTML = `<span class="health-ok">✓ ${NL ? 'Model ziet er goed uit' : 'Model looks good'}</span>`;
+  bar.innerHTML = pills.length === 0
+    ? `<span class="health-ok">✓ ${NL?'Model ziet er goed uit':'Model looks good'}</span>`
+    : `<span class="health-label">${NL?'Aandachtspunten:':'Attention:'}</span>` + pills.join('');
+}
+
+function toggleHealthDrop(type, pill) {
+  const drop = document.getElementById('healthDrop');
+  if (!drop) return;
+  // Toggle off if same pill
+  if (drop.style.display !== 'none' && drop.dataset.type === type) { closeHealthDrop(); return; }
+  closeHealthDrop();
+
+  const NL = currentLang === 'nl';
+  const items = _healthData[type] || [];
+  const hdrs = {
+    incomplete:   NL ? 'Incomplete relaties'          : 'Incomplete relationships',
+    orphaned:     NL ? 'Onverbonden elementen'         : 'Unconnected elements',
+    undocumented: NL ? 'Zonder documentatie'           : 'Undocumented elements'
+  };
+
+  let html = `<div class="health-drop-hd">${hdrs[type]} (${items.length})</div><div class="health-drop-list">`;
+
+  if (type === 'incomplete') {
+    for (const r of items) {
+      const src = model.elements.find(e => e.id === r.sourceId);
+      const tgt = model.elements.find(e => e.id === r.targetId);
+      const lbl = r.type.replace('Relationship','')
+        + (src ? ` · ${src.name}` : NL ? ' · (geen bron)' : ' · (no source)')
+        + (tgt ? ` → ${tgt.name}` : NL ? ' → (geen doel)' : ' → (no target)');
+      html += `<div class="health-drop-item" onclick="navigateToRelationship('${r.id}');closeHealthDrop()">
+        <span class="health-drop-name">${esc(lbl)}</span>
+        <span class="health-drop-arrow">→</span></div>`;
+    }
   } else {
-    bar.innerHTML = `<span class="health-label">${NL ? 'Aandachtspunten:' : 'Attention:'}</span>` + pills.join('');
+    for (const el of items) {
+      html += `<div class="health-drop-item" onclick="navigateToElement('${el.id}');closeHealthDrop()">
+        <span class="health-drop-name">${esc(el.name||'—')}</span>
+        <span class="health-drop-type">${TYPE_LABELS[el.type]||el.type}</span>
+        <span class="health-drop-arrow">→</span></div>`;
+    }
   }
+  html += '</div>';
+  drop.innerHTML = html;
+  drop.dataset.type = type;
+
+  // Position below pill, guard right edge
+  const r = pill.getBoundingClientRect();
+  drop.style.left = r.left + 'px';
+  drop.style.top  = (r.bottom + 5) + 'px';
+  drop.style.display = 'flex';
+  requestAnimationFrame(() => {
+    const dr = drop.getBoundingClientRect();
+    if (dr.right > window.innerWidth - 8) drop.style.left = (window.innerWidth - dr.width - 8) + 'px';
+  });
+
+  pill.classList.add('active');
+  drop.dataset.pillEl = pill.className; // stash for deactivation
+}
+
+function closeHealthDrop() {
+  const drop = document.getElementById('healthDrop');
+  if (!drop || drop.style.display === 'none') return;
+  drop.style.display = 'none';
+  drop.dataset.type = '';
+  // Remove active class from any active pill
+  document.querySelectorAll('.health-pill.active').forEach(p => p.classList.remove('active'));
+}
+
+function navigateToRelationship(relId) {
+  showTab('relationships');
+  setTimeout(() => {
+    const row = document.querySelector(`tr[data-rel-id="${relId}"]`);
+    if (row) {
+      row.scrollIntoView({ behavior:'smooth', block:'center' });
+      row.classList.add('elem-highlight');
+      setTimeout(() => row.classList.remove('elem-highlight'), 1000);
+    }
+  }, 120);
 }
 
 // ══════════════════════════════════════════════════════════════
