@@ -2600,6 +2600,10 @@ function renderLayer(layer) {
   const bridgeBtn = layer === 'business'
     ? `<button class="btn-open-swimlane" onclick="openAsSwimlane()" title="${bridgeTip}">${bridgeLabel}</button>`
     : '';
+
+  // TOGAF Architecture Principles Workflow guide (Motivation layer only)
+  const principlesGuide = (layer === 'motivation' && _togafVisible) ? buildPrinciplesGuide(NL) : '';
+
   let html     = `
     <div class="layer-intro" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
       <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
@@ -2607,7 +2611,8 @@ function renderLayer(layer) {
         <span class="layer-desc">${t(LAYER_DESC_KEY[layer])}</span>
       </div>
       ${bridgeBtn}
-    </div>`;
+    </div>
+    ${principlesGuide}`;
 
   for (const [secName, types] of Object.entries(config.sections)) {
     const elems = model.elements.filter(e => e.layer === layer && types.includes(e.type));
