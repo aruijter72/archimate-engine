@@ -6166,6 +6166,10 @@ function navigateToElement(elemId) {
 
 document.addEventListener('keydown', ev => {
   if ((ev.metaKey || ev.ctrlKey) && ev.key === 'k') { ev.preventDefault(); _searchOpen ? closeSearch() : showSearch(); }
+  if ((ev.metaKey || ev.ctrlKey) && ev.key === 's') {
+    ev.preventDefault();
+    if (currentMode === 'archimate') quickSaveModel(); else quickSaveProcJSON();
+  }
   if (ev.key === 'Escape' && _searchOpen) closeSearch();
   if (ev.key === 'Escape') closeHealthDrop();
 });
