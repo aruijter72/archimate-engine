@@ -2521,7 +2521,7 @@ function deleteRel(id) {
 
 function setRel(id, field, val) {
   const r = model.relationships.find(r => r.id === id);
-  if (r) { r[field] = val; if (field === 'type') renderRelationships(); }
+  if (r) { r[field] = val; if (field === 'type') renderRelationships(); scheduleHealthUpdate(); }
 }
 
 // ══════════════════════════════════════════════════════════════
