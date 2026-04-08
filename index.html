@@ -5238,6 +5238,9 @@ function saveProcJSON() {
   URL.revokeObjectURL(url);
 }
 
+let _procSaveHandles = {};  // procId → FSA handle
+let _procSavedOnce   = {}; // procId → bool
+
 async function saveProcJSONAs() {
   const NL = currentLang === 'nl';
   const proc = getActiveProc();
@@ -5253,6 +5256,8 @@ async function saveProcJSONAs() {
       const writable = await handle.createWritable();
       await writable.write(json);
       await writable.close();
+      _procSaveHandles[proc.id] = handle;
+      _procSavedOnce[proc.id]   = true;
       showToast(NL ? '💾 Bestand opgeslagen' : '💾 File saved', 'gold');
       return;
     } catch(e) { if (e.name === 'AbortError') return; }
@@ -5265,7 +5270,26 @@ async function saveProcJSONAs() {
     href: url, download: name.endsWith('.json') ? name : name + '.json'
   });
   a.click(); URL.revokeObjectURL(url);
+  _procSavedOnce[proc.id] = true;
   showToast(NL ? '💾 Bestand opgeslagen' : '💾 File saved', 'gold');
+}
+
+async function quickSaveProcJSON() {
+  const NL = currentLang === 'nl';
+  const proc = getActiveProc();
+  if (!proc) { showToast(NL ? 'Geen actief proces.' : 'No active process.', ''); return; }
+  const handle = _procSaveHandles[proc.id];
+  if (handle) {
+    try {
+      const writable = await handle.createWritable();
+      await writable.write(JSON.stringify(proc, null, 2));
+      await writable.close();
+      showToast(NL ? '💾 Opgeslagen' : '💾 Saved', 'gold');
+      return;
+    } catch(e) { if (e.name !== 'AbortError') delete _procSaveHandles[proc.id]; }
+  }
+  if (_procSavedOnce[proc.id]) { saveProcJSON(); showToast(NL ? '💾 Opgeslagen' : '💾 Saved', 'gold'); return; }
+  await saveProcJSONAs();
 }
 
 function triggerLoadProc() {
