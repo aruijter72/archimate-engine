@@ -727,6 +727,49 @@
     .wiz-back:hover { border-color: var(--muted); color: var(--white); }
     .wiz-err { color: #ef4444; font-size: .78rem; margin-top: .35rem; }
 
+    /* ── Wizard mode toggle ──────────────────────────────────── */
+    .wiz-mode-toggle {
+      display: flex; gap: 0; margin-bottom: 1.2rem;
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+      background: rgba(255,255,255,.03);
+    }
+    .wiz-mode-btn {
+      flex: 1; padding: .42rem .6rem; border: none; background: none;
+      color: var(--text2); cursor: pointer; font-size: .82rem; font-weight: 600;
+      font-family: 'Catamaran', system-ui, sans-serif;
+      transition: all .2s; border-right: 1px solid var(--border);
+    }
+    .wiz-mode-btn:last-child { border-right: none; }
+    .wiz-mode-btn.active { background: rgba(201,163,85,.15); color: var(--gold); }
+    .wiz-mode-btn:not(.active):hover { color: var(--white); }
+    /* AI mode textarea */
+    .wiz-ai-textarea {
+      width: 100%; background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12); border-radius: 8px;
+      color: var(--white); font-size: .88rem; padding: .75rem .9rem;
+      outline: none; resize: vertical; min-height: 140px; line-height: 1.6;
+      font-family: 'Catamaran', system-ui, sans-serif; transition: border-color .15s;
+    }
+    .wiz-ai-textarea:focus { border-color: var(--gold); background: rgba(255,255,255,.08); }
+    /* Spinner */
+    .wiz-spinner {
+      display: none; align-items: center; gap: .65rem; padding: .8rem 0;
+      font-size: .84rem; color: var(--text2);
+    }
+    .wiz-spinner.active { display: flex; }
+    .wiz-spin-ring {
+      width: 18px; height: 18px; border: 2px solid rgba(201,163,85,.3);
+      border-top-color: var(--gold); border-radius: 50%;
+      animation: wiz-spin .7s linear infinite; flex-shrink: 0;
+    }
+    @keyframes wiz-spin { to { transform: rotate(360deg); } }
+    .wiz-apikey-warn {
+      font-size: .8rem; color: #f5a050; background: rgba(245,160,80,.1);
+      border: 1px solid rgba(245,160,80,.35); border-radius: 6px;
+      padding: .55rem .85rem; line-height: 1.5;
+    }
+    .wiz-apikey-warn a { color: var(--gold); cursor: pointer; text-decoration: underline; }
+
     /* ── AR Logo ─────────────────────────────────────────────── */
     .ar-logo {
       display: inline-block; flex-shrink: 0;
