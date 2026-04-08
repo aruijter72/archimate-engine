@@ -3846,7 +3846,12 @@ const TEMPLATES = [
         {id:'tr1-06',type:'ServingRelationship',sourceId:'t1-10',targetId:'t1-07',name:'',documentation:''},
         {id:'tr1-07',type:'RealizationRelationship',sourceId:'t1-08',targetId:'t1-10',name:'',documentation:''},
         {id:'tr1-08',type:'RealizationRelationship',sourceId:'t1-11',targetId:'t1-08',name:'',documentation:''},
-        {id:'tr1-09',type:'ServingRelationship',sourceId:'t1-08',targetId:'t1-02',name:'self-service access',documentation:''}
+        {id:'tr1-09',type:'ServingRelationship',sourceId:'t1-08',targetId:'t1-02',name:'self-service access',documentation:''},
+        {id:'tr1-10',type:'RealizationRelationship',sourceId:'t1-11',targetId:'t1-09',name:'',documentation:''},
+        {id:'tr1-11',type:'ServingRelationship',sourceId:'t1-09',targetId:'t1-02',name:'order & delivery portal',documentation:''},
+        {id:'tr1-12',type:'RealizationRelationship',sourceId:'t1-11',targetId:'t1-12',name:'',documentation:''},
+        {id:'tr1-13',type:'RealizationRelationship',sourceId:'t1-05',targetId:'t1-07',name:'',documentation:''},
+        {id:'tr1-14',type:'RealizationRelationship',sourceId:'t1-06',targetId:'t1-07',name:'',documentation:''}
       ]
     }
   },
@@ -3878,7 +3883,10 @@ const TEMPLATES = [
         {id:'tr2-05',type:'RealizationRelationship',sourceId:'t2-04',targetId:'t2-06',name:'',documentation:''},
         {id:'tr2-06',type:'RealizationRelationship',sourceId:'t2-07',targetId:'t2-09',name:'',documentation:''},
         {id:'tr2-07',type:'ServingRelationship',sourceId:'t2-09',targetId:'t2-06',name:'',documentation:''},
-        {id:'tr2-08',type:'RealizationRelationship',sourceId:'t2-10',targetId:'t2-07',name:'',documentation:''}
+        {id:'tr2-08',type:'RealizationRelationship',sourceId:'t2-10',targetId:'t2-07',name:'',documentation:''},
+        {id:'tr2-09',type:'ServingRelationship',sourceId:'t2-06',targetId:'t2-01',name:'',documentation:''},
+        {id:'tr2-10',type:'AccessRelationship',sourceId:'t2-05',targetId:'t2-08',name:'',documentation:'',accessType:'Read'},
+        {id:'tr2-11',type:'RealizationRelationship',sourceId:'t2-10',targetId:'t2-11',name:'',documentation:''}
       ]
     }
   },
