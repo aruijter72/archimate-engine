@@ -3998,6 +3998,121 @@ const TEMPLATES = [
       ]
     }
   }
+  ,{
+    icon:'🏥', name:'Healthcare — Patient Management',
+    desc:'Patient intake, clinical consultation and discharge supported by EHR and appointment systems.',
+    tags:['Business','Application','Technology'],
+    model:{
+      name:'Healthcare — Patient Management',
+      documentation:'End-to-end patient management model covering registration, clinical care and discharge.',
+      elements:[
+        {id:'th1-01',layer:'business',type:'BusinessActor',name:'Patient',documentation:'Individual seeking medical care, either walk-in or referred.',properties:[]},
+        {id:'th1-02',layer:'business',type:'BusinessActor',name:'Clinical Staff',documentation:'Nurses and physicians responsible for direct patient care.',properties:[]},
+        {id:'th1-03',layer:'business',type:'BusinessActor',name:'Receptionist',documentation:'Administrative staff managing appointments, registration and discharge paperwork.',properties:[]},
+        {id:'th1-04',layer:'business',type:'BusinessRole',name:'Treating Physician',documentation:'',properties:[]},
+        {id:'th1-05',layer:'business',type:'BusinessProcess',name:'Patient Registration',documentation:'Capturing patient identity, insurance details and presenting complaint on arrival.',properties:[]},
+        {id:'th1-06',layer:'business',type:'BusinessProcess',name:'Clinical Consultation',documentation:'Assessment, diagnosis and treatment planning by the treating physician.',properties:[]},
+        {id:'th1-07',layer:'business',type:'BusinessProcess',name:'Discharge & Follow-up',documentation:'Completing discharge documentation, scheduling follow-up appointments and issuing prescriptions.',properties:[]},
+        {id:'th1-08',layer:'business',type:'BusinessService',name:'Patient Care Service',documentation:'',properties:[]},
+        {id:'th1-09',layer:'application',type:'ApplicationComponent',name:'EHR System',documentation:'Electronic Health Record platform storing patient history, diagnoses, medications and care plans.',properties:[{key:'Example',value:'Epic, Meditech, ChipSoft HiX'}]},
+        {id:'th1-10',layer:'application',type:'ApplicationComponent',name:'Appointment Portal',documentation:'Online and kiosk-based portal for booking, rescheduling and cancelling appointments.',properties:[]},
+        {id:'th1-11',layer:'application',type:'ApplicationService',name:'Clinical Decision Support',documentation:'Rule-based service providing drug interaction alerts, diagnostic suggestions and care pathway guidance.',properties:[]},
+        {id:'th1-12',layer:'technology',type:'Node',name:'Hospital Application Server',documentation:'On-premise or private cloud server hosting clinical applications.',properties:[]},
+        {id:'th1-13',layer:'technology',type:'Artifact',name:'Patient Records Database',documentation:'Encrypted database storing all patient clinical and administrative data.',properties:[]}
+      ],
+      relationships:[
+        {id:'thr1-01',type:'AssignmentRelationship',sourceId:'th1-02',targetId:'th1-04',name:'',documentation:''},
+        {id:'thr1-02',type:'AssignmentRelationship',sourceId:'th1-04',targetId:'th1-06',name:'',documentation:''},
+        {id:'thr1-03',type:'AssignmentRelationship',sourceId:'th1-03',targetId:'th1-05',name:'',documentation:''},
+        {id:'thr1-04',type:'TriggeringRelationship',sourceId:'th1-05',targetId:'th1-06',name:'',documentation:''},
+        {id:'thr1-05',type:'TriggeringRelationship',sourceId:'th1-06',targetId:'th1-07',name:'',documentation:''},
+        {id:'thr1-06',type:'RealizationRelationship',sourceId:'th1-06',targetId:'th1-08',name:'',documentation:''},
+        {id:'thr1-07',type:'ServingRelationship',sourceId:'th1-11',targetId:'th1-08',name:'',documentation:''},
+        {id:'thr1-08',type:'RealizationRelationship',sourceId:'th1-09',targetId:'th1-11',name:'',documentation:''},
+        {id:'thr1-09',type:'ServingRelationship',sourceId:'th1-10',targetId:'th1-05',name:'self-service booking',documentation:''},
+        {id:'thr1-10',type:'RealizationRelationship',sourceId:'th1-12',targetId:'th1-09',name:'',documentation:''},
+        {id:'thr1-11',type:'RealizationRelationship',sourceId:'th1-12',targetId:'th1-10',name:'',documentation:''},
+        {id:'thr1-12',type:'ServingRelationship',sourceId:'th1-12',targetId:'th1-13',name:'hosts',documentation:''}
+      ]
+    }
+  }
+  ,{
+    icon:'🏦', name:'Retail Banking — Account Services',
+    desc:'Account opening, daily transactions and loan applications in a retail bank.',
+    tags:['Business','Application','Technology'],
+    model:{
+      name:'Retail Banking — Account Services',
+      documentation:'Core retail banking model covering customer onboarding, transactional banking and lending.',
+      elements:[
+        {id:'tb1-01',layer:'business',type:'BusinessActor',name:'Retail Customer',documentation:'Individual or SME customer holding one or more products with the bank.',properties:[]},
+        {id:'tb1-02',layer:'business',type:'BusinessActor',name:'Branch Manager',documentation:'Accountable for branch performance and authorises non-standard customer requests.',properties:[]},
+        {id:'tb1-03',layer:'business',type:'BusinessActor',name:'Relationship Manager',documentation:'Manages the ongoing relationship for priority or business customers.',properties:[]},
+        {id:'tb1-04',layer:'business',type:'BusinessRole',name:'KYC Officer',documentation:'',properties:[]},
+        {id:'tb1-05',layer:'business',type:'BusinessProcess',name:'Account Opening',documentation:'Collecting customer identification, running KYC checks and provisioning a new current or savings account.',properties:[]},
+        {id:'tb1-06',layer:'business',type:'BusinessProcess',name:'Daily Transaction Processing',documentation:'Handling payments, transfers, direct debits and standing orders on customer accounts.',properties:[]},
+        {id:'tb1-07',layer:'business',type:'BusinessProcess',name:'Loan Application',documentation:'Receiving, credit-scoring and approving or declining retail loan and mortgage applications.',properties:[]},
+        {id:'tb1-08',layer:'business',type:'BusinessService',name:'Retail Banking Service',documentation:'',properties:[]},
+        {id:'tb1-09',layer:'application',type:'ApplicationComponent',name:'Core Banking System',documentation:'Central ledger and product engine managing accounts, balances and transactions.',properties:[{key:'Example',value:'Temenos T24, Finastra Fusion, Mambu'}]},
+        {id:'tb1-10',layer:'application',type:'ApplicationComponent',name:'Mobile Banking App',documentation:'Customer-facing mobile application for account overview, payments and card management.',properties:[]},
+        {id:'tb1-11',layer:'application',type:'ApplicationComponent',name:'Credit Risk Engine',documentation:'Automated scoring and decision engine for loan and overdraft applications.',properties:[]},
+        {id:'tb1-12',layer:'application',type:'ApplicationService',name:'Payment Processing Service',documentation:'Service executing SEPA, SWIFT and domestic payment instructions.',properties:[]},
+        {id:'tb1-13',layer:'technology',type:'Node',name:'Banking Platform Server',documentation:'Hardened server cluster running core banking and payment workloads.',properties:[{key:'Example',value:'On-premise data centre or private cloud'}]},
+        {id:'tb1-14',layer:'technology',type:'Artifact',name:'Customer & Accounts Database',documentation:'Authoritative store of customer records, account balances and transaction history.',properties:[]}
+      ],
+      relationships:[
+        {id:'tbr1-01',type:'AssignmentRelationship',sourceId:'tb1-03',targetId:'tb1-04',name:'',documentation:''},
+        {id:'tbr1-02',type:'AssignmentRelationship',sourceId:'tb1-04',targetId:'tb1-05',name:'',documentation:''},
+        {id:'tbr1-03',type:'TriggeringRelationship',sourceId:'tb1-05',targetId:'tb1-06',name:'',documentation:''},
+        {id:'tbr1-04',type:'AssignmentRelationship',sourceId:'tb1-03',targetId:'tb1-07',name:'',documentation:''},
+        {id:'tbr1-05',type:'RealizationRelationship',sourceId:'tb1-06',targetId:'tb1-08',name:'',documentation:''},
+        {id:'tbr1-06',type:'ServingRelationship',sourceId:'tb1-12',targetId:'tb1-08',name:'',documentation:''},
+        {id:'tbr1-07',type:'RealizationRelationship',sourceId:'tb1-09',targetId:'tb1-12',name:'',documentation:''},
+        {id:'tbr1-08',type:'ServingRelationship',sourceId:'tb1-10',targetId:'tb1-06',name:'self-service payments',documentation:''},
+        {id:'tbr1-09',type:'RealizationRelationship',sourceId:'tb1-11',targetId:'tb1-07',name:'automated scoring',documentation:''},
+        {id:'tbr1-10',type:'RealizationRelationship',sourceId:'tb1-13',targetId:'tb1-09',name:'',documentation:''},
+        {id:'tbr1-11',type:'RealizationRelationship',sourceId:'tb1-13',targetId:'tb1-11',name:'',documentation:''},
+        {id:'tbr1-12',type:'ServingRelationship',sourceId:'tb1-13',targetId:'tb1-14',name:'hosts',documentation:''}
+      ]
+    }
+  }
+  ,{
+    icon:'🏭', name:'Manufacturing — Supply Chain',
+    desc:'Procurement, production planning and quality control backed by an ERP and WMS.',
+    tags:['Business','Application','Technology'],
+    model:{
+      name:'Manufacturing — Supply Chain',
+      documentation:'Supply chain model for a discrete manufacturer covering procurement, production and quality assurance.',
+      elements:[
+        {id:'tm1-01',layer:'business',type:'BusinessActor',name:'Procurement Manager',documentation:'Responsible for supplier selection, purchase orders and contract management.',properties:[]},
+        {id:'tm1-02',layer:'business',type:'BusinessActor',name:'Production Team',documentation:'Shop-floor operators executing the manufacturing and assembly work orders.',properties:[]},
+        {id:'tm1-03',layer:'business',type:'BusinessActor',name:'External Supplier',documentation:'Third-party vendor delivering raw materials or sub-assemblies.',properties:[]},
+        {id:'tm1-04',layer:'business',type:'BusinessRole',name:'Quality Inspector',documentation:'',properties:[]},
+        {id:'tm1-05',layer:'business',type:'BusinessProcess',name:'Material Procurement',documentation:'Raising purchase requisitions, issuing POs to suppliers and receiving goods.',properties:[]},
+        {id:'tm1-06',layer:'business',type:'BusinessProcess',name:'Production Planning',documentation:'Scheduling work orders, allocating resources and managing the production calendar.',properties:[]},
+        {id:'tm1-07',layer:'business',type:'BusinessProcess',name:'Quality Control',documentation:'Incoming goods inspection and in-process checks against product specifications.',properties:[]},
+        {id:'tm1-08',layer:'business',type:'BusinessService',name:'Manufacturing Service',documentation:'',properties:[]},
+        {id:'tm1-09',layer:'application',type:'ApplicationComponent',name:'ERP System',documentation:'Enterprise resource planning platform managing finance, procurement and production.',properties:[{key:'Example',value:'SAP S/4HANA, Microsoft Dynamics, Infor LN'}]},
+        {id:'tm1-10',layer:'application',type:'ApplicationComponent',name:'Warehouse Management System',documentation:'Tracks stock locations, movements and replenishment within the warehouse.',properties:[{key:'Example',value:'Manhattan, Blue Yonder, Korber'}]},
+        {id:'tm1-11',layer:'application',type:'ApplicationService',name:'Procurement Service',documentation:'Service automating PO creation, supplier communication and goods receipt.',properties:[]},
+        {id:'tm1-12',layer:'technology',type:'Node',name:'Manufacturing Platform Server',documentation:'On-premise server cluster hosting ERP and WMS workloads.',properties:[]},
+        {id:'tm1-13',layer:'technology',type:'Artifact',name:'Inventory & Production Database',documentation:'Central store for stock levels, work orders, BOM and quality records.',properties:[]}
+      ],
+      relationships:[
+        {id:'tmr1-01',type:'AssignmentRelationship',sourceId:'tm1-01',targetId:'tm1-05',name:'',documentation:''},
+        {id:'tmr1-02',type:'AssignmentRelationship',sourceId:'tm1-02',targetId:'tm1-06',name:'',documentation:''},
+        {id:'tmr1-03',type:'AssignmentRelationship',sourceId:'tm1-04',targetId:'tm1-07',name:'',documentation:''},
+        {id:'tmr1-04',type:'TriggeringRelationship',sourceId:'tm1-05',targetId:'tm1-06',name:'',documentation:''},
+        {id:'tmr1-05',type:'TriggeringRelationship',sourceId:'tm1-06',targetId:'tm1-07',name:'',documentation:''},
+        {id:'tmr1-06',type:'RealizationRelationship',sourceId:'tm1-06',targetId:'tm1-08',name:'',documentation:''},
+        {id:'tmr1-07',type:'ServingRelationship',sourceId:'tm1-11',targetId:'tm1-08',name:'',documentation:''},
+        {id:'tmr1-08',type:'RealizationRelationship',sourceId:'tm1-09',targetId:'tm1-11',name:'',documentation:''},
+        {id:'tmr1-09',type:'ServingRelationship',sourceId:'tm1-10',targetId:'tm1-06',name:'stock visibility',documentation:''},
+        {id:'tmr1-10',type:'RealizationRelationship',sourceId:'tm1-12',targetId:'tm1-09',name:'',documentation:''},
+        {id:'tmr1-11',type:'RealizationRelationship',sourceId:'tm1-12',targetId:'tm1-10',name:'',documentation:''},
+        {id:'tmr1-12',type:'ServingRelationship',sourceId:'tm1-12',targetId:'tm1-13',name:'hosts',documentation:''}
+      ]
+    }
+  }
 ];
 
 // ── Process / Swimlane Templates ─────────────────────────────
