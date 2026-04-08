@@ -1278,6 +1278,9 @@
   <span class="stat-item" style="margin-left:auto"><span id="stat-total-lbl">Total elements</span>: <span class="stat-count" id="statTotal">0</span></span>
 </div>
 
+<!-- ── Health Bar ──────────────────────────────────────────── -->
+<div class="health-bar" id="health-bar" style="display:none"></div>
+
 <!-- ── Tab Navigation (ArchiMate mode) ─────────────────────── -->
 <nav class="tab-nav" id="archimate-tab-nav">
   <button class="tab-btn active biz" id="tab-btn-business"     onclick="showTab('business')">
@@ -2741,6 +2744,35 @@ function updateStats() {
   document.getElementById('statTech').textContent  = model.elements.filter(e=>e.layer==='technology').length;
   document.getElementById('statRel').textContent   = model.relationships.length;
   document.getElementById('statTotal').textContent = model.elements.length;
+  updateHealth();
+}
+
+function updateHealth() {
+  const bar = document.getElementById('health-bar');
+  if (!bar) return;
+  const NL = currentLang === 'nl';
+  const elems = model.elements || [];
+  const rels   = model.relationships || [];
+  if (elems.length === 0) { bar.style.display = 'none'; return; }
+
+  const connectedIds = new Set();
+  for (const r of rels) { if (r.sourceId) connectedIds.add(r.sourceId); if (r.targetId) connectedIds.add(r.targetId); }
+
+  const orphaned     = elems.filter(e => !connectedIds.has(e.id)).length;
+  const undocumented = elems.filter(e => !(e.documentation||'').trim()).length;
+  const incomplete   = rels.filter(r  => !r.sourceId || !r.targetId).length;
+
+  const pills = [];
+  if (incomplete   > 0) pills.push(`<span class="health-pill error" title="${NL ? 'Relaties zonder bron of doel' : 'Relationships missing source or target'}">⚠ ${incomplete} ${NL ? 'incomplete rel.' : 'incomplete rel.'}</span>`);
+  if (orphaned     > 0) pills.push(`<span class="health-pill warn"  title="${NL ? 'Elementen zonder relaties' : 'Elements with no relationships'}">◎ ${orphaned} ${NL ? 'onverbonden' : 'unconnected'}</span>`);
+  if (undocumented > 0) pills.push(`<span class="health-pill info"  title="${NL ? 'Elementen zonder documentatie' : 'Elements without documentation'}">✎ ${undocumented} ${NL ? 'zonder documentatie' : 'undocumented'}</span>`);
+
+  bar.style.display = '';
+  if (pills.length === 0) {
+    bar.innerHTML = `<span class="health-ok">✓ ${NL ? 'Model ziet er goed uit' : 'Model looks good'}</span>`;
+  } else {
+    bar.innerHTML = `<span class="health-label">${NL ? 'Aandachtspunten:' : 'Attention:'}</span>` + pills.join('');
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
