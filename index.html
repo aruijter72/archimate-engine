@@ -1354,7 +1354,7 @@
     <span class="tab-icon mot">M</span> <span id="tab-mot-label">Motivation</span></button>
   <button class="tab-btn str" id="tab-btn-strategy"   onclick="showTab('strategy')" style="display:none">
     <span class="tab-icon str">S</span> <span id="tab-str-label">Strategy</span></button>
-  <button class="tab-togaf-toggle" id="togaf-toggle-btn" onclick="toggleTogaf()">◈ <span id="togaf-toggle-label">TOGAF</span> ▸</button>
+  <button class="tab-togaf-toggle" id="togaf-toggle-btn" onclick="toggleTogaf()" title="TOGAF-inspired features: Viewpoints, Architecture Principles &amp; ADM phase labels on templates">◈ <span id="togaf-toggle-label">TOGAF</span> ▸</button>
 </nav>
 
 <!-- ── Tab Panels (ArchiMate mode) ─────────────────────────── -->
@@ -1787,6 +1787,9 @@ function applyTranslations() {
   // Advanced layers toggle label
   const advLabel = document.getElementById('adv-toggle-label');
   if (advLabel) advLabel.textContent = t('adv-toggle');
+  // TOGAF toggle label (always stays 'TOGAF' in both languages)
+  const togafLbl = document.getElementById('togaf-toggle-label');
+  if (togafLbl) togafLbl.textContent = 'TOGAF';
   const tabMotLbl = document.getElementById('tab-mot-label');
   if (tabMotLbl) tabMotLbl.textContent = t('tab-mot');
   const tabStrLbl = document.getElementById('tab-str-label');
