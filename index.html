@@ -2445,23 +2445,23 @@ function renderWizStep() {
 }
 
 function wizGenerate() {
-  const name    = _wiz.name || 'My Architecture Model';
-  const actors  = _splitLines(_wiz.actors);
-  const procs   = _splitLines(_wiz.processes);
-  const systems = _splitLines(_wiz.systems);
-
+  const NL2 = currentLang === 'nl';
   if (model.elements.length > 0) {
-    const NL2 = currentLang === 'nl';
     showConfirm(
       NL2 ? '🪄 Model genereren' : '🪄 Generate Model',
       NL2 ? 'Uw huidige model wordt vervangen. Wilt u doorgaan?' : 'Your current model will be replaced. Continue?',
       NL2 ? 'Genereren' : 'Generate', true,
-      () => _doWizGenerate()
+      _doWizGenerate
     );
     return;
   }
   _doWizGenerate();
-
+}
+function _doWizGenerate() {
+  const name    = _wiz.name || 'My Architecture Model';
+  const actors  = _splitLines(_wiz.actors);
+  const procs   = _splitLines(_wiz.processes);
+  const systems = _splitLines(_wiz.systems);
   const elements = [], relationships = [];
 
   const actorIds = actors.map(a => {
@@ -2484,7 +2484,7 @@ function wizGenerate() {
     for (const pId of procIds)
       relationships.push({id:genId(),type:'ServingRelationship',sourceId:sId,targetId:pId,name:'',documentation:'',directed:false,accessType:'ReadWrite',strength:''});
 
-  model = { name, documentation:'', elements, relationships };
+  model = { name, documentation:'', elements, relationships, views:[], snapshots:[] };
   document.getElementById('modelName').value = name;
   document.getElementById('modelDoc').value  = '';
   renderAll(); updateStats();
