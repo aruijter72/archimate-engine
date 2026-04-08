@@ -1291,6 +1291,8 @@
 
 <!-- ── Health Bar ──────────────────────────────────────────── -->
 <div class="health-bar" id="health-bar" style="display:none"></div>
+<!-- ── Health Dropdown (portal, fixed-positioned) ──────────── -->
+<div id="healthDrop" class="health-drop" style="display:none" onclick="event.stopPropagation()"></div>
 
 <!-- ── Tab Navigation (ArchiMate mode) ─────────────────────── -->
 <nav class="tab-nav" id="archimate-tab-nav">
@@ -2713,7 +2715,7 @@ function renderRelationships() {
       }
 
       html += `
-        <tr>
+        <tr data-rel-id="${rel.id}">
           <td><select class="rel-select" onchange="setRel('${rel.id}','sourceId',this.value)">${sOpts}</select></td>
           <td>
             <select class="rel-select" onchange="setRel('${rel.id}','type',this.value)">${rtOpts}</select>
