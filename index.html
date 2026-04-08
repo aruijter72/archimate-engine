@@ -2397,13 +2397,249 @@ function hideTemplates() {
 // ══════════════════════════════════════════════════════════════
 const _wiz = { step:1, name:'', actors:'', processes:'', systems:'', err:'' };
 
+let _wizMode = 'classic'; // 'classic' | 'ai'
+
 function showWizard() {
   _wiz.step=1; _wiz.name=''; _wiz.actors=''; _wiz.processes=''; _wiz.systems=''; _wiz.err='';
+  _wizMode = 'classic';
+  _applyWizMode();
   renderWizStep();
   document.getElementById('wizModal').classList.add('open');
 }
 function hideWizard() {
   document.getElementById('wizModal').classList.remove('open');
+}
+
+function setWizMode(mode) {
+  _wizMode = mode;
+  _applyWizMode();
+}
+
+function _applyWizMode() {
+  const NL = currentLang === 'nl';
+  const classicBtn = document.getElementById('wiz-mode-classic');
+  const aiBtn      = document.getElementById('wiz-mode-ai');
+  const classicContent = document.getElementById('wizContent');
+  const aiContent  = document.getElementById('wizAIContent');
+  const subEl      = document.getElementById('wiz-sub-el');
+
+  if (classicBtn) { classicBtn.classList.toggle('active', _wizMode==='classic'); }
+  if (aiBtn)      { aiBtn.classList.toggle('active', _wizMode==='ai'); }
+
+  if (_wizMode === 'classic') {
+    if (classicContent) classicContent.style.display = '';
+    if (aiContent)      aiContent.style.display = 'none';
+    if (subEl) subEl.textContent = NL
+      ? 'Beantwoord vier snelle vragen en het systeem maakt een werkend architectuurmodel.'
+      : 'Answer four quick questions and the engine will create a working architecture model you can refine.';
+  } else {
+    if (classicContent) classicContent.style.display = 'none';
+    if (aiContent)      aiContent.style.display = '';
+    if (subEl) subEl.textContent = NL
+      ? 'Beschrijf uw architectuur in gewone taal — de AI zet het om naar een ArchiMate-model.'
+      : 'Describe your architecture in plain language — the AI will turn it into an ArchiMate model.';
+    renderWizAI();
+  }
+}
+
+// ── AI mode renderer ──────────────────────────────────────────
+let _wizAIText = '';
+let _wizAILoading = false;
+
+function renderWizAI() {
+  const NL = currentLang === 'nl';
+  const aiContent = document.getElementById('wizAIContent');
+  if (!aiContent) return;
+
+  const hasKey = !!getApiKey();
+  const warnHtml = hasKey ? '' : `
+    <div class="wiz-apikey-warn" id="wiz-ai-keywarn">
+      ${NL ? 'Geen API-sleutel ingesteld.' : 'No API key configured.'}
+      <a onclick="hideWizard();showSettings()"> ${NL ? 'Sleutel instellen →' : 'Add key →'}</a>
+    </div>`;
+
+  aiContent.innerHTML = `
+    ${warnHtml}
+    <div class="wiz-q" style="margin-top:${hasKey?'0':'.75rem'}">${NL ? 'Beschrijf uw architectuur' : 'Describe your architecture'}</div>
+    <div class="wiz-hint">${NL
+      ? 'Noem de organisatie, business processen, applicaties en technologie. Hoe meer detail, hoe beter het model.'
+      : 'Include the organisation, business processes, applications and technology. More detail → better model.'}</div>
+    <textarea id="wizAIInput" class="wiz-ai-textarea" placeholder="${NL
+      ? 'Bijv: Een verzekeraar met Claims, Underwriting en Finance afdelingen. Kernsystemen zijn ClaimsManager en PolicyHub…'
+      : 'E.g. An insurer with Claims, Underwriting and Finance departments. Core systems are ClaimsManager and PolicyHub…'}">${esc(_wizAIText)}</textarea>
+    <div class="wiz-spinner" id="wiz-ai-spinner">
+      <div class="wiz-spin-ring"></div>
+      <span>${NL ? 'Model genereren via AI…' : 'Generating model via AI…'}</span>
+    </div>
+    <div id="wiz-ai-err" class="wiz-err" style="margin-top:.5rem"></div>
+    <div class="wiz-actions" style="margin-top:.85rem">
+      <button class="btn btn-primary" id="wiz-ai-gen-btn" onclick="wizAIGenerate()"${!hasKey||_wizAILoading?' disabled':''}>
+        ✨ ${NL ? 'Genereer model' : 'Generate model'}
+      </button>
+    </div>`;
+
+  if (_wizAILoading) {
+    const sp = document.getElementById('wiz-ai-spinner');
+    if (sp) sp.classList.add('active');
+  }
+}
+
+async function wizAIGenerate() {
+  const NL = currentLang === 'nl';
+  const key = getApiKey();
+  if (!key) { showSettings(); return; }
+
+  const ta = document.getElementById('wizAIInput');
+  _wizAIText = ta ? ta.value.trim() : '';
+  if (!_wizAIText) {
+    const errEl = document.getElementById('wiz-ai-err');
+    if (errEl) errEl.textContent = NL ? 'Vul een beschrijving in.' : 'Please enter a description.';
+    return;
+  }
+
+  // Confirm if model already has content
+  if (model.elements.length > 0) {
+    showConfirm(
+      NL ? '✨ AI-model genereren' : '✨ Generate AI Model',
+      NL ? 'Uw huidige model wordt vervangen. Doorgaan?' : 'Your current model will be replaced. Continue?',
+      NL ? 'Genereren' : 'Generate', true,
+      _doWizAIGenerate
+    );
+    return;
+  }
+  _doWizAIGenerate();
+}
+
+async function _doWizAIGenerate() {
+  const NL = currentLang === 'nl';
+  _wizAILoading = true;
+  renderWizAI();
+
+  const SYSTEM_PROMPT = `You are an ArchiMate 3 architecture modelling assistant. The user will describe their organisation and IT landscape in plain language. You must output ONLY valid JSON — no markdown, no code fences, no explanation — matching this exact schema:
+
+{
+  "name": "string (model name, max 60 chars)",
+  "documentation": "string (1-2 sentence summary)",
+  "elements": [
+    {
+      "id": "e1",
+      "layer": "business|application|technology|motivation|strategy",
+      "type": "BusinessActor|BusinessRole|BusinessCollaboration|BusinessInterface|BusinessProcess|BusinessFunction|BusinessInteraction|BusinessEvent|BusinessService|BusinessObject|Contract|Representation|Product|ApplicationComponent|ApplicationCollaboration|ApplicationInterface|ApplicationFunction|ApplicationInteraction|ApplicationProcess|ApplicationEvent|ApplicationService|DataObject|Node|Device|SystemSoftware|TechnologyCollaboration|TechnologyInterface|Path|CommunicationNetwork|TechnologyFunction|TechnologyProcess|TechnologyInteraction|TechnologyEvent|TechnologyService|Artifact|Stakeholder|Driver|Assessment|Goal|Outcome|Principle|Requirement|Constraint|Meaning|Value|Resource|Capability|CourseOfAction|ValueStream",
+      "name": "string",
+      "documentation": "string (optional brief description)"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "r1",
+      "type": "AssignmentRelationship|RealizationRelationship|ServingRelationship|AccessRelationship|InfluenceRelationship|TriggeringRelationship|FlowRelationship|AssociationRelationship|CompositionRelationship|AggregationRelationship|SpecializationRelationship",
+      "sourceId": "e1",
+      "targetId": "e2",
+      "name": "",
+      "documentation": ""
+    }
+  ]
+}
+
+Rules:
+- Use 8-25 elements covering at least Business and Application layers
+- Use realistic ArchiMate types (BusinessActor for people/orgs, BusinessProcess for processes, ApplicationComponent for software systems, DataObject for data, etc.)
+- Every relationship sourceId and targetId must reference a valid element id
+- AssignmentRelationship: actor/role → function/process/behaviour
+- ServingRelationship: lower layer → higher layer (app serves business)
+- RealizationRelationship: implementation → logical concept
+- Use CompositionRelationship sparingly for genuine part-of structures
+- Output ONLY the JSON object, nothing else.`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': getApiKey(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 4096,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: _wizAIText }]
+      })
+    });
+
+    if (!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `HTTP ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const raw = data.content?.[0]?.text || '';
+
+    // Strip markdown code fences if present
+    const cleaned = raw.replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim();
+    let parsed;
+    try { parsed = JSON.parse(cleaned); }
+    catch(e) { throw new Error(NL ? 'AI gaf geen geldig JSON terug. Probeer opnieuw.' : 'AI did not return valid JSON. Please try again.'); }
+
+    // Validate & sanitise
+    if (!Array.isArray(parsed.elements) || parsed.elements.length === 0)
+      throw new Error(NL ? 'AI-model bevat geen elementen.' : 'AI model contains no elements.');
+
+    const validLayers  = new Set(['business','application','technology','motivation','strategy']);
+    const validRelTypes = new Set(['AssignmentRelationship','RealizationRelationship','ServingRelationship','AccessRelationship','InfluenceRelationship','TriggeringRelationship','FlowRelationship','AssociationRelationship','CompositionRelationship','AggregationRelationship','SpecializationRelationship']);
+
+    const elementIds = new Set();
+    const elements = parsed.elements.map(el => {
+      const id = genId();
+      el._newId = id;
+      elementIds.add(el.id);
+      return {
+        id, layer: validLayers.has(el.layer) ? el.layer : 'business',
+        type: el.type || 'BusinessActor',
+        name: (el.name||'Unnamed').slice(0,100),
+        documentation: (el.documentation||'').slice(0,500),
+        properties: []
+      };
+    });
+
+    // Build old→new id map
+    const idMap = {};
+    parsed.elements.forEach(el => { idMap[el.id] = el._newId; });
+
+    const relationships = (parsed.relationships||[])
+      .filter(r => idMap[r.sourceId] && idMap[r.targetId])
+      .map(r => ({
+        id: genId(),
+        type: validRelTypes.has(r.type) ? r.type : 'AssociationRelationship',
+        sourceId: idMap[r.sourceId],
+        targetId: idMap[r.targetId],
+        name: (r.name||'').slice(0,100),
+        documentation: (r.documentation||'').slice(0,500),
+        directed: false, accessType: 'ReadWrite', strength: ''
+      }));
+
+    model = {
+      name: (parsed.name||'AI Architecture Model').slice(0,80),
+      documentation: (parsed.documentation||'').slice(0,1000),
+      elements, relationships, views:[], snapshots:[]
+    };
+    document.getElementById('modelName').value = model.name;
+    document.getElementById('modelDoc').value  = model.documentation;
+    renderAll(); updateStats();
+    hideWizard();
+    showTab('business');
+    showToast(NL
+      ? `✨ AI-model geladen — ${elements.length} elementen, ${relationships.length} relaties`
+      : `✨ AI model loaded — ${elements.length} elements, ${relationships.length} relationships`, 'togaf');
+
+  } catch(err) {
+    _wizAILoading = false;
+    renderWizAI();
+    const errEl = document.getElementById('wiz-ai-err');
+    if (errEl) errEl.textContent = (NL ? 'Fout: ' : 'Error: ') + err.message;
+  }
+  _wizAILoading = false;
 }
 
 function _wizSaveCurrent() {
