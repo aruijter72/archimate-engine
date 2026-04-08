@@ -6069,6 +6069,12 @@ function navigateToElement(elemId) {
 document.addEventListener('keydown', ev => {
   if ((ev.metaKey || ev.ctrlKey) && ev.key === 'k') { ev.preventDefault(); _searchOpen ? closeSearch() : showSearch(); }
   if (ev.key === 'Escape' && _searchOpen) closeSearch();
+  if (ev.key === 'Escape') closeHealthDrop();
+});
+document.addEventListener('click', ev => {
+  const drop = document.getElementById('healthDrop');
+  if (drop && drop.style.display !== 'none' && !drop.contains(ev.target) && !ev.target.closest('.health-pill'))
+    closeHealthDrop();
 });
 
 // ══════════════════════════════════════════════════════════════
