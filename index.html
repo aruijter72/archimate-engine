@@ -1791,13 +1791,23 @@ function applyTranslations() {
   // Swimlane header controls
   const swFileLabel = document.getElementById('proc-file-btn-label');
   if (swFileLabel) swFileLabel.textContent = L === 'nl' ? 'Bestand' : 'File';
-  // ArchiMate import / snapshot / history buttons
-  const btnImpArch = document.getElementById('btn-import-archimate-el');
-  if (btnImpArch) btnImpArch.textContent = L === 'nl' ? '📥 Importeer .archimate…' : '📥 Import .archimate…';
-  const btnSnap = document.getElementById('btn-snapshot-el');
-  if (btnSnap) btnSnap.textContent = L === 'nl' ? '📸 Snapshot opslaan…' : '📸 Save Snapshot…';
-  const btnHist = document.getElementById('btn-history-el');
-  if (btnHist) btnHist.textContent = L === 'nl' ? '📜 Versiegeschiedenis…' : '📜 Version History…';
+  // ArchiMate File menu — full set
+  const fileMenuLabel = document.getElementById('menu-file-label');
+  if (fileMenuLabel) fileMenuLabel.textContent = L === 'nl' ? 'Bestand' : 'File';
+  const archiMenuMap = {
+    'btn-newmodel-el':        L === 'nl' ? '🆕 Nieuw model'              : '🆕 New Model',
+    'btn-openjson-el':        L === 'nl' ? '📂 JSON openen…'             : '📂 Open JSON…',
+    'btn-import-archimate-el':L === 'nl' ? '📥 Importeer .archimate…'    : '📥 Import .archimate…',
+    'btn-savejson-el':        L === 'nl' ? '💾 JSON opslaan'             : '💾 Save JSON',
+    'btn-saveas-el':          L === 'nl' ? '💾 Opslaan als…'             : '💾 Save As…',
+    'btn-export-arc-menu-el': L === 'nl' ? '⬇ Exporteer .archimate'      : '⬇ Export .archimate',
+    'btn-export-ameff-menu-el':L === 'nl' ? '⬇ Exporteer AMEFF XML'      : '⬇ Export AMEFF XML',
+    'btn-snapshot-el':        L === 'nl' ? '📸 Snapshot opslaan…'        : '📸 Save Snapshot…',
+    'btn-history-el':         L === 'nl' ? '📜 Versiegeschiedenis…'       : '📜 Version History…',
+  };
+  for (const [id, txt] of Object.entries(archiMenuMap)) {
+    const el = document.getElementById(id); if (el) el.textContent = txt;
+  }
   // Views button
   const viewsLabel = document.getElementById('btn-views-label');
   if (viewsLabel) viewsLabel.textContent = 'Views';
