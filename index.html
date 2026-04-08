@@ -6263,6 +6263,10 @@ let _activeViewId = null;
 
 function showViews() {
   if (!model.views) model.views = [];
+  // Show/hide viewpoints section based on TOGAF toggle state
+  const vpSection = document.getElementById('viewpoints-section');
+  if (vpSection) vpSection.style.display = _togafVisible ? '' : 'none';
+  if (_togafVisible) renderViewpointsGrid();
   renderViewsModal();
   document.getElementById('viewsModal').classList.add('open');
 }
@@ -6396,6 +6400,149 @@ function setAllInView(viewId, include) {
   if (!v) return;
   v.elementIds = include ? model.elements.map(e => e.id) : [];
   renderViewsModal();
+}
+
+// ══════════════════════════════════════════════════════════════
+// TOGAF VIEWPOINTS
+// ══════════════════════════════════════════════════════════════
+
+const VIEWPOINTS = [
+  {
+    id:'vp-biz-cap',
+    icon:'🏢',
+    key:'vp-biz-cap',
+    nameEn:'Business Capability Map',
+    nameNl:'Business Capability Map',
+    descEn:'High-level map of what the organisation does — roles, functions and services, independent of how they are implemented.',
+    descNl:'Overzicht van wat de organisatie doet — rollen, functies en services, onafhankelijk van de uitvoering.',
+    layers:['business'],
+    types:['BusinessActor','BusinessRole','BusinessFunction','BusinessService','Capability'],
+    examplesEn:['Healthcare: Clinical capability map','Retail: Channel capability overview','Banking: Product capability landscape'],
+    examplesNl:['Zorg: Klinische capability map','Retail: Kanaal capability overzicht','Bankieren: Product capability landschap'],
+    admPhase:'Phase B'
+  },
+  {
+    id:'vp-app-landscape',
+    icon:'🗺',
+    key:'vp-app-landscape',
+    nameEn:'Application Landscape',
+    nameNl:'Application Landscape',
+    descEn:'All application components and their services — who uses what and how systems connect.',
+    descNl:'Alle applicatiecomponenten en hun services — wie gebruikt wat en hoe systemen zijn verbonden.',
+    layers:['application'],
+    types:['ApplicationComponent','ApplicationCollaboration','ApplicationInterface','ApplicationService','DataObject'],
+    examplesEn:['Retail: E-commerce & ERP landscape','Manufacturing: MES + ERP integration map','Banking: Core banking application overview'],
+    examplesNl:['Retail: E-commerce & ERP landschap','Productie: MES + ERP integratie','Bankieren: Core banking applicatieoverzicht'],
+    admPhase:'Phase C'
+  },
+  {
+    id:'vp-infra',
+    icon:'☁',
+    key:'vp-infra',
+    nameEn:'Infrastructure & Cloud',
+    nameNl:'Infrastructure & Cloud',
+    descEn:'Physical and virtual infrastructure — nodes, networks, cloud platforms and deployment artefacts.',
+    descNl:'Fysieke en virtuele infrastructuur — nodes, netwerken, cloudplatforms en deployment artefacten.',
+    layers:['technology'],
+    types:['Node','SystemSoftware','TechnologyInterface','Path','CommunicationNetwork','Artifact','Device'],
+    examplesEn:['Healthcare: On-prem vs cloud split','Retail: CDN + checkout infrastructure','Manufacturing: OT/IT network boundary'],
+    examplesNl:['Zorg: On-premise vs cloud verdeling','Retail: CDN + checkout infrastructuur','Productie: OT/IT netwerk grens'],
+    admPhase:'Phase D'
+  },
+  {
+    id:'vp-stakeholder',
+    icon:'🤝',
+    key:'vp-stakeholder',
+    nameEn:'Stakeholder Communication',
+    nameNl:'Stakeholder Communication',
+    descEn:'Focus on who cares and why — stakeholders, their concerns, goals and the drivers behind the architecture.',
+    descNl:'Focus op wie betrokken zijn en waarom — stakeholders, belangen, doelen en drijfveren achter de architectuur.',
+    layers:['business','motivation'],
+    types:['BusinessActor','BusinessRole','Stakeholder','Driver','Assessment','Goal','Principle'],
+    examplesEn:['Healthcare: Patient safety stakeholder view','Banking: Regulator communication view','Manufacturing: Board-level strategy view'],
+    examplesNl:['Zorg: Patiëntveiligheid stakeholder view','Bankieren: Toezichthouder communicatie view','Productie: Bestuursniveau strategie view'],
+    admPhase:'Phase A/B'
+  },
+  {
+    id:'vp-security',
+    icon:'🔒',
+    key:'vp-security',
+    nameEn:'Security & Risk Overview',
+    nameNl:'Security & Risk Overview',
+    descEn:'Combines constraints, requirements and technology elements to show risk areas and security controls.',
+    descNl:'Combineert beperkingen, vereisten en technologie-elementen om risicogebieden en beveiligingsmaatregelen zichtbaar te maken.',
+    layers:['motivation','technology'],
+    types:['Constraint','Requirement','Principle','Node','SystemSoftware','Artifact'],
+    examplesEn:['Healthcare: GDPR data access controls','Banking: PSD2 API security perimeter','Manufacturing: OT network segmentation'],
+    examplesNl:['Zorg: AVG gegevenstoegangscontroles','Bankieren: PSD2 API beveiligingsperimeter','Productie: OT netwerksegmentatie'],
+    admPhase:'Phase C/D'
+  },
+  {
+    id:'vp-migration',
+    icon:'🚀',
+    key:'vp-migration',
+    nameEn:'Migration Roadmap',
+    nameNl:'Migration Roadmap',
+    descEn:'Current vs target architecture — courses of action, capabilities and technology changes on the path to the future state.',
+    descNl:'Huidige vs doelarchitectuur — handelingsplannen, capabilities en technologiewijzigingen op weg naar de toekomstige staat.',
+    layers:['strategy','technology'],
+    types:['CourseOfAction','Capability','Resource','Node','Artifact','SystemSoftware'],
+    examplesEn:['Retail: Legacy ERP to cloud migration','Banking: Branch digitisation roadmap','Healthcare: EHR consolidation plan'],
+    examplesNl:['Retail: Legacy ERP naar cloud migratie','Bankieren: Filiaal digitalisering roadmap','Zorg: EPD consolidatie plan'],
+    admPhase:'Phase E/F'
+  }
+];
+
+function renderViewpointsGrid() {
+  const NL = currentLang === 'nl';
+  const grid = document.getElementById('viewpointsGrid');
+  if (!grid) return;
+  const titleEl = document.getElementById('vp-section-title');
+  if (titleEl) titleEl.textContent = NL ? 'Viewpoints' : 'Viewpoints';
+  const subEl = document.getElementById('vp-section-sub');
+  if (subEl) subEl.textContent = NL
+    ? '— klik op een viewpoint om een view aan te maken met overeenkomende elementen'
+    : '— click a viewpoint to create a named view pre-filled with matching elements';
+
+  grid.innerHTML = VIEWPOINTS.map(vp => {
+    const name = NL ? vp.nameNl : vp.nameEn;
+    const desc = NL ? vp.descNl : vp.descEn;
+    const examples = NL ? vp.examplesNl : vp.examplesEn;
+    const exTags = examples.map(e => `<span class="vp-ex-tag">${e}</span>`).join('');
+    const phaseBadge = `<span class="tmpl-phase-badge" style="margin-left:.35rem">◈ ${vp.admPhase}</span>`;
+    const btnLabel = NL ? `+ View aanmaken` : `+ Create View`;
+    return `<div class="vp-card">
+      <div class="vp-card-title">${vp.icon} ${name} ${phaseBadge}</div>
+      <div class="vp-card-desc">${desc}</div>
+      <div class="vp-card-examples">${exTags}</div>
+      <button class="vp-card-btn" onclick="createViewpointView('${vp.id}')">${btnLabel}</button>
+    </div>`;
+  }).join('');
+}
+
+function createViewpointView(vpId) {
+  const NL = currentLang === 'nl';
+  const vp = VIEWPOINTS.find(v => v.id === vpId);
+  if (!vp) return;
+  if (!model.views) model.views = [];
+  // Find matching elements by layer + type
+  const matchingIds = model.elements
+    .filter(e => vp.layers.includes(e.layer) && vp.types.includes(e.type))
+    .map(e => e.id);
+  const name = (NL ? vp.nameNl : vp.nameEn);
+  const v = { id: genId(), name, elementIds: matchingIds };
+  model.views.push(v);
+  _activeViewId = v.id;
+  renderViewsModal();
+  // Show helpful feedback
+  const countMsg = matchingIds.length > 0
+    ? (NL ? `${matchingIds.length} element(en) toegevoegd.` : `${matchingIds.length} element(s) added.`)
+    : (NL ? 'Geen overeenkomende elementen gevonden — voeg elementen toe en probeer opnieuw.' : 'No matching elements found — add elements to the model and try again.');
+  // Briefly flash the new view item
+  setTimeout(() => {
+    const el = document.querySelector(`.view-item[data-vid="${v.id}"]`);
+    if (el) { el.style.transition='background .4s'; el.style.background='rgba(96,168,220,.18)'; setTimeout(()=>el.style.background='',800); }
+  }, 50);
 }
 
 // ══════════════════════════════════════════════════════════════
