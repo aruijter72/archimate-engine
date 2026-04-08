@@ -3114,14 +3114,14 @@ function toggleTogaf() {
   if (btn) btn.innerHTML = `◈ <span id="togaf-toggle-label">${lbl ? lbl.textContent : 'TOGAF'}</span> ${arrow}`;
   // Show/hide viewpoints section in the Views modal
   const vpSection = document.getElementById('viewpoints-section');
-  if (vpSection) vpSection.style.display = _togafVisible ? '' : 'none';
+  if (vpSection) { vpSection.style.display = _togafVisible ? '' : 'none'; if (_togafVisible) renderViewpointsGrid(); }
   // Show/hide principles guide in motivation tab
   const pgEl = document.getElementById('principles-guide-wrap');
   if (pgEl) pgEl.style.display = _togafVisible ? '' : 'none';
   // Re-render templates to show/hide phase badges
   if (document.getElementById('tmplGrid')) renderTemplateGrid();
-  // Re-render motivation to inject guide if just enabled
-  if (_togafVisible) { renderLayer('motivation'); renderLayer('strategy'); }
+  // Re-render motivation/strategy to inject guide if just enabled
+  renderLayer('motivation'); renderLayer('strategy');
 }
 
 function toggleAdvancedLayers() {
