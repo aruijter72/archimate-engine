@@ -4234,6 +4234,52 @@ const PROC_TEMPLATES = [
       flows: []
     }
   }
+  ,{
+    icon: '💳', name: 'Purchase-to-Pay',
+    desc: 'Requisition through supplier payment — procurement, approvals and accounts payable.',
+    tags: ['Finance','Procurement'],
+    process: {
+      name: 'Purchase-to-Pay',
+      columns: ['Requester','Manager','Procurement','Accounts Payable','Supplier'],
+      lanes: [],
+      steps: [
+        {id:'pp-01',col:0,row:0,type:'start',  label:'Purchase need identified',description:'Business user identifies a need for goods or services.',flows:[]},
+        {id:'pp-02',col:0,row:1,type:'task',   label:'Create purchase requisition',description:'Requester raises a formal PR in the system.',flows:['pp-03']},
+        {id:'pp-03',col:1,row:2,type:'decision',label:'Approve requisition?',description:'Manager reviews and approves or rejects the PR.',flows:['pp-04','pp-02']},
+        {id:'pp-04',col:2,row:3,type:'task',   label:'Issue purchase order',description:'Procurement issues a PO to the selected supplier.',flows:['pp-05']},
+        {id:'pp-05',col:4,row:4,type:'task',   label:'Deliver goods / services',description:'Supplier fulfils the order and delivers.',flows:['pp-06']},
+        {id:'pp-06',col:0,row:5,type:'task',   label:'Confirm goods receipt',description:'Requester confirms delivery in the system.',flows:['pp-07']},
+        {id:'pp-07',col:4,row:6,type:'task',   label:'Submit invoice',description:'Supplier submits invoice for the delivered goods.',flows:['pp-08']},
+        {id:'pp-08',col:3,row:7,type:'task',   label:'3-way match & approval',description:'AP team matches PO, goods receipt and invoice.',flows:['pp-09']},
+        {id:'pp-09',col:3,row:8,type:'task',   label:'Process payment',description:'AP executes the payment run to the supplier.',flows:['pp-10']},
+        {id:'pp-10',col:3,row:9,type:'end',    label:'Payment complete',description:'',flows:[]}
+      ],
+      flows: []
+    }
+  }
+  ,{
+    icon: '📣', name: 'Customer Complaint Handling',
+    desc: 'From complaint submission through investigation and resolution to case closure.',
+    tags: ['Customer Service','Operations'],
+    process: {
+      name: 'Customer Complaint Handling',
+      columns: ['Customer','Customer Service','Technical Team','Management'],
+      lanes: [],
+      steps: [
+        {id:'cc-01',col:0,row:0,type:'start',   label:'Customer submits complaint',description:'Customer contacts support via phone, email or portal.',flows:[]},
+        {id:'cc-02',col:1,row:1,type:'task',    label:'Log & categorise case',description:'Agent logs the complaint and assigns a priority category.',flows:['cc-03']},
+        {id:'cc-03',col:1,row:2,type:'decision',label:'Within CS scope?',description:'Determine whether the issue requires technical escalation.',flows:['cc-04','cc-05']},
+        {id:'cc-04',col:1,row:3,type:'task',    label:'Resolve directly',description:'CS agent resolves the issue and contacts the customer.',flows:['cc-08']},
+        {id:'cc-05',col:2,row:3,type:'task',    label:'Investigate root cause',description:'Technical team analyses logs and reproduces the issue.',flows:['cc-06']},
+        {id:'cc-06',col:2,row:4,type:'decision',label:'Escalate to management?',description:'High-impact or unresolved issues escalate.',flows:['cc-07','cc-08']},
+        {id:'cc-07',col:3,row:5,type:'task',    label:'Management review & decision',description:'Management authorises remedy, compensation or policy change.',flows:['cc-08']},
+        {id:'cc-08',col:1,row:6,type:'task',    label:'Communicate resolution',description:'Agent contacts customer with resolution details.',flows:['cc-09']},
+        {id:'cc-09',col:0,row:7,type:'task',    label:'Customer confirms resolution',description:'Customer accepts or reopens the case.',flows:['cc-10']},
+        {id:'cc-10',col:1,row:8,type:'end',     label:'Case closed',description:'',flows:[]}
+      ],
+      flows: []
+    }
+  }
 ];
 
 // Allowed relationship rules (summarised)
