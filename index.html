@@ -3035,13 +3035,15 @@ function navigateToRelationship(relId) {
 function showToast(msg, type) {
   const t = document.createElement('div');
   t.innerHTML = msg;
-  const border = type === 'gold' ? 'var(--gold)'
-               : type === 'proc' ? 'var(--proc-border)'
-               : type === 'err'  ? 'rgba(239,68,68,.6)'
+  const border = type === 'gold'  ? 'var(--gold)'
+               : type === 'proc'  ? 'var(--proc-border)'
+               : type === 'err'   ? 'rgba(239,68,68,.6)'
+               : type === 'togaf' ? 'var(--togaf-border)'
                : 'var(--border)';
-  const color  = type === 'gold' ? 'var(--gold)'
-               : type === 'proc' ? 'var(--proc-text)'
-               : type === 'err'  ? '#ef8888'
+  const color  = type === 'gold'  ? 'var(--gold)'
+               : type === 'proc'  ? 'var(--proc-text)'
+               : type === 'err'   ? '#ef8888'
+               : type === 'togaf' ? 'var(--togaf)'
                : 'var(--white)';
   Object.assign(t.style, {
     position:'fixed', bottom:'1.5rem', left:'50%', transform:'translateX(-50%)',
