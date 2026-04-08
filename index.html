@@ -1926,9 +1926,13 @@ function applyTranslations() {
   if (tmplNote) tmplNote.textContent = t('tmpl-note');
   // Wizard modal
   const wizTitle = document.getElementById('wiz-title-el');
-  if (wizTitle) wizTitle.textContent = t('wiz-title');
-  const wizSub = document.getElementById('wiz-sub-el');
-  if (wizSub) wizSub.textContent = t('wiz-sub');
+  if (wizTitle) wizTitle.textContent = '🪄 ' + (L === 'nl' ? 'Begeleid Starten' : 'Guided Start');
+  // wiz-sub is set dynamically by _applyWizMode() — update mode toggle labels instead
+  const classicLbl = document.getElementById('wiz-mode-classic-lbl');
+  if (classicLbl) classicLbl.textContent = L === 'nl' ? 'Klassiek' : 'Classic';
+  const aiLbl = document.getElementById('wiz-mode-ai-lbl');
+  if (aiLbl) aiLbl.textContent = L === 'nl' ? 'AI-gestuurd' : 'AI-Guided';
+  applySettingsTranslations();
   // Swimlane header controls
   const swFileLabel = document.getElementById('proc-file-btn-label');
   if (swFileLabel) swFileLabel.textContent = L === 'nl' ? 'Bestand' : 'File';
