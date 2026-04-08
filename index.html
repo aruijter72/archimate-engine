@@ -6498,6 +6498,61 @@ const VIEWPOINTS = [
   }
 ];
 
+function buildPrinciplesGuide(NL) {
+  const hd = NL
+    ? '◈ Architecture Principles Workflow — Fase A: Architecture Vision'
+    : '◈ Architecture Principles Workflow — Phase A: Architecture Vision';
+  const sub = NL
+    ? 'Gebruik de Motivatielaag om de redenering achter uw architectuur vast te leggen in vier stappen:'
+    : 'Use the Motivation layer to capture the reasoning behind your architecture in four steps:';
+
+  const steps = NL ? [
+    { num:'01', type:'Driver',     q:'"Welke krachten bepalen onze architectuur?"',    tip:'Gebruik Driver-elementen om externe of interne druk vast te leggen.' },
+    { num:'02', type:'Goal',       q:'"Welke uitkomsten willen we bereiken?"',          tip:'Voeg Goal-elementen toe die aansluiten op elke Driver.' },
+    { num:'03', type:'Principle',  q:'"Welke regels sturen onze beslissingen?"',        tip:'Principle-elementen vertalen doelen in richtlijnen voor het ontwerp.' },
+    { num:'04', type:'Constraint', q:'"Welke harde grenzen gelden er?"',               tip:'Constraint-elementen leggen onveranderlijke beperkingen vast (wet, budget, tech).' }
+  ] : [
+    { num:'01', type:'Driver',     q:'"What forces shape our architecture?"',           tip:'Use Driver elements to capture external or internal pressures.' },
+    { num:'02', type:'Goal',       q:'"What outcomes do we want to achieve?"',          tip:'Add Goal elements that align to each Driver.' },
+    { num:'03', type:'Principle',  q:'"What rules guide our decisions?"',              tip:'Principle elements translate goals into design guidelines.' },
+    { num:'04', type:'Constraint', q:'"What hard limits do we face?"',                 tip:'Constraint elements capture immovable limits (regulation, budget, tech).' }
+  ];
+
+  const stepsHtml = steps.map((s, i) => {
+    const arrow = i < steps.length - 1 ? `<div class="principles-arrow">→</div>` : '';
+    return `<div class="principles-step" title="${s.tip}">
+      <div class="principles-step-num">Step ${s.num}</div>
+      <div class="principles-step-type">${s.type}</div>
+      <div class="principles-step-q">${s.q}</div>
+    </div>${arrow}`;
+  }).join('');
+
+  const exLabel = NL ? 'Industry voorbeelden:' : 'Industry examples:';
+  const examples = NL ? [
+    { industry:'🏥 Zorg',        chain:'Driver: Privacywetgeving → Goal: Nul datalekken → Principle: Dataminimalisatie → Constraint: AVG Art. 9' },
+    { industry:'🏦 Bankieren',   chain:'Driver: Toezichthoudersvereisten → Goal: Audit zonder bevindingen → Principle: Auditspoor per transactie → Constraint: PSD2 API-verplichting' },
+    { industry:'🏭 Productie',   chain:'Driver: Ketenweerbaarheid → Goal: < 4u productieuitval → Principle: Dubbele bronnen → Constraint: ISO 9001 certificering vereist' }
+  ] : [
+    { industry:'🏥 Healthcare',  chain:'Driver: Patient data privacy → Goal: Zero data breach → Principle: Data minimisation → Constraint: GDPR Article 9' },
+    { industry:'🏦 Banking',     chain:'Driver: Regulatory compliance → Goal: Pass audits with zero findings → Principle: Audit trail for all transactions → Constraint: PSD2 API mandate' },
+    { industry:'🏭 Manufacturing',chain:'Driver: Supply chain resilience → Goal: < 4hr production stoppage → Principle: Dual-source critical components → Constraint: ISO 9001 certification required' }
+  ];
+
+  const examplesHtml = examples.map(ex =>
+    `<div class="principles-ex-row"><span class="principles-ex-item"><strong>${ex.industry}:</strong> ${ex.chain}</span></div>`
+  ).join('');
+
+  return `<div class="principles-guide" id="principles-guide-wrap">
+    <div class="principles-guide-hd">${hd}</div>
+    <p style="font-size:.72rem;color:var(--muted);margin-bottom:.75rem">${sub}</p>
+    <div class="principles-steps">${stepsHtml}</div>
+    <div class="principles-examples">
+      <div class="principles-examples-lbl">${exLabel}</div>
+      ${examplesHtml}
+    </div>
+  </div>`;
+}
+
 function renderViewpointsGrid() {
   const NL = currentLang === 'nl';
   const grid = document.getElementById('viewpointsGrid');
