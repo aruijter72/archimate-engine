@@ -1110,6 +1110,35 @@
   </div>
 </div>
 
+<!-- ── Settings Modal ──────────────────────────────────── -->
+<div id="settingsModal" class="modal-overlay" onclick="if(event.target===this)hideSettings()" style="z-index:3000">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title" id="settings-title-el">⚙ Settings</div>
+      <button class="modal-close" onclick="hideSettings()">×</button>
+    </div>
+    <!-- API Key section -->
+    <div style="margin-bottom:1.5rem">
+      <div style="font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin-bottom:.65rem" id="settings-apikey-hd">AI — Anthropic API Key</div>
+      <p style="font-size:.8rem;color:var(--text2);line-height:1.6;margin-bottom:.75rem" id="settings-apikey-desc">Used for <strong style="color:var(--white)">AI-Guided Start</strong> inside the wizard. Your key is stored only in this browser (localStorage) and sent directly to Anthropic — never to any third-party server.</p>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <input type="password" id="settings-apikey-input"
+          placeholder="sk-ant-…"
+          style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:6px;color:var(--white);font-size:.86rem;padding:.45rem .75rem;outline:none;font-family:'Catamaran',system-ui,sans-serif;transition:border-color .15s"
+          oninput="this.style.borderColor=''">
+        <button onclick="toggleApiKeyVisibility()" id="settings-apikey-eye"
+          style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--text2);cursor:pointer;padding:.42rem .65rem;font-size:.85rem;transition:color .15s"
+          title="Show/hide key">👁</button>
+      </div>
+      <p style="font-size:.73rem;color:var(--muted);margin-top:.4rem;line-height:1.4" id="settings-apikey-note">Key is saved per browser profile. Clear browser data to remove it.</p>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.5rem;border-top:1px solid var(--border);padding-top:.9rem">
+      <button class="btn btn-secondary" onclick="hideSettings()" id="settings-cancel-btn">Cancel</button>
+      <button class="btn" onclick="saveSettings()" id="settings-save-btn" style="background:var(--gold);color:#0e1526;border:none;font-weight:700">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Guided Wizard Modal ─────────────────────────────── -->
 <div id="wizModal" class="modal-overlay">
   <div class="modal-box" style="max-width:580px">
