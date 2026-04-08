@@ -2499,12 +2499,13 @@ function renderTemplateGrid() {
     const blank = tmpl.isBlank ? ' tmpl-blank' : '';
     const elCount = tmpl.isBlank ? '' : `<span class="tmpl-meta-tag">${tmpl.model.elements.length} ${NL?'elem.':'elements'}</span>`;
     const phaseBadge = (_togafVisible && tmpl.togafPhase)
-      ? `<span class="tmpl-phase-badge" title="TOGAF ADM ${tmpl.togafPhase}">◈ ${tmpl.togafPhase}</span>`
+      ? `<div style="margin:.18rem 0 .28rem"><span class="tmpl-phase-badge" title="TOGAF ADM ${tmpl.togafPhase}">◈ ${tmpl.togafPhase}</span></div>`
       : '';
     return `
       <button class="tmpl-card${blank}" onclick="loadTemplate(${i})">
         <div class="tmpl-card-icon">${tmpl.icon}</div>
-        <div class="tmpl-card-name">${tmpl.name}${phaseBadge ? ' ' : ''}${phaseBadge}</div>
+        <div class="tmpl-card-name">${tmpl.name}</div>
+        ${phaseBadge}
         <div class="tmpl-card-desc">${tmpl.desc}</div>
         <div class="tmpl-card-meta">${tags}${elCount}</div>
       </button>`;
