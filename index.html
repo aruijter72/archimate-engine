@@ -2450,7 +2450,17 @@ function wizGenerate() {
   const procs   = _splitLines(_wiz.processes);
   const systems = _splitLines(_wiz.systems);
 
-  if (model.elements.length > 0 && !confirm('Generate new model? Your current model will be replaced.')) return;
+  if (model.elements.length > 0) {
+    const NL2 = currentLang === 'nl';
+    showConfirm(
+      NL2 ? '🪄 Model genereren' : '🪄 Generate Model',
+      NL2 ? 'Uw huidige model wordt vervangen. Wilt u doorgaan?' : 'Your current model will be replaced. Continue?',
+      NL2 ? 'Genereren' : 'Generate', true,
+      () => _doWizGenerate()
+    );
+    return;
+  }
+  _doWizGenerate();
 
   const elements = [], relationships = [];
 
