@@ -4998,6 +4998,63 @@ function renderHelp() {
     </div>`;
   }
 
+  // ── TOGAF features section ─────────────────────────────────
+  if (NL) {
+    html += `
+    <div class="ml-card" style="margin-bottom:1.25rem;border-color:var(--togaf-border)">
+      <div class="ml-card-head" style="color:var(--togaf)"><span class="ml-card-head-icon">◈</span> TOGAF-geïnspireerde functies</div>
+      <div class="ml-card-body">
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:.9rem;line-height:1.55">
+          Klik op <strong style="color:var(--togaf)">◈ TOGAF ▸</strong> in de tabbalk om drie optionele functies te activeren voor Enterprise Architects. Ze zijn volledig verborgen voor gebruikers die ze niet nodig hebben.
+        </p>
+        <div class="manual-steps">
+          <div class="step"><div class="step-num" style="background:var(--togaf-bg);color:var(--togaf);border-color:var(--togaf-border)">1</div><div class="step-body">
+            <div class="step-title">Viewpoints <span style="font-size:.68rem;color:var(--muted);font-weight:400">— in het Views-venster</span></div>
+            <div class="step-desc">Zes vooraf gedefinieerde viewpoint-sjablonen op basis van TOGAF ADM. Open het <strong>Views</strong>-venster (via Bestand → Views) met TOGAF aan en zie het Viewpoints-paneel bovenaan. Klik op <em>+ View aanmaken</em> om direct een benoemde view aan te maken, gevuld met alle elementen uit uw model die overeenkomen met dat viewpoint.</div>
+            <div class="step-tip">📐 Business Capability Map · Application Landscape · Infrastructure &amp; Cloud · Stakeholder Communication · Security &amp; Risk · Migration Roadmap</div>
+          </div></div>
+          <div class="step"><div class="step-num" style="background:var(--togaf-bg);color:var(--togaf);border-color:var(--togaf-border)">2</div><div class="step-body">
+            <div class="step-title">Architecture Principles Workflow <span style="font-size:.68rem;color:var(--muted);font-weight:400">— bovenaan het Motivatietabblad</span></div>
+            <div class="step-desc">Een geleide vierstappe redenering bovenaan het <strong>Motivatie</strong>-tabblad (zichtbaar via <em>⋯ Geavanceerd ▸</em>). De stappen volgen de TOGAF ADM Fase A-aanpak: <strong>Driver → Goal → Principle → Constraint</strong>. Elk element in de Motivatielaag kan worden gekoppeld aan één van deze stappen. Branche-voorbeelden voor Zorg, Bankieren en Productie zijn inbegrepen.</div>
+            <div class="step-tip">💡 Gebruik <em>Driver</em>-elementen voor externe druk (bijv. regelgeving), <em>Goal</em> voor gewenste uitkomsten, <em>Principle</em> voor ontwerprichtlijnen, en <em>Constraint</em> voor onveranderlijke beperkingen.</div>
+          </div></div>
+          <div class="step"><div class="step-num" style="background:var(--togaf-bg);color:var(--togaf);border-color:var(--togaf-border)">3</div><div class="step-body">
+            <div class="step-title">ADM Fase-labels op Sjablonen <span style="font-size:.68rem;color:var(--muted);font-weight:400">— in het Sjablonenvenster</span></div>
+            <div class="step-desc">Elke ArchiMate-sjabloon toont een <span class="tmpl-phase-badge" style="font-size:.6rem">◈ Phase B</span>-badge wanneer TOGAF actief is. Dit geeft aan in welke TOGAF ADM-fase het sjabloon het best past — van Fase B (Business Architecture) tot Fase D (Technology Architecture) en verder.</div>
+            <div class="step-tip">📋 Fase B = Business Architecture · Fase C = Application Architecture · Fase D = Technology Architecture · Fase E/F = Implementatie</div>
+          </div></div>
+        </div>
+      </div>
+    </div>`;
+  } else {
+    html += `
+    <div class="ml-card" style="margin-bottom:1.25rem;border-color:var(--togaf-border)">
+      <div class="ml-card-head" style="color:var(--togaf)"><span class="ml-card-head-icon">◈</span> TOGAF-Inspired Features</div>
+      <div class="ml-card-body">
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:.9rem;line-height:1.55">
+          Click <strong style="color:var(--togaf)">◈ TOGAF ▸</strong> in the tab bar to activate three optional features for Enterprise Architects. Completely invisible to users who don't need them.
+        </p>
+        <div class="manual-steps">
+          <div class="step"><div class="step-num" style="background:var(--togaf-bg);color:var(--togaf);border-color:var(--togaf-border)">1</div><div class="step-body">
+            <div class="step-title">Viewpoints <span style="font-size:.68rem;color:var(--muted);font-weight:400">— inside the Views modal</span></div>
+            <div class="step-desc">Six pre-defined viewpoint templates based on TOGAF ADM. Open the <strong>Views</strong> modal (via File → Views) with TOGAF on and you'll see a Viewpoints panel at the top. Click <em>+ Create View</em> to instantly create a named view pre-filled with all matching elements from your current model.</div>
+            <div class="step-tip">📐 Business Capability Map · Application Landscape · Infrastructure &amp; Cloud · Stakeholder Communication · Security &amp; Risk · Migration Roadmap</div>
+          </div></div>
+          <div class="step"><div class="step-num" style="background:var(--togaf-bg);color:var(--togaf);border-color:var(--togaf-border)">2</div><div class="step-body">
+            <div class="step-title">Architecture Principles Workflow <span style="font-size:.68rem;color:var(--muted);font-weight:400">— top of the Motivation tab</span></div>
+            <div class="step-desc">A guided four-step reasoning chain at the top of the <strong>Motivation</strong> tab (visible via <em>⋯ Advanced ▸</em>). The steps follow the TOGAF ADM Phase A approach: <strong>Driver → Goal → Principle → Constraint</strong>. Each element type in the Motivation layer maps to one of these steps. Industry examples for Healthcare, Banking, and Manufacturing are included.</div>
+            <div class="step-tip">💡 Use <em>Driver</em> for external pressures (e.g. regulation), <em>Goal</em> for desired outcomes, <em>Principle</em> for design guidelines, and <em>Constraint</em> for immovable limits.</div>
+          </div></div>
+          <div class="step"><div class="step-num" style="background:var(--togaf-bg);color:var(--togaf);border-color:var(--togaf-border)">3</div><div class="step-body">
+            <div class="step-title">ADM Phase Labels on Templates <span style="font-size:.68rem;color:var(--muted);font-weight:400">— in the Templates modal</span></div>
+            <div class="step-desc">Every ArchiMate template shows a <span class="tmpl-phase-badge" style="font-size:.6rem">◈ Phase B</span> badge when TOGAF is active, indicating which TOGAF ADM phase it best supports — from Phase B (Business Architecture) through Phase D (Technology Architecture) and beyond.</div>
+            <div class="step-tip">📋 Phase B = Business Architecture · Phase C = Application Architecture · Phase D = Technology Architecture · Phase E/F = Implementation</div>
+          </div></div>
+        </div>
+      </div>
+    </div>`;
+  }
+
   html += `</div>`; // close left column
 
   // ═══════════════════════════════════════════════════════════
