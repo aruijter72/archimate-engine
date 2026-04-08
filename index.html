@@ -2978,12 +2978,15 @@ function newModel() {
 // ══════════════════════════════════════════════════════════════
 // SAVE AS
 // ══════════════════════════════════════════════════════════════
+let _modelSaveHandle  = null;   // FSA handle for quick re-save (ArchiMate)
+let _modelSavedOnce   = false;  // fallback: has user saved at least once this session
+
 async function saveModelAs() {
   const NL          = currentLang === 'nl';
   const defaultName = (model.name || 'model').replace(/[^\w\- ]/g, '_') + '.json';
   const json        = JSON.stringify(model, null, 2);
 
-  // Modern browser: native Save dialog with chosen folder + filename
+  // Modern browser: native Save dialog — store handle for Cmd+S re-use
   if (window.showSaveFilePicker) {
     try {
       const handle = await window.showSaveFilePicker({
@@ -2993,6 +2996,8 @@ async function saveModelAs() {
       const writable = await handle.createWritable();
       await writable.write(json);
       await writable.close();
+      _modelSaveHandle = handle;
+      _modelSavedOnce  = true;
       showToast(NL ? '💾 Bestand opgeslagen' : '💾 File saved', 'gold');
       return;
     } catch(e) { if (e.name === 'AbortError') return; }
@@ -3007,7 +3012,26 @@ async function saveModelAs() {
     href: url, download: name.endsWith('.json') ? name : name + '.json'
   });
   a.click(); URL.revokeObjectURL(url);
+  _modelSavedOnce = true;
   showToast(NL ? '💾 Bestand opgeslagen' : '💾 File saved', 'gold');
+}
+
+async function quickSaveModel() {
+  const NL = currentLang === 'nl';
+  // Re-use FSA handle if available
+  if (_modelSaveHandle) {
+    try {
+      const writable = await _modelSaveHandle.createWritable();
+      await writable.write(JSON.stringify(model, null, 2));
+      await writable.close();
+      showToast(NL ? '💾 Opgeslagen' : '💾 Saved', 'gold');
+      return;
+    } catch(e) { if (e.name !== 'AbortError') _modelSaveHandle = null; }
+  }
+  // Saved before (no FSA): re-download silently with model name
+  if (_modelSavedOnce) { saveModel(); showToast(NL ? '💾 Opgeslagen' : '💾 Saved', 'gold'); return; }
+  // First time: prompt via Save As
+  await saveModelAs();
 }
 
 // ══════════════════════════════════════════════════════════════
