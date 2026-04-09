@@ -2556,6 +2556,8 @@ Rules:
 - Output ONLY the JSON object, nothing else.`;
 
   try {
+    const _key = getApiKey();
+    console.log('AI wizard — key length:', _key.length, '| first 12 chars:', _key.slice(0,12), '| model: claude-3-haiku-20240307');
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
