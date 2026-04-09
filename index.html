@@ -2565,7 +2565,7 @@ Rules:
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'claude-3-5-haiku-20241022',
+        model: 'claude-3-haiku-20240307',
         max_tokens: 4096,
         system: SYSTEM_PROMPT,
         messages: [{ role: 'user', content: _wizAIText }]
@@ -2574,8 +2574,10 @@ Rules:
 
     if (!resp.ok) {
       const errData = await resp.json().catch(() => ({}));
-      const msg = errData.error?.message || errData.message || JSON.stringify(errData);
-      throw new Error(`[HTTP ${resp.status}] ${msg}`);
+      console.error('Anthropic API error:', resp.status, JSON.stringify(errData));
+      const type = errData.error?.type ? ` [${errData.error.type}]` : '';
+      const msg  = errData.error?.message || errData.message || JSON.stringify(errData);
+      throw new Error(`HTTP ${resp.status}${type}: ${msg}`);
     }
 
     const data = await resp.json();
