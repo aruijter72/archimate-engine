@@ -2574,7 +2574,8 @@ Rules:
 
     if (!resp.ok) {
       const errData = await resp.json().catch(() => ({}));
-      throw new Error(errData.error?.message || `HTTP ${resp.status}`);
+      const msg = errData.error?.message || errData.message || JSON.stringify(errData);
+      throw new Error(`[HTTP ${resp.status}] ${msg}`);
     }
 
     const data = await resp.json();
