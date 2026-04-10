@@ -2013,17 +2013,17 @@ function applyTranslations() {
   }
   // Mode switcher button tooltips
   const btnArchi = document.getElementById('mode-btn-archimate');
-  if (btnArchi) btnArchi.title = NL ? 'ArchiMate modelleren' : 'ArchiMate modelling';
+  if (btnArchi) btnArchi.title = L === 'nl' ? 'ArchiMate modelleren' : 'ArchiMate modelling';
   const btnSw = document.getElementById('mode-btn-swimlane');
-  if (btnSw) btnSw.title = NL ? 'Swimlane / procesdiagrammen' : 'Swimlane / process diagrams';
+  if (btnSw) btnSw.title = L === 'nl' ? 'Swimlane / procesdiagrammen' : 'Swimlane / process diagrams';
   // Auto Layout button tooltip
   const btnAl = document.getElementById('btn-autolayout');
-  if (btnAl) btnAl.title = NL
+  if (btnAl) btnAl.title = L === 'nl'
     ? 'Auto Layout gebruikt Dagre/Sugiyama om kruisende verbindingen te minimaliseren in de Archi-export'
     : 'Auto Layout uses Dagre/Sugiyama to minimise edge crossings in the Archi export';
   // TOGAF toggle button tooltip
   const togafBtn = document.getElementById('togaf-toggle-btn');
-  if (togafBtn) togafBtn.title = NL
+  if (togafBtn) togafBtn.title = L === 'nl'
     ? 'TOGAF-geïnspireerde functies: Viewpoints, Architecture Principles & ADM-faselabels op sjablonen'
     : 'TOGAF-inspired features: Viewpoints, Architecture Principles & ADM phase labels on templates';
   updateHealth();
