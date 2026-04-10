@@ -25,7 +25,7 @@
         <mxCell id="13" parent="5" style="rounded=1;arcSize=12;fillColor=#D1ECF1;strokeColor=#0C7A9D;fontColor=#0C5460;fontStyle=1;fontSize=10;" value="E-Invoice Validation &amp; Archival" vertex="1">
           <mxGeometry height="54" width="130" x="785" y="18" as="geometry" />
         </mxCell>
-        <mxCell id="15" parent="5" style="rounded=1;arcSize=12;fillColor=#D1ECF1;strokeColor=#0C7A9D;fontColor=#0C5460;fontStyle=1;fontSize=10;" value="Store to online E-Invoicing archive" vertex="1">
+        <mxCell id="15" parent="5" style="rounded=1;arcSize=12;fillColor=#D1ECF1;strokeColor=#0C7A9D;fontColor=#0C5460;fontStyle=1;fontSize=10;whiteSpace=wrap;" value="Store to online E-Invoicing archive" vertex="1">
           <mxGeometry height="54" width="130" x="585" y="93" as="geometry" />
         </mxCell>
         <mxCell id="6" parent="2" style="swimlane;startSize=150;horizontal=0;fillColor=#FDF8F5;strokeColor=#CCCCCC;fontColor=#444444;fontStyle=1;fontSize=11;" value="Customer Invoice Processing" vertex="1">
