@@ -1,0 +1,498 @@
+{
+  "name": "Automated E-Invoice Processing Flow",
+  "documentation": "End-to-end automated invoice generation, transformation, and delivery flow from goods shipment through ERP to customer processing via ESB and message broker.",
+  "elements": [
+    {
+      "id": "id-mnsmzv040mxu7",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Goods Issue Process",
+      "documentation": "Process triggered when goods are shipped from warehouse",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv041zusu",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Invoice Generation",
+      "documentation": "Automatic invoice creation following goods shipment",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv042kob0",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "E-Invoice Validation & Archival",
+      "documentation": "Validation and archiving of e-invoice in compliant format",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv043e4g7",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Customer Invoice Processing",
+      "documentation": "Customer receives and processes invoice in their system",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv0441bnc",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "ERP System",
+      "documentation": "Enterprise Resource Planning system managing goods and invoicing",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv045carp",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "ESB (Enterprise Service Bus)",
+      "documentation": "Middleware for message routing, transformation and orchestration",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv046bakm",
+      "layer": "application",
+      "type": "ApplicationFunction",
+      "name": "Invoice Listener",
+      "documentation": "Listens for and captures invoice messages from ERP",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv047tk14",
+      "layer": "application",
+      "type": "ApplicationFunction",
+      "name": "Message Router",
+      "documentation": "Routes messages based on content and rules",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv048f2mq",
+      "layer": "application",
+      "type": "ApplicationFunction",
+      "name": "XML to Standard Format Translator",
+      "documentation": "Transforms ERP XML format to standard e-invoice format",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv049kbjr",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Message Broker",
+      "documentation": "External message broker handling e-invoice distribution",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv04aiesn",
+      "layer": "application",
+      "type": "ApplicationFunction",
+      "name": "E-Invoice Validator",
+      "documentation": "Validates e-invoice against compliance rules",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv04bugzp",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "E-Invoice Archive",
+      "documentation": "Repository for validated and archived e-invoices",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv04c8uut",
+      "layer": "application",
+      "type": "ApplicationFunction",
+      "name": "Customer Delivery Service",
+      "documentation": "Delivers formatted e-invoice to customer",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv04d9590",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Customer ERP System",
+      "documentation": "Customer's enterprise system receiving and processing invoices",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv04enu98",
+      "layer": "application",
+      "type": "ApplicationFunction",
+      "name": "Invoice Format Translator",
+      "documentation": "Translates received e-invoice to customer's internal format",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv04f2vr3",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Invoice (XML Format)",
+      "documentation": "Invoice in ERP native XML format",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv04g9bpb",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Invoice (Standard E-Invoice Format)",
+      "documentation": "Invoice transformed to standard e-invoice format",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv04hpqv2",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Validated E-Invoice",
+      "documentation": "E-invoice after validation and compliance checks",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv04i5yz7",
+      "layer": "technology",
+      "type": "CommunicationNetwork",
+      "name": "ESB-Message Broker Network",
+      "documentation": "Network connection between ESB and external message broker",
+      "properties": []
+    },
+    {
+      "id": "id-mnsmzv04jltvc",
+      "layer": "technology",
+      "type": "CommunicationNetwork",
+      "name": "Message Broker-Customer Network",
+      "documentation": "Network connection for invoice delivery to customer",
+      "properties": []
+    }
+  ],
+  "relationships": [
+    {
+      "id": "id-mnsmzv04kjxt1",
+      "type": "TriggeringRelationship",
+      "sourceId": "id-mnsmzv040mxu7",
+      "targetId": "id-mnsmzv041zusu",
+      "name": "triggers",
+      "documentation": "Goods issue automatically triggers invoice generation",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04lwn4p",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mnsmzv0441bnc",
+      "targetId": "id-mnsmzv041zusu",
+      "name": "realizes",
+      "documentation": "ERP system implements invoice generation process",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04mtxm1",
+      "type": "FlowRelationship",
+      "sourceId": "id-mnsmzv0441bnc",
+      "targetId": "id-mnsmzv04f2vr3",
+      "name": "produces",
+      "documentation": "ERP generates invoice in XML format",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04ncvvi",
+      "type": "AccessRelationship",
+      "sourceId": "id-mnsmzv046bakm",
+      "targetId": "id-mnsmzv04f2vr3",
+      "name": "reads",
+      "documentation": "Invoice listener captures XML invoice",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04ogbo2",
+      "type": "ServingRelationship",
+      "sourceId": "id-mnsmzv046bakm",
+      "targetId": "id-mnsmzv045carp",
+      "name": "serves",
+      "documentation": "Listener provides messages to ESB",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04pmdbf",
+      "type": "FlowRelationship",
+      "sourceId": "id-mnsmzv046bakm",
+      "targetId": "id-mnsmzv047tk14",
+      "name": "passes to",
+      "documentation": "Listener passes message to router",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04q2fq6",
+      "type": "FlowRelationship",
+      "sourceId": "id-mnsmzv047tk14",
+      "targetId": "id-mnsmzv048f2mq",
+      "name": "routes to",
+      "documentation": "Router directs message to translator",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04rjg52",
+      "type": "FlowRelationship",
+      "sourceId": "id-mnsmzv048f2mq",
+      "targetId": "id-mnsmzv04g9bpb",
+      "name": "produces",
+      "documentation": "Translator transforms XML to standard format",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04sbbf4",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mnsmzv045carp",
+      "targetId": "id-mnsmzv047tk14",
+      "name": "provides",
+      "documentation": "ESB provides routing capability",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04tmt65",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mnsmzv045carp",
+      "targetId": "id-mnsmzv048f2mq",
+      "name": "provides",
+      "documentation": "ESB provides translation capability",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04u6anu",
+      "type": "ServingRelationship",
+      "sourceId": "id-mnsmzv049kbjr",
+      "targetId": "id-mnsmzv045carp",
+      "name": "receives from",
+      "documentation": "Message broker receives formatted invoice from ESB",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04viwp1",
+      "type": "FlowRelationship",
+      "sourceId": "id-mnsmzv04g9bpb",
+      "targetId": "id-mnsmzv049kbjr",
+      "name": "delivered to",
+      "documentation": "Standard format invoice sent to message broker",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04w2l6y",
+      "type": "TriggeringRelationship",
+      "sourceId": "id-mnsmzv049kbjr",
+      "targetId": "id-mnsmzv042kob0",
+      "name": "triggers",
+      "documentation": "Message broker initiates validation and archival",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04xca62",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mnsmzv04aiesn",
+      "targetId": "id-mnsmzv042kob0",
+      "name": "implements",
+      "documentation": "Validator performs validation process",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04yi0ix",
+      "type": "FlowRelationship",
+      "sourceId": "id-mnsmzv04g9bpb",
+      "targetId": "id-mnsmzv04aiesn",
+      "name": "validates",
+      "documentation": "Validator checks e-invoice compliance",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04zjuw0",
+      "type": "FlowRelationship",
+      "sourceId": "id-mnsmzv04aiesn",
+      "targetId": "id-mnsmzv04hpqv2",
+      "name": "produces",
+      "documentation": "Validator outputs validated invoice",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv0410adrp",
+      "type": "AccessRelationship",
+      "sourceId": "id-mnsmzv04bugzp",
+      "targetId": "id-mnsmzv04hpqv2",
+      "name": "archives",
+      "documentation": "Archive stores validated e-invoices",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv0411tuv7",
+      "type": "FlowRelationship",
+      "sourceId": "id-mnsmzv049kbjr",
+      "targetId": "id-mnsmzv04c8uut",
+      "name": "sends to",
+      "documentation": "Message broker directs invoice to customer delivery service",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv0412cxb2",
+      "type": "TriggeringRelationship",
+      "sourceId": "id-mnsmzv04g9bpb",
+      "targetId": "id-mnsmzv04c8uut",
+      "name": "delivers",
+      "documentation": "Formatted invoice sent to customer",
+      "directed": true,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04139jb8",
+      "type": "FlowRelationship",
+      "sourceId": "id-mnsmzv04c8uut",
+      "targetId": "id-mnsmzv04d9590",
+      "name": "sends to",
+      "documentation": "Delivery service transmits invoice to customer ERP",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv0414r4gd",
+      "type": "FlowRelationship",
+      "sourceId": "id-mnsmzv04enu98",
+      "targetId": "id-mnsmzv04d9590",
+      "name": "feeds",
+      "documentation": "Translator provides formatted invoice to customer ERP",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv0415g90l",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mnsmzv04d9590",
+      "targetId": "id-mnsmzv043e4g7",
+      "name": "realizes",
+      "documentation": "Customer ERP implements invoice processing",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv04165360",
+      "type": "ServingRelationship",
+      "sourceId": "id-mnsmzv04i5yz7",
+      "targetId": "id-mnsmzv045carp",
+      "name": "connects",
+      "documentation": "Network enables ESB-message broker communication",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mnsmzv0417djt1",
+      "type": "ServingRelationship",
+      "sourceId": "id-mnsmzv04jltvc",
+      "targetId": "id-mnsmzv04c8uut",
+      "name": "connects",
+      "documentation": "Network enables invoice delivery to customer",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    }
+  ],
+  "views": [],
+  "snapshots": [],
+  "processes": [
+    {
+      "id": "id-mnsmzxte1avnb9",
+      "name": "Automated E-Invoice Processing Flow — Swimlane",
+      "lanes": [
+        {
+          "id": "id-mnsn09qk1bw55a",
+          "name": "Goods Issue Process",
+          "sourceId": "id-mnsmzv040mxu7"
+        },
+        {
+          "id": "id-mnsn09qk1cw814",
+          "name": "Invoice Generation",
+          "sourceId": "id-mnsmzv041zusu"
+        },
+        {
+          "id": "id-mnsn09qk1dd236",
+          "name": "E-Invoice Validation & Archival",
+          "sourceId": "id-mnsmzv042kob0"
+        },
+        {
+          "id": "id-mnsn09qk1eh84v",
+          "name": "Customer Invoice Processing",
+          "sourceId": "id-mnsmzv043e4g7"
+        }
+      ],
+      "steps": [
+        {
+          "id": "id-mnsn09ql1f80je",
+          "laneId": "id-mnsn09qk1bw55a",
+          "columnId": "",
+          "type": "task",
+          "label": "Goods Issue Process",
+          "sourceId": "id-mnsmzv040mxu7"
+        },
+        {
+          "id": "id-mnsn09ql1g6huu",
+          "laneId": "id-mnsn09qk1cw814",
+          "columnId": "",
+          "type": "task",
+          "label": "Invoice Generation",
+          "sourceId": "id-mnsmzv041zusu"
+        },
+        {
+          "id": "id-mnsn09ql1h74vz",
+          "laneId": "id-mnsn09qk1dd236",
+          "columnId": "",
+          "type": "task",
+          "label": "E-Invoice Validation & Archival",
+          "sourceId": "id-mnsmzv042kob0"
+        },
+        {
+          "id": "id-mnsn09ql1iicab",
+          "laneId": "id-mnsn09qk1eh84v",
+          "columnId": "",
+          "type": "task",
+          "label": "Customer Invoice Processing",
+          "sourceId": "id-mnsmzv043e4g7"
+        }
+      ],
+      "flows": [],
+      "columns": []
+    }
+  ]
+}
