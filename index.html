@@ -6584,10 +6584,10 @@ function renderProcTab() {
       <!-- RIGHT: Preview + Export -->
       <div class="proc-preview-pane">
         <div class="proc-preview-header">
-          <span class="proc-preview-label">Preview ${hasCols ? '<span style="font-size:.65rem;color:var(--proc-text);margin-left:.3rem">grid mode</span>' : ''}</span>
+          <span class="proc-preview-label">${NL ? 'Voorbeeld' : 'Preview'} ${hasCols ? `<span style="font-size:.65rem;color:var(--proc-text);margin-left:.3rem">${NL ? 'rastermodus' : 'grid mode'}</span>` : ''}</span>
         </div>
         <div class="proc-svg-wrap" id="proc-svg-wrap">
-          ${!proc ? '<div class="proc-svg-empty">Select or create a process to see the preview.</div>' : ''}
+          ${!proc ? `<div class="proc-svg-empty">${NL ? 'Selecteer of maak een proces om de voorvertoning te zien.' : 'Select or create a process to see the preview.'}</div>` : ''}
         </div>
       </div>
 
