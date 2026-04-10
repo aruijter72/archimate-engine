@@ -6623,10 +6623,7 @@ function exportDrawio() {
     };
 
     const containerId = nextId();
-    // Pool container with no value — title is an explicit child cell pinned to the header strip
-    cells += `<mxCell id="${containerId}" value="" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#FFFFFF;strokeColor=#CCCCCC;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
-    // Title cell: child of pool, spans the full width of the header at y=0
-    cells += `<mxCell id="${nextId()}" value="${esc(proc.name||'Process')}" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=13;fontColor=#333333;strokeColor=none;fillColor=none;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="0" width="${totalW}" height="${PROC_HDR}" as="geometry"/></mxCell>\n`;
+    cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="swimlane;startSize=${PROC_HDR};horizontal=1;fillColor=#FFFFFF;strokeColor=#CCCCCC;fontColor=#333333;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
 
     // Lanes (horizontal rows)
     lanes.forEach((l, i) => {
