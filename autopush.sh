@@ -1,5 +1,5 @@
 #!/bin/zsh
-# autopush.sh — auto-commit and push changes in Archimate-engine
+# autopush.sh — auto-commit and push changes in Architise
 # Called by launchd WatchPaths when files change in this folder
 
 cd "$(dirname "$0")"
