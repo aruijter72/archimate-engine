@@ -6481,36 +6481,36 @@ function renderProcTab() {
         <!-- Lanes -->
         <div class="proc-section">
           <div class="proc-section-header">
-            <span class="proc-section-title">Lanes <i class="tip-icon" onmouseenter="showTipById(this,'proc-lanes')" onmouseleave="hideTip()">?</i></span>
+            <span class="proc-section-title">${NL ? 'Rijstroken' : 'Lanes'} <i class="tip-icon" onmouseenter="showTipById(this,'proc-lanes')" onmouseleave="hideTip()">?</i></span>
             <div class="add-buttons">
-              ${hasArchiBiz ? `<button class="btn-add proc" onclick="showRolePicker()" title="Import from Business layer">+ From Architecture</button>` : ''}
-              <button class="btn-add" onclick="addLane()">+ Add Lane</button>
+              ${hasArchiBiz ? `<button class="btn-add proc" onclick="showRolePicker()" title="${NL ? 'Importeer uit Bedrijfslaag' : 'Import from Business layer'}">+ ${NL ? 'Uit Architectuur' : 'From Architecture'}</button>` : ''}
+              <button class="btn-add" onclick="addLane()">+ ${NL ? 'Rijstrook toevoegen' : 'Add Lane'}</button>
             </div>
           </div>
           ${!proc.lanes.length
-            ? `<div class="proc-empty">No lanes yet — add the actors or roles that participate in this process.</div>`
+            ? `<div class="proc-empty">${NL ? 'Nog geen rijstroken — voeg de actoren of rollen toe die deelnemen aan dit proces.' : 'No lanes yet — add the actors or roles that participate in this process.'}</div>`
             : proc.lanes.map((l, i) => `
               <div class="proc-row">
                 <span style="font-size:.68rem;color:var(--muted);width:16px;text-align:right;flex-shrink:0">${i+1}</span>
-                <input class="elem-input" value="${esc(l.name)}" oninput="updateLaneName('${l.id}',this.value)" placeholder="Lane name…" style="flex:1">
-                <button class="btn-del-sm" onclick="deleteLane('${l.id}')" title="Remove lane">×</button>
+                <input class="elem-input" value="${esc(l.name)}" oninput="updateLaneName('${l.id}',this.value)" placeholder="${NL ? 'Rijstreeknaam…' : 'Lane name…'}" style="flex:1">
+                <button class="btn-del-sm" onclick="deleteLane('${l.id}')" title="${NL ? 'Rijstrook verwijderen' : 'Remove lane'}">×</button>
               </div>`).join('')}
         </div>
 
         <!-- Steps -->
         <div class="proc-section">
           <div class="proc-section-header">
-            <span class="proc-section-title">Steps <i class="tip-icon" onmouseenter="showTipById(this,'proc-steps')" onmouseleave="hideTip()">?</i></span>
-            <button class="btn-add proc" onclick="addStep()">+ Add Step</button>
+            <span class="proc-section-title">${NL ? 'Stappen' : 'Steps'} <i class="tip-icon" onmouseenter="showTipById(this,'proc-steps')" onmouseleave="hideTip()">?</i></span>
+            <button class="btn-add proc" onclick="addStep()">+ ${NL ? 'Stap toevoegen' : 'Add Step'}</button>
           </div>
           ${!proc.steps.length
-            ? `<div class="proc-empty">No steps yet — add tasks, decisions, and start/end events.</div>`
+            ? `<div class="proc-empty">${NL ? 'Nog geen stappen — voeg taken, beslissingen en start-/eindevents toe.' : 'No steps yet — add tasks, decisions, and start/end events.'}</div>`
             : `<table class="elem-table" style="font-size:.79rem">
                 <thead><tr>
-                  <th style="width:84px">Type</th>
-                  <th>Label</th>
-                  <th style="width:100px">Lane</th>
-                  ${hasCols ? `<th style="width:100px">Column</th>` : ''}
+                  <th style="width:84px">${NL ? 'Type' : 'Type'}</th>
+                  <th>${NL ? 'Label' : 'Label'}</th>
+                  <th style="width:100px">${NL ? 'Rijstrook' : 'Lane'}</th>
+                  ${hasCols ? `<th style="width:100px">${NL ? 'Kolom' : 'Column'}</th>` : ''}
                   <th style="width:28px"></th>
                 </tr></thead>
                 <tbody>
