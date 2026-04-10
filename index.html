@@ -6446,8 +6446,8 @@ function renderProcTab() {
         <!-- Process selector -->
         <div class="proc-section">
           <div class="proc-section-header">
-            <span class="proc-section-title">Processes <i class="tip-icon" onmouseenter="showTipById(this,'proc-processes')" onmouseleave="hideTip()">?</i></span>
-            <button class="btn-add proc" onclick="addProcess()">+ New Process</button>
+            <span class="proc-section-title">${NL ? 'Processen' : 'Processes'} <i class="tip-icon" onmouseenter="showTipById(this,'proc-processes')" onmouseleave="hideTip()">?</i></span>
+            <button class="btn-add proc" onclick="addProcess()">+ ${NL ? 'Nieuw Proces' : 'New Process'}</button>
           </div>
           ${!model.processes.length
             ? `<div class="proc-empty">No processes yet — click <em>New Process</em> to start.</div>`
