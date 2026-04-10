@@ -6616,14 +6616,17 @@ function exportDrawio() {
     // Light colour palette for export
     const DX_LANE_COLORS = ['#FFFFFF','#F7F9FC','#F9FBF7','#FDF8F5','#F9F7FD','#F5FAFA'];
     const dxStepStyle = type => {
-      if (type==='start')    return `ellipse;fillColor=#D4EDDA;strokeColor=#28A745;fontColor=#155724;fontStyle=1;fontSize=10;`;
-      if (type==='end')      return `ellipse;fillColor=#F8D7DA;strokeColor=#DC3545;fontColor=#721C24;fontStyle=1;fontSize=10;`;
-      if (type==='decision') return `rhombus;fillColor=#FFF3CD;strokeColor=#D4A000;fontColor=#664D03;fontStyle=1;fontSize=10;`;
-      return `rounded=1;arcSize=12;fillColor=#D1ECF1;strokeColor=#0C7A9D;fontColor=#0C5460;fontStyle=1;fontSize=10;`;
+      if (type==='start')    return `ellipse;fillColor=#D4EDDA;strokeColor=#28A745;fontColor=#155724;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
+      if (type==='end')      return `ellipse;fillColor=#F8D7DA;strokeColor=#DC3545;fontColor=#721C24;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
+      if (type==='decision') return `rhombus;fillColor=#FFF3CD;strokeColor=#D4A000;fontColor=#664D03;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
+      return `rounded=1;arcSize=12;fillColor=#D1ECF1;strokeColor=#0C7A9D;fontColor=#0C5460;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
     };
 
     const containerId = nextId();
-    cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#FFFFFF;strokeColor=#CCCCCC;fontColor=#333333;fontStyle=1;fontSize=13;verticalAlign=top;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
+    // Pool container with no value — title is an explicit child cell pinned to the header strip
+    cells += `<mxCell id="${containerId}" value="" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#FFFFFF;strokeColor=#CCCCCC;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
+    // Title cell: child of pool, spans the full width of the header at y=0
+    cells += `<mxCell id="${nextId()}" value="${esc(proc.name||'Process')}" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=13;fontColor=#333333;strokeColor=none;fillColor=none;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="0" width="${totalW}" height="${PROC_HDR}" as="geometry"/></mxCell>\n`;
 
     // Lanes (horizontal rows)
     lanes.forEach((l, i) => {
@@ -6668,14 +6671,17 @@ function exportDrawio() {
 
     const DX_LANE_COLORS = ['#FFFFFF','#F7F9FC','#F9FBF7','#FDF8F5','#F9F7FD','#F5FAFA'];
     const dxStepStyle = type => {
-      if (type==='start')    return `ellipse;fillColor=#D4EDDA;strokeColor=#28A745;fontColor=#155724;fontStyle=1;fontSize=10;`;
-      if (type==='end')      return `ellipse;fillColor=#F8D7DA;strokeColor=#DC3545;fontColor=#721C24;fontStyle=1;fontSize=10;`;
-      if (type==='decision') return `rhombus;fillColor=#FFF3CD;strokeColor=#D4A000;fontColor=#664D03;fontStyle=1;fontSize=10;`;
-      return `rounded=1;arcSize=12;fillColor=#D1ECF1;strokeColor=#0C7A9D;fontColor=#0C5460;fontStyle=1;fontSize=10;`;
+      if (type==='start')    return `ellipse;fillColor=#D4EDDA;strokeColor=#28A745;fontColor=#155724;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
+      if (type==='end')      return `ellipse;fillColor=#F8D7DA;strokeColor=#DC3545;fontColor=#721C24;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
+      if (type==='decision') return `rhombus;fillColor=#FFF3CD;strokeColor=#D4A000;fontColor=#664D03;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
+      return `rounded=1;arcSize=12;fillColor=#D1ECF1;strokeColor=#0C7A9D;fontColor=#0C5460;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
     };
 
     const containerId = nextId();
-    cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#FFFFFF;strokeColor=#CCCCCC;fontColor=#333333;fontStyle=1;fontSize=13;verticalAlign=top;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
+    // Pool container with no value — title is an explicit child cell pinned to the header strip
+    cells += `<mxCell id="${containerId}" value="" style="shape=pool;startSize=${PROC_HDR};horizontal=1;fillColor=#FFFFFF;strokeColor=#CCCCCC;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
+    // Title cell: child of pool, spans the full width of the header at y=0
+    cells += `<mxCell id="${nextId()}" value="${esc(proc.name||'Process')}" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=13;fontColor=#333333;strokeColor=none;fillColor=none;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="0" width="${totalW}" height="${PROC_HDR}" as="geometry"/></mxCell>\n`;
 
     lanes.forEach((l, i) => {
       const lid = nextId(); laneIds[l.id] = lid;
