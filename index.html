@@ -6584,9 +6584,12 @@ function renderProcTab() {
 function exportDrawio() {
   const proc = getActiveProc(); if (!proc) return;
 
-  const LANE_STRIP = 150, PROC_HDR = 40, COL_HDR_H = 32;
-  const STEP_W = 130, STEP_H = 54, STEP_R = 27;
-  const MARGIN = 30;
+  // Layout constants
+  const PROC_HDR  = 34;   // standalone title bar height
+  const LANE_HDR  = 26;   // horizontal lane-name strip inside each lane
+  const COL_HDR_H = 28;   // column header row height (grid mode only)
+  const STEP_W = 130, STEP_H = 52, STEP_R = 26;
+  const MARGIN = 24;      // left/right padding inside lanes (flow mode)
 
   const { lanes, steps, flows, columns } = proc;
   const hasColumns = columns && columns.length > 0;
@@ -6596,111 +6599,116 @@ function exportDrawio() {
   let dxId = 2;
   const nextId = () => String(dxId++);
   const laneIds = {}, stepIds = {};
-  let cells = '', totalW, totalH, LANE_H;
+  let cells = '', totalW, LANE_H;
+
+  // Shared style helpers
+  const DX_LANE_COLORS = ['#EFF6FF','#FFFBEB','#F0FDF4','#FFF7ED','#FAF5FF','#F0FDFA'];
+  const dxStepStyle = type => {
+    if (type==='start')    return `ellipse;fillColor=#D4EDDA;strokeColor=#28A745;fontColor=#155724;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
+    if (type==='end')      return `ellipse;fillColor=#F8D7DA;strokeColor=#DC3545;fontColor=#721C24;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
+    if (type==='decision') return `rhombus;fillColor=#FFF3CD;strokeColor=#D4A000;fontColor=#664D03;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
+    return `rounded=1;arcSize=12;fillColor=#D1ECF1;strokeColor=#0C7A9D;fontColor=#0C5460;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
+  };
+  // Lane: horizontal=1 puts the name in a horizontal strip at the top of each row
+  const laneStyle = c => `swimlane;startSize=${LANE_HDR};horizontal=1;fillColor=${c};strokeColor=#CCCCCC;fontColor=#444444;fontStyle=1;fontSize=11;`;
 
   if (hasColumns) {
     // ── Grid mode ─────────────────────────────────────────────
-    const COL_W = 200;
+    const COL_W = 180;
     const colIdx = {}; columns.forEach((c, i) => colIdx[c.id] = i);
 
-    // Compute LANE_H from max steps per cell
+    // Compute LANE_H from max steps stacked in any cell (skip unassigned)
     const cellCount = {};
     steps.forEach(s => {
-      const k = `${laneIdx[s.laneId]??0}_${colIdx[s.columnId]??0}`;
+      const li = laneIdx[s.laneId]; if (li === undefined) return;
+      const k = `${li}_${colIdx[s.columnId]??0}`;
       cellCount[k] = (cellCount[k]||0)+1;
     });
     const maxStack = Math.max(1, ...Object.values(cellCount));
-    LANE_H = Math.max(100, maxStack*(STEP_H+16)+30);
+    LANE_H = Math.max(LANE_HDR + 80, LANE_HDR + maxStack*(STEP_H+14)+20);
 
-    totalW = LANE_STRIP + columns.length * COL_W;
-    totalH = PROC_HDR + COL_HDR_H + numLanes * LANE_H;
+    totalW = columns.length * COL_W;
+    const poolH = COL_HDR_H + numLanes * LANE_H;
 
-    // Light colour palette for export
-    const DX_LANE_COLORS = ['#FFFFFF','#F7F9FC','#F9FBF7','#FDF8F5','#F9F7FD','#F5FAFA'];
-    const dxStepStyle = type => {
-      if (type==='start')    return `ellipse;fillColor=#D4EDDA;strokeColor=#28A745;fontColor=#155724;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
-      if (type==='end')      return `ellipse;fillColor=#F8D7DA;strokeColor=#DC3545;fontColor=#721C24;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
-      if (type==='decision') return `rhombus;fillColor=#FFF3CD;strokeColor=#D4A000;fontColor=#664D03;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
-      return `rounded=1;arcSize=12;fillColor=#D1ECF1;strokeColor=#0C7A9D;fontColor=#0C5460;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
-    };
+    // ① Title — standalone rect directly above the pool
+    cells += `<mxCell id="${nextId()}" value="${esc(proc.name||'Process')}" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=14;fontColor=#222222;strokeColor=#CCCCCC;fillColor=#F0F0F0;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${PROC_HDR}" as="geometry"/></mxCell>\n`;
 
+    // ② Pool container — no label, sits directly below title
     const containerId = nextId();
-    cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="swimlane;startSize=${PROC_HDR};horizontal=1;fillColor=#FFFFFF;strokeColor=#CCCCCC;fontColor=#333333;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
+    cells += `<mxCell id="${containerId}" value="" style="swimlane;startSize=0;swimlaneLine=0;fillColor=#FFFFFF;strokeColor=#CCCCCC;" vertex="1" parent="1"><mxGeometry x="40" y="${40+PROC_HDR}" width="${totalW}" height="${poolH}" as="geometry"/></mxCell>\n`;
 
-    // Lanes (horizontal rows)
+    // ③ Column header cells (children of pool, top row)
+    columns.forEach((c, ci) => {
+      cells += `<mxCell id="${nextId()}" value="${esc(c.name||'Col '+(ci+1))}" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#5E35B1;strokeColor=#D1C4E9;fillColor=#EDE7F6;" vertex="1" parent="${containerId}"><mxGeometry x="${ci*COL_W}" y="0" width="${COL_W}" height="${COL_HDR_H}" as="geometry"/></mxCell>\n`;
+    });
+
+    // ④ Lane rows (children of pool, below column headers)
     lanes.forEach((l, i) => {
       const lid = nextId(); laneIds[l.id] = lid;
-      const laneColor = DX_LANE_COLORS[i % DX_LANE_COLORS.length];
-      cells += `<mxCell id="${lid}" value="${esc(l.name||'Lane '+(i+1))}" style="swimlane;startSize=${LANE_STRIP};horizontal=0;fillColor=${laneColor};strokeColor=#CCCCCC;fontColor=#444444;fontStyle=1;fontSize=11;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="${PROC_HDR+COL_HDR_H+i*LANE_H}" width="${totalW}" height="${LANE_H}" as="geometry"/></mxCell>\n`;
+      cells += `<mxCell id="${lid}" value="${esc(l.name||'Lane '+(i+1))}" style="${laneStyle(DX_LANE_COLORS[i%DX_LANE_COLORS.length])}" vertex="1" parent="${containerId}"><mxGeometry x="0" y="${COL_HDR_H+i*LANE_H}" width="${totalW}" height="${LANE_H}" as="geometry"/></mxCell>\n`;
     });
 
-    // Column header labels
-    columns.forEach((c, ci) => {
-      const hid = nextId();
-      cells += `<mxCell id="${hid}" value="${esc(c.name||'Col '+(ci+1))}" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#5E35B1;strokeColor=#D1C4E9;fillColor=#EDE7F6;" vertex="1" parent="${containerId}"><mxGeometry x="${LANE_STRIP+ci*COL_W}" y="${PROC_HDR}" width="${COL_W}" height="${COL_HDR_H}" as="geometry"/></mxCell>\n`;
-    });
-
-    // Steps — track stacking order per cell
+    // ⑤ Steps (children of their lane; coords in full lane cell space)
     const cellOrder = {};
     steps.forEach(s => {
+      const li = laneIdx[s.laneId]; if (li === undefined) return;
       const ci = colIdx[s.columnId] ?? 0;
-      const li = laneIdx[s.laneId] ?? 0;
       const k = `${li}_${ci}`;
       if (!cellOrder[k]) cellOrder[k] = 0;
       const order = cellOrder[k]++;
       const total = cellCount[k] || 1;
       const isRound = s.type==='start'||s.type==='end';
       const sw = isRound?STEP_R*2:STEP_W, sh=isRound?STEP_R*2:STEP_H;
-      const sx = LANE_STRIP + ci*COL_W + (COL_W-sw)/2;
-      const stackH = total*(STEP_H+16)-16;
-      const sy = (LANE_H-stackH)/2 + order*(STEP_H+16) + (STEP_H-sh)/2;
-      const sid = nextId(); stepIds[s.id]=sid;
-      const parentId = lanes.length?(laneIds[s.laneId]||containerId):containerId;
-      cells+=`<mxCell id="${sid}" value="${esc(s.label||s.type)}" style="${dxStepStyle(s.type)}" vertex="1" parent="${parentId}"><mxGeometry x="${sx}" y="${sy}" width="${sw}" height="${sh}" as="geometry"/></mxCell>\n`;
+      const contentH = LANE_H - LANE_HDR;
+      const sx = ci*COL_W + (COL_W-sw)/2;
+      const stackH = total*(STEP_H+14)-14;
+      const sy = LANE_HDR + (contentH-stackH)/2 + order*(STEP_H+14) + (STEP_H-sh)/2;
+      const sid = nextId(); stepIds[s.id] = sid;
+      cells += `<mxCell id="${sid}" value="${esc(s.label||s.type)}" style="${dxStepStyle(s.type)}" vertex="1" parent="${laneIds[s.laneId]||containerId}"><mxGeometry x="${sx}" y="${sy}" width="${sw}" height="${sh}" as="geometry"/></mxCell>\n`;
     });
 
   } else {
     // ── Flow mode ─────────────────────────────────────────────
     const COL_W = 190;
-    LANE_H = 130;
+    LANE_H = LANE_HDR + 100;   // 26px name strip + 100px content
+
     const colMap = procColMap(steps, flows);
-    const maxCol = steps.length ? Math.max(...steps.map(s => colMap[s.id])) : 0;
-    totalW = LANE_STRIP + MARGIN + (maxCol+1)*COL_W + MARGIN;
-    totalH = PROC_HDR + numLanes * LANE_H;
+    const validSteps = steps.filter(s => laneIdx[s.laneId] !== undefined);
+    const maxCol = validSteps.length ? Math.max(...validSteps.map(s => colMap[s.id])) : 0;
+    totalW = MARGIN + (maxCol+1)*COL_W + MARGIN;
+    const poolH = numLanes * LANE_H;
 
-    const DX_LANE_COLORS = ['#FFFFFF','#F7F9FC','#F9FBF7','#FDF8F5','#F9F7FD','#F5FAFA'];
-    const dxStepStyle = type => {
-      if (type==='start')    return `ellipse;fillColor=#D4EDDA;strokeColor=#28A745;fontColor=#155724;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
-      if (type==='end')      return `ellipse;fillColor=#F8D7DA;strokeColor=#DC3545;fontColor=#721C24;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
-      if (type==='decision') return `rhombus;fillColor=#FFF3CD;strokeColor=#D4A000;fontColor=#664D03;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
-      return `rounded=1;arcSize=12;fillColor=#D1ECF1;strokeColor=#0C7A9D;fontColor=#0C5460;fontStyle=1;fontSize=10;whiteSpace=wrap;html=1;`;
-    };
+    // ① Title — standalone rect directly above the pool
+    cells += `<mxCell id="${nextId()}" value="${esc(proc.name||'Process')}" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=14;fontColor=#222222;strokeColor=#CCCCCC;fillColor=#F0F0F0;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${PROC_HDR}" as="geometry"/></mxCell>\n`;
 
+    // ② Pool container — no label, sits directly below title
     const containerId = nextId();
-    cells += `<mxCell id="${containerId}" value="${esc(proc.name||'Process')}" style="swimlane;startSize=${PROC_HDR};horizontal=1;fillColor=#FFFFFF;strokeColor=#CCCCCC;fontColor=#333333;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="${totalW}" height="${totalH}" as="geometry"/></mxCell>\n`;
+    cells += `<mxCell id="${containerId}" value="" style="swimlane;startSize=0;swimlaneLine=0;fillColor=#FFFFFF;strokeColor=#CCCCCC;" vertex="1" parent="1"><mxGeometry x="40" y="${40+PROC_HDR}" width="${totalW}" height="${poolH}" as="geometry"/></mxCell>\n`;
 
+    // ③ Lane rows (children of pool)
     lanes.forEach((l, i) => {
       const lid = nextId(); laneIds[l.id] = lid;
-      const laneColor = DX_LANE_COLORS[i % DX_LANE_COLORS.length];
-      cells += `<mxCell id="${lid}" value="${esc(l.name||'Lane '+(i+1))}" style="swimlane;startSize=${LANE_STRIP};horizontal=0;fillColor=${laneColor};strokeColor=#CCCCCC;fontColor=#444444;fontStyle=1;fontSize=11;" vertex="1" parent="${containerId}"><mxGeometry x="0" y="${PROC_HDR+i*LANE_H}" width="${totalW}" height="${LANE_H}" as="geometry"/></mxCell>\n`;
+      cells += `<mxCell id="${lid}" value="${esc(l.name||'Lane '+(i+1))}" style="${laneStyle(DX_LANE_COLORS[i%DX_LANE_COLORS.length])}" vertex="1" parent="${containerId}"><mxGeometry x="0" y="${i*LANE_H}" width="${totalW}" height="${LANE_H}" as="geometry"/></mxCell>\n`;
     });
 
+    // ④ Steps (children of their lane; coords in full lane cell space)
     steps.forEach(s => {
-      const col=colMap[s.id], lIdx=laneIdx[s.laneId]??0;
-      const isRound=s.type==='start'||s.type==='end';
-      const sw=isRound?STEP_R*2:STEP_W, sh=isRound?STEP_R*2:STEP_H;
-      const sx=MARGIN+col*COL_W+(isRound?(STEP_W-sw)/2:0), sy=(LANE_H-sh)/2;
-      const sid=nextId(); stepIds[s.id]=sid;
-      const parentId=lanes.length?(laneIds[s.laneId]||containerId):containerId;
-      cells+=`<mxCell id="${sid}" value="${esc(s.label||s.type)}" style="${dxStepStyle(s.type)}" vertex="1" parent="${parentId}"><mxGeometry x="${sx}" y="${sy}" width="${sw}" height="${sh}" as="geometry"/></mxCell>\n`;
+      const li = laneIdx[s.laneId]; if (li === undefined) return;
+      const col = colMap[s.id];
+      const isRound = s.type==='start'||s.type==='end';
+      const sw = isRound?STEP_R*2:STEP_W, sh = isRound?STEP_R*2:STEP_H;
+      const contentH = LANE_H - LANE_HDR;
+      const sx = MARGIN + col*COL_W + (isRound?(STEP_W-sw)/2:0);
+      const sy = LANE_HDR + (contentH-sh)/2;
+      const sid = nextId(); stepIds[s.id] = sid;
+      cells += `<mxCell id="${sid}" value="${esc(s.label||s.type)}" style="${dxStepStyle(s.type)}" vertex="1" parent="${laneIds[s.laneId]||containerId}"><mxGeometry x="${sx}" y="${sy}" width="${sw}" height="${sh}" as="geometry"/></mxCell>\n`;
     });
   }
 
-  // Flows (same for both modes)
+  // Flows — edges connect step cells across lanes; parent="1" (graph root) handles all routing
   flows.forEach(f => {
     const src=stepIds[f.from], tgt=stepIds[f.to]; if(!src||!tgt) return;
-    const eid=nextId();
-    cells+=`<mxCell id="${eid}" value="${esc(f.label||'')}" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#a78af5;fontColor=#c9a355;fontSize=9;fontStyle=1;" edge="1" source="${src}" target="${tgt}" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>\n`;
+    cells += `<mxCell id="${nextId()}" value="${esc(f.label||'')}" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#a78af5;fontColor=#c9a355;fontSize=9;fontStyle=1;" edge="1" source="${src}" target="${tgt}" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>\n`;
   });
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
