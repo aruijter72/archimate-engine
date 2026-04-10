@@ -6465,16 +6465,16 @@ function renderProcTab() {
         <!-- Columns (optional extra dimension) -->
         <div class="proc-section">
           <div class="proc-section-header">
-            <span class="proc-section-title">Columns <i class="tip-icon" onmouseenter="showTipById(this,'proc-columns')" onmouseleave="hideTip()">?</i> <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem;color:var(--text2);margin-left:.3rem">optional — phases, locations, partners…</span></span>
-            <button class="btn-add proc" onclick="addColumn()">+ Add Column</button>
+            <span class="proc-section-title">${NL ? 'Kolommen' : 'Columns'} <i class="tip-icon" onmouseenter="showTipById(this,'proc-columns')" onmouseleave="hideTip()">?</i> <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem;color:var(--text2);margin-left:.3rem">${NL ? 'optioneel — fasen, locaties, partners…' : 'optional — phases, locations, partners…'}</span></span>
+            <button class="btn-add proc" onclick="addColumn()">+ ${NL ? 'Kolom toevoegen' : 'Add Column'}</button>
           </div>
           ${!proc.columns.length
-            ? `<div class="proc-empty">No columns — steps flow left-to-right automatically. Add columns to create a phase grid.</div>`
+            ? `<div class="proc-empty">${NL ? 'Geen kolommen — stappen lopen automatisch van links naar rechts. Voeg kolommen toe om een fasegrid te maken.' : 'No columns — steps flow left-to-right automatically. Add columns to create a phase grid.'}</div>`
             : proc.columns.map((c, i) => `
               <div class="proc-row">
                 <span style="font-size:.68rem;color:var(--muted);width:16px;text-align:right;flex-shrink:0">${i+1}</span>
-                <input class="elem-input" value="${esc(c.name)}" oninput="updateColumnName('${c.id}',this.value)" placeholder="Column name (e.g. Phase 1)…" style="flex:1">
-                <button class="btn-del-sm" onclick="deleteColumn('${c.id}')" title="Remove column">×</button>
+                <input class="elem-input" value="${esc(c.name)}" oninput="updateColumnName('${c.id}',this.value)" placeholder="${NL ? 'Kolomnaam (bijv. Fase 1)…' : 'Column name (e.g. Phase 1)…'}" style="flex:1">
+                <button class="btn-del-sm" onclick="deleteColumn('${c.id}')" title="${NL ? 'Kolom verwijderen' : 'Remove column'}">×</button>
               </div>`).join('')}
         </div>
 
