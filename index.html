@@ -3959,9 +3959,10 @@ let _autoLayout = false;
 function toggleAutoLayout(btn) {
   _autoLayout = !_autoLayout;
   btn.classList.toggle('active', _autoLayout);
+  const isNL = currentLang === 'nl';
   btn.textContent = _autoLayout
-    ? (NL ? '⚡ Auto Layout: AAN' : '⚡ Auto Layout: ON')
-    : (NL ? '⚡ Auto Layout: UIT' : '⚡ Auto Layout: OFF');
+    ? (isNL ? '⚡ Auto Layout: AAN' : '⚡ Auto Layout: ON')
+    : (isNL ? '⚡ Auto Layout: UIT' : '⚡ Auto Layout: OFF');
 }
 
 function computeDagreLayout() {
