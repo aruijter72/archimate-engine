@@ -2478,9 +2478,13 @@ function renderWizAI() {
       <a onclick="hideWizard();showSettings()"> ${NL ? 'Sleutel instellen →' : 'Add key →'}</a>
     </div>`;
 
+  const provBadge = hasKey
+    ? `<span style="font-size:.68rem;font-weight:700;padding:.1rem .45rem;border-radius:4px;background:rgba(255,255,255,.07);color:var(--text2);margin-left:.5rem;vertical-align:middle">${provName}</span>`
+    : '';
+
   aiContent.innerHTML = `
     ${warnHtml}
-    <div class="wiz-q" style="margin-top:${hasKey?'0':'.75rem'}">${NL ? 'Beschrijf uw architectuur' : 'Describe your architecture'}</div>
+    <div class="wiz-q" style="margin-top:${hasKey?'0':'.75rem'}">${NL ? 'Beschrijf uw architectuur' : 'Describe your architecture'}${provBadge}</div>
     <div class="wiz-hint">${NL
       ? 'Noem de organisatie, business processen, applicaties en technologie. Hoe meer detail, hoe beter het model.'
       : 'Include the organisation, business processes, applications and technology. More detail → better model.'}</div>
@@ -2493,6 +2497,7 @@ function renderWizAI() {
     </div>
     <div id="wiz-ai-err" class="wiz-err" style="margin-top:.5rem"></div>
     <div class="wiz-actions" style="margin-top:.85rem">
+      <button class="btn btn-secondary" style="font-size:.75rem;padding:.3rem .7rem" onclick="hideWizard();showSettings()" title="${NL?'Provider / sleutel wijzigen':'Change provider / key'}">⚙</button>
       <button class="btn btn-primary" id="wiz-ai-gen-btn" onclick="wizAIGenerate()"${!hasKey||_wizAILoading?' disabled':''}>
         ✨ ${NL ? 'Genereer model' : 'Generate model'}
       </button>
@@ -2506,8 +2511,8 @@ function renderWizAI() {
 
 async function wizAIGenerate() {
   const NL = currentLang === 'nl';
-  const key = getApiKey();
-  if (!key) { showSettings(); return; }
+  const key = getActiveKey();
+  if (!key) { hideWizard(); showSettings(); return; }
 
   const ta = document.getElementById('wizAIInput');
   _wizAIText = ta ? ta.value.trim() : '';
