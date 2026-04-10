@@ -6229,11 +6229,11 @@ function renderProcPreview() {
     const numCols = columns.length;
     const colIdx = {}; columns.forEach((c, i) => colIdx[c.id] = i);
 
-    // Count steps per cell to compute LANE_H
+    // Count steps per cell to compute LANE_H (skip steps with no lane assigned)
     const cellCount = {};
     steps.forEach(s => {
+      const li = laneIdx[s.laneId]; if (li === undefined) return;
       const ci = colIdx[s.columnId] ?? 0;
-      const li = laneIdx[s.laneId] ?? 0;
       const k = `${li}_${ci}`;
       cellCount[k] = (cellCount[k] || 0) + 1;
     });
