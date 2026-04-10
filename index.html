@@ -6243,11 +6243,11 @@ function renderProcPreview() {
     svgW = LANE_STRIP + numCols * COL_W;
     svgH = PROC_HDR + COL_HDR_H + numLanes * LANE_H;
 
-    // Track per-cell order for stacking
+    // Track per-cell order for stacking (skip steps with no lane assigned)
     const cellOrder = {};
     steps.forEach(s => {
+      const li = laneIdx[s.laneId]; if (li === undefined) return;
       const ci = colIdx[s.columnId] ?? 0;
-      const li = laneIdx[s.laneId] ?? 0;
       const k = `${li}_${ci}`;
       if (!cellOrder[k]) cellOrder[k] = 0;
       const order = cellOrder[k]++;
