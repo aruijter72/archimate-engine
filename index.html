@@ -2469,10 +2469,12 @@ function renderWizAI() {
   const aiContent = document.getElementById('wizAIContent');
   if (!aiContent) return;
 
-  const hasKey = !!getApiKey();
+  const provider = getProvider();
+  const hasKey   = !!getActiveKey();
+  const provName = provider === 'openai' ? 'OpenAI' : 'Anthropic';
   const warnHtml = hasKey ? '' : `
     <div class="wiz-apikey-warn" id="wiz-ai-keywarn">
-      ${NL ? 'Geen API-sleutel ingesteld.' : 'No API key configured.'}
+      ${NL ? `Geen ${provName} API-sleutel ingesteld.` : `No ${provName} API key configured.`}
       <a onclick="hideWizard();showSettings()"> ${NL ? 'Sleutel instellen →' : 'Add key →'}</a>
     </div>`;
 
