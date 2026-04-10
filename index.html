@@ -3410,17 +3410,49 @@ function executeConfirm() { document.getElementById('confirmModal').classList.re
 // ══════════════════════════════════════════════════════════════
 // SETTINGS MODAL
 // ══════════════════════════════════════════════════════════════
-const _APIKEY_STORE = 'architise-anthropic-key';
+const _APIKEY_STORE    = 'architise-anthropic-key';
+const _OAIKEY_STORE    = 'architise-openai-key';
+const _PROVIDER_STORE  = 'architise-ai-provider';   // 'anthropic' | 'openai'
+
+let _settingsProvider = 'anthropic';
+
+function getProvider() {
+  try { return localStorage.getItem(_PROVIDER_STORE) || 'anthropic'; } catch(e) { return 'anthropic'; }
+}
+function getApiKey() {
+  try { return localStorage.getItem(_APIKEY_STORE) || ''; } catch(e) { return ''; }
+}
+function getOpenAIKey() {
+  try { return localStorage.getItem(_OAIKEY_STORE) || ''; } catch(e) { return ''; }
+}
+function getActiveKey() {
+  return getProvider() === 'openai' ? getOpenAIKey() : getApiKey();
+}
+
+function setSettingsProvider(p) {
+  _settingsProvider = p;
+  const antBtn  = document.getElementById('settings-provider-anthropic');
+  const oaiBtn  = document.getElementById('settings-provider-openai');
+  const antWrap = document.getElementById('settings-anthropic-wrap');
+  const oaiWrap = document.getElementById('settings-openai-wrap');
+  if (antBtn) antBtn.classList.toggle('active', p === 'anthropic');
+  if (oaiBtn) oaiBtn.classList.toggle('active', p === 'openai');
+  if (antWrap) antWrap.style.display = p === 'anthropic' ? '' : 'none';
+  if (oaiWrap) oaiWrap.style.display = p === 'openai'    ? '' : 'none';
+}
 
 function showSettings() {
-  const inp = document.getElementById('settings-apikey-input');
-  if (inp) {
-    const stored = (() => { try { return localStorage.getItem(_APIKEY_STORE) || ''; } catch(e) { return ''; } })();
-    inp.value = stored;
-    inp.type  = 'password';
-    const eye = document.getElementById('settings-apikey-eye');
-    if (eye) eye.textContent = '👁';
-  }
+  _settingsProvider = getProvider();
+  // Restore stored keys
+  const antInp = document.getElementById('settings-apikey-input');
+  const oaiInp = document.getElementById('settings-oaikey-input');
+  if (antInp) { antInp.value = getApiKey();    antInp.type = 'password'; }
+  if (oaiInp) { oaiInp.value = getOpenAIKey(); oaiInp.type = 'password'; }
+  const antEye = document.getElementById('settings-apikey-eye');
+  const oaiEye = document.getElementById('settings-oaikey-eye');
+  if (antEye) antEye.textContent = '👁';
+  if (oaiEye) oaiEye.textContent = '👁';
+  setSettingsProvider(_settingsProvider);
   applySettingsTranslations();
   document.getElementById('settingsModal').classList.add('open');
 }
@@ -3430,39 +3462,39 @@ function hideSettings() {
 }
 
 function saveSettings() {
-  const inp = document.getElementById('settings-apikey-input');
-  const key = inp ? inp.value.trim() : '';
-  try { if (key) localStorage.setItem(_APIKEY_STORE, key); else localStorage.removeItem(_APIKEY_STORE); } catch(e) {}
+  const antInp = document.getElementById('settings-apikey-input');
+  const oaiInp = document.getElementById('settings-oaikey-input');
+  const antKey = antInp ? antInp.value.trim() : '';
+  const oaiKey = oaiInp ? oaiInp.value.trim() : '';
+  try {
+    if (antKey) localStorage.setItem(_APIKEY_STORE, antKey); else localStorage.removeItem(_APIKEY_STORE);
+    if (oaiKey) localStorage.setItem(_OAIKEY_STORE, oaiKey); else localStorage.removeItem(_OAIKEY_STORE);
+    localStorage.setItem(_PROVIDER_STORE, _settingsProvider);
+  } catch(e) {}
   hideSettings();
   const NL = currentLang === 'nl';
   showToast(NL ? 'Instellingen opgeslagen' : 'Settings saved');
+  // Re-render AI panel if open
+  if (_wizMode === 'ai') renderWizAI();
 }
 
-function toggleApiKeyVisibility() {
-  const inp = document.getElementById('settings-apikey-input');
-  const eye = document.getElementById('settings-apikey-eye');
+function toggleApiKeyVisibility(inputId, eyeId) {
+  const inp = document.getElementById(inputId);
+  const eye = document.getElementById(eyeId);
   if (!inp) return;
   if (inp.type === 'password') { inp.type = 'text'; if (eye) eye.textContent = '🙈'; }
   else { inp.type = 'password'; if (eye) eye.textContent = '👁'; }
 }
 
-function getApiKey() {
-  try { return localStorage.getItem(_APIKEY_STORE) || ''; } catch(e) { return ''; }
-}
-
 function applySettingsTranslations() {
   const NL = currentLang === 'nl';
   const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
-  set('settings-title-el',    NL ? '⚙ Instellingen'       : '⚙ Settings');
-  set('settings-apikey-hd',   NL ? 'AI — Anthropic API-sleutel' : 'AI — Anthropic API Key');
-  set('settings-apikey-desc', NL ? 'Gebruikt voor AI-gestuurde Start in de wizard. Uw sleutel wordt alleen in deze browser opgeslagen (localStorage) en direct naar Anthropic gestuurd — nooit naar een server van derden.'
-                                 : 'Used for AI-Guided Start inside the wizard. Your key is stored only in this browser (localStorage) and sent directly to Anthropic — never to any third-party server.');
-  const inp = document.getElementById('settings-apikey-input');
-  if (inp) inp.placeholder = 'sk-ant-…';
-  set('settings-apikey-note', NL ? 'Sleutel is opgeslagen per browserprofiel. Browserdata wissen verwijdert de sleutel.'
-                                 : 'Key is saved per browser profile. Clear browser data to remove it.');
-  set('settings-cancel-btn', NL ? 'Annuleren' : 'Cancel');
-  set('settings-save-btn',   NL ? 'Opslaan'   : 'Save');
+  set('settings-title-el',    NL ? '⚙ Instellingen' : '⚙ Settings');
+  set('settings-provider-hd', NL ? 'AI-provider'    : 'AI Provider');
+  set('settings-apikey-note', NL ? 'Sleutels worden opgeslagen per browserprofiel. Browserdata wissen verwijdert ze.'
+                                 : 'Keys are saved per browser profile. Clear browser data to remove them.');
+  set('settings-cancel-btn',  NL ? 'Annuleren' : 'Cancel');
+  set('settings-save-btn',    NL ? 'Opslaan'   : 'Save');
 }
 
 // ══════════════════════════════════════════════════════════════
