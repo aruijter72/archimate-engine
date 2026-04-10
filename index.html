@@ -6146,7 +6146,7 @@ function importFromArchitecture() {
 
   // Auto-flows from relationships
   if (document.getElementById('autoImportFlows')?.checked && Object.keys(importedStepMap).length > 1) {
-    const FLOW_TYPES = new Set(['Triggering','Flow','Association']);
+    const FLOW_TYPES = new Set(['TriggeringRelationship','FlowRelationship','AssociationRelationship']);
     (model.relationships || []).forEach(rel => {
       if (!FLOW_TYPES.has(rel.type)) return;
       const from = importedStepMap[rel.sourceId];
