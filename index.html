@@ -6315,7 +6315,8 @@ function renderProcPreview() {
     svgH = PROC_HDR + numLanes * LANE_H;
 
     steps.forEach(s => {
-      const col = colMap[s.id], li = laneIdx[s.laneId] ?? 0;
+      const li = laneIdx[s.laneId]; if (li === undefined) return; // skip unassigned steps
+      const col = colMap[s.id];
       sPos[s.id] = {
         cx: LANE_STRIP + MARGIN + col*COL_W + STEP_W/2,
         cy: PROC_HDR + li*LANE_H + LANE_H/2
