@@ -6349,7 +6349,11 @@ function renderProcPreview() {
 
     svg += _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww);
     svg += '</svg>';
-    wrap.innerHTML = svg;
+    const unassigned = steps.filter(s => laneIdx[s.laneId] === undefined).length;
+    wrap.innerHTML = svg + (unassigned
+      ? `<div style="font-size:.73rem;color:var(--muted);margin-top:.4rem;padding:0 .25rem">
+           ⚠ ${unassigned} step${unassigned>1?'s':''} not shown — assign a lane in the Steps table above.
+         </div>` : '');
   }
 }
 
