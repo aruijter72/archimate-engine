@@ -2026,6 +2026,11 @@ function applyTranslations() {
   if (togafBtn) togafBtn.title = L === 'nl'
     ? 'TOGAF-geïnspireerde functies: Viewpoints, Architecture Principles & ADM-faselabels op sjablonen'
     : 'TOGAF-inspired features: Viewpoints, Architecture Principles & ADM phase labels on templates';
+  // Search button tooltip
+  const btnSearch = document.getElementById('btn-search-global');
+  if (btnSearch) btnSearch.title = L === 'nl'
+    ? 'Zoek elementen (⌘K / Ctrl+K)'
+    : 'Search elements (⌘K / Ctrl+K)';
   updateHealth();
 }
 
