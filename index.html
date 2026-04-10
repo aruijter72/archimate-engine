@@ -3526,6 +3526,8 @@ function applySettingsTranslations() {
   const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
   set('settings-title-el',    NL ? '⚙ Instellingen' : '⚙ Settings');
   set('settings-provider-hd', NL ? 'AI-provider'    : 'AI Provider');
+  const sbtn = document.getElementById('btn-settings');
+  if (sbtn) sbtn.title = NL ? 'Instellingen (AI-provider & API-sleutels)' : 'Settings (AI provider & API keys)';
   set('settings-apikey-note', NL ? 'Sleutels worden opgeslagen per browserprofiel. Browserdata wissen verwijdert ze.'
                                  : 'Keys are saved per browser profile. Clear browser data to remove them.');
   set('settings-cancel-btn',  NL ? 'Annuleren' : 'Cancel');
