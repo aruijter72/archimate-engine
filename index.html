@@ -6547,16 +6547,16 @@ function renderProcTab() {
         <!-- Flows -->
         <div class="proc-section">
           <div class="proc-section-header">
-            <span class="proc-section-title">Flows <i class="tip-icon" onmouseenter="showTipById(this,'proc-flows')" onmouseleave="hideTip()">?</i></span>
-            <button class="btn-add proc" onclick="addFlow()">+ Add Flow</button>
+            <span class="proc-section-title">${NL ? 'Verbindingen' : 'Flows'} <i class="tip-icon" onmouseenter="showTipById(this,'proc-flows')" onmouseleave="hideTip()">?</i></span>
+            <button class="btn-add proc" onclick="addFlow()">+ ${NL ? 'Verbinding toevoegen' : 'Add Flow'}</button>
           </div>
           ${!proc.flows.length
-            ? `<div class="proc-empty">No flows yet — connect steps to define the sequence.</div>`
+            ? `<div class="proc-empty">${NL ? 'Nog geen verbindingen — verbind stappen om de volgorde te bepalen.' : 'No flows yet — connect steps to define the sequence.'}</div>`
             : `<table class="elem-table" style="font-size:.79rem">
                 <thead><tr>
-                  <th>From</th>
-                  <th>To</th>
-                  <th style="width:82px">Label</th>
+                  <th>${NL ? 'Van' : 'From'}</th>
+                  <th>${NL ? 'Naar' : 'To'}</th>
+                  <th style="width:82px">${NL ? 'Label' : 'Label'}</th>
                   <th style="width:28px"></th>
                 </tr></thead>
                 <tbody>
@@ -6572,7 +6572,7 @@ function renderProcTab() {
                           ${proc.steps.map(s => `<option value="${s.id}" ${f.to===s.id?'selected':''}>${esc(s.label)||s.type}</option>`).join('')}
                         </select>
                       </td>
-                      <td><input class="elem-input" value="${esc(f.label)}" oninput="updateFlowField('${f.id}','label',this.value)" placeholder="Yes / No…" style="font-size:.73rem"></td>
+                      <td><input class="elem-input" value="${esc(f.label)}" oninput="updateFlowField('${f.id}','label',this.value)" placeholder="${NL ? 'Ja / Nee…' : 'Yes / No…'}" style="font-size:.73rem"></td>
                       <td><button class="btn-del-sm" onclick="deleteFlow('${f.id}')">×</button></td>
                     </tr>`).join('')}
                 </tbody>
