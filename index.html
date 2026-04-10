@@ -3959,7 +3959,9 @@ let _autoLayout = false;
 function toggleAutoLayout(btn) {
   _autoLayout = !_autoLayout;
   btn.classList.toggle('active', _autoLayout);
-  btn.textContent = _autoLayout ? '⚡ Auto Layout: ON' : '⚡ Auto Layout: OFF';
+  btn.textContent = _autoLayout
+    ? (NL ? '⚡ Auto Layout: AAN' : '⚡ Auto Layout: ON')
+    : (NL ? '⚡ Auto Layout: UIT' : '⚡ Auto Layout: OFF');
 }
 
 function computeDagreLayout() {
