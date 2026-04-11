@@ -5321,7 +5321,20 @@ function renderHelp() {
       desc:'Objects acted upon — business objects, data objects, artifacts. They are "used" or "produced".' }
   ];
 
-  let html = `<div class="ml-grid">`;
+  // ── What's New section ──────────────────────────────────────
+  const seenVer = (function(){ try { return localStorage.getItem('architise-seen-version'); } catch(e){ return null; } })();
+  const hasNew  = seenVer !== CURRENT_VERSION;
+  let html = `<div style="margin-bottom:1.5rem">
+    <div class="ml-card-head" style="margin-bottom:.75rem">
+      ${hasNew ? `<span style="color:var(--gold)">★</span> ` : ''}${NL ? "Wat is er nieuw" : "What's New"}
+    </div>
+    ${CHANGELOG.map(v => `
+      <div class="wn-entry">
+        <div class="wn-version">${v.version} &nbsp;·&nbsp; ${v.date}</div>
+        ${v.items.map(i => `<div class="wn-item">${NL ? i.nl : i.en}</div>`).join('')}
+      </div>`).join('')}
+  </div>
+  <div class="ml-grid">`;
 
   // ═══════════════════════════════════════════════════════════
   // LEFT COLUMN — Manual
