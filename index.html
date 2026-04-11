@@ -3133,8 +3133,12 @@ function renderLayer(layer) {
                    oninput="setElem('${el.id}','name',this.value)">
           </td>
           <td>
-            <textarea class="elem-textarea" rows="2"
-                      placeholder="${t('ph-doc')}"
+            <button class="notes-toggle-btn ${el.documentation?'has-notes':''}"
+                    data-nid="${el.id}" onclick="toggleNotes('${el.id}')">
+              ${el.documentation ? '📝' : '+'} ${NL?'Notities':'Notes'}${el.documentation && !_notesExpanded.has(el.id) ? ` · ${el.documentation.slice(0,32)}${el.documentation.length>32?'…':''}` : ''}
+            </button>
+            <textarea class="elem-textarea${_notesExpanded.has(el.id)?' notes-open':''}" rows="3"
+                      data-nid="${el.id}" placeholder="${t('ph-doc')}"
                       oninput="setElem('${el.id}','documentation',this.value)">${esc(el.documentation)}</textarea>
           </td>
           <td>
@@ -3276,7 +3280,12 @@ function renderRelationships() {
             <div class="rel-extras">${extras}</div>
           </td>
           <td>
-            <textarea class="elem-textarea" rows="2" placeholder="Documentation…"
+            <button class="notes-toggle-btn ${rel.documentation?'has-notes':''}"
+                    data-nid="${rel.id}" onclick="toggleNotes('${rel.id}')">
+              ${rel.documentation ? '📝' : '+'} ${NL?'Notities':'Notes'}${rel.documentation && !_notesExpanded.has(rel.id) ? ` · ${rel.documentation.slice(0,32)}${rel.documentation.length>32?'…':''}` : ''}
+            </button>
+            <textarea class="elem-textarea${_notesExpanded.has(rel.id)?' notes-open':''}" rows="3"
+                      data-nid="${rel.id}" placeholder="${t('ph-doc')}"
                       oninput="setRel('${rel.id}','documentation',this.value)">${esc(rel.documentation)}</textarea>
           </td>
           <td><button class="btn-del-sm" style="font-size:1.1rem" onclick="deleteRel('${rel.id}')" title="Delete relationship">🗑</button></td>
