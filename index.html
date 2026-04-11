@@ -3708,10 +3708,77 @@ function showTab(tab) {
   if (panel) panel.classList.add('active');
   const btn = document.getElementById(`tab-btn-${tab}`);
   if (btn) btn.classList.add('active');
+  if (tab === 'help') markWhatsNewSeen();
 }
 
 let _advLayersVisible = false;
 let _togafVisible = (function(){ try { return localStorage.getItem('architise-togaf') === '1'; } catch(e){ return false; } })();
+
+// ── Collapsible notes ─────────────────────────────────────────────────────────
+const _notesExpanded = new Set(); // tracks IDs with notes currently open
+
+function toggleNotes(id) {
+  if (_notesExpanded.has(id)) { _notesExpanded.delete(id); }
+  else { _notesExpanded.add(id); }
+  const ta  = document.querySelector(`.elem-textarea[data-nid="${id}"]`);
+  const btn = document.querySelector(`.notes-toggle-btn[data-nid="${id}"]`);
+  if (ta)  ta.classList.toggle('notes-open', _notesExpanded.has(id));
+  if (btn) _updateNotesBtn(btn, id);
+  if (ta && _notesExpanded.has(id)) ta.focus();
+}
+
+function _updateNotesBtn(btn, id) {
+  const NL  = currentLang === 'nl';
+  const el  = model.elements.find(e => e.id === id);
+  const rel = model.relationships.find(r => r.id === id);
+  const doc = (el || rel)?.documentation || '';
+  const open = _notesExpanded.has(id);
+  btn.classList.toggle('has-notes', doc.length > 0);
+  const preview = doc.length > 0 && !open
+    ? ` · ${doc.slice(0, 32)}${doc.length > 32 ? '…' : ''}` : '';
+  btn.textContent = (doc.length > 0 ? '📝' : '+') + ' ' + (NL ? 'Notities' : 'Notes') + preview;
+}
+
+// ── What's New ────────────────────────────────────────────────────────────────
+const CURRENT_VERSION = '2026.04.1';
+
+const CHANGELOG = [
+  { version: '2026.04.1', date: '2026-04-11', items: [
+    { en: 'Collapsible notes on all elements and relationships',
+      nl: 'Inklapbare notities bij alle elementen en relaties' },
+    { en: 'What\'s New notifications with version history in Manual',
+      nl: 'Meldingen over nieuwe functies met versiegeschiedenis in de Handleiding' },
+    { en: 'Full Dutch translations for all tooltips and swimlane editor',
+      nl: 'Volledige Nederlandse vertalingen voor alle tooltips en swimlane-editor' },
+    { en: 'Mobile-responsive layout — tab bar, tables, and header',
+      nl: 'Mobiel-responsieve opmaak — tabbalk, tabellen en header' },
+    { en: 'Autopush throttling to prevent GitHub Pages queue overload',
+      nl: 'Autopush-beperking om wachtrij GitHub Pages niet te overbelasten' },
+  ]},
+];
+
+function checkWhatsNew() {
+  try {
+    const seen = localStorage.getItem('architise-seen-version');
+    if (seen === CURRENT_VERSION) return;
+    // Add gold dot to Manual & Legend tab button
+    const helpBtn = document.getElementById('tab-btn-help');
+    if (helpBtn && !helpBtn.querySelector('.tab-new-dot')) {
+      const dot = document.createElement('span');
+      dot.className = 'tab-new-dot';
+      dot.title = currentLang === 'nl' ? 'Nieuwe functies beschikbaar' : 'New features available';
+      helpBtn.appendChild(dot);
+    }
+  } catch(e) {}
+}
+
+function markWhatsNewSeen() {
+  try {
+    localStorage.setItem('architise-seen-version', CURRENT_VERSION);
+    const dot = document.querySelector('#tab-btn-help .tab-new-dot');
+    if (dot) dot.remove();
+  } catch(e) {}
+}
 
 function toggleTogaf() {
   _togafVisible = !_togafVisible;
