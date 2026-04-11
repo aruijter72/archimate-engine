@@ -440,14 +440,57 @@
     .elem-input::placeholder { color: rgba(138,154,181,.4); }
 
     .elem-textarea {
+      display: none;
       background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09);
       border-radius: 5px; color: var(--text2); font-size: .84rem;
       padding: .3rem .5rem; width: 100%; resize: vertical;
-      min-height: 36px; outline: none; font-family: inherit; line-height: 1.5;
+      min-height: 54px; outline: none; font-family: inherit; line-height: 1.5;
       transition: border-color .15s, background .15s;
+      margin-top: .3rem;
     }
+    .elem-textarea.notes-open { display: block; }
     .elem-textarea:focus { border-color: rgba(201,163,85,.45); background: rgba(255,255,255,.07); color: var(--white); }
     .elem-textarea::placeholder { color: rgba(138,154,181,.4); }
+    /* Notes toggle button */
+    .notes-toggle-btn {
+      font-size: .68rem; color: var(--muted); background: none;
+      border: 1px solid var(--border); border-radius: 4px; cursor: pointer;
+      padding: .15rem .45rem; margin-top: .25rem; display: inline-flex;
+      align-items: center; gap: .2rem; transition: color .15s, border-color .15s;
+      max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .notes-toggle-btn:hover { color: var(--gold); border-color: var(--gold); }
+    .notes-toggle-btn.has-notes { color: var(--gold); border-color: rgba(201,163,85,.4); }
+    /* What's New badge on tab button */
+    .tab-new-dot {
+      display: inline-block; width: 7px; height: 7px;
+      background: var(--gold); border-radius: 50%;
+      margin-left: .3rem; vertical-align: middle; flex-shrink: 0;
+    }
+    /* What's New section in Manual */
+    .wn-entry { border-left: 2px solid var(--gold); padding: .4rem .75rem; margin-bottom: .5rem; }
+    .wn-version { font-size: .7rem; font-weight: 700; color: var(--gold); margin-bottom: .25rem; }
+    .wn-item { font-size: .8rem; color: var(--text2); padding: .1rem 0; }
+    .wn-item::before { content: '→ '; color: var(--muted); }
+    /* ── Mobile responsiveness ───────────────────────────────── */
+    @media (max-width: 768px) {
+      .app-header { flex-wrap: wrap; padding: .4rem .6rem; gap: .4rem; }
+      .mode-switcher { order: 3; width: 100%; justify-content: stretch; }
+      .mode-btn { flex: 1; justify-content: center; }
+      #modelName { min-width: 0; width: 100%; order: 4; }
+      .tab-bar { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch;
+                 scrollbar-width: none; gap: 0; }
+      .tab-bar::-webkit-scrollbar { display: none; }
+      .tab-btn { white-space: nowrap; font-size: .72rem; padding: .55rem .6rem; flex-shrink: 0; }
+      .tab-togaf-toggle { flex-shrink: 0; }
+      #archimate-main { overflow-x: auto; }
+      .elem-table { font-size: .75rem; }
+      .elem-table th, .elem-table td { padding: .25rem .3rem; }
+      .rel-header { flex-direction: column; align-items: flex-start; gap: .5rem; }
+      .stats-bar { flex-wrap: wrap; gap: .3rem .75rem; font-size: .72rem; }
+      .layer-intro { flex-direction: column; gap: .3rem; }
+      .proc-layout { grid-template-columns: 1fr !important; }
+    }
 
     /* ── Properties ──────────────────────────────────────────── */
     .props-list { display: flex; flex-direction: column; gap: .28rem; margin-bottom: .28rem; }
