@@ -5355,7 +5355,14 @@ function renderHelp() {
   // ── What's New section ──────────────────────────────────────
   const seenVer = (function(){ try { return localStorage.getItem('architise-seen-version'); } catch(e){ return null; } })();
   const hasNew  = seenVer !== CURRENT_VERSION;
-  let html = `<div style="margin-bottom:1.5rem">
+  let html = `
+  <div class="help-search-wrap">
+    <input class="help-search-input" id="helpSearchInput"
+           placeholder="${NL ? 'Doorzoek de help…' : 'Search help…'}"
+           oninput="filterHelp(this.value)">
+  </div>
+  <div id="helpContent">
+  <div style="margin-bottom:1.5rem">
     <div class="ml-card-head" style="margin-bottom:.75rem">
       ${hasNew ? `<span style="color:var(--gold)">★</span> ` : ''}${NL ? "Wat is er nieuw" : "What's New"}
     </div>
