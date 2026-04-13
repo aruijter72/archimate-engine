@@ -3090,6 +3090,32 @@ function setProp(elemId, i, field, val) {
 }
 
 // ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// PRINT / PDF EXPORT
+// ══════════════════════════════════════════════════════════════
+function printModel() {
+  // Switch to ArchiMate mode and show all tabs for printing
+  const wasSwim = document.getElementById('swimlane-main').style.display !== 'none';
+  if (wasSwim) {
+    document.getElementById('archimate-main').style.display = '';
+    document.getElementById('archimate-tab-nav').style.display = '';
+    document.getElementById('swimlane-main').style.display = 'none';
+  }
+  // Show all tab panels temporarily for print
+  document.querySelectorAll('#archimate-main .tab-panel').forEach(p => p.style.display = 'block');
+  window.print();
+  // Restore
+  setTimeout(() => {
+    document.querySelectorAll('#archimate-main .tab-panel').forEach(p => p.style.display = '');
+    showTab(wasSwim ? 'process' : (document.querySelector('.tab-btn.active')?.id?.replace('tab-btn-','') || 'business'));
+    if (wasSwim) {
+      document.getElementById('archimate-main').style.display = 'none';
+      document.getElementById('archimate-tab-nav').style.display = 'none';
+      document.getElementById('swimlane-main').style.display = '';
+    }
+  }, 500);
+}
+
 // Help search function
 // ──────────────────────────────────────────────────────────────
 function filterHelp(query) {
