@@ -5595,6 +5595,7 @@ function renderHelp() {
   }
 
   // ── Swimlane Manual ────────────────────────────────────────
+  html += `<div class="help-section-sep"><div class="help-section-sep-line"></div><div class="help-section-sep-label">${NL ? '🏊 Swimlane' : '🏊 Swimlane'}</div><div class="help-section-sep-line"></div></div>`;
   if (NL) {
     html += `
     <div class="ml-card">
@@ -6734,6 +6735,8 @@ function renderProcTab() {
                           <option value="task"     ${s.type==='task'     ?'selected':''}>□ ${NL ? 'Taak' : 'Task'}</option>
                           <option value="decision" ${s.type==='decision' ?'selected':''}>◇ ${NL ? 'Beslissing' : 'Decision'}</option>
                           <option value="end"      ${s.type==='end'      ?'selected':''}>● ${NL ? 'Einde' : 'End'}</option>
+                          <option value="document" ${s.type==='document' ?'selected':''}>📄 ${NL ? 'Document' : 'Document'}</option>
+                          <option value="label"    ${s.type==='label'    ?'selected':''}>🏷 ${NL ? 'Label' : 'Label'}</option>
                         </select>
                         <i class="tip-icon" onmouseenter="showTipById(this,'proc-step-${s.type}')" onmouseleave="hideTip()">?</i>
                       </td>
