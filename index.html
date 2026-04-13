@@ -3491,6 +3491,7 @@ function renderLayer(layer) {
 
 function renderRelationships() {
   const panel = document.getElementById('tab-relationships');
+  const NL    = currentLang === 'nl';
   const allEl = model.elements.map(e => ({ id:e.id, label:elemLabel(e) }));
 
   let html = `
