@@ -6209,7 +6209,7 @@ let _procSavedOnce   = {}; // procId → bool
 async function saveProcJSONAs() {
   const NL = currentLang === 'nl';
   const proc = getActiveProc();
-  if (!proc) { alert(NL ? 'Selecteer eerst een proces.' : 'Select a process first.'); return; }
+  if (!proc) { showAlert(NL ? 'Selecteer eerst een proces.' : 'Select a process first.', NL ? 'Let op' : 'Notice'); return; }
   const defaultName = (proc.name || 'process').replace(/[^\w\- ]/g, '_') + '.swimlane.json';
   const json = JSON.stringify(proc, null, 2);
   if (window.showSaveFilePicker) {
