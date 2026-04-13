@@ -3065,6 +3065,39 @@ function setProp(elemId, i, field, val) {
   if (el && el.properties[i]) el.properties[i][field] = val;
 }
 
+// ──────────────────────────────────────────────────────────────
+// Help search function
+// ──────────────────────────────────────────────────────────────
+function filterHelp(query) {
+  const content = document.getElementById('helpContent');
+  if (!content) return;
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    content.querySelectorAll('.help-searchable').forEach(el => el.style.display = '');
+    const nr = document.getElementById('helpNoResults');
+    if (nr) nr.remove();
+    return;
+  }
+  let anyVisible = false;
+  content.querySelectorAll('.help-searchable').forEach(el => {
+    const text = el.textContent.toLowerCase();
+    const match = text.includes(q);
+    el.style.display = match ? '' : 'none';
+    if (match) anyVisible = true;
+  });
+  let nr = document.getElementById('helpNoResults');
+  const NL = currentLang === 'nl';
+  if (!anyVisible) {
+    if (!nr) {
+      nr = document.createElement('div');
+      nr.id = 'helpNoResults';
+      nr.className = 'help-no-results';
+      content.appendChild(nr);
+    }
+    nr.textContent = NL ? 'Geen resultaten gevonden.' : 'No results found.';
+  } else if (nr) { nr.remove(); }
+}
+
 // ══════════════════════════════════════════════════════════════
 // RELATIONSHIP OPERATIONS
 // ══════════════════════════════════════════════════════════════
