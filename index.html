@@ -2012,7 +2012,7 @@ function applyTranslations() {
   const tabMap = {
     'tab-btn-business':'tab-biz','tab-btn-application':'tab-app',
     'tab-btn-technology':'tab-tech','tab-btn-relationships':'tab-rel',
-    'tab-btn-help':'tab-help','tab-btn-process':'tab-process',
+    'tab-btn-help':'tab-help','tab-btn-canvas':'tab-canvas','tab-btn-process':'tab-process',
     'tab-btn-motivation':'tab-mot','tab-btn-strategy':'tab-str'
   };
   for (const [elId, key] of Object.entries(tabMap)) {
@@ -4052,7 +4052,8 @@ function showTab(tab) {
   if (panel) panel.classList.add('active');
   const btn = document.getElementById(`tab-btn-${tab}`);
   if (btn) btn.classList.add('active');
-  if (tab === 'help') markWhatsNewSeen();
+  if (tab === 'help')   markWhatsNewSeen();
+  if (tab === 'canvas') renderCanvas();
 }
 
 let _advLayersVisible = false;
