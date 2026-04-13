@@ -4129,9 +4129,10 @@ function handleImportArchimate(ev) {
       }
 
       if (!newModel.elements.length) {
-        alert(currentLang === 'nl'
+        showAlert(currentLang === 'nl'
           ? 'Geen ondersteunde elementen gevonden in dit .archimate bestand.'
-          : 'No supported elements found in this .archimate file.');
+          : 'No supported elements found in this .archimate file.',
+          currentLang === 'nl' ? 'Importeren' : 'Import');
         return;
       }
 
@@ -4145,7 +4146,7 @@ function handleImportArchimate(ev) {
       document.getElementById('modelDoc').value  = model.documentation || '';
       renderAll(); updateStats();
     } catch(err) {
-      alert((currentLang==='nl' ? 'Kan .archimate bestand niet laden: ' : 'Could not import .archimate file: ') + err.message);
+      showAlert((currentLang==='nl' ? 'Kan .archimate bestand niet laden: ' : 'Could not import .archimate file: ') + err.message, currentLang==='nl' ? 'Fout' : 'Error');
     }
   };
   r.readAsText(f);
