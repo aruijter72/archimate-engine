@@ -3241,56 +3241,70 @@ function printModel() {
 function filterHelp(query) {
   const content = document.getElementById('helpContent');
   if (!content) return;
-  const NL = currentLang === 'nl';
-  const q  = query.trim().toLowerCase();
-  const seps = [...content.querySelectorAll('.help-section-sep')];
+  const NL    = currentLang === 'nl';
+  const q     = query.trim().toLowerCase();
+  const grid  = content.querySelector('.ml-grid');
+  const seps  = [...content.querySelectorAll('.help-section-sep')];
 
-  // ── Clear state ──────────────────────────────────────────────
+  // ── Helper: show/hide element, return 1 if shown ────────────
+  const show = (el, vis) => { el.style.display = vis ? '' : 'none'; return vis ? 1 : 0; };
+
+  // ── CLEAR ────────────────────────────────────────────────────
   if (!q) {
-    content.querySelectorAll('.ml-card, .wn-entry').forEach(el => el.style.display = '');
-    content.querySelectorAll('tbody tr[data-help-row]').forEach(tr => tr.style.display = '');
+    if (grid) grid.style.cssText = '';
+    content.querySelectorAll(
+      '.ml-card, .wn-entry, .legend-elem-item, .legend-elem-group, .step, .wn-item, tbody tr'
+    ).forEach(el => el.style.display = '');
+    // Restore What's New wrapper
+    const wnWrap = content.querySelector(':scope > div:not(.ml-grid):not(.help-section-sep)');
+    if (wnWrap) wnWrap.style.display = '';
     seps.forEach(el => el.style.display = '');
-    const nr = document.getElementById('helpNoResults');
-    if (nr) nr.remove();
-    const cnt = document.getElementById('helpResultCount');
-    if (cnt) cnt.remove();
+    ['helpResultCount','helpNoResults'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
     return;
   }
 
+  // ── SEARCH MODE: single-column layout ───────────────────────
+  if (grid) grid.style.cssText = 'display:block';
   seps.forEach(el => el.style.display = 'none');
-  let totalHits = 0;
+  let hits = 0;
 
-  content.querySelectorAll('.ml-card, .wn-entry').forEach(card => {
-    // Filter table rows individually (element types, relationship types, etc.)
-    const rows = [...card.querySelectorAll('tbody tr')];
-    let cardHits = 0;
-
-    if (rows.length) {
-      // Mark rows for tracking so we can reset later
-      rows.forEach(tr => {
-        tr.setAttribute('data-help-row', '1');
-        const match = tr.textContent.toLowerCase().includes(q);
-        tr.style.display = match ? '' : 'none';
-        if (match) cardHits++;
-      });
-      // If no row matched, check non-table text in the card header/desc
-      if (!cardHits) {
-        const cardText = card.querySelector('.ml-card-head, .legend-layer, .notation-box, .step-title');
-        if (cardText && cardText.textContent.toLowerCase().includes(q)) {
-          rows.forEach(tr => tr.style.display = ''); // show all rows
-          cardHits = 1;
-        }
-      }
-    } else {
-      // No table — match the whole card
-      cardHits = card.textContent.toLowerCase().includes(q) ? 1 : 0;
-    }
-
-    card.style.display = cardHits ? '' : 'none';
-    totalHits += cardHits;
+  // 1. Element type items (.legend-elem-item)
+  content.querySelectorAll('.legend-elem-item').forEach(item => { hits += show(item, item.textContent.toLowerCase().includes(q)); });
+  // Collapse empty aspect groups
+  content.querySelectorAll('.legend-elem-group').forEach(g => {
+    show(g, [...g.querySelectorAll('.legend-elem-item')].some(i => i.style.display !== 'none'));
   });
 
-  // ── Result count badge ───────────────────────────────────────
+  // 2. Relationship table rows
+  content.querySelectorAll('tbody tr').forEach(tr => { hits += show(tr, tr.textContent.toLowerCase().includes(q)); });
+
+  // 3. Manual steps & tips (.step)
+  content.querySelectorAll('.step').forEach(s => { hits += show(s, s.textContent.toLowerCase().includes(q)); });
+
+  // 4. What's New items (.wn-item)
+  content.querySelectorAll('.wn-item').forEach(item => { hits += show(item, item.textContent.toLowerCase().includes(q)); });
+  // Collapse empty wn-entry containers
+  content.querySelectorAll('.wn-entry').forEach(e => {
+    show(e, [...e.querySelectorAll('.wn-item')].some(i => i.style.display !== 'none'));
+  });
+  // Collapse What's New wrapper if all entries hidden
+  const wnWrap = content.querySelector(':scope > div:not(.ml-grid):not(.help-section-sep)');
+  if (wnWrap) show(wnWrap, [...wnWrap.querySelectorAll('.wn-entry')].some(e => e.style.display !== 'none'));
+
+  // Show/hide parent .ml-card based on whether it has any visible fine-grained children
+  content.querySelectorAll('.ml-card').forEach(card => {
+    const fine = [...card.querySelectorAll('.legend-elem-item, tbody tr, .step, .wn-item')];
+    if (fine.length) {
+      show(card, fine.some(el => el.style.display !== 'none'));
+    } else {
+      // Card has no fine-grained items (e.g. layer colours, aspect indicators)
+      const match = card.textContent.toLowerCase().includes(q);
+      show(card, match);
+      if (match) hits++;
+    }
+  });
+
+  // ── Result count ─────────────────────────────────────────────
   let cnt = document.getElementById('helpResultCount');
   if (!cnt) {
     cnt = document.createElement('div');
@@ -3298,20 +3312,15 @@ function filterHelp(query) {
     cnt.style.cssText = 'font-size:.75rem;color:var(--gold);font-weight:700;margin-bottom:.75rem;padding:.2rem 0';
     content.prepend(cnt);
   }
-
-  // ── No-results message ───────────────────────────────────────
   let nr = document.getElementById('helpNoResults');
-  if (!totalHits) {
+  if (!hits) {
     cnt.textContent = NL ? 'Geen resultaten.' : 'No results.';
-    if (!nr) {
-      nr = document.createElement('div');
-      nr.id = 'helpNoResults';
-      nr.className = 'help-no-results';
-      content.appendChild(nr);
-    }
+    if (!nr) { nr = document.createElement('div'); nr.id = 'helpNoResults'; nr.className = 'help-no-results'; content.appendChild(nr); }
     nr.textContent = NL ? `Geen resultaten voor "${query}".` : `No results for "${query}".`;
   } else {
-    cnt.textContent = NL ? `${totalHits} resultaat${totalHits===1?'':'en'} voor "${query}"` : `${totalHits} result${totalHits===1?'':'s'} for "${query}"`;
+    cnt.textContent = NL
+      ? `${hits} resultaat${hits===1?'':'en'} voor "${query}"`
+      : `${hits} result${hits===1?'':'s'} for "${query}"`;
     if (nr) nr.remove();
   }
 }
