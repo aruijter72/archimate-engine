@@ -3564,21 +3564,18 @@ function showToast(msg, type) {
 function showAlert(msg, title) {
   const NL = currentLang === 'nl';
   const t = title || (NL ? 'Melding' : 'Notice');
-  showConfirm(t, msg, NL ? 'OK' : 'OK', false, null);
-  // Hide cancel button for pure alert
   const cancelBtn = document.getElementById('confirm-cancel-btn');
   if (cancelBtn) cancelBtn.style.display = 'none';
-  // Restore cancel on next close
-  const origExec = window._alertRestored;
-  const origCancel = cancelBtn;
-  const restore = () => { if (origCancel) origCancel.style.display = ''; };
-  const okBtn = document.getElementById('confirm-ok-btn');
-  if (okBtn) {
-    const origOnclick = okBtn.onclick;
-    okBtn.onclick = () => { restore(); if (origOnclick) origOnclick(); else executeConfirm(); };
-  }
+  // Callback restores cancel button visibility
+  showConfirm(t, msg, 'OK', false, () => {
+    if (cancelBtn) cancelBtn.style.display = '';
+  });
+  // Also restore when close × is clicked (which calls cancelConfirm, not executeConfirm)
   const closeBtn = document.querySelector('#confirmModal .modal-close');
-  if (closeBtn) { const orig = closeBtn.onclick; closeBtn.onclick = () => { restore(); cancelConfirm(); }; }
+  if (closeBtn) {
+    const _prev = closeBtn.onclick;
+    closeBtn.onclick = () => { if (cancelBtn) cancelBtn.style.display = ''; cancelConfirm(); closeBtn.onclick = _prev; };
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
