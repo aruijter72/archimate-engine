@@ -6165,9 +6165,10 @@ function handleImportDrawio(ev) {
         .filter(fl => fl.from && fl.to);
 
       if (!steps.length && !lanes.length) {
-        alert(currentLang === 'nl'
+        showAlert(currentLang === 'nl'
           ? 'Geen swimlane-inhoud gevonden in dit draw.io bestand.'
-          : 'No swimlane content found in this draw.io file.');
+          : 'No swimlane content found in this draw.io file.',
+          currentLang === 'nl' ? 'Draw.io import' : 'Draw.io Import');
         return;
       }
 
@@ -6182,7 +6183,7 @@ function handleImportDrawio(ev) {
       _activeProcId = newProc.id;
       renderProcTab();
     } catch(err) {
-      alert((currentLang==='nl' ? 'Kan draw.io bestand niet laden: ' : 'Could not import draw.io file: ') + err.message);
+      showAlert((currentLang==='nl' ? 'Kan draw.io bestand niet laden: ' : 'Could not import draw.io file: ') + err.message, currentLang==='nl' ? 'Fout' : 'Error');
     }
   };
   r.readAsText(f);
