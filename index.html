@@ -1489,7 +1489,7 @@
   <button class="tab-btn rel"         id="tab-btn-relationships" onclick="showTab('relationships')">
     <span class="tab-icon rel">R</span> Relationships</button>
   <button class="tab-btn help"        id="tab-btn-help"          onclick="showTab('help')">
-    <span class="tab-icon help">?</span> Manual &amp; Legend</button>
+    <span class="tab-icon help">?</span> <span id="tab-help-label">Help</span></button>
   <div class="tab-adv-sep" id="adv-sep"></div>
   <button class="tab-adv-toggle" id="adv-toggle-btn" onclick="toggleAdvancedLayers()">⋯ <span id="adv-toggle-label">Advanced</span> ▸</button>
   <button class="tab-btn mot" id="tab-btn-motivation" onclick="showTab('motivation')" style="display:none">
@@ -5061,7 +5061,7 @@ const TEMPLATES = [
   }
   ,{
     icon:'🏭', name:'Manufacturing — Supply Chain', togafPhase:'Phase C/D',
-    desc:'Procurement, production planning and quality control backed by an ERP and WMS.',
+    desc:{ en:'Procurement, production planning and quality control backed by an ERP and WMS.', nl:'Inkoop, productieplanning en kwaliteitscontrole ondersteund door een ERP en WMS.' },
     tags:['Business','Application','Technology'],
     model:{
       name:'Manufacturing — Supply Chain',
