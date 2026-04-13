@@ -3591,8 +3591,8 @@ function showConfirm(title, msg, okLabel, okDanger, callback) {
   const cancelBtn = document.getElementById('confirm-cancel-btn');
   if (titleEl)   titleEl.textContent  = title;
   if (msgEl)     msgEl.textContent    = msg;
-  if (okBtn)     { okBtn.textContent  = okLabel; okBtn.style.background = okDanger ? '#c0444e' : 'var(--gold)'; okBtn.style.color = '#fff'; okBtn.style.border = 'none'; }
-  if (cancelBtn) cancelBtn.textContent = NL ? 'Annuleren' : 'Cancel';
+  if (okBtn)     { okBtn.textContent  = okLabel; okBtn.style.background = okDanger ? '#c0444e' : 'var(--gold)'; okBtn.style.color = '#fff'; okBtn.style.border = 'none'; okBtn.onclick = executeConfirm; }
+  if (cancelBtn) { cancelBtn.textContent = NL ? 'Annuleren' : 'Cancel'; cancelBtn.style.display = ''; }
   document.getElementById('confirmModal').classList.add('open');
 }
 function cancelConfirm()  { document.getElementById('confirmModal').classList.remove('open'); _confirmCb = null; }
