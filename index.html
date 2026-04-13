@@ -3253,7 +3253,7 @@ function filterHelp(query) {
   if (!q) {
     if (grid) grid.style.cssText = '';
     content.querySelectorAll(
-      '.ml-card, .wn-entry, .legend-elem-item, .legend-elem-group, .step, .wn-item, tbody tr'
+      '.ml-card, .wn-entry, .legend-elem-item, .legend-elem-group, .legend-layer-wrap, .step, .wn-item, tbody tr'
     ).forEach(el => el.style.display = '');
     // Restore What's New wrapper
     const wnWrap = content.querySelector(':scope > div:not(.ml-grid):not(.help-section-sep)');
@@ -3273,6 +3273,10 @@ function filterHelp(query) {
   // Collapse empty aspect groups
   content.querySelectorAll('.legend-elem-group').forEach(g => {
     show(g, [...g.querySelectorAll('.legend-elem-item')].some(i => i.style.display !== 'none'));
+  });
+  // Collapse empty layer wrappers (Business/Application/Technology headers)
+  content.querySelectorAll('.legend-layer-wrap').forEach(wrap => {
+    show(wrap, [...wrap.querySelectorAll('.legend-elem-group')].some(g => g.style.display !== 'none'));
   });
 
   // 2. Relationship table rows
