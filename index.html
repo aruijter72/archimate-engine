@@ -3558,6 +3558,29 @@ function showToast(msg, type) {
   setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 320); }, dur);
 }
 
+// ──────────────────────────────────────────────────────────────
+// Custom alert (replaces native browser alert)
+// ──────────────────────────────────────────────────────────────
+function showAlert(msg, title) {
+  const NL = currentLang === 'nl';
+  const t = title || (NL ? 'Melding' : 'Notice');
+  showConfirm(t, msg, NL ? 'OK' : 'OK', false, null);
+  // Hide cancel button for pure alert
+  const cancelBtn = document.getElementById('confirm-cancel-btn');
+  if (cancelBtn) cancelBtn.style.display = 'none';
+  // Restore cancel on next close
+  const origExec = window._alertRestored;
+  const origCancel = cancelBtn;
+  const restore = () => { if (origCancel) origCancel.style.display = ''; };
+  const okBtn = document.getElementById('confirm-ok-btn');
+  if (okBtn) {
+    const origOnclick = okBtn.onclick;
+    okBtn.onclick = () => { restore(); if (origOnclick) origOnclick(); else executeConfirm(); };
+  }
+  const closeBtn = document.querySelector('#confirmModal .modal-close');
+  if (closeBtn) { const orig = closeBtn.onclick; closeBtn.onclick = () => { restore(); cancelConfirm(); }; }
+}
+
 // ══════════════════════════════════════════════════════════════
 // REUSABLE CONFIRM DIALOG
 // ══════════════════════════════════════════════════════════════
@@ -6030,7 +6053,7 @@ function deleteStep(stepId) {
 
 function addFlow() {
   const proc = getActiveProc(); if (!proc) return;
-  if (proc.steps.length < 2) { alert('Add at least two steps first.'); return; }
+  if (proc.steps.length < 2) { const NL = currentLang === 'nl'; showAlert(NL ? 'Voeg eerst minimaal twee stappen toe.' : 'Add at least two steps first.', NL ? 'Verbinding toevoegen' : 'Add Flow'); return; }
   proc.flows.push({ id: genId(), from: proc.steps[0].id, to: proc.steps[proc.steps.length-1].id, label: '' });
   renderProcTab();
 }
