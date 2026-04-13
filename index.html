@@ -1147,6 +1147,28 @@
     .snap-del { font-size:.73rem; padding:.22rem .6rem; border-radius:4px; border:1px solid rgba(224,108,117,.3); background:transparent; color:#e06c75; cursor:pointer; transition:background .14s; }
     .snap-del:hover { background:rgba(224,108,117,.1); }
     .snap-empty { text-align:center; padding:2.5rem 1rem; color:var(--text2); font-size:.86rem; }
+    /* ── Print / PDF export ─────────────────────────────────── */
+    @media print {
+      .app-header, .tab-nav, .app-footer, .health-bar,
+      #swimlane-main, .proc-layout, .modal-overlay,
+      .btn, .btn-add, .btn-del-sm, .notes-toggle-btn,
+      .tip-icon, #healthDrop, .search-overlay { display: none !important; }
+      body { background: #fff !important; color: #111 !important; font-size: 11pt; }
+      #archimate-main { display: block !important; }
+      .tab-panel { display: block !important; page-break-inside: avoid; }
+      .tab-panel + .tab-panel { border-top: 1.5pt solid #ccc; padding-top: 1rem; margin-top: 1rem; }
+      .layer-badge { border: 1px solid #999 !important; color: #333 !important; background: #f5f5f5 !important; }
+      .elem-table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+      .elem-table th, .elem-table td { border: 0.5pt solid #ccc; padding: 3pt 5pt; }
+      .elem-table th { background: #f0f0f0 !important; }
+      .section-card { border: 0.5pt solid #ddd !important; background: #fafafa !important; }
+      .elem-input, select { border: none !important; background: transparent !important; color: #111 !important; font-size: 9pt; }
+      .print-only { display: block !important; }
+      .no-print { display: none !important; }
+      a { color: #111 !important; }
+      @page { margin: 15mm 15mm 15mm 15mm; size: A4 portrait; }
+    }
+    .print-only { display: none; }
   </style>
 </head>
 <body>
@@ -1438,6 +1460,7 @@
       <div class="menu-dropdown" id="menu-file-dd">
         <button class="mi-btn" id="btn-wizard-el" onclick="showWizard();closeMenus()">🪄 Guided Start</button>
         <button class="mi-btn" id="btn-templates-el" onclick="showTemplates();closeMenus()">📋 Templates</button>
+        <button class="mi-btn no-print" onclick="printModel();closeMenus()">🖨 Print / Save as PDF</button>
         <div class="mi-sep"></div>
         <button class="mi-btn danger" id="btn-newmodel-el" onclick="newModel();closeMenus()">🆕 New Model</button>
         <div class="mi-sep"></div>
