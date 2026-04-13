@@ -4178,7 +4178,7 @@ function toggleAutoLayout(btn) {
 
 function computeDagreLayout() {
   if (typeof dagre === 'undefined') {
-    alert('Dagre layout library not loaded — check your internet connection.');
+    showAlert('Dagre layout library not loaded — check your internet connection.', 'Layout Error');
     return null;
   }
   const EW = 150, EH = 58;
@@ -7543,7 +7543,7 @@ function saveSnapshot() {
   });
   if (model.snapshots.length > MAX_SNAPSHOTS) model.snapshots = model.snapshots.slice(0, MAX_SNAPSHOTS);
   const NL2 = currentLang === 'nl';
-  alert(NL2 ? '✓ Snapshot opgeslagen.' : '✓ Snapshot saved.');
+  showAlert(NL2 ? '✓ Snapshot opgeslagen.' : '✓ Snapshot saved.', NL2 ? 'Snapshot' : 'Snapshot');
 }
 
 function showHistory() {
