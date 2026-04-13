@@ -1699,6 +1699,8 @@ const STRINGS = {
     'col-tgt':     'Target Element',
     'col-lopts':   'Label / Options',
     'add-rel':     '+ Add Relationship',
+    'share-btn':   '🔗 Share',
+    'print-btn':   '🖨 Print / PDF',
     'no-elems':    'No relationships yet. Click <strong>+ Add Relationship</strong> above to create one. You\'ll need elements in the model as source and target.',
     'rel-directed':'Directed arrow',
     'rel-acctype': 'Access type:',
@@ -3106,6 +3108,103 @@ function delProp(elemId, i) {
 function setProp(elemId, i, field, val) {
   const el = model.elements.find(e => e.id === elemId);
   if (el && el.properties[i]) el.properties[i][field] = val;
+}
+
+// ══════════════════════════════════════════════════════════════
+// SHARE / READ-ONLY LINK
+// ══════════════════════════════════════════════════════════════
+let _isReadOnly = false;
+
+function showShare() {
+  const NL = currentLang === 'nl';
+  const titleEl = document.getElementById('share-title-el');
+  const subEl   = document.getElementById('share-sub-el');
+  const noteEl  = document.getElementById('share-note-el');
+  if (titleEl) titleEl.textContent = NL ? '🔗 Model delen' : '🔗 Share Model';
+  if (subEl)   subEl.textContent   = NL
+    ? 'Iedereen met deze link kan een alleen-lezen versie van uw model bekijken. Het model is volledig in de URL versleuteld — geen server nodig.'
+    : 'Anyone with this link can view a read-only snapshot of your model. The full model is encoded in the URL — no server required.';
+  if (noteEl)  noteEl.textContent  = NL
+    ? 'De link bevat uw huidige model. Maak een nieuwe link als u het model bijwerkt.'
+    : 'The link encodes your current model. If you update the model, generate a new link.';
+  const copyBtn = document.getElementById('share-copy-btn');
+  if (copyBtn) copyBtn.textContent = NL ? '📋 Kopiëren' : '📋 Copy';
+
+  const link = buildShareLink();
+  const inp  = document.getElementById('shareLinkInput');
+  if (inp) { inp.value = link; setTimeout(() => inp.select(), 60); }
+  document.getElementById('shareModal').classList.add('open');
+}
+
+function hideShare() {
+  document.getElementById('shareModal').classList.remove('open');
+}
+
+function buildShareLink() {
+  try {
+    const json       = JSON.stringify(model);
+    const compressed = LZString.compressToEncodedURIComponent(json);
+    return location.origin + location.pathname + '#share=' + compressed;
+  } catch(e) {
+    return location.href;
+  }
+}
+
+function copyShareLink() {
+  const inp = document.getElementById('shareLinkInput');
+  const NL  = currentLang === 'nl';
+  if (!inp) return;
+  inp.select();
+  try {
+    navigator.clipboard.writeText(inp.value).then(() => {
+      const btn = document.getElementById('share-copy-btn');
+      if (btn) { btn.textContent = NL ? '✓ Gekopieerd!' : '✓ Copied!'; setTimeout(() => { btn.textContent = NL ? '📋 Kopiëren' : '📋 Copy'; }, 2000); }
+    });
+  } catch(e) {
+    document.execCommand('copy');
+  }
+}
+
+function _loadFromShareHash() {
+  const hash = location.hash || '';
+  if (!hash.startsWith('#share=')) return false;
+  try {
+    const compressed = hash.slice(7);
+    const json       = LZString.decompressFromEncodedURIComponent(compressed);
+    if (!json) return false;
+    const m = JSON.parse(json);
+    model           = m;
+    model.views     = model.views     || [];
+    model.snapshots = model.snapshots || [];
+    model.processes = model.processes || [];
+    _isReadOnly     = true;
+    const mn = document.getElementById('modelName');
+    const md = document.getElementById('modelDoc');
+    if (mn) mn.value = model.name || '';
+    if (md) md.value = model.documentation || '';
+    return true;
+  } catch(e) {
+    console.warn('Could not load shared model from URL:', e);
+    return false;
+  }
+}
+
+function _applyReadOnlyBanner() {
+  if (!_isReadOnly) return;
+  const NL = currentLang === 'nl';
+  const banner = document.createElement('div');
+  banner.id = 'readOnlyBanner';
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:var(--gold);color:#0f1923;font-size:.78rem;font-weight:700;text-align:center;padding:.3rem;letter-spacing:.03em';
+  banner.textContent = NL
+    ? '👁 Alleen-lezen weergave — dit is een gedeeld model. Sla het op als JSON om het te bewerken.'
+    : '👁 Read-only view — this is a shared model. Save as JSON to edit it.';
+  document.body.prepend(banner);
+  // Offset header
+  const hdr = document.querySelector('.app-header');
+  if (hdr) hdr.style.top = '26px';
+  // Disable inputs
+  document.querySelectorAll('input:not(#modelName), select, textarea').forEach(el => el.disabled = true);
+  document.querySelectorAll('.btn-add, .btn-del-sm, .btn-danger').forEach(el => el.disabled = true);
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -7153,9 +7252,11 @@ function loadProcTemplate(idx) {
 initTipData();
 applyTranslations();
 applyMode();
+const _sharedLoaded = _loadFromShareHash();
 renderAll();
 renderHelp();
 updateStats();
+if (_sharedLoaded) _applyReadOnlyBanner();
 showOnboard();
 checkWhatsNew();
 // Restore TOGAF state (must run after renderAll so Motivation tab panel exists)
