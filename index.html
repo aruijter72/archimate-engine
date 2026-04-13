@@ -1625,7 +1625,7 @@ const STRINGS = {
     'col-tgt':     'Target Element',
     'col-lopts':   'Label / Options',
     'add-rel':     '+ Add Relationship',
-    'no-elems':    'Add elements to the layers above before creating relationships.',
+    'no-elems':    'No relationships yet. Click <strong>+ Add Relationship</strong> above to create one. You\'ll need elements in the model as source and target.',
     'rel-directed':'Directed arrow',
     'rel-acctype': 'Access type:',
     'rel-strength':'Strength:',
@@ -1765,7 +1765,7 @@ const STRINGS = {
     'col-tgt':     'Doelelement',
     'col-lopts':   'Label / Opties',
     'add-rel':     '+ Relatie toevoegen',
-    'no-elems':    'Voeg eerst elementen toe aan de lagen voordat u relaties aanmaakt.',
+    'no-elems':    'Nog geen relaties. Klik op <strong>+ Relatie toevoegen</strong> hierboven om er een aan te maken. U heeft elementen nodig als bron en doel.',
     'rel-directed':'Gerichte pijl',
     'rel-acctype': 'Toegangstype:',
     'rel-strength':'Sterkte:',
@@ -2933,7 +2933,7 @@ function renderTemplateGrid() {
         <div class="tmpl-card-icon">${tmpl.icon}</div>
         <div class="tmpl-card-name">${tmpl.name}</div>
         ${phaseBadge}
-        <div class="tmpl-card-desc">${tmpl.desc}</div>
+        <div class="tmpl-card-desc">${typeof tmpl.desc === 'object' ? (tmpl.desc[currentLang] || tmpl.desc.en) : tmpl.desc}</div>
         <div class="tmpl-card-meta">${tags}${elCount}</div>
       </button>`;
   }).join('');
@@ -7082,8 +7082,8 @@ function showViews() {
   // Show/hide viewpoints section based on TOGAF toggle state
   const vpSection = document.getElementById('viewpoints-section');
   if (vpSection) vpSection.style.display = _togafVisible ? '' : 'none';
-  if (_togafVisible) renderViewpointsGrid();
-  renderViewsModal();
+  if (_togafVisible) { try { renderViewpointsGrid(); } catch(e) { console.warn('renderViewpointsGrid error', e); } }
+  try { renderViewsModal(); } catch(e) { console.warn('renderViewsModal error', e); }
   document.getElementById('viewsModal').classList.add('open');
 }
 function hideViews() { document.getElementById('viewsModal').classList.remove('open'); }
