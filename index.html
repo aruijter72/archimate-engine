@@ -4033,7 +4033,7 @@ function handleLoadFile(ev) {
       document.getElementById('modelName').value = model.name || '';
       document.getElementById('modelDoc').value  = model.documentation || '';
       renderAll(); updateStats();
-    } catch(err) { alert('Could not load file: ' + err.message); }
+    } catch(err) { showAlert((currentLang==='nl' ? 'Kan bestand niet laden: ' : 'Could not load file: ') + err.message, currentLang==='nl' ? 'Fout' : 'Error'); }
   };
   r.readAsText(f);
   ev.target.value = '';
@@ -6280,7 +6280,7 @@ function handleLoadProcFile(ev) {
       }
       _activeProcId = proc.id;
       renderProcTab();
-    } catch(err) { alert('Could not load file: ' + err.message); }
+    } catch(err) { showAlert((currentLang==='nl' ? 'Kan bestand niet laden: ' : 'Could not load file: ') + err.message, currentLang==='nl' ? 'Fout' : 'Error'); }
   };
   r.readAsText(f);
   ev.target.value = '';
