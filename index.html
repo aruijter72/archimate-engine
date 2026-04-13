@@ -1169,7 +1169,7 @@
 </div>
 
 <!-- ── Template Modal ────────────────────────────────────── -->
-<div id="tmplModal" class="modal-overlay">
+<div id="tmplModal" class="modal-overlay" onclick="if(event.target===this)hideTemplates()">
   <div class="modal-box">
     <div class="modal-header">
       <div class="modal-title" id="tmpl-title-el">📋 Start from a Template</div>
@@ -2958,8 +2958,8 @@ function _doLoadTemplate(idx) {
   model.snapshots = model.snapshots || [];
   document.getElementById('modelName').value = model.name || '';
   document.getElementById('modelDoc').value  = model.documentation || '';
-  renderAll(); updateStats();
   hideTemplates();
+  renderAll(); updateStats();
 }
 
 // ══════════════════════════════════════════════════════════════
