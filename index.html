@@ -3072,16 +3072,21 @@ function filterHelp(query) {
   const content = document.getElementById('helpContent');
   if (!content) return;
   const q = query.trim().toLowerCase();
+  // Searchable units: cards and what's-new entries
+  const units = [...content.querySelectorAll('.ml-card, .wn-entry')];
+  const seps  = [...content.querySelectorAll('.help-section-sep')];
   if (!q) {
-    content.querySelectorAll('.help-searchable').forEach(el => el.style.display = '');
+    units.forEach(el => el.style.display = '');
+    seps.forEach(el  => el.style.display = '');
     const nr = document.getElementById('helpNoResults');
     if (nr) nr.remove();
     return;
   }
+  // Hide separators while searching
+  seps.forEach(el => el.style.display = 'none');
   let anyVisible = false;
-  content.querySelectorAll('.help-searchable').forEach(el => {
-    const text = el.textContent.toLowerCase();
-    const match = text.includes(q);
+  units.forEach(el => {
+    const match = el.textContent.toLowerCase().includes(q);
     el.style.display = match ? '' : 'none';
     if (match) anyVisible = true;
   });
