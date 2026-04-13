@@ -1235,6 +1235,24 @@
   </div>
 </div>
 
+<!-- ── Share Modal ────────────────────────────────────────────── -->
+<div id="shareModal" class="modal-overlay" onclick="if(event.target===this)hideShare()">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-header">
+      <div class="modal-title" id="share-title-el">🔗 Share Model</div>
+      <button class="modal-close" onclick="hideShare()">×</button>
+    </div>
+    <p class="modal-sub" id="share-sub-el">Anyone with this link can view a read-only snapshot of your model. The full model is encoded in the URL — no server required.</p>
+    <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.9rem">
+      <input id="shareLinkInput" type="text" readonly
+             style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:.4rem .75rem;color:var(--white);font-size:.78rem;font-family:monospace;outline:none"
+             onclick="this.select()">
+      <button class="btn btn-primary" id="share-copy-btn" onclick="copyShareLink()" style="white-space:nowrap">📋 Copy</button>
+    </div>
+    <p style="font-size:.75rem;color:var(--muted)" id="share-note-el">The link encodes your current model. If you update the model, generate a new link.</p>
+  </div>
+</div>
+
 <!-- ── Reusable Confirm Modal ─────────────────────────────────── -->
 <div id="confirmModal" class="modal-overlay" onclick="if(event.target===this)cancelConfirm()" style="z-index:3000">
   <div class="modal-box" style="max-width:400px">
@@ -1461,6 +1479,7 @@
         <button class="mi-btn" id="btn-wizard-el" onclick="showWizard();closeMenus()">🪄 Guided Start</button>
         <button class="mi-btn" id="btn-templates-el" onclick="showTemplates();closeMenus()">📋 Templates</button>
         <button class="mi-btn no-print" onclick="printModel();closeMenus()">🖨 Print / Save as PDF</button>
+        <button class="mi-btn no-print" onclick="showShare();closeMenus()">🔗 Share (read-only link)</button>
         <div class="mi-sep"></div>
         <button class="mi-btn danger" id="btn-newmodel-el" onclick="newModel();closeMenus()">🆕 New Model</button>
         <div class="mi-sep"></div>
