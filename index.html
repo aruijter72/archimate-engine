@@ -6190,7 +6190,7 @@ function handleImportDrawio(ev) {
 
 function saveProcJSON() {
   const proc = getActiveProc();
-  if (!proc) { alert('Select a process first.'); return; }
+  if (!proc) { const NL = currentLang === 'nl'; showAlert(NL ? 'Selecteer eerst een proces.' : 'Select a process first.', NL ? 'Let op' : 'Notice'); return; }
   const blob = new Blob([JSON.stringify(proc, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
   const a    = Object.assign(document.createElement('a'), {
@@ -6320,7 +6320,7 @@ function showRolePicker() {
   const proc = getActiveProc(); if (!proc) return;
   const bizElems = (model.elements || []).filter(e => e.layer === 'business');
   if (!bizElems.length) {
-    alert('No Business layer elements found.\nAdd elements in the Business Layer tab first, or use manual entry.');
+    { const NL = currentLang === 'nl'; showAlert(NL ? 'Geen elementen gevonden in de Business-laag.\nVoeg elementen toe in het tabblad Business Layer, of gebruik handmatige invoer.' : 'No Business layer elements found.\nAdd elements in the Business Layer tab first, or use manual entry.', NL ? 'Swimlane importeren' : 'Import Swimlane'); }
     return;
   }
   document.getElementById('role-picker-overlay')?.remove();
