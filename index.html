@@ -5045,7 +5045,8 @@ function exportArchimate() {
   if (broken.length)  warn += t('exp-broken')(broken.length);
   if (warn && !confirm(warn + t('exp-anyway'))) return;
 
-  const extLayout = _autoLayout ? computeDagreLayout() : null;
+  // Canvas positions take priority; dagre fallback if auto-layout toggle is on
+  const extLayout = cvBuildExtLayout() || (_autoLayout ? computeDagreLayout() : null);
   const xml  = generateArchimateXML(extLayout);
   const blob = new Blob([xml], {type:'application/xml;charset=UTF-8'});
   const url  = URL.createObjectURL(blob);
