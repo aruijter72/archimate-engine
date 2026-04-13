@@ -6622,6 +6622,21 @@ function _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww) {
       ww(lbl,11).forEach((ln,li,a) => {
         out += `<text x="${cx}" y="${cy+(li-(a.length-1)/2)*11+4}" text-anchor="middle" font-size="9" font-weight="600" fill="${c.text}">${esc(ln)}</text>`;
       });
+    } else if (s.type==='document') {
+      // Document shape: rectangle with wavy bottom
+      const x0=cx-STEP_W/2, y0=cy-STEP_H/2, w=STEP_W, h=STEP_H, wav=6;
+      const wavY = y0+h-wav;
+      out += `<path d="M${x0},${y0} h${w} v${h-wav} q-${w/4},${wav*2} -${w/2},0 t-${w/2},0 Z" fill="${c.fill}" stroke="${c.stroke}" stroke-width="1.5"/>`;
+      ww(lbl,13).forEach((ln,li,a) => {
+        out += `<text x="${cx}" y="${cy-wav/2+(li-(a.length-1)/2)*12+4}" text-anchor="middle" font-size="10" font-weight="600" fill="${c.text}">${esc(ln)}</text>`;
+      });
+    } else if (s.type==='label') {
+      // Label shape: pentagon with pointed left side
+      const x0=cx-STEP_W/2, y0=cy-STEP_H/2, w=STEP_W, h=STEP_H, pt=8;
+      out += `<polygon points="${x0+pt},${y0} ${x0+w},${y0} ${x0+w},${y0+h} ${x0+pt},${y0+h} ${x0},${cy}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="1.5"/>`;
+      ww(lbl,12).forEach((ln,li,a) => {
+        out += `<text x="${cx+pt/2}" y="${cy+(li-(a.length-1)/2)*12+4}" text-anchor="middle" font-size="10" font-weight="600" fill="${c.text}">${esc(ln)}</text>`;
+      });
     } else {
       out += `<rect x="${cx-STEP_W/2}" y="${cy-STEP_H/2}" width="${STEP_W}" height="${STEP_H}" rx="5" fill="${c.fill}" stroke="${c.stroke}" stroke-width="1.5"/>`;
       ww(lbl,13).forEach((ln,li,a) => {
