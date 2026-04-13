@@ -5380,6 +5380,7 @@ function renderHelp() {
   html += `<div>`;
 
   // ── ArchiMate Quick Start ──────────────────────────────────
+  html += `<div class="help-section-sep"><div class="help-section-sep-line"></div><div class="help-section-sep-label">${NL ? '🏛 ArchiMate' : '🏛 ArchiMate'}</div><div class="help-section-sep-line"></div></div>`;
   if (NL) {
     html += `
     <div class="ml-card" style="margin-bottom:1.25rem">
@@ -5839,7 +5840,9 @@ function renderHelp() {
   </div>`; // close right column
 
   html += `</div>`; // close ml-grid
+  html += `</div>`; // close #helpContent
   panel.innerHTML = html;
+  markWhatsNewSeen();
 }
 
 // ══════════════════════════════════════════════════════════════
