@@ -4843,6 +4843,18 @@ function _cvDragStart(evt, id) {
 }
 
 function _cvMoveHandler(evt) {
+  // Canvas pan
+  if (_cvPan) {
+    const svg = document.getElementById('canvas-svg');
+    if (!svg) return;
+    const pt = _cvSvgCoord(svg, evt);
+    const {startSVGX, startSVGY, origVB} = _cvPan;
+    _cvApplyVB(svg,
+      origVB.x - (pt.x - startSVGX),
+      origVB.y - (pt.y - startSVGY),
+      origVB.w, origVB.h);
+    return;
+  }
   if (!_cvDrag) return;
   const svg = document.getElementById('canvas-svg');
   if (!svg) return;
@@ -4872,6 +4884,13 @@ function _cvMoveHandler(evt) {
 }
 
 function _cvUpHandler(evt) {
+  // End pan
+  if (_cvPan) {
+    const svg = document.getElementById('canvas-svg');
+    if (svg) svg.style.cursor = 'default';
+    _cvPan = null;
+    return;
+  }
   if (!_cvDrag) return;
   const svg = document.getElementById('canvas-svg');
   if (svg) {
@@ -4882,7 +4901,6 @@ function _cvUpHandler(evt) {
     svg.style.cursor = 'default';
   }
   _cvDrag = null;
-  // Re-render with proper border-intersection arrow endpoints
   renderCanvas();
 }
 
