@@ -4585,6 +4585,7 @@ function cvSmartLayout() {
   }
 
   model.elementPositions = positions;
+  _cvVB = null; // reset zoom so the new layout fits
   renderCanvas();
   const NL = currentLang === 'nl';
   showToast(NL ? '⚡ Slimme layout toegepast' : '⚡ Smart layout applied');
@@ -4947,12 +4948,14 @@ function _cvUpHandler(evt) {
 
 function cvResetLayout() {
   model.elementPositions = {};
+  _cvVB = null;
   _cvEnsurePositions();
   renderCanvas();
 }
 
 function cvClearPositions() {
   model.elementPositions = {};
+  _cvVB = null;
   renderCanvas();
 }
 
