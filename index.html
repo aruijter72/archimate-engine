@@ -4776,19 +4776,60 @@ function renderCanvas() {
   }
   svg += `</g></svg>`;
 
-  const hint = NL ? '🖱 Sleep elementen om te positioneren — posities worden 1-op-1 geëxporteerd naar Archi'
-                  : '🖱 Drag elements to position — coordinates export 1-to-1 into Archi';
+  const hint = NL ? '🖱 Sleep om te verplaatsen · Scroll of ⊞/⊟ om in/uit te zoomen · Sleep leeg gebied om te pannen'
+                  : '🖱 Drag to move · Scroll or ⊞/⊟ to zoom · Drag empty area to pan';
 
   panel.innerHTML = `
   <div class="canvas-toolbar">
     <span class="canvas-hint">${hint}</span>
-    <div style="display:flex;gap:.5rem;align-items:center">
-      <button class="btn btn-sm" style="background:rgba(201,163,85,.12);border-color:rgba(201,163,85,.4);color:var(--gold)" onclick="cvSmartLayout()" title="${NL?'Past relaties-bewuste lay-out toe zonder overlapping':'Applies relationship-aware layout with no overlaps'}">⚡ ${NL?'Slimme layout':'Smart layout'}</button>
-      <button class="btn btn-sm" onclick="cvResetLayout()">↺ ${NL?'Standaard':'Default'}</button>
-      <button class="btn-canvas-danger" onclick="cvClearPositions()">✕ ${NL?'Wis posities':'Clear'}</button>
+    <div style="display:flex;gap:.4rem;align-items:center">
+      <button class="btn btn-sm" style="background:rgba(201,163,85,.12);border-color:rgba(201,163,85,.4);color:var(--gold)" onclick="cvSmartLayout()" title="${NL?'Relaties-bewuste lay-out zonder overlapping':'Relationship-aware layout, no overlaps'}">⚡ ${NL?'Slim':'Smart'}</button>
+      <button class="btn btn-sm" onclick="cvResetLayout()" title="${NL?'Standaard lay-out':'Default layout'}">↺</button>
+      <button class="btn-canvas-danger" onclick="cvClearPositions()" title="${NL?'Wis posities':'Clear positions'}">✕</button>
+      <div style="display:flex;align-items:center;gap:.2rem;margin-left:.35rem;border-left:1px solid var(--border);padding-left:.4rem">
+        <button class="btn btn-sm" onclick="cvZoomBy(1.3)" title="${NL?'Inzoomen':'Zoom in'}" style="font-size:1rem;padding:.1rem .45rem;line-height:1">⊞</button>
+        <span id="cv-zoom-pct" style="font-size:.72rem;color:var(--muted);min-width:2.8rem;text-align:center">100%</span>
+        <button class="btn btn-sm" onclick="cvZoomBy(1/1.3)" title="${NL?'Uitzoomen':'Zoom out'}" style="font-size:1rem;padding:.1rem .45rem;line-height:1">⊟</button>
+        <button class="btn btn-sm" onclick="cvZoomFit()" title="${NL?'Alles weergeven':'Fit all'}" style="padding:.1rem .45rem">⊡</button>
+      </div>
     </div>
   </div>
   <div class="canvas-wrap">${svg}</div>`;
+
+  // Attach zoom + pan events to the freshly-rendered SVG
+  const svgEl = document.getElementById('canvas-svg');
+  if (svgEl) {
+    // Save fit-all viewBox
+    const vbParts = svgEl.getAttribute('viewBox').split(' ').map(Number);
+    _cvInitVB = {x:vbParts[0], y:vbParts[1], w:vbParts[2], h:vbParts[3]};
+    // Restore previous zoom/pan if any
+    if (_cvVB) _cvApplyVB(svgEl, _cvVB.x, _cvVB.y, _cvVB.w, _cvVB.h);
+    else _cvUpdateZoomLabel();
+
+    // Scroll-wheel zoom (centred on cursor)
+    svgEl.addEventListener('wheel', evt => {
+      evt.preventDefault();
+      const factor = evt.deltaY < 0 ? 1.15 : 1 / 1.15;
+      const vb = _cvVB || _cvInitVB; if (!vb) return;
+      const pt = _cvSvgCoord(svgEl, evt);
+      const nw = vb.w / factor, nh = vb.h / factor;
+      _cvApplyVB(svgEl,
+        pt.x - (pt.x - vb.x) / factor,
+        pt.y - (pt.y - vb.y) / factor,
+        nw, nh);
+    }, {passive: false});
+
+    // Drag-to-pan on empty canvas (not on elements)
+    svgEl.addEventListener('mousedown', evt => {
+      if (evt.target.closest('.cv-elem')) return;
+      if (evt.button !== 0) return;
+      evt.preventDefault();
+      const pt = _cvSvgCoord(svgEl, evt);
+      const vb = _cvVB || _cvInitVB || {x:0,y:0,w:500,h:500};
+      _cvPan = {startSVGX: pt.x, startSVGY: pt.y, origVB: {...vb}};
+      svgEl.style.cursor = 'grabbing';
+    });
+  }
 }
 
 // Elbow (orthogonal) path between two rectangles.
