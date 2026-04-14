@@ -3523,7 +3523,7 @@ function renderRelationships() {
           <span class="ref-name">${rt.label}</span>
           <span class="ref-symbol">${rt.sym}</span>
         </div>
-        <div class="ref-desc">${rt.desc}</div>
+        <div class="ref-desc">${typeof rt.desc==='object'?(rt.desc[currentLang]||rt.desc.en):rt.desc}</div>
       </div>`;
   }
   html += `</div></details>`;
