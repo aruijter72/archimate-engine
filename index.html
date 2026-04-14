@@ -4879,6 +4879,38 @@ function cvBuildExtLayout() {
   return Object.keys(layout).length ? layout : null;
 }
 
+// Compute Archi-format elbow bendpoints for a connection between two elements.
+// Archi stores bendpoints as offsets from BOTH source and target element centres,
+// so it can maintain relative routing when elements are moved.
+// Returns [{startX, startY, endX, endY}, ...] (two points for the 90° elbow).
+function _archElbowBendpoints(sx, sy, tx, ty, ew, eh) {
+  const scx = sx + ew/2, scy = sy + eh/2;
+  const tcx = tx + ew/2, tcy = ty + eh/2;
+  const dx = tcx - scx, dy = tcy - scy;
+
+  if (Math.abs(dy) >= Math.abs(dx)) {
+    // Primarily vertical — exit bottom/top of source, enter top/bottom of target
+    const goDown = dy > 0;
+    const exitY  = goDown ? sy + eh : sy;
+    const entY   = goDown ? ty      : ty + eh;
+    const midY   = Math.round((exitY + entY) / 2);
+    return [
+      { startX: 0,                       startY: midY - scy, endX: Math.round(scx-tcx), endY: midY - tcy },
+      { startX: Math.round(tcx - scx),   startY: midY - scy, endX: 0,                   endY: midY - tcy }
+    ];
+  } else {
+    // Primarily horizontal — exit right/left of source, enter left/right of target
+    const goRight = dx > 0;
+    const exitX   = goRight ? sx + ew : sx;
+    const entX    = goRight ? tx      : tx + ew;
+    const midX    = Math.round((exitX + entX) / 2);
+    return [
+      { startX: midX - scx, startY: 0,                       endX: midX - tcx, endY: Math.round(scy-tcy) },
+      { startX: midX - scx, startY: Math.round(tcy - scy),   endX: midX - tcx, endY: 0                   }
+    ];
+  }
+}
+
 function generateArchimateXML(extLayout = null) {
   const mid  = genId(), bfId = genId(), afId = genId(), tfId = genId();
   const mfId = genId(), sfId = genId();
