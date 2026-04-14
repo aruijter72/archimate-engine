@@ -5080,11 +5080,21 @@ function generateArchimateXML(extLayout = null) {
       vxml += `      <child xsi:type="archimate:DiagramObject" id="${d.diagId}" archimateElement="${el.id}"${tcAttr}>\n`;
       vxml += `        <bounds x="${d.x}" y="${d.y}" width="${EW}" height="${EH}"/>\n`;
       for (const c of (srcConns[d.diagId]||[])) {
-        if (!diagMap[model.elements.find(e2=>e2.id===model.relationships.find(r=>r.id===c.relId)?.targetId)?.id]) continue;
-        // Include connection only if target is also in view
         const relTarget = model.relationships.find(r=>r.id===c.relId)?.targetId;
+        if (!diagMap[model.elements.find(e2=>e2.id===relTarget)?.id]) continue;
         if (!inViewIds.has(relTarget)) continue;
-        vxml += `        <sourceConnection xsi:type="archimate:Connection" id="${c.connId}" source="${d.diagId}" target="${c.tgtDiagId}" archimateRelationship="${c.relId}"/>\n`;
+        const connAttr = `xsi:type="archimate:Connection" id="${c.connId}" source="${d.diagId}" target="${c.tgtDiagId}" archimateRelationship="${c.relId}"`;
+        // Emit elbow bendpoints when canvas positions are set
+        const sd = diagMap[el.id], td = diagMap[relTarget];
+        if (extLayout && sd && td) {
+          const bps = _archElbowBendpoints(sd.x, sd.y, td.x, td.y, EW, EH);
+          const bpXml = bps.map(b =>
+            `          <bendpoint startX="${b.startX}" startY="${b.startY}" endX="${b.endX}" endY="${b.endY}"/>\n`
+          ).join('');
+          vxml += `        <sourceConnection ${connAttr}>\n${bpXml}        </sourceConnection>\n`;
+        } else {
+          vxml += `        <sourceConnection ${connAttr}/>\n`;
+        }
       }
       vxml += `      </child>\n`;
     }
