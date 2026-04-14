@@ -4807,8 +4807,10 @@ function renderCanvas() {
     if (_cvVB) _cvApplyVB(svgEl, _cvVB.x, _cvVB.y, _cvVB.w, _cvVB.h);
     else _cvUpdateZoomLabel();
 
-    // Scroll-wheel zoom (centred on cursor)
+    // Pinch-to-zoom only (ctrlKey = true for pinch/trackpad zoom gesture).
+    // Regular scroll (ctrlKey = false) is left untouched so the page scrolls normally.
     svgEl.addEventListener('wheel', evt => {
+      if (!evt.ctrlKey) return;
       evt.preventDefault();
       const factor = evt.deltaY < 0 ? 1.15 : 1 / 1.15;
       const vb = _cvVB || _cvInitVB; if (!vb) return;
