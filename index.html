@@ -4552,6 +4552,22 @@ function _cvEnsurePositions() {
 
 let _cvDrag = null;
 
+// Per-relationship-type visual style for the canvas
+// [strokeDash, strokeWidth, markerEndId, strokeOpacity, markerStartId|null]
+const CV_REL_STYLE = {
+  AssociationRelationship:   ['5 4', 1.2, 'cv-arr-open', 0.40, null],
+  RealizationRelationship:   ['7 3', 1.4, 'cv-arr-open', 0.55, null],
+  AssignmentRelationship:    ['',    1.5, 'cv-arr-fill', 0.60, 'cv-dot'],
+  AggregationRelationship:   ['',    1.5, null,          0.55, 'cv-diamond-o'],
+  CompositionRelationship:   ['',    1.5, null,          0.60, 'cv-diamond-f'],
+  ServingRelationship:       ['',    1.5, 'cv-arr-open', 0.60, null],
+  AccessRelationship:        ['3 3', 1.2, 'cv-arr-open', 0.45, null],
+  InfluenceRelationship:     ['7 3', 1.2, 'cv-arr-open', 0.45, null],
+  TriggeringRelationship:    ['',    2.0, 'cv-arr-fill', 0.70, null],
+  FlowRelationship:          ['6 3', 1.8, 'cv-arr-fill', 0.55, null],
+  SpecializationRelationship:['',    1.5, 'cv-tri',      0.55, null],
+};
+
 function renderCanvas() {
   const panel = document.getElementById('tab-canvas');
   if (!panel) return;
@@ -4570,7 +4586,7 @@ function renderCanvas() {
   // Compute viewBox from actual element positions
   const allPos = model.elements.map(e => pos[e.id]).filter(Boolean);
   const minX = Math.min(...allPos.map(p => p.x)) - PAD;
-  const minY = Math.min(...allPos.map(p => p.y)) - PAD - 20; // extra room for layer label
+  const minY = Math.min(...allPos.map(p => p.y)) - PAD - 20;
   const maxX = Math.max(...allPos.map(p => p.x)) + EW + PAD;
   const maxY = Math.max(...allPos.map(p => p.y)) + EH + PAD;
   const vw = maxX - minX, vh = maxY - minY;
@@ -4582,21 +4598,30 @@ function renderCanvas() {
     if (!elems.length) continue;
     const lxs = elems.map(e => pos[e.id].x), lys = elems.map(e => pos[e.id].y);
     layerBands[key] = {
-      x: Math.min(...lxs) - PAD/2,  y: Math.min(...lys) - PAD/2 - 14,
+      x: Math.min(...lxs) - PAD/2, y: Math.min(...lys) - PAD/2 - 14,
       w: Math.max(...lxs) + EW - Math.min(...lxs) + PAD,
       h: Math.max(...lys) + EH - Math.min(...lys) + PAD + 14
     };
   }
 
-  // SVG content
+  // SVG — all markers in defs
   let svg = `<svg id="canvas-svg" xmlns="http://www.w3.org/2000/svg"
     viewBox="${minX} ${minY} ${vw} ${vh}"
     style="width:100%;display:block;background:var(--bg);border-radius:6px;cursor:default;user-select:none"
     onmouseup="_cvUpHandler(event)" onmouseleave="_cvUpHandler(event)" onmousemove="_cvMoveHandler(event)">
   <defs>
-    <marker id="cv-arr" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
-      <polygon points="0 0,7 2.5,0 5" fill="rgba(138,154,181,0.65)"/>
-    </marker>
+    <marker id="cv-arr-fill" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+      <polygon points="0 0,7 2.5,0 5" fill="rgba(138,154,181,0.75)"/></marker>
+    <marker id="cv-arr-open" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polyline points="0 0,8 3,0 6" fill="none" stroke="rgba(138,154,181,0.75)" stroke-width="1.3"/></marker>
+    <marker id="cv-tri" markerWidth="8" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="8 0,0 3.5,8 7" fill="none" stroke="rgba(138,154,181,0.75)" stroke-width="1.2"/></marker>
+    <marker id="cv-dot" markerWidth="6" markerHeight="6" refX="0" refY="3" orient="auto">
+      <circle cx="3" cy="3" r="2.5" fill="rgba(138,154,181,0.75)"/></marker>
+    <marker id="cv-diamond-o" markerWidth="11" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 3.5,5 0,10 3.5,5 7" fill="none" stroke="rgba(138,154,181,0.7)" stroke-width="1.1"/></marker>
+    <marker id="cv-diamond-f" markerWidth="11" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 3.5,5 0,10 3.5,5 7" fill="rgba(138,154,181,0.7)"/></marker>
   </defs>`;
 
   // Layer bands
@@ -4604,33 +4629,26 @@ function renderCanvas() {
   for (const [key, b] of Object.entries(layerBands)) {
     const f = CV.FILL[key];
     svg += `<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}"
-      fill="${f.band}" stroke="${f.stroke}" stroke-opacity="0.22" stroke-width="1" rx="5"/>`;
-    svg += `<text x="${b.x+9}" y="${b.y+11}" font-size="8.5" font-weight="800" letter-spacing="0.09em"
+      fill="${f.band}" stroke="${f.stroke}" stroke-opacity="0.22" stroke-width="1" rx="5"/>
+    <text x="${b.x+9}" y="${b.y+11}" font-size="8.5" font-weight="800" letter-spacing="0.09em"
       fill="${f.text}" fill-opacity="0.5" font-family="Catamaran,system-ui">${f.lbl}</text>`;
   }
   svg += `</g>`;
 
-  // Relationships
+  // Relationships — elbow routing + per-type styling
   svg += `<g id="cv-rels">`;
   for (const r of model.relationships) {
     if (!r.sourceId || !r.targetId) continue;
     const sp = pos[r.sourceId], tp = pos[r.targetId];
     if (!sp || !tp) continue;
-    const scx = sp.x + EW/2, scy = sp.y + EH/2;
-    const tcx = tp.x + EW/2, tcy = tp.y + EH/2;
-    const dx = tcx-scx, dy = tcy-scy, len = Math.sqrt(dx*dx+dy*dy);
-    if (len < 2) continue;
-    const ux = dx/len, uy = dy/len;
-    const d1 = _cvBorderDist(ux, uy, EW/2, EH/2);
-    const d2 = _cvBorderDist(-ux, -uy, EW/2, EH/2);
-    const x1 = (scx + ux*d1).toFixed(1), y1 = (scy + uy*d1).toFixed(1);
-    const x2 = (tcx - ux*(d2+9)).toFixed(1), y2 = (tcy - uy*(d2+9)).toFixed(1);
-    const dashed = r.type === 'AssociationRelationship' || r.type === 'InfluenceRelationship';
-    svg += `<line class="cv-rel" data-src="${r.sourceId}" data-tgt="${r.targetId}"
-      x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
-      stroke="rgba(138,154,181,0.45)" stroke-width="1.5"
-      ${dashed ? 'stroke-dasharray="5 3"' : ''}
-      marker-end="url(#cv-arr)"/>`;
+    const [dash, sw, mEnd, opacity, mStart] = CV_REL_STYLE[r.type] || ['', 1.5, 'cv-arr-fill', 0.55, null];
+    const stroke = `rgba(138,154,181,${opacity})`;
+    const path = _cvElbowPath(sp.x, sp.y, EW, EH, tp.x, tp.y, EW, EH, mEnd, mStart);
+    svg += `<path class="cv-rel" data-src="${r.sourceId}" data-tgt="${r.targetId}"
+      d="${path}" fill="none" stroke="${stroke}" stroke-width="${sw}"
+      ${dash ? `stroke-dasharray="${dash}"` : ''}
+      ${mEnd ? `marker-end="url(#${mEnd})"` : ''}
+      ${mStart ? `marker-start="url(#${mStart})"` : ''}/>`;
   }
   svg += `</g>`;
 
@@ -4640,13 +4658,12 @@ function renderCanvas() {
     const p = pos[el.id]; if (!p) continue;
     const f = CV.FILL[el.layer] || CV.FILL.business;
     const typeLabel = TYPE_LABELS[el.type] || el.type;
-    const nm = (el.name || '—');
+    const nm = el.name || '—';
     const shortNm   = nm.length > 21 ? nm.slice(0,20) + '…' : nm;
     const shortType = typeLabel.length > 25 ? typeLabel.slice(0,24) + '…' : typeLabel;
     svg += `<g class="cv-elem" data-id="${el.id}" transform="translate(${p.x},${p.y})"
       onmousedown="_cvDragStart(event,'${el.id}')" style="cursor:grab">
-      <rect width="${EW}" height="${EH}" rx="4"
-        fill="${f.elem}" stroke="${f.stroke}" stroke-width="1.3"/>
+      <rect width="${EW}" height="${EH}" rx="4" fill="${f.elem}" stroke="${f.stroke}" stroke-width="1.3"/>
       <text x="${EW/2}" y="17" text-anchor="middle" font-size="8" font-weight="700" letter-spacing="0.04em"
         fill="${f.text}" fill-opacity="0.85" font-family="Catamaran,system-ui">${shortType}</text>
       <line x1="10" x2="${EW-10}" y1="22" y2="22" stroke="${f.stroke}" stroke-opacity="0.28" stroke-width="0.8"/>
@@ -4668,6 +4685,34 @@ function renderCanvas() {
     </div>
   </div>
   <div class="canvas-wrap">${svg}</div>`;
+}
+
+// Elbow (orthogonal) path between two rectangles.
+// Returns SVG path d-string with a 90° bend at the midpoint.
+function _cvElbowPath(sx, sy, sw, sh, tx, ty, tw, th, mEnd, mStart) {
+  const scx = sx + sw/2, scy = sy + sh/2;
+  const tcx = tx + tw/2, tcy = ty + th/2;
+  const dx = tcx - scx, dy = tcy - scy;
+  const arrowOff = mEnd ? 9 : 0;  // offset endpoint for arrowhead
+  const srcOff   = mStart ? 6 : 0; // offset start for source marker
+
+  if (Math.abs(dy) >= Math.abs(dx)) {
+    // Primarily vertical — exit top/bottom, bend at midY
+    const goDown = dy > 0;
+    const exitY  = goDown ? sy + sh : sy;
+    const entY   = goDown ? ty - arrowOff : ty + th + arrowOff;
+    const startY = goDown ? exitY + srcOff : exitY - srcOff;
+    const midY   = (exitY + (goDown ? ty : ty + th)) / 2;
+    return `M ${scx.toFixed(1)} ${startY.toFixed(1)} L ${scx.toFixed(1)} ${midY.toFixed(1)} L ${tcx.toFixed(1)} ${midY.toFixed(1)} L ${tcx.toFixed(1)} ${entY.toFixed(1)}`;
+  } else {
+    // Primarily horizontal — exit left/right, bend at midX
+    const goRight = dx > 0;
+    const exitX   = goRight ? sx + sw : sx;
+    const entX    = goRight ? tx - arrowOff : tx + tw + arrowOff;
+    const startX  = goRight ? exitX + srcOff : exitX - srcOff;
+    const midX    = (exitX + (goRight ? tx : tx + tw)) / 2;
+    return `M ${startX.toFixed(1)} ${scy.toFixed(1)} L ${midX.toFixed(1)} ${scy.toFixed(1)} L ${midX.toFixed(1)} ${tcy.toFixed(1)} L ${entX.toFixed(1)} ${tcy.toFixed(1)}`;
+  }
 }
 
 // Distance from center (cx,cy) to rectangle border in direction (ux,uy)
