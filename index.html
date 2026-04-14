@@ -4753,8 +4753,9 @@ function renderCanvas() {
   <div class="canvas-toolbar">
     <span class="canvas-hint">${hint}</span>
     <div style="display:flex;gap:.5rem;align-items:center">
-      <button class="btn btn-sm" onclick="cvResetLayout()">↺ ${NL?'Herstel layout':'Reset layout'}</button>
-      <button class="btn-canvas-danger" onclick="cvClearPositions()">✕ ${NL?'Wis posities':'Clear positions'}</button>
+      <button class="btn btn-sm" style="background:rgba(201,163,85,.12);border-color:rgba(201,163,85,.4);color:var(--gold)" onclick="cvSmartLayout()" title="${NL?'Past relaties-bewuste lay-out toe zonder overlapping':'Applies relationship-aware layout with no overlaps'}">⚡ ${NL?'Slimme layout':'Smart layout'}</button>
+      <button class="btn btn-sm" onclick="cvResetLayout()">↺ ${NL?'Standaard':'Default'}</button>
+      <button class="btn-canvas-danger" onclick="cvClearPositions()">✕ ${NL?'Wis posities':'Clear'}</button>
     </div>
   </div>
   <div class="canvas-wrap">${svg}</div>`;
