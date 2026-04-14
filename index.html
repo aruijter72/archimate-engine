@@ -3595,7 +3595,7 @@ function renderRelationships() {
           <td><select class="rel-select" onchange="setRel('${rel.id}','sourceId',this.value)">${sOpts}</select></td>
           <td>
             <select class="rel-select" onchange="setRel('${rel.id}','type',this.value)">${rtOpts}</select>
-            <div class="rel-desc">${rt.desc}</div>
+            <div class="rel-desc">${typeof rt.desc==='object'?(rt.desc[currentLang]||rt.desc.en):rt.desc}</div>
             ${relWarn ? `<div class="rel-warning">⚠ ${relWarn}</div>` : ''}
           </td>
           <td><select class="rel-select" onchange="setRel('${rel.id}','targetId',this.value)">${tOpts}</select></td>
@@ -3631,6 +3631,8 @@ function renderAll() {
   renderLayer('strategy');
   renderRelationships();
   renderProcTab();
+  // Always refresh canvas so it stays in sync with model changes
+  renderCanvas();
 }
 
 function updateStats() {
