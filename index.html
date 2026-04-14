@@ -4748,14 +4748,22 @@ function _cvMoveHandler(evt) {
   // Translate element group
   const g = svg.querySelector(`[data-id="${_cvDrag.id}"]`);
   if (g) g.setAttribute('transform', `translate(${nx},${ny})`);
-  // Update relationship line endpoints (center approximation during drag)
+  // Recompute elbow paths for connected relationships during drag
+  const pos = model.elementPositions;
   const {EW, EH} = CV;
-  const cx = nx + EW/2, cy = ny + EH/2;
-  svg.querySelectorAll(`line.cv-rel[data-src="${_cvDrag.id}"]`).forEach(l => {
-    l.setAttribute('x1', cx.toFixed(1)); l.setAttribute('y1', cy.toFixed(1));
+  svg.querySelectorAll(`path.cv-rel[data-src="${_cvDrag.id}"]`).forEach(p => {
+    const tgtId = p.dataset.tgt;
+    const tp = pos[tgtId]; if (!tp) return;
+    const mEnd = p.getAttribute('marker-end')?.match(/url\(#([\w-]+)\)/)?.[1] || null;
+    const mStart = p.getAttribute('marker-start')?.match(/url\(#([\w-]+)\)/)?.[1] || null;
+    p.setAttribute('d', _cvElbowPath(nx, ny, EW, EH, tp.x, tp.y, EW, EH, mEnd, mStart));
   });
-  svg.querySelectorAll(`line.cv-rel[data-tgt="${_cvDrag.id}"]`).forEach(l => {
-    l.setAttribute('x2', cx.toFixed(1)); l.setAttribute('y2', cy.toFixed(1));
+  svg.querySelectorAll(`path.cv-rel[data-tgt="${_cvDrag.id}"]`).forEach(p => {
+    const srcId = p.dataset.src;
+    const sp = pos[srcId]; if (!sp) return;
+    const mEnd = p.getAttribute('marker-end')?.match(/url\(#([\w-]+)\)/)?.[1] || null;
+    const mStart = p.getAttribute('marker-start')?.match(/url\(#([\w-]+)\)/)?.[1] || null;
+    p.setAttribute('d', _cvElbowPath(sp.x, sp.y, EW, EH, nx, ny, EW, EH, mEnd, mStart));
   });
 }
 
