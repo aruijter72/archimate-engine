@@ -3901,6 +3901,8 @@ function getActiveKey() {
 
 function setSettingsProvider(p) {
   _settingsProvider = p;
+  // Persist immediately so getProvider() stays in sync everywhere
+  try { localStorage.setItem(_PROVIDER_STORE, p); } catch(e) {}
   const antBtn  = document.getElementById('settings-provider-anthropic');
   const oaiBtn  = document.getElementById('settings-provider-openai');
   const antWrap = document.getElementById('settings-anthropic-wrap');
