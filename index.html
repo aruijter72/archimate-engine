@@ -7337,7 +7337,9 @@ function renderProcPreview() {
       svg += `<rect x="0" y="${y}" width="${svgW}" height="${LANE_H}" fill="${PV_LANE_COLORS[li%PV_LANE_COLORS.length]}" stroke="#e8e8ee" stroke-width="1"/>`;
       svg += `<rect x="0" y="${y}" width="${LANE_STRIP}" height="${LANE_H}" fill="#f0f0f5" stroke="#dcdce8" stroke-width="1"/>`;
       const lname = lanes[li]?.name || `Lane ${li+1}`;
-      svg += `<text transform="translate(${LANE_STRIP/2},${y+LANE_H/2}) rotate(-90)" text-anchor="middle" font-size="10" font-weight="600" fill="#555">${esc(lname)}</text>`;
+      const _ll1 = _svgLaneLines(lname, 18);
+      const _ll1H = 13, _ll1Y = y + LANE_H/2 - (_ll1.length-1)*_ll1H/2;
+      _ll1.forEach((ln,ii) => { svg += `<text x="${LANE_STRIP/2}" y="${_ll1Y+ii*_ll1H}" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="600" fill="#555">${esc(ln)}</text>`; });
     }
     // Vertical column dividers
     svg += `<line x1="${LANE_STRIP}" y1="${PROC_HDR}" x2="${LANE_STRIP}" y2="${svgH}" stroke="#ccc" stroke-width="1"/>`;
@@ -7395,7 +7397,9 @@ function renderProcPreview() {
       svg += `<rect x="0" y="${y}" width="${svgW}" height="${LANE_H}" fill="${PV_LANE_COLORS2[i%PV_LANE_COLORS2.length]}" stroke="#e8e8ee" stroke-width="1"/>`;
       svg += `<rect x="0" y="${y}" width="${LANE_STRIP}" height="${LANE_H}" fill="#f0f0f5" stroke="#dcdce8" stroke-width="1"/>`;
       const lname = lanes[i]?.name || `Lane ${i+1}`;
-      svg += `<text transform="translate(${LANE_STRIP/2},${y+LANE_H/2}) rotate(-90)" text-anchor="middle" font-size="10" font-weight="600" fill="#555">${esc(lname)}</text>`;
+      const _ll2 = _svgLaneLines(lname, 18);
+      const _ll2H = 13, _ll2Y = y + LANE_H/2 - (_ll2.length-1)*_ll2H/2;
+      _ll2.forEach((ln,ii) => { svg += `<text x="${LANE_STRIP/2}" y="${_ll2Y+ii*_ll2H}" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="600" fill="#555">${esc(ln)}</text>`; });
     }
     svg += `<line x1="${LANE_STRIP}" y1="${PROC_HDR}" x2="${LANE_STRIP}" y2="${svgH}" stroke="#ccc" stroke-width="1"/>`;
 
