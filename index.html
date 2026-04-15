@@ -7422,6 +7422,24 @@ function renderProcPreview() {
 }
 
 // Shared step shape renderer (returns SVG string) — light-bg palette
+// Split a lane name into at most 2 lines for SVG rendering (horizontal text).
+// maxChars is the approximate character budget per line.
+function _svgLaneLines(text, maxChars) {
+  if (!text || text.length <= maxChars) return [text || ''];
+  const words = text.split(' ');
+  if (words.length < 2) return [text.slice(0, maxChars - 1) + '…'];
+  let line1 = '', line2 = '';
+  for (const w of words) {
+    if ((line1 + (line1 ? ' ' : '') + w).length <= maxChars) {
+      line1 += (line1 ? ' ' : '') + w;
+    } else {
+      line2 += (line2 ? ' ' : '') + w;
+    }
+  }
+  if (line2.length > maxChars) line2 = line2.slice(0, maxChars - 1) + '…';
+  return line2 ? [line1, line2] : [line1];
+}
+
 function _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww) {
   // Light-background fill/stroke/text triples per type
   const LIGHT = {
