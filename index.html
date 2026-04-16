@@ -4370,6 +4370,344 @@ function openAsSwimlane() {
   showToast(msg, 'proc');
 }
 
+// ── Generate Flow from Architecture ───────────────────────────
+
+const PLAIN_LANG = {
+  // Business
+  BusinessActor:         { en: 'A person or organisation that takes part in the process.',        nl: 'Een persoon of organisatie die deelneemt aan het proces.' },
+  BusinessRole:          { en: 'A responsibility or capability assigned to an actor.',              nl: 'Een verantwoordelijkheid of bekwaamheid die aan een actor is toegewezen.' },
+  BusinessCollaboration: { en: 'Two or more roles working together on a shared goal.',             nl: 'Twee of meer rollen die samenwerken aan een gezamenlijk doel.' },
+  BusinessProcess:       { en: 'A sequence of activities that deliver a business result.',         nl: 'Een reeks activiteiten die een bedrijfsresultaat opleveren.' },
+  BusinessFunction:      { en: 'A set of related business behaviours grouped by skill or purpose.',nl: 'Een set van gerelateerde bedrijfsgedragingen gegroepeerd op vaardigheid of doel.' },
+  BusinessService:       { en: 'An explicitly defined result that the business delivers.',         nl: 'Een expliciet gedefinieerd resultaat dat het bedrijf levert.' },
+  BusinessInteraction:   { en: 'A unit of collective behaviour performed by two or more roles.',   nl: 'Een eenheid van collectief gedrag uitgevoerd door twee of meer rollen.' },
+  BusinessEvent:         { en: 'Something that happens that triggers or results from a process.',  nl: 'Iets dat gebeurt en een proces triggert of het gevolg is van een proces.' },
+  BusinessObject:        { en: 'A passive element used or produced by the business.',              nl: 'Een passief element dat door het bedrijf wordt gebruikt of geproduceerd.' },
+  // Application
+  ApplicationComponent:  { en: 'A software unit that encapsulates its behaviour and data.',        nl: 'Een software-eenheid die zijn gedrag en data inkapselt.' },
+  ApplicationService:    { en: 'An explicitly defined result that an application delivers.',       nl: 'Een expliciet gedefinieerd resultaat dat een applicatie levert.' },
+  ApplicationFunction:   { en: 'Automated behaviour performed by an application component.',      nl: 'Geautomatiseerd gedrag uitgevoerd door een applicatiecomponent.' },
+  ApplicationProcess:    { en: 'A sequence of steps carried out by an application.',              nl: 'Een reeks stappen die door een applicatie worden uitgevoerd.' },
+  ApplicationInteraction:{ en: 'Collective behaviour performed by two or more application components.', nl: 'Collectief gedrag uitgevoerd door twee of meer applicatiecomponenten.' },
+  DataObject:            { en: 'Data that the application manages or operates on.',               nl: 'Data die de applicatie beheert of mee werkt.' },
+  // Technology
+  Node:                  { en: 'A deployment unit that hosts and executes software.',             nl: 'Een inzetbaarheid die software host en uitvoert.' },
+  TechnologyService:     { en: 'An explicitly defined result that the infrastructure delivers.', nl: 'Een expliciet gedefinieerd resultaat dat de infrastructuur levert.' },
+  TechnologyFunction:    { en: 'Automated behaviour performed by infrastructure.',               nl: 'Geautomatiseerd gedrag uitgevoerd door infrastructuur.' },
+  TechnologyProcess:     { en: 'A sequence of steps carried out by infrastructure.',             nl: 'Een reeks stappen die door infrastructuur worden uitgevoerd.' },
+  Artifact:              { en: 'A piece of data or software stored on infrastructure.',          nl: 'Een stuk data of software opgeslagen op infrastructuur.' },
+  SystemSoftware:        { en: 'Software that manages hardware or provides platform services.',  nl: 'Software die hardware beheert of platformdiensten levert.' },
+  Device:                { en: 'A hardware resource used by the infrastructure.',                nl: 'Een hardwarebron die door de infrastructuur wordt gebruikt.' },
+};
+
+function _archTypeToStepType(archType) {
+  if (!archType) return 'task';
+  if (archType.includes('Event'))  return 'start';
+  if (archType.includes('Object') || archType === 'DataObject' || archType === 'Artifact') return 'document';
+  return 'task';
+}
+
+function showFlowGenModal() {
+  const NL = currentLang === 'nl';
+  const hasArchi = (model.elements || []).length > 0;
+
+  // Update bilingual labels
+  const t = {
+    title:     NL ? '⟳ Stroomdiagram genereren uit Architectuur' : '⟳ Generate Flow from Architecture',
+    sub:       NL ? 'Genereert automatisch een swimlane-diagram door relaties over architectuurlagen te traceren. Actoren en Rollen worden rijstroken; Processen en Services worden stappen; Triggering / Stroom / Serving-relaties worden verbindingen.'
+                  : 'Auto-generate a swimlane diagram by tracing relationships across your architecture layers. Actors and Roles become lanes; Processes and Services become steps; Triggering / Flow / Serving relationships become connections.',
+    nameLbl:   NL ? 'Procesnaam' : 'Process name',
+    layersLbl: NL ? 'Lagen opnemen' : 'Include layers',
+    bizLbl:    NL ? 'Business-laag' : 'Business Layer',
+    bizDesc:   NL ? 'Actoren, Rollen, Processen, Functies (altijd opgenomen)' : 'Actors, Roles, Processes, Functions (always included)',
+    appLbl:    NL ? 'Applicatielaag' : 'Application Layer',
+    appDesc:   NL ? 'Componenten, Services, Functies' : 'Components, Services, Functions',
+    techLbl:   NL ? 'Technologielaag' : 'Technology Layer',
+    techDesc:  NL ? 'Infrastructuurknooppunten, Systeemservices' : 'Infrastructure nodes, System Services',
+    cancel:    NL ? 'Annuleren' : 'Cancel',
+    generate:  NL ? '⟳ Genereren' : '⟳ Generate',
+  };
+  const ids = ['fgm-title','fgm-sub','fgm-name-lbl','fgm-layers-lbl','fgm-biz-lbl','fgm-biz-desc',
+               'fgm-app-lbl','fgm-app-desc','fgm-tech-lbl','fgm-tech-desc','fgm-cancel','fgm-generate'];
+  const vals = [t.title,t.sub,t.nameLbl,t.layersLbl,t.bizLbl,t.bizDesc,t.appLbl,t.appDesc,t.techLbl,t.techDesc,t.cancel,t.generate];
+  ids.forEach((id, i) => { const el = document.getElementById(id); if (el) el.textContent = vals[i]; });
+
+  // Pre-fill process name
+  const nameInput = document.getElementById('fgm-proc-name');
+  if (nameInput) {
+    const base = model.name || (NL ? 'Architectuurstroom' : 'Architecture Flow');
+    nameInput.value = base + ' — ' + (NL ? 'Swimlane' : 'Swimlane');
+  }
+
+  if (!hasArchi) {
+    showAlert(
+      NL ? 'Nog geen architectuurelementen. Voeg elementen toe in de Business-, Applicatie- of Technologielaag voordat u een stroom genereert.'
+         : 'No architecture elements yet. Add elements in the Business, Application, or Technology layer before generating a flow.',
+      NL ? 'Stroom genereren' : 'Generate Flow'
+    );
+    return;
+  }
+
+  document.getElementById('flowGenModal').style.display = 'flex';
+}
+
+function hideFlowGenModal() {
+  const m = document.getElementById('flowGenModal');
+  if (m) m.style.display = '';
+}
+
+function generateFlowFromArch() {
+  const NL = currentLang === 'nl';
+  const inclApp  = document.getElementById('fgm-app')?.checked  ?? true;
+  const inclTech = document.getElementById('fgm-tech')?.checked ?? false;
+  const procName = (document.getElementById('fgm-proc-name')?.value.trim())
+    || (NL ? 'Gegenereerde stroom' : 'Generated Flow');
+
+  hideFlowGenModal();
+
+  const elems = model.elements || [];
+  const rels  = model.relationships || [];
+
+  // ── Determine which layers are in scope ──────────────────────
+  const allowedLayers = new Set(['business']);
+  if (inclApp)  allowedLayers.add('application');
+  if (inclTech) allowedLayers.add('technology');
+
+  const scopedElems = elems.filter(e => allowedLayers.has(e.layer));
+  if (!scopedElems.length) {
+    showAlert(NL ? 'Geen elementen gevonden in de geselecteerde lagen.' : 'No elements found in the selected layers.');
+    return;
+  }
+
+  // ── Categorise elements ──────────────────────────────────────
+  const LANE_TYPES = new Set([
+    'BusinessActor','BusinessRole','BusinessCollaboration',
+    'ApplicationComponent',
+    'Node','SystemSoftware','Device',
+  ]);
+  const STEP_TYPES = new Set([
+    'BusinessProcess','BusinessFunction','BusinessService','BusinessInteraction','BusinessEvent',
+    'ApplicationService','ApplicationFunction','ApplicationProcess','ApplicationInteraction',
+    'TechnologyService','TechnologyFunction','TechnologyProcess',
+    'DataObject','Artifact',
+  ]);
+  const FLOW_REL_TYPES = new Set([
+    'TriggeringRelationship','FlowRelationship','ServingRelationship','AssociationRelationship',
+  ]);
+
+  const laneElems = scopedElems.filter(e => LANE_TYPES.has(e.type) && e.name);
+  const stepElems = scopedElems.filter(e => STEP_TYPES.has(e.type) && e.name);
+
+  if (!laneElems.length && !stepElems.length) {
+    showAlert(
+      NL ? 'Geen geschikte elementen gevonden. Voeg Actoren, Processen of Services toe aan uw model.'
+         : 'No suitable elements found. Add Actors, Processes, or Services to your model.'
+    );
+    return;
+  }
+
+  // ── Determine which steps belong to which lane ───────────────
+  // Walk AssignmentRelationship and CompositionRelationship to assign step → lane
+  const ASSIGN_RELS = new Set(['AssignmentRelationship','CompositionRelationship','AggregationRelationship','RealizationRelationship']);
+  const laneIds = new Set(laneElems.map(e => e.id));
+  const stepIds = new Set(stepElems.map(e => e.id));
+
+  const stepToLaneId = {}; // element id → lane element id
+  rels.forEach(r => {
+    if (!ASSIGN_RELS.has(r.type)) return;
+    const srcIsLane = laneIds.has(r.source), srcIsStep = stepIds.has(r.source);
+    const tgtIsLane = laneIds.has(r.target), tgtIsStep = stepIds.has(r.target);
+    if (srcIsLane && tgtIsStep && !stepToLaneId[r.target]) stepToLaneId[r.target] = r.source;
+    if (tgtIsLane && srcIsStep && !stepToLaneId[r.source]) stepToLaneId[r.source] = r.target;
+    // Serving: app component serves a business process → that component is the lane for the step
+    if (r.type === 'ServingRelationship' && srcIsLane && tgtIsStep && !stepToLaneId[r.target]) stepToLaneId[r.target] = r.source;
+  });
+
+  // For steps not assigned to a lane, try to find cross-layer connections
+  // e.g. BusinessProcess → ApplicationService via Serving / Triggering
+  const flowRels = rels.filter(r => FLOW_REL_TYPES.has(r.type));
+  flowRels.forEach(r => {
+    const srcIsStep = stepIds.has(r.source), tgtIsStep = stepIds.has(r.target);
+    const srcIsLane = laneIds.has(r.source), tgtIsLane = laneIds.has(r.target);
+    if (tgtIsStep && srcIsLane && !stepToLaneId[r.target]) stepToLaneId[r.target] = r.source;
+    if (srcIsStep && tgtIsLane && !stepToLaneId[r.source]) stepToLaneId[r.source] = r.target;
+  });
+
+  // ── Topological sort of steps by flow relationships ──────────
+  // Build adjacency list among step elements
+  const stepFlowEdges = []; // { from: elemId, to: elemId, label }
+  flowRels.forEach(r => {
+    if (stepIds.has(r.source) && stepIds.has(r.target)) {
+      stepFlowEdges.push({ from: r.source, to: r.target, label: r.name || '' });
+    }
+  });
+
+  // Kahn's algorithm for topological sort
+  const inDegree = {};
+  stepElems.forEach(e => { inDegree[e.id] = 0; });
+  stepFlowEdges.forEach(e => { if (inDegree[e.to] !== undefined) inDegree[e.to]++; });
+  const queue = stepElems.filter(e => inDegree[e.id] === 0).map(e => e.id);
+  const sortedStepIds = [];
+  while (queue.length) {
+    const cur = queue.shift();
+    sortedStepIds.push(cur);
+    stepFlowEdges.filter(e => e.from === cur).forEach(e => {
+      inDegree[e.to]--;
+      if (inDegree[e.to] === 0) queue.push(e.to);
+    });
+  }
+  // Append any not reached (cycles)
+  stepElems.forEach(e => { if (!sortedStepIds.includes(e.id)) sortedStepIds.push(e.id); });
+
+  // ── Build lane objects ───────────────────────────────────────
+  if (!model.processes) model.processes = [];
+
+  const newLaneIdMap  = {}; // element id → new lane id
+  const lanes = laneElems.map(e => {
+    const lid = genId();
+    newLaneIdMap[e.id] = lid;
+    return { id: lid, name: e.name, sourceId: e.id };
+  });
+
+  // If no lane elements, create one generic lane
+  if (!lanes.length) {
+    const lid = genId();
+    lanes.push({ id: lid, name: NL ? 'Architectuurstroom' : 'Architecture Flow' });
+    laneElems.forEach(e => { newLaneIdMap[e.id] = lid; });
+  }
+
+  // Fallback lane: for steps that couldn't be assigned to any lane
+  let fallbackLaneId = null;
+  const getFallbackLane = () => {
+    if (fallbackLaneId) return fallbackLaneId;
+    const lbl = NL ? 'Overig' : 'Other';
+    const fid = genId();
+    lanes.push({ id: fid, name: lbl });
+    fallbackLaneId = fid;
+    return fid;
+  };
+
+  // ── Build step objects ───────────────────────────────────────
+  const newStepIdMap = {}; // element id → new step id
+  const steps = sortedStepIds.map(eid => {
+    const el = elems.find(e => e.id === eid);
+    if (!el) return null;
+    const sid = genId();
+    newStepIdMap[eid] = sid;
+    const laneElemId = stepToLaneId[eid];
+    const laneId = laneElemId ? (newLaneIdMap[laneElemId] || getFallbackLane()) : getFallbackLane();
+    return {
+      id: sid,
+      laneId,
+      columnId: '',
+      type: _archTypeToStepType(el.type),
+      label: el.name || el.type,
+      sourceId: el.id,
+      sourceType: el.type,
+      sourceLayer: el.layer,
+      documentation: el.documentation || '',
+      properties: el.properties || [],
+    };
+  }).filter(Boolean);
+
+  // ── Build flow objects ───────────────────────────────────────
+  const flows = stepFlowEdges
+    .filter(e => newStepIdMap[e.from] && newStepIdMap[e.to])
+    .map(e => ({
+      id: genId(),
+      from: newStepIdMap[e.from],
+      to:   newStepIdMap[e.to],
+      label: e.label || '',
+    }));
+
+  // ── Create the process ───────────────────────────────────────
+  const newProc = {
+    id: genId(),
+    name: procName,
+    lanes,
+    steps,
+    flows,
+    columns: [],
+    _generatedFromArch: true,
+  };
+  model.processes.push(newProc);
+  _activeProcId = newProc.id;
+
+  switchMode('swimlane');
+
+  const nLanes = lanes.length, nSteps = steps.length, nFlows = flows.length;
+  showToast(
+    NL ? `⟳ Stroom gegenereerd: ${nLanes} banen, ${nSteps} stappen, ${nFlows} verbindingen.`
+       : `⟳ Flow generated: ${nLanes} lanes, ${nSteps} steps, ${nFlows} connections.`,
+    'proc'
+  );
+}
+
+function showStepInfo(procId, stepId) {
+  const NL = currentLang === 'nl';
+  const proc = (model.processes || []).find(p => p.id === procId);
+  if (!proc) return;
+  const step = (proc.steps || []).find(s => s.id === stepId);
+  if (!step || !step.sourceId) return;
+  const el = (model.elements || []).find(e => e.id === step.sourceId);
+
+  const layerKey = step.sourceLayer || (el && el.layer) || '';
+  const layerBadgeClass = layerKey === 'business' ? 'step-info-layer-biz'
+    : layerKey === 'application' ? 'step-info-layer-app'
+    : layerKey === 'technology'  ? 'step-info-layer-tech'
+    : '';
+  const layerLabel = layerKey === 'business'    ? (NL ? 'Business-laag'    : 'Business Layer')
+    : layerKey === 'application' ? (NL ? 'Applicatielaag'  : 'Application Layer')
+    : layerKey === 'technology'  ? (NL ? 'Technologielaag' : 'Technology Layer')
+    : layerKey;
+
+  const typeName = step.sourceType || (el && el.type) || '';
+  const plainLangObj = PLAIN_LANG[typeName];
+  const plainLang = plainLangObj ? (NL ? plainLangObj.nl : plainLangObj.en) : '';
+
+  const doc = step.documentation || (el && el.documentation) || '';
+  const props = step.properties || (el && el.properties) || [];
+
+  const title = document.getElementById('si-title');
+  if (title) title.textContent = esc(step.label || typeName);
+
+  const siClose = document.getElementById('si-close-btn');
+  if (siClose) siClose.textContent = NL ? 'Sluiten' : 'Close';
+
+  let html = '';
+  if (layerBadgeClass) {
+    html += `<span class="step-info-type-badge ${layerBadgeClass}">${esc(layerLabel)} — ${esc(typeName)}</span>`;
+  }
+  if (plainLang) {
+    html += `<p style="font-size:.83rem;color:var(--text2);margin-bottom:.5rem">${esc(plainLang)}</p>`;
+  }
+  if (doc) {
+    html += `<div style="font-size:.73rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.3rem">${NL ? 'Documentatie' : 'Documentation'}</div>`;
+    html += `<div class="step-info-doc">${esc(doc)}</div>`;
+  }
+  if (props.length) {
+    html += `<div class="step-info-props">`;
+    html += `<div style="font-size:.73rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.3rem">${NL ? 'Eigenschappen' : 'Properties'}</div>`;
+    props.forEach(p => {
+      html += `<div class="step-info-prop-row"><span class="step-info-prop-key">${esc(p.key||p.name||'')}</span><span class="step-info-prop-val">${esc(p.value||'')}</span></div>`;
+    });
+    html += `</div>`;
+  }
+  if (!doc && !props.length && !plainLang) {
+    html = `<p style="font-size:.83rem;color:var(--muted)">${NL ? 'Geen aanvullende informatie beschikbaar voor dit element.' : 'No additional information available for this element.'}</p>`;
+  }
+
+  const body = document.getElementById('si-body');
+  if (body) body.innerHTML = html;
+  const modal = document.getElementById('stepInfoModal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function hideStepInfo() {
+  const m = document.getElementById('stepInfoModal');
+  if (m) m.style.display = '';
+}
+
 function applyMode() {
   const isArchi = currentMode === 'archimate';
   // Mode buttons
