@@ -8878,6 +8878,35 @@ function handleSearchKey(ev) {
   items[_searchFocusIdx]?.scrollIntoView({ block:'nearest' });
 }
 
+// Plain-language hint for orphaned (unconnected) elements
+function _orphanHint(el, NL) {
+  const t = el.type || '';
+  const ACTOR_TYPES  = ['BusinessActor','BusinessRole','BusinessCollaboration'];
+  const PROC_TYPES   = ['BusinessProcess','BusinessFunction','BusinessService','BusinessInteraction','BusinessEvent'];
+  const APP_TYPES    = ['ApplicationComponent','ApplicationService','ApplicationFunction','ApplicationProcess'];
+  const DATA_TYPES   = ['BusinessObject','DataObject','Artifact'];
+  const TECH_TYPES   = ['Node','SystemSoftware','Device','TechnologyService','TechnologyFunction'];
+
+  if (ACTOR_TYPES.includes(t)) return NL
+    ? `${el.name} doet nog niets. Koppel hem aan een proces via een Toewijzing (Assignment) in het tabblad Relaties.`
+    : `${el.name} isn't participating in anything. Link it to a process using an Assignment relationship in the Relationships tab.`;
+  if (PROC_TYPES.includes(t)) return NL
+    ? `'${el.name}' is niet verbonden met een actor of systeem. Voeg een Toewijzing toe (wie voert het uit?) of een Serving-relatie (welk systeem ondersteunt het?).`
+    : `'${el.name}' has no actor or system connected. Add an Assignment (who performs it?) or a Serving relationship (which system supports it?).`;
+  if (APP_TYPES.includes(t)) return NL
+    ? `${el.name} ondersteunt nog geen enkel bedrijfsproces. Voeg een Serving-relatie toe van ${el.name} naar een Business Process.`
+    : `${el.name} isn't supporting any business process yet. Add a Serving relationship from ${el.name} to a Business Process.`;
+  if (DATA_TYPES.includes(t)) return NL
+    ? `'${el.name}' wordt door niets gebruikt. Koppel het aan een proces via een Toegang (Access) relatie.`
+    : `'${el.name}' isn't used by anything. Connect it to a process using an Access relationship.`;
+  if (TECH_TYPES.includes(t)) return NL
+    ? `${el.name} heeft geen relatie met een applicatiecomponent. Voeg een Realisatie- of Toewijzingsrelatie toe.`
+    : `${el.name} has no relation to any application component. Add a Realisation or Assignment relationship.`;
+  return NL
+    ? `${el.name||'Dit element'} is niet verbonden. Ga naar het tabblad Relaties om een verbinding toe te voegen.`
+    : `${el.name||'This element'} is not connected to anything. Go to the Relationships tab to add a connection.`;
+}
+
 function navigateToElement(elemId) {
   const el = model.elements.find(e => e.id === elemId);
   if (!el) return;
