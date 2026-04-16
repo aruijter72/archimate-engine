@@ -4781,22 +4781,21 @@ function renderCanvas() {
   }
   svg += `</g></svg>`;
 
-  const hint = NL ? '🖱 Sleep om te verplaatsen · Scroll of ⊞/⊟ om in/uit te zoomen · Sleep leeg gebied om te pannen'
-                  : '🖱 Drag to move · Scroll or ⊞/⊟ to zoom · Drag empty area to pan';
+  const hint = NL ? '🖱 Sleep element om te verplaatsen · Knijp of knoppen om in/uit te zoomen · Sleep leeg gebied om te pannen'
+                  : '🖱 Drag element to move · Pinch or buttons to zoom · Drag empty area to pan';
 
   panel.innerHTML = `
   <div class="canvas-toolbar">
     <span class="canvas-hint">${hint}</span>
-    <div style="display:flex;gap:.4rem;align-items:center">
-      <button class="btn btn-sm" style="background:rgba(201,163,85,.12);border-color:rgba(201,163,85,.4);color:var(--gold)" onclick="cvSmartLayout()" title="${NL?'Relaties-bewuste lay-out zonder overlapping':'Relationship-aware layout, no overlaps'}">⚡ ${NL?'Slim':'Smart'}</button>
-      <button class="btn btn-sm" onclick="cvResetLayout()" title="${NL?'Standaard lay-out':'Default layout'}">↺</button>
-      <button class="btn-canvas-danger" onclick="cvClearPositions()" title="${NL?'Wis posities':'Clear positions'}">✕</button>
-      <div style="display:flex;align-items:center;gap:.2rem;margin-left:.35rem;border-left:1px solid var(--border);padding-left:.4rem">
-        <button class="btn btn-sm" onclick="cvZoomBy(1.3)" title="${NL?'Inzoomen':'Zoom in'}" style="font-size:1rem;padding:.1rem .45rem;line-height:1">⊞</button>
-        <span id="cv-zoom-pct" style="font-size:.72rem;color:var(--muted);min-width:2.8rem;text-align:center">100%</span>
-        <button class="btn btn-sm" onclick="cvZoomBy(1/1.3)" title="${NL?'Uitzoomen':'Zoom out'}" style="font-size:1rem;padding:.1rem .45rem;line-height:1">⊟</button>
-        <button class="btn btn-sm" onclick="cvZoomFit()" title="${NL?'Alles weergeven':'Fit all'}" style="padding:.1rem .45rem">⊡</button>
-      </div>
+    <div style="display:flex;gap:.1rem;align-items:center">
+      <button class="cv-icon-btn" style="color:var(--gold);font-size:1rem" onclick="cvSmartLayout()" title="${NL?'Slimme lay-out: relatie-bewust, geen overlapping':'Smart layout: relationship-aware, no overlaps'}">⚡ ${NL?'Slim':'Smart'}</button>
+      <button class="cv-icon-btn" onclick="cvResetLayout()" title="${NL?'Standaard lay-out':'Default layout'}" style="font-size:1.2rem">↺</button>
+      <button class="cv-icon-btn" onclick="cvClearPositions()" title="${NL?'Wis posities':'Clear positions'}" style="color:rgba(220,100,80,.75);font-size:1rem">✕</button>
+      <div class="cv-zoom-sep"></div>
+      <button class="cv-icon-btn" onclick="cvZoomBy(1/1.3)" title="${NL?'Uitzoomen':'Zoom out'}" style="font-size:1.5rem;font-weight:300;padding:.05rem .4rem">−</button>
+      <span class="cv-zoom-pct" id="cv-zoom-pct">100%</span>
+      <button class="cv-icon-btn" onclick="cvZoomBy(1.3)" title="${NL?'Inzoomen':'Zoom in'}" style="font-size:1.5rem;font-weight:300;padding:.05rem .4rem">+</button>
+      <button class="cv-icon-btn" onclick="cvZoomFit()" title="${NL?'Alles weergeven':'Fit all'}" style="font-size:1.15rem">⊡</button>
     </div>
   </div>
   <div class="canvas-wrap">${svg}</div>`;
