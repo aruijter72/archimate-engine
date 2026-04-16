@@ -1907,13 +1907,13 @@ const STRINGS = {
     // Relationship reference dropdown
     'rel-ref-hdr': 'ArchiMate Relationship Reference (click to expand)',
     // Metamodel validation warnings
-    'vw-acc-src':  'Access: source must be a Behaviour element (Process, Function, Service…).',
-    'vw-acc-tgt':  'Access: target must be a Passive Structure element (Data Object, Artifact…).',
-    'vw-assign':   'Assignment: requires Active Structure ↔ Behaviour (or Active ↔ Active for roles).',
-    'vw-trig':     'Triggering: both source and target must be Behaviour elements.',
-    'vw-flow':     'Flow: both source and target must be Behaviour elements.',
-    'vw-srv-tgt':  'Serving: cannot target a Passive Structure element — use Association (directed) or Access.',
-    'vw-srv-src':  'Serving: cannot originate from a Passive Structure element.',
+    'vw-acc-src':  '💡 The "reads/writes" connection should start from a Process, Function or Service — not from a person, system or object. Move the source to a behaviour element.',
+    'vw-acc-tgt':  '💡 The "reads/writes" connection should point to a data item (Data Object, Artifact, Business Object) — not a person or process.',
+    'vw-assign':   '💡 Assignment links a person or system to the process they perform. The source should be an Actor, Role or Component and the target a Process, Function or Service (or vice versa).',
+    'vw-trig':     '💡 Triggering connects two processes or events — both sides should be a Process, Function, Service or Event, not a person or system.',
+    'vw-flow':     '💡 Flow connects two processes or events — both sides should be a Process, Function, Service or Event, not a person or system.',
+    'vw-srv-tgt':  '💡 Serving shows that a system supports a process. The target should be a Process, Function or Service — not a data object. Use Access for data, or Association for a general link.',
+    'vw-srv-src':  '💡 Serving should come from an active element (a system, component or role) — not from a data object or document.',
     // Export
     'exp-unnamed': (n) => `⚠ ${n} element(s) have no name. Archi will still import them.\n`,
     'exp-broken':  (n) => `⚠ ${n} relationship(s) have no source/target and will be skipped.\n`,
