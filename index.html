@@ -1506,6 +1506,60 @@
   </div>
 </div>
 
+<!-- ── Generate Flow from Architecture modal ─────────────────── -->
+<div id="flowGenModal" class="modal-overlay" onclick="if(event.target===this)hideFlowGenModal()" style="z-index:2500">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-header">
+      <div class="modal-title" id="fgm-title">⟳ Generate Flow from Architecture</div>
+      <button class="modal-close" onclick="hideFlowGenModal()">×</button>
+    </div>
+    <p class="modal-sub" id="fgm-sub">Auto-generate a swimlane diagram by tracing relationships across your architecture layers. Actors and Roles become lanes; Processes and Services become steps; Triggering / Flow / Serving relationships become connections.</p>
+
+    <div style="margin-bottom:1rem">
+      <label style="display:block;font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem" id="fgm-name-lbl">Process name</label>
+      <input id="fgm-proc-name" class="elem-input" style="width:100%;font-size:.88rem" placeholder="My generated flow…">
+    </div>
+
+    <div style="margin-bottom:1.1rem">
+      <div style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem" id="fgm-layers-lbl">Include layers</div>
+      <div class="fgm-layer-row">
+        <input type="checkbox" id="fgm-biz" checked disabled style="accent-color:var(--gold);flex-shrink:0">
+        <div class="fgm-layer-label" id="fgm-biz-lbl">Business Layer</div>
+        <div class="fgm-layer-desc" id="fgm-biz-desc">Actors, Roles, Processes, Functions (always included)</div>
+      </div>
+      <div class="fgm-layer-row">
+        <input type="checkbox" id="fgm-app" checked style="accent-color:var(--gold);flex-shrink:0">
+        <div class="fgm-layer-label" id="fgm-app-lbl">Application Layer</div>
+        <div class="fgm-layer-desc" id="fgm-app-desc">Components, Services, Functions</div>
+      </div>
+      <div class="fgm-layer-row">
+        <input type="checkbox" id="fgm-tech" style="accent-color:var(--gold);flex-shrink:0">
+        <div class="fgm-layer-label" id="fgm-tech-lbl">Technology Layer</div>
+        <div class="fgm-layer-desc" id="fgm-tech-desc">Infrastructure nodes, System Services</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.6rem;justify-content:flex-end">
+      <button class="btn btn-secondary" onclick="hideFlowGenModal()" id="fgm-cancel">Cancel</button>
+      <button class="btn btn-primary" onclick="generateFlowFromArch()" id="fgm-generate">⟳ Generate</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Step Info modal ───────────────────────────────────────── -->
+<div id="stepInfoModal" class="modal-overlay" onclick="if(event.target===this)hideStepInfo()" style="z-index:2600">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title" id="si-title">Element info</div>
+      <button class="modal-close" onclick="hideStepInfo()">×</button>
+    </div>
+    <div id="si-body"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:1rem">
+      <button class="btn btn-secondary" onclick="hideStepInfo()" id="si-close-btn">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- Floating tooltip -->
 <div id="tipPopup"></div>
 
