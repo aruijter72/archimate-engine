@@ -2050,13 +2050,13 @@ const STRINGS = {
     // Relationship reference dropdown
     'rel-ref-hdr': 'ArchiMate Relatieverwijzing (klik om uit te klappen)',
     // Metamodel validation warnings
-    'vw-acc-src':  'Toegang: bron moet een Gedragselement zijn (Proces, Functie, Service…).',
-    'vw-acc-tgt':  'Toegang: doel moet een Passief Structuurelement zijn (Gegevensobject, Artefact…).',
-    'vw-assign':   'Toewijzing: vereist Actieve Structuur ↔ Gedrag (of Actief ↔ Actief voor rollen).',
-    'vw-trig':     'Activering: bron en doel moeten beide Gedragselementen zijn.',
-    'vw-flow':     'Stroom: bron en doel moeten beide Gedragselementen zijn.',
-    'vw-srv-tgt':  'Dienstverlening: kan geen Passief Structuurelement als doel hebben — gebruik Associatie (gericht) of Toegang.',
-    'vw-srv-src':  'Dienstverlening: kan niet vanuit een Passief Structuurelement komen.',
+    'vw-acc-src':  '💡 De "leest/schrijft"-koppeling moet beginnen bij een Proces, Functie of Service — niet bij een persoon, systeem of object. Verander de bron naar een gedragselement.',
+    'vw-acc-tgt':  '💡 De "leest/schrijft"-koppeling moet wijzen naar een gegevensitem (Gegevensobject, Artefact, Bedrijfsobject) — niet naar een persoon of proces.',
+    'vw-assign':   '💡 Toewijzing koppelt een persoon of systeem aan het proces dat zij uitvoeren. De bron moet een Actor, Rol of Component zijn en het doel een Proces, Functie of Service (of andersom).',
+    'vw-trig':     '💡 Activering verbindt twee processen of gebeurtenissen — beide kanten moeten een Proces, Functie, Service of Gebeurtenis zijn, geen persoon of systeem.',
+    'vw-flow':     '💡 Stroom verbindt twee processen of gebeurtenissen — beide kanten moeten een Proces, Functie, Service of Gebeurtenis zijn, geen persoon of systeem.',
+    'vw-srv-tgt':  '💡 Serving laat zien dat een systeem een proces ondersteunt. Het doel moet een Proces, Functie of Service zijn — niet een gegevensobject. Gebruik Toegang voor data, of Associatie voor een algemene koppeling.',
+    'vw-srv-src':  '💡 Serving moet komen van een actief element (een systeem, component of rol) — niet van een gegevensobject of document.',
     // Export
     'exp-unnamed': (n) => `⚠ ${n} element(en) hebben geen naam. Archi importeert ze toch.\n`,
     'exp-broken':  (n) => `⚠ ${n} relatie(s) hebben geen bron/doel en worden overgeslagen.\n`,
