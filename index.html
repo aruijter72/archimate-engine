@@ -8582,7 +8582,10 @@ function renderProcTab() {
         <div class="proc-section">
           <div class="proc-section-header">
             <span class="proc-section-title">${NL ? 'Kolommen' : 'Columns'} <i class="tip-icon" onmouseenter="showTipById(this,'proc-columns')" onmouseleave="hideTip()">?</i> <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem;color:var(--text2);margin-left:.3rem">${NL ? 'optioneel — fasen, locaties, partners…' : 'optional — phases, locations, partners…'}</span></span>
-            <button class="btn-add proc" onclick="addColumn()">+ ${NL ? 'Kolom toevoegen' : 'Add Column'}</button>
+            <div class="add-buttons">
+              ${_hasSuggestedColumns(proc) ? `<button class="btn-add proc" onclick="showColumnSuggest()" title="${NL ? 'Detecteer systemen uit architectuur als kolommen' : 'Detect systems from architecture as columns'}">⚙ ${NL ? 'Systemen als kolommen' : 'Systems as columns'}</button>` : ''}
+              <button class="btn-add proc" onclick="addColumn()">+ ${NL ? 'Kolom toevoegen' : 'Add Column'}</button>
+            </div>
           </div>
           ${!proc.columns.length
             ? `<div class="proc-empty">${NL ? 'Geen kolommen — stappen lopen automatisch van links naar rechts. Voeg kolommen toe om een fasegrid te maken.' : 'No columns — steps flow left-to-right automatically. Add columns to create a phase grid.'}</div>`
