@@ -4623,30 +4623,30 @@ function generateFlowFromArch() {
   const stepToLaneId = {}; // element id → lane element id
   rels.forEach(r => {
     if (!ASSIGN_RELS.has(r.type)) return;
-    const srcIsLane = laneIds.has(r.source), srcIsStep = stepIds.has(r.source);
-    const tgtIsLane = laneIds.has(r.target), tgtIsStep = stepIds.has(r.target);
-    if (srcIsLane && tgtIsStep && !stepToLaneId[r.target]) stepToLaneId[r.target] = r.source;
-    if (tgtIsLane && srcIsStep && !stepToLaneId[r.source]) stepToLaneId[r.source] = r.target;
+    const srcIsLane = laneIds.has(r.sourceId), srcIsStep = stepIds.has(r.sourceId);
+    const tgtIsLane = laneIds.has(r.targetId), tgtIsStep = stepIds.has(r.targetId);
+    if (srcIsLane && tgtIsStep && !stepToLaneId[r.targetId]) stepToLaneId[r.targetId] = r.sourceId;
+    if (tgtIsLane && srcIsStep && !stepToLaneId[r.sourceId]) stepToLaneId[r.sourceId] = r.targetId;
     // Serving: app component serves a business process → that component is the lane for the step
-    if (r.type === 'ServingRelationship' && srcIsLane && tgtIsStep && !stepToLaneId[r.target]) stepToLaneId[r.target] = r.source;
+    if (r.type === 'ServingRelationship' && srcIsLane && tgtIsStep && !stepToLaneId[r.targetId]) stepToLaneId[r.targetId] = r.sourceId;
   });
 
   // For steps not assigned to a lane, try to find cross-layer connections
   // e.g. BusinessProcess → ApplicationService via Serving / Triggering
   const flowRels = rels.filter(r => FLOW_REL_TYPES.has(r.type));
   flowRels.forEach(r => {
-    const srcIsStep = stepIds.has(r.source), tgtIsStep = stepIds.has(r.target);
-    const srcIsLane = laneIds.has(r.source), tgtIsLane = laneIds.has(r.target);
-    if (tgtIsStep && srcIsLane && !stepToLaneId[r.target]) stepToLaneId[r.target] = r.source;
-    if (srcIsStep && tgtIsLane && !stepToLaneId[r.source]) stepToLaneId[r.source] = r.target;
+    const srcIsStep = stepIds.has(r.sourceId), tgtIsStep = stepIds.has(r.targetId);
+    const srcIsLane = laneIds.has(r.sourceId), tgtIsLane = laneIds.has(r.targetId);
+    if (tgtIsStep && srcIsLane && !stepToLaneId[r.targetId]) stepToLaneId[r.targetId] = r.sourceId;
+    if (srcIsStep && tgtIsLane && !stepToLaneId[r.sourceId]) stepToLaneId[r.sourceId] = r.targetId;
   });
 
   // ── Topological sort of steps by flow relationships ──────────
   // Build adjacency list among step elements
   const stepFlowEdges = []; // { from: elemId, to: elemId, label }
   flowRels.forEach(r => {
-    if (stepIds.has(r.source) && stepIds.has(r.target)) {
-      stepFlowEdges.push({ from: r.source, to: r.target, label: r.name || '' });
+    if (stepIds.has(r.sourceId) && stepIds.has(r.targetId)) {
+      stepFlowEdges.push({ from: r.sourceId, to: r.targetId, label: r.name || '' });
     }
   });
 
