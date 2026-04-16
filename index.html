@@ -8682,6 +8682,12 @@ function renderProcTab() {
       <div class="proc-preview-pane">
         <div class="proc-preview-header">
           <span class="proc-preview-label">${NL ? 'Voorbeeld' : 'Preview'} ${hasCols ? `<span style="font-size:.65rem;color:var(--proc-text);margin-left:.3rem">${NL ? 'rastermodus' : 'grid mode'}</span>` : ''}</span>
+          <div class="proc-zoom-controls">
+            <button class="proc-zoom-btn" onclick="setProcZoom(-0.15)" title="${NL ? 'Uitzoomen' : 'Zoom out'}">−</button>
+            <span class="proc-zoom-pct" id="proc-zoom-pct-lbl">100%</span>
+            <button class="proc-zoom-btn" onclick="setProcZoom(+0.15)" title="${NL ? 'Inzoomen' : 'Zoom in'}">+</button>
+            <button class="proc-zoom-btn" onclick="resetProcZoom()" title="${NL ? 'Aanpassen' : 'Fit'}" style="width:auto;padding:0 .35rem;font-size:.65rem">⊡</button>
+          </div>
         </div>
         <div class="proc-svg-wrap" id="proc-svg-wrap">
           ${!proc ? `<div class="proc-svg-empty">${NL ? 'Selecteer of maak een proces om de voorvertoning te zien.' : 'Select or create a process to see the preview.'}</div>` : ''}
