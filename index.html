@@ -8881,11 +8881,16 @@ function navigateToElement(elemId) {
   if (!el) return;
   showTab(el.layer);
   setTimeout(() => {
+    // Clear any existing persistent highlights
+    document.querySelectorAll('.elem-highlight-persist').forEach(r => r.classList.remove('elem-highlight-persist'));
     const row = document.querySelector(`tr[data-elem-id="${elemId}"]`);
     if (row) {
       row.scrollIntoView({ behavior:'smooth', block:'center' });
-      row.classList.add('elem-highlight');
-      setTimeout(() => row.classList.remove('elem-highlight'), 1000);
+      row.classList.add('elem-highlight-persist');
+      // Remove on next user interaction with that row
+      const clear = () => { row.classList.remove('elem-highlight-persist'); row.removeEventListener('click', clear); row.removeEventListener('focusin', clear); };
+      row.addEventListener('click', clear);
+      row.addEventListener('focusin', clear);
     }
   }, 120);
 }
