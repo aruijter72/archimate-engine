@@ -7846,7 +7846,7 @@ function renderProcPreview() {
     }
 
     // Steps (reuse common renderer below)
-    svg += _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww);
+    svg += _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww, proc.id);
     svg += '</svg>';
     const unassignedG = steps.filter(s => laneIdx[s.laneId] === undefined).length;
     wrap.innerHTML = svg + (unassignedG
@@ -7899,7 +7899,7 @@ function renderProcPreview() {
       if (f.label) svg += `<text x="${(a.cx+b.cx)/2}" y="${(a.cy+b.cy)/2-5}" text-anchor="middle" font-size="9" fill="#7c5cbf">${esc(f.label)}</text>`;
     }
 
-    svg += _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww);
+    svg += _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww, proc.id);
     svg += '</svg>';
     const unassigned = steps.filter(s => laneIdx[s.laneId] === undefined).length;
     wrap.innerHTML = svg + (unassigned
