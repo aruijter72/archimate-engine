@@ -1,0 +1,587 @@
+{
+  "name": "Supplier Order-to-Cash Process",
+  "documentation": "End-to-end order management process from supplier customer service through order creation, warehouse fulfillment, logistics, and payment reconciliation.",
+  "elements": [
+    {
+      "id": "id-mo1ed69o03xbx",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Customer Service Representative",
+      "documentation": "Supplier employee who reviews customer sales figures, inventory, and creates orders",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69p1p8fu",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Warehouse Manager",
+      "documentation": "Manages warehouse operations and converts orders to pick orders",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69p2nl34",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Warehouse Worker",
+      "documentation": "Picks items, registers completion, and places goods on dock",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69p3ecuc",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Carrier",
+      "documentation": "Transport provider who loads and scans goods for shipment",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69p4mojj",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Customer",
+      "documentation": "External customer who validates orders and receives goods",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69p5uhtt",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Accountant",
+      "documentation": "Reconciles payments and closes orders",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69p6pibt",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Order Creation",
+      "documentation": "Process of creating order based on customer inventory and sales data",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69p7f229",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Order Validation",
+      "documentation": "Customer validates and confirms order",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69p8myqv",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Warehouse Fulfillment",
+      "documentation": "Converting order to pick order and assembling goods",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69p9mmuk",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Shipment and Tracking",
+      "documentation": "Loading goods, scanning, and tracking shipment status",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69paxre2",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Goods Receipt",
+      "documentation": "Customer receives and registers goods as received",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pbapdi",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Invoice Generation",
+      "documentation": "Automatic invoice creation upon shipment",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pc01bm",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Payment Processing",
+      "documentation": "Customer payment via bank to supplier",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pdqdwz",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Order Closure",
+      "documentation": "Accountant reconciles payment and closes order",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pe9wga",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Supplier ERP",
+      "documentation": "Enterprise Resource Planning system for supplier",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pfah9z",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Customer ERP",
+      "documentation": "Enterprise Resource Planning system for customer",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pgoj29",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Warehouse Management System",
+      "documentation": "Logistics system managing picks, inventory, and warehouse operations",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69ph4he7",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Carrier Management System",
+      "documentation": "Transport provider system tracking shipments and status",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pi8ysz",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Middleware",
+      "documentation": "Integration layer connecting supplier and customer ERPs",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pjed2t",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Order",
+      "documentation": "Order document containing items and quantities",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pkttsv",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Pick Order",
+      "documentation": "Warehouse instruction for picking items from stock",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pllsq8",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Invoice",
+      "documentation": "Billing document sent to customer",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pmm4wt",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Shipment Status",
+      "documentation": "Tracking information from carrier",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pnv32g",
+      "layer": "technology",
+      "type": "Node",
+      "name": "Bank System",
+      "documentation": "Financial institution processing payment",
+      "properties": []
+    }
+  ],
+  "relationships": [
+    {
+      "id": "id-mo1ed69po3ye8",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69o03xbx",
+      "targetId": "id-mo1ed69p6pibt",
+      "name": "creates",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69ppp70j",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69p4mojj",
+      "targetId": "id-mo1ed69p7f229",
+      "name": "performs",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pq73ai",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69p1p8fu",
+      "targetId": "id-mo1ed69p8myqv",
+      "name": "manages",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69prqdad",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69p2nl34",
+      "targetId": "id-mo1ed69p8myqv",
+      "name": "executes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pssj1c",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69p3ecuc",
+      "targetId": "id-mo1ed69p9mmuk",
+      "name": "performs",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pt1i1d",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69p4mojj",
+      "targetId": "id-mo1ed69paxre2",
+      "name": "performs",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pukm2s",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69p5uhtt",
+      "targetId": "id-mo1ed69pdqdwz",
+      "name": "performs",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pvjmwm",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pe9wga",
+      "targetId": "id-mo1ed69p6pibt",
+      "name": "supports",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pwsz9x",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pi8ysz",
+      "targetId": "id-mo1ed69p6pibt",
+      "name": "connects",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pxmu8x",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pe9wga",
+      "targetId": "id-mo1ed69pbapdi",
+      "name": "generates",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pykh1j",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pgoj29",
+      "targetId": "id-mo1ed69p8myqv",
+      "name": "executes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pzryac",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pgoj29",
+      "targetId": "id-mo1ed69p9mmuk",
+      "name": "tracks",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p10oxob",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69ph4he7",
+      "targetId": "id-mo1ed69p9mmuk",
+      "name": "manages",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p11c21m",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pfah9z",
+      "targetId": "id-mo1ed69p7f229",
+      "name": "supports",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p12r7br",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pfah9z",
+      "targetId": "id-mo1ed69paxre2",
+      "name": "receives",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p13n2e5",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pnv32g",
+      "targetId": "id-mo1ed69pc01bm",
+      "name": "processes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p14xwp8",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo1ed69pjed2t",
+      "targetId": "id-mo1ed69p6pibt",
+      "name": "realizes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p15u7fb",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo1ed69pkttsv",
+      "targetId": "id-mo1ed69p8myqv",
+      "name": "realizes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p16shlf",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo1ed69pllsq8",
+      "targetId": "id-mo1ed69pbapdi",
+      "name": "realizes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p177wqt",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo1ed69pmm4wt",
+      "targetId": "id-mo1ed69p9mmuk",
+      "name": "realizes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p18f9or",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo1ed69p6pibt",
+      "targetId": "id-mo1ed69p7f229",
+      "name": "flows to",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p19gyzl",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo1ed69p7f229",
+      "targetId": "id-mo1ed69p8myqv",
+      "name": "flows to",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p1afsnr",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo1ed69p8myqv",
+      "targetId": "id-mo1ed69p9mmuk",
+      "name": "flows to",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p1b0t05",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo1ed69p9mmuk",
+      "targetId": "id-mo1ed69paxre2",
+      "name": "flows to",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p1c1ub7",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo1ed69paxre2",
+      "targetId": "id-mo1ed69pc01bm",
+      "name": "triggers",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p1dktge",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo1ed69pc01bm",
+      "targetId": "id-mo1ed69pdqdwz",
+      "name": "flows to",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    }
+  ],
+  "views": [],
+  "snapshots": [],
+  "processes": [],
+  "elementPositions": {
+    "id-mo1ed69o03xbx": {
+      "x": 40,
+      "y": 70
+    },
+    "id-mo1ed69p1p8fu": {
+      "x": 212,
+      "y": 70
+    },
+    "id-mo1ed69p2nl34": {
+      "x": 384,
+      "y": 70
+    },
+    "id-mo1ed69p3ecuc": {
+      "x": 40,
+      "y": 148
+    },
+    "id-mo1ed69p4mojj": {
+      "x": 212,
+      "y": 148
+    },
+    "id-mo1ed69p5uhtt": {
+      "x": 384,
+      "y": 148
+    },
+    "id-mo1ed69p6pibt": {
+      "x": 589,
+      "y": 70
+    },
+    "id-mo1ed69p7f229": {
+      "x": 761,
+      "y": 70
+    },
+    "id-mo1ed69p8myqv": {
+      "x": 933,
+      "y": 70
+    },
+    "id-mo1ed69p9mmuk": {
+      "x": 589,
+      "y": 148
+    },
+    "id-mo1ed69paxre2": {
+      "x": 761,
+      "y": 148
+    },
+    "id-mo1ed69pbapdi": {
+      "x": 933,
+      "y": 148
+    },
+    "id-mo1ed69pc01bm": {
+      "x": 589,
+      "y": 226
+    },
+    "id-mo1ed69pdqdwz": {
+      "x": 761,
+      "y": 226
+    },
+    "id-mo1ed69pe9wga": {
+      "x": 40,
+      "y": 424
+    },
+    "id-mo1ed69pfah9z": {
+      "x": 212,
+      "y": 424
+    },
+    "id-mo1ed69pgoj29": {
+      "x": 384,
+      "y": 424
+    },
+    "id-mo1ed69ph4he7": {
+      "x": 40,
+      "y": 502
+    },
+    "id-mo1ed69pi8ysz": {
+      "x": 212,
+      "y": 502
+    },
+    "id-mo1ed69pjed2t": {
+      "x": 1138,
+      "y": 424
+    },
+    "id-mo1ed69pkttsv": {
+      "x": 1310,
+      "y": 424
+    },
+    "id-mo1ed69pllsq8": {
+      "x": 1482,
+      "y": 424
+    },
+    "id-mo1ed69pmm4wt": {
+      "x": 1138,
+      "y": 502
+    },
+    "id-mo1ed69pnv32g": {
+      "x": 40,
+      "y": 700
+    }
+  }
+}
