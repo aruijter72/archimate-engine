@@ -7800,6 +7800,16 @@ function deleteLane(laneId) {
   renderProcTab();
 }
 
+function moveLane(laneId, dir) {
+  const proc = getActiveProc(); if (!proc) return;
+  const idx = proc.lanes.findIndex(l => l.id === laneId);
+  if (idx < 0) return;
+  const swapIdx = idx + dir;
+  if (swapIdx < 0 || swapIdx >= proc.lanes.length) return;
+  [proc.lanes[idx], proc.lanes[swapIdx]] = [proc.lanes[swapIdx], proc.lanes[idx]];
+  renderProcTab();
+}
+
 // ── Column mutations ──────────────────────────────────────────
 function addColumn() {
   const proc = getActiveProc(); if (!proc) return;
