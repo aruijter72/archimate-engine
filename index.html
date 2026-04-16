@@ -7959,13 +7959,8 @@ function updateColumnName(colId, val) {
   if (c) { c.name = val; renderProcPreview(); }
 }
 
-// ── Column auto-suggest from architecture ─────────────────────
-const COLUMN_SYS_TYPES = new Set([
-  'ApplicationComponent','ApplicationService','ApplicationFunction',
-  'ApplicationCollaboration','ApplicationInterface','ApplicationProcess',
-  'ApplicationInteraction','ApplicationEvent',
-  'SystemSoftware','Node','Device'
-]);
+// ── Column suggest from architecture — generic ────────────────
+// Relationship types used to find connected elements
 const COLUMN_REL_TYPES = new Set([
   'ServingRelationship','AssignmentRelationship','AssociationRelationship',
   'RealizationRelationship','TriggeringRelationship','FlowRelationship',
@@ -7973,89 +7968,258 @@ const COLUMN_REL_TYPES = new Set([
   'AggregationRelationship'
 ]);
 
-function _getSuggestedColumnSystems(proc) {
-  if (!proc) return [];
-  const elems      = model.elements    || [];
+// Column dimension types: each has a label, sublabel, ArchiMate element type filters,
+// and whether step→column auto-assignment is possible from architecture relations
+const COLUMN_DIMS = [
+  {
+    id: 'systems',
+    labelEn: 'Systems / Applications',
+    labelNl: 'Systemen / Applicaties',
+    subEn: 'Each column = a software system involved in this process. Steps are auto-assigned to their primary system.',
+    subNl: 'Elke kolom = een softwaresysteem dat betrokken is bij dit proces. Stappen worden automatisch aan hun primaire systeem toegewezen.',
+    types: new Set(['ApplicationComponent','ApplicationService','ApplicationFunction',
+                    'ApplicationCollaboration','ApplicationInterface','ApplicationProcess',
+                    'ApplicationInteraction','ApplicationEvent','SystemSoftware','Node','Device']),
+    autoAssign: true
+  },
+  {
+    id: 'partners',
+    labelEn: 'Partners / Organisations',
+    labelNl: 'Partners / Organisaties',
+    subEn: 'Each column = an external party or organisation. Useful for cross-company or supply-chain processes.',
+    subNl: 'Elke kolom = een externe partij of organisatie. Handig voor processen die meerdere bedrijven omvatten.',
+    types: new Set(['BusinessActor','BusinessRole','BusinessCollaboration','Stakeholder']),
+    autoAssign: true
+  },
+  {
+    id: 'locations',
+    labelEn: 'Locations',
+    labelNl: 'Locaties',
+    subEn: 'Each column = a physical or logical location (warehouse, region, branch). Add locations as elements first.',
+    subNl: 'Elke kolom = een fysieke of logische locatie (magazijn, regio, vestiging). Voeg locaties eerst toe als elementen.',
+    types: new Set(['Location']),
+    autoAssign: false
+  },
+  {
+    id: 'manual',
+    labelEn: 'Custom phases / other',
+    labelNl: 'Aangepaste fasen / anders',
+    subEn: 'Type your own column names — e.g. "Before", "During", "After" or project phases.',
+    subNl: 'Typ zelf kolomnamen — bijv. "Voor", "Tijdens", "Na" of projectfasen.',
+    types: null,
+    autoAssign: false
+  }
+];
+
+// Find architecture elements of given types that are connected to steps in this process
+function _getColumnCandidates(proc, dimTypes) {
+  if (!proc || !dimTypes) return [];
+  const elems      = model.elements     || [];
   const rels       = model.relationships || [];
   const stepSrcIds = new Set(proc.steps.filter(s => s.sourceId).map(s => s.sourceId));
   if (!stepSrcIds.size) return [];
 
-  // Find all system elements connected to any step source
-  const sysIds = new Set();
+  const found = new Set();
   rels.forEach(r => {
     if (!COLUMN_REL_TYPES.has(r.type)) return;
     const srcEl = elems.find(e => e.id === r.sourceId);
     const tgtEl = elems.find(e => e.id === r.targetId);
-    if (srcEl && stepSrcIds.has(r.sourceId) && tgtEl && COLUMN_SYS_TYPES.has(tgtEl.type)) sysIds.add(r.targetId);
-    if (tgtEl && stepSrcIds.has(r.targetId) && srcEl && COLUMN_SYS_TYPES.has(srcEl.type)) sysIds.add(r.sourceId);
+    if (srcEl && stepSrcIds.has(r.sourceId) && tgtEl && dimTypes.has(tgtEl.type)) found.add(r.targetId);
+    if (tgtEl && stepSrcIds.has(r.targetId) && srcEl && dimTypes.has(srcEl.type)) found.add(r.sourceId);
   });
-  return [...sysIds].map(id => elems.find(e => e.id === id)).filter(Boolean);
+  return [...found].map(id => elems.find(e => e.id === id)).filter(Boolean);
 }
 
-function _hasSuggestedColumns(proc) {
-  return _getSuggestedColumnSystems(proc).length > 0;
+// For auto-assign: given a step's sourceId, find its primary element for a dimension
+function _stepPrimaryColElem(stepSrcId, dimTypes) {
+  const elems = model.elements || [];
+  const rels  = model.relationships || [];
+  for (const r of rels) {
+    if (!COLUMN_REL_TYPES.has(r.type)) continue;
+    if (r.sourceId === stepSrcId) {
+      const tgt = elems.find(e => e.id === r.targetId);
+      if (tgt && dimTypes.has(tgt.type)) return tgt.id;
+    }
+    if (r.targetId === stepSrcId) {
+      const src = elems.find(e => e.id === r.sourceId);
+      if (src && dimTypes.has(src.type)) return src.id;
+    }
+  }
+  return null;
 }
+
+let _colSuggestDim = null; // currently active dimension id in the picker
 
 function showColumnSuggest() {
   const proc = getActiveProc(); if (!proc) return;
   const NL   = currentLang === 'nl';
-  const candidates = _getSuggestedColumnSystems(proc);
-
-  if (!candidates.length) {
-    showAlert(NL
-      ? 'Geen systemen gevonden in de architectuur die gekoppeld zijn aan de stappen in dit proces. Voeg koppelingen toe via de relaties in de Business/Application laag.'
-      : 'No systems found in the architecture linked to steps in this process. Add connections via relationships in the Business/Application layer.',
-      NL ? 'Systemen als kolommen' : 'Systems as columns');
-    return;
-  }
-
-  const existingColSrcIds = new Set(proc.columns.filter(c => c.sourceId).map(c => c.sourceId));
+  document.getElementById('col-suggest-overlay')?.remove();
 
   const overlay = document.createElement('div');
   overlay.id = 'col-suggest-overlay';
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:2000;display:flex;align-items:center;justify-content:center';
 
-  const rows = candidates.map(el => {
-    const already = existingColSrcIds.has(el.id);
-    return `<label style="display:flex;align-items:center;gap:.5rem;padding:.28rem .2rem;cursor:pointer;border-radius:4px"
-        onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background=''">
-      <input type="checkbox" name="colSysEl" value="${esc(el.id)}" ${already?'checked disabled':''} style="accent-color:var(--proc);flex-shrink:0">
-      <span style="font-size:.82rem;color:var(--white)">${esc(el.name)||'(unnamed)'}</span>
-      <span style="font-size:.67rem;color:var(--muted);margin-left:auto;flex-shrink:0">${esc(el.type)}</span>
-    </label>`;
+  _colSuggestDim = null;
+  overlay.innerHTML = _renderColSuggestDimPicker(NL);
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+
+function _renderColSuggestDimPicker(NL) {
+  const dimCards = COLUMN_DIMS.map(d => {
+    const candidates = d.types ? _getColumnCandidates(getActiveProc(), d.types) : [];
+    const count = d.types ? candidates.length : null;
+    const available = !d.types || count > 0;
+    const badge = d.types
+      ? (count > 0
+          ? `<span style="margin-left:auto;font-size:.68rem;background:rgba(167,138,245,.18);color:var(--proc-text);padding:.1rem .45rem;border-radius:10px;flex-shrink:0">${count} ${NL ? 'gevonden' : 'found'}</span>`
+          : `<span style="margin-left:auto;font-size:.68rem;color:var(--muted);flex-shrink:0">${NL ? 'geen gevonden' : 'none found'}</span>`)
+      : '';
+    return `<button onclick="_selectColDim('${d.id}')" style="display:flex;align-items:flex-start;gap:.7rem;width:100%;text-align:left;
+        padding:.6rem .75rem;border-radius:7px;border:1px solid var(--border);background:transparent;
+        cursor:pointer;font-family:inherit;margin-bottom:.4rem;transition:all .15s;
+        ${available ? '' : 'opacity:.4;cursor:default;pointer-events:none'}"
+        onmouseover="if(this.style.pointerEvents!=='none')this.style.background='rgba(167,138,245,.1)'"
+        onmouseout="this.style.background='transparent'">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:.4rem">
+          <span style="font-size:.84rem;font-weight:700;color:var(--white)">${NL ? d.labelNl : d.labelEn}</span>
+          ${badge}
+        </div>
+        <div style="font-size:.73rem;color:var(--muted);margin-top:.18rem;line-height:1.5">${NL ? d.subNl : d.subEn}</div>
+      </div>
+    </button>`;
   }).join('');
 
-  overlay.innerHTML = `
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.3rem;min-width:360px;max-width:480px;max-height:78vh;overflow-y:auto;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
-        <strong style="color:var(--white);font-size:.92rem">${NL ? 'Systemen als kolommen' : 'Systems as columns'}</strong>
+  return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.3rem;min-width:400px;max-width:520px;max-height:82vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+      <strong style="color:var(--white);font-size:.92rem">${NL ? 'Kolommen toevoegen' : 'Add columns'}</strong>
+      <button onclick="document.getElementById('col-suggest-overlay').remove()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;line-height:1">×</button>
+    </div>
+    <p style="font-size:.76rem;color:var(--muted);margin-bottom:.9rem;line-height:1.55">${NL
+      ? 'Kolommen voegen een extra dimensie toe aan het swimlane-diagram — een tweede manier om stappen te groeperen naast de rijstroken. Kies wat de kolommen in dit geval vertegenwoordigen.'
+      : 'Columns add a second dimension to the swimlane — another way to group steps alongside lanes. Choose what the columns represent in this case.'}</p>
+    ${dimCards}
+  </div>`;
+}
+
+function _selectColDim(dimId) {
+  _colSuggestDim = dimId;
+  const NL   = currentLang === 'nl';
+  const proc = getActiveProc(); if (!proc) return;
+  const dim  = COLUMN_DIMS.find(d => d.id === dimId); if (!dim) return;
+  const overlay = document.getElementById('col-suggest-overlay'); if (!overlay) return;
+
+  if (dimId === 'manual') {
+    // Show a simple text input for custom phase names
+    overlay.querySelector('div').innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+        <strong style="color:var(--white);font-size:.92rem">${NL ? 'Aangepaste kolomnamen' : 'Custom column names'}</strong>
         <button onclick="document.getElementById('col-suggest-overlay').remove()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;line-height:1">×</button>
       </div>
       <p style="font-size:.76rem;color:var(--muted);margin-bottom:.75rem">${NL
-        ? 'De onderstaande systemen zijn gekoppeld aan stappen in dit proces. Selecteer welke je als kolommen wilt toevoegen — zo zie je per stap welk systeem betrokken is.'
-        : 'The systems below are connected to steps in this process. Select which ones to add as columns — this shows per step which system is involved.'}</p>
-      <div>${rows}</div>
-      <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1.1rem">
-        <button onclick="document.getElementById('col-suggest-overlay').remove()" class="btn-add" style="padding:.32rem .8rem">${NL ? 'Annuleren' : 'Cancel'}</button>
-        <button onclick="importColumnsFromSuggest()" class="btn-add proc" style="padding:.32rem .8rem">${NL ? '+ Kolommen toevoegen' : '+ Add Columns'}</button>
-      </div>
-    </div>`;
+        ? 'Voer één kolomnaam per regel in (bijv. fasen, locaties, perioden).'
+        : 'Enter one column name per line (e.g. phases, locations, periods).'}</p>
+      <textarea id="manual-cols-input" style="width:100%;box-sizing:border-box;min-height:120px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:.84rem;padding:.5rem .65rem;font-family:inherit;resize:vertical" placeholder="${NL ? 'Voorbereiding\nUitvoering\nAfronding' : 'Preparation\nExecution\nCompletion'}"></textarea>
+      <div style="display:flex;gap:.5rem;justify-content:space-between;margin-top:1rem">
+        <button onclick="_colSuggestDim=null;document.getElementById('col-suggest-overlay').querySelector('div').innerHTML=_renderColSuggestDimPicker(${NL})" class="btn-add" style="padding:.32rem .8rem">← ${NL ? 'Terug' : 'Back'}</button>
+        <button onclick="_importManualColumns()" class="btn-add proc" style="padding:.32rem .8rem">${NL ? '+ Kolommen toevoegen' : '+ Add Columns'}</button>
+      </div>`;
+    return;
+  }
 
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
-  document.body.appendChild(overlay);
+  const candidates = _getColumnCandidates(proc, dim.types);
+  const existingColSrcIds = new Set(proc.columns.filter(c => c.sourceId).map(c => c.sourceId));
+
+  const rows = candidates.length
+    ? candidates.map(el => {
+        const already = existingColSrcIds.has(el.id);
+        return `<label style="display:flex;align-items:center;gap:.5rem;padding:.28rem .2rem;cursor:pointer;border-radius:4px"
+            onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background=''">
+          <input type="checkbox" name="colArchEl" value="${esc(el.id)}" ${already?'checked disabled':''} style="accent-color:var(--proc);flex-shrink:0">
+          <span style="font-size:.82rem;color:var(--white)">${esc(el.name)||'(unnamed)'}</span>
+          <span style="font-size:.67rem;color:var(--muted);margin-left:auto;flex-shrink:0">${esc(el.type)}</span>
+        </label>`;
+      }).join('')
+    : `<p style="font-size:.78rem;color:var(--muted);font-style:italic">${NL
+        ? 'Geen passende elementen gevonden in de architectuur. Voeg eerst elementen van dit type toe en koppel ze aan de processtappen.'
+        : 'No matching elements found in the architecture. Add elements of this type first and link them to process steps.'}</p>`;
+
+  const autoNote = dim.autoAssign && candidates.length
+    ? `<label style="display:flex;align-items:center;gap:.45rem;font-size:.76rem;color:var(--muted);cursor:pointer;margin-top:.75rem">
+         <input type="checkbox" id="colAutoAssign" checked style="accent-color:var(--proc)">
+         ${NL ? 'Stappen automatisch toewijzen aan hun primaire kolom' : 'Auto-assign steps to their primary column'}
+       </label>`
+    : '';
+
+  overlay.querySelector('div').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
+      <strong style="color:var(--white);font-size:.92rem">${NL ? dim.labelNl : dim.labelEn}</strong>
+      <button onclick="document.getElementById('col-suggest-overlay').remove()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;line-height:1">×</button>
+    </div>
+    <p style="font-size:.76rem;color:var(--muted);margin-bottom:.75rem">${NL ? dim.subNl : dim.subEn}</p>
+    <div>${rows}</div>
+    ${autoNote}
+    <div style="display:flex;gap:.5rem;justify-content:space-between;margin-top:1.1rem">
+      <button onclick="_colSuggestDim=null;document.getElementById('col-suggest-overlay').querySelector('div').innerHTML=_renderColSuggestDimPicker(${NL})" class="btn-add" style="padding:.32rem .8rem">← ${NL ? 'Terug' : 'Back'}</button>
+      <button onclick="importColumnsFromSuggest()" class="btn-add proc" style="padding:.32rem .8rem" ${!candidates.length?'disabled':''}>${NL ? '+ Kolommen toevoegen' : '+ Add Columns'}</button>
+    </div>`;
 }
 
 function importColumnsFromSuggest() {
   const proc = getActiveProc(); if (!proc) return;
   if (!proc.columns) proc.columns = [];
-  [...document.querySelectorAll('[name=colSysEl]:checked:not(:disabled)')].forEach(cb => {
+  const dim = COLUMN_DIMS.find(d => d.id === _colSuggestDim);
+  const autoAssign = document.getElementById('colAutoAssign')?.checked && dim?.autoAssign;
+
+  // Add selected columns
+  const newColMap = {}; // sourceId → column id (for auto-assign)
+  [...document.querySelectorAll('[name=colArchEl]:checked:not(:disabled)')].forEach(cb => {
     const el = (model.elements || []).find(e => e.id === cb.value);
     if (el && !proc.columns.find(c => c.sourceId === el.id)) {
-      proc.columns.push({ id: genId(), name: el.name || '', sourceId: el.id });
+      const cid = genId();
+      proc.columns.push({ id: cid, name: el.name || '', sourceId: el.id });
+      newColMap[el.id] = cid;
+    } else if (el) {
+      // already exists — map existing col
+      const existing = proc.columns.find(c => c.sourceId === el.id);
+      if (existing) newColMap[el.id] = existing.id;
+    }
+  });
+
+  // Auto-assign steps to columns based on architecture relationships
+  if (autoAssign && dim?.types && Object.keys(newColMap).length) {
+    proc.steps.forEach(s => {
+      if (!s.sourceId) return;
+      const primElemId = _stepPrimaryColElem(s.sourceId, dim.types);
+      if (primElemId && newColMap[primElemId]) {
+        s.columnId = newColMap[primElemId];
+      }
+    });
+  }
+
+  document.getElementById('col-suggest-overlay')?.remove();
+  renderProcTab();
+}
+
+function _importManualColumns() {
+  const proc = getActiveProc(); if (!proc) return;
+  if (!proc.columns) proc.columns = [];
+  const raw = document.getElementById('manual-cols-input')?.value || '';
+  raw.split('\n').map(s => s.trim()).filter(Boolean).forEach(name => {
+    if (!proc.columns.find(c => c.name === name)) {
+      proc.columns.push({ id: genId(), name });
     }
   });
   document.getElementById('col-suggest-overlay')?.remove();
   renderProcTab();
+}
+
+function _hasSuggestedColumns(proc) {
+  // Show the button if model has ANY architecture elements that could become columns
+  if (!proc) return false;
+  const hasArch = COLUMN_DIMS.some(d => d.types && _getColumnCandidates(proc, d.types).length > 0);
+  return hasArch || true; // always show – lets user add manual phases too
 }
 
 function addStep() {
