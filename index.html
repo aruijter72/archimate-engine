@@ -1688,7 +1688,8 @@
     <button class="menu-trigger" id="btn-views-el" onclick="showViews()" style="gap:.35rem">
       📐 <span id="btn-views-label">Views</span> <span style="font-size:.62rem;opacity:.65">▾</span>
     </button>
-    <div class="header-right">
+    <div class="header-right" style="display:flex;align-items:center;gap:.5rem">
+      <button class="btn-narrative" id="btn-narrative-arch-el" onclick="showNarrative()" title="Plain-language description of your model">📖 <span id="btn-narrative-arch-lbl">Narrative</span></button>
       <button class="btn btn-primary" id="btn-export-arc-el" onclick="exportArchimate()">⬇ Export .archimate</button>
     </div>
   </div>
@@ -1709,6 +1710,7 @@
         <button class="mi-btn gold" id="proc-mi-drawio" onclick="exportDrawio();closeMenus()">⬇ Export draw.io XML</button>
       </div>
     </div>
+    <button class="btn-narrative" id="btn-narrative-sw-el" onclick="showNarrative()" title="Plain-language description of your model">📖 <span id="btn-narrative-sw-lbl">Narrative</span></button>
     <button class="btn-gen-flow" id="btn-gen-flow-el" onclick="showFlowGenModal()" title="Generate a swimlane diagram from your architecture model">⟳ <span id="btn-gen-flow-lbl">Generate Flow</span></button>
     <button class="btn btn-primary" id="btn-export-drawio-el" onclick="exportDrawio()">⬇ Export draw.io XML</button>
   </div>
