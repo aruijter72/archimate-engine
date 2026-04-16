@@ -5178,6 +5178,66 @@ function saveModel() {
 
 function triggerLoad() { document.getElementById('loadFile').click(); }
 
+// ── Open project (welcome screen) — accepts JSON and .archimate ─
+function triggerOpenProject() { document.getElementById('openProjectFile').click(); }
+
+function handleOpenProject(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  const isArchimate = /\.(archimate|xml)$/i.test(f.name);
+  if (isArchimate) {
+    // Reuse the .archimate importer
+    const r = new FileReader();
+    r.onload = e => {
+      // Temporarily set the importArchimateFile and fire the handler via synthetic event
+      const fakeEv = { target: { files: [f], value: '' } };
+      // Directly call the handler with the already-read content
+      handleOpenProjectArchimate(e.target.result, f.name);
+    };
+    r.readAsText(f);
+  } else {
+    // JSON
+    const r = new FileReader();
+    r.onload = e => {
+      try {
+        model = JSON.parse(e.target.result);
+        if (!model.views)            model.views            = [];
+        if (!model.snapshots)        model.snapshots        = [];
+        if (!model.processes)        model.processes        = [];
+        if (!model.elementPositions) model.elementPositions = {};
+        document.getElementById('modelName').value = model.name || '';
+        document.getElementById('modelDoc').value  = model.documentation || '';
+        renderAll(); updateStats();
+      } catch(err) {
+        const NL = currentLang === 'nl';
+        showAlert((NL ? 'Kan bestand niet laden: ' : 'Could not load file: ') + err.message, NL ? 'Fout' : 'Error');
+      }
+    };
+    r.readAsText(f);
+  }
+  ev.target.value = '';
+}
+
+// Shared archimate import logic (called from both the menu item and open project)
+function handleOpenProjectArchimate(xmlText, fileName) {
+  try {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+    const root   = xmlDoc.querySelector('model');
+    if (!root) throw new Error('Not a valid ArchiMate file — no <model> root element found.');
+    // Re-use the full import logic by temporarily creating a fake file event
+    const blob = new Blob([xmlText], { type: 'text/xml' });
+    const fakeFile = new File([blob], fileName);
+    const dt = new DataTransfer();
+    dt.items.add(fakeFile);
+    const inp = document.getElementById('importArchimateFile');
+    inp.files = dt.files;
+    inp.dispatchEvent(new Event('change'));
+  } catch(err) {
+    const NL = currentLang === 'nl';
+    showAlert((NL ? 'Kan .archimate bestand niet laden: ' : 'Could not open .archimate file: ') + err.message, NL ? 'Fout' : 'Error');
+  }
+}
+
 function handleLoadFile(ev) {
   const f = ev.target.files[0]; if (!f) return;
   const r = new FileReader();
