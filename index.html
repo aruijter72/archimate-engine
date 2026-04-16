@@ -8921,6 +8921,23 @@ function _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww, procId
   return out;
 }
 
+// ── Flow renderer with draggable endpoint handles ─────────────
+function _renderFlowsSVG(flows, sPos) {
+  let out = '';
+  for (const f of flows) {
+    const a = sPos[f.from], b = sPos[f.to]; if (!a||!b) continue;
+    const d = Math.abs(a.cy-b.cy) < 5
+      ? `M${a.cx} ${a.cy} L${b.cx} ${b.cy}`
+      : `M${a.cx} ${a.cy} C${(a.cx+b.cx)/2} ${a.cy} ${(a.cx+b.cx)/2} ${b.cy} ${b.cx} ${b.cy}`;
+    out += `<path data-flow-path="${f.id}" d="${d}" fill="none" stroke="#7c5cbf" stroke-width="1.5" marker-end="url(#pa)" pointer-events="none"/>`;
+    if (f.label) out += `<text x="${(a.cx+b.cx)/2}" y="${(a.cy+b.cy)/2-7}" text-anchor="middle" font-size="9" fill="#7c5cbf" pointer-events="none">${esc(f.label)}</text>`;
+    // Draggable endpoint handles (rendered after path so they're on top)
+    out += `<circle data-flow-id="${f.id}" data-end="from" cx="${a.cx}" cy="${a.cy}" r="5" fill="#a78af5" stroke="white" stroke-width="1.5" class="flow-end-handle"/>`;
+    out += `<circle data-flow-id="${f.id}" data-end="to"   cx="${b.cx}" cy="${b.cy}" r="5" fill="#7c5cbf"  stroke="white" stroke-width="1.5" class="flow-end-handle"/>`;
+  }
+  return out;
+}
+
 // ── Full Process Tab Render ───────────────────────────────────
 function renderProcTab() {
   if (!model.processes) model.processes = [];
