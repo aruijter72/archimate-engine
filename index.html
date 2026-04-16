@@ -8240,6 +8240,27 @@ function procColMap(steps, flows) {
   return colMap;
 }
 
+// ── SVG Preview zoom state ────────────────────────────────────
+let _procZoom = 1.0;
+
+function setProcZoom(delta) {
+  _procZoom = Math.min(3.0, Math.max(0.25, _procZoom + delta));
+  _applyProcZoom();
+}
+function resetProcZoom() {
+  _procZoom = 1.0;
+  _applyProcZoom();
+}
+function _applyProcZoom() {
+  const svg = document.querySelector('#proc-svg-wrap svg');
+  if (svg) svg.style.transform = `scale(${_procZoom})`;
+  // Also update if wrap holds a container
+  const inner = document.getElementById('proc-svg-inner');
+  if (inner) inner.style.transform = `scale(${_procZoom})`;
+  const lbl = document.getElementById('proc-zoom-pct-lbl');
+  if (lbl) lbl.textContent = Math.round(_procZoom * 100) + '%';
+}
+
 // ── SVG Preview ───────────────────────────────────────────────
 function renderProcPreview() {
   const wrap = document.getElementById('proc-svg-wrap');
