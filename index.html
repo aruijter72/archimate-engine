@@ -3908,6 +3908,19 @@ function refreshHealthDrop() {
         <span class="health-drop-name">${esc(lbl)}</span>
         <span class="health-drop-arrow">→</span></div>`;
     }
+  } else if (type === 'orphaned') {
+    const NL2 = currentLang === 'nl';
+    for (const el of items) {
+      const hint = _orphanHint(el, NL2);
+      html += `<div class="health-drop-item" style="flex-direction:column;align-items:flex-start;gap:.2rem;padding:.55rem .75rem" onclick="navigateToElement('${el.id}');closeHealthDrop()">
+        <div style="display:flex;align-items:center;gap:.5rem;width:100%">
+          <span class="health-drop-name">${esc(el.name||'—')}</span>
+          <span class="health-drop-type">${TYPE_LABELS[el.type]||el.type}</span>
+          <span class="health-drop-arrow" style="margin-left:auto">→</span>
+        </div>
+        <div style="font-size:.72rem;color:var(--muted);line-height:1.4">${esc(hint)}</div>
+      </div>`;
+    }
   } else {
     for (const el of items) {
       html += `<div class="health-drop-item" onclick="navigateToElement('${el.id}');closeHealthDrop()">
