@@ -7831,6 +7831,105 @@ function updateColumnName(colId, val) {
   if (c) { c.name = val; renderProcPreview(); }
 }
 
+// ── Column auto-suggest from architecture ─────────────────────
+const COLUMN_SYS_TYPES = new Set([
+  'ApplicationComponent','ApplicationService','ApplicationFunction',
+  'ApplicationCollaboration','ApplicationInterface','ApplicationProcess',
+  'ApplicationInteraction','ApplicationEvent',
+  'SystemSoftware','Node','Device'
+]);
+const COLUMN_REL_TYPES = new Set([
+  'ServingRelationship','AssignmentRelationship','AssociationRelationship',
+  'RealizationRelationship','TriggeringRelationship','FlowRelationship',
+  'AccessRelationship','InfluenceRelationship','CompositionRelationship',
+  'AggregationRelationship'
+]);
+
+function _getSuggestedColumnSystems(proc) {
+  if (!proc) return [];
+  const elems      = model.elements    || [];
+  const rels       = model.relationships || [];
+  const stepSrcIds = new Set(proc.steps.filter(s => s.sourceId).map(s => s.sourceId));
+  if (!stepSrcIds.size) return [];
+
+  // Find all system elements connected to any step source
+  const sysIds = new Set();
+  rels.forEach(r => {
+    if (!COLUMN_REL_TYPES.has(r.type)) return;
+    const srcEl = elems.find(e => e.id === r.sourceId);
+    const tgtEl = elems.find(e => e.id === r.targetId);
+    if (srcEl && stepSrcIds.has(r.sourceId) && tgtEl && COLUMN_SYS_TYPES.has(tgtEl.type)) sysIds.add(r.targetId);
+    if (tgtEl && stepSrcIds.has(r.targetId) && srcEl && COLUMN_SYS_TYPES.has(srcEl.type)) sysIds.add(r.sourceId);
+  });
+  return [...sysIds].map(id => elems.find(e => e.id === id)).filter(Boolean);
+}
+
+function _hasSuggestedColumns(proc) {
+  return _getSuggestedColumnSystems(proc).length > 0;
+}
+
+function showColumnSuggest() {
+  const proc = getActiveProc(); if (!proc) return;
+  const NL   = currentLang === 'nl';
+  const candidates = _getSuggestedColumnSystems(proc);
+
+  if (!candidates.length) {
+    showAlert(NL
+      ? 'Geen systemen gevonden in de architectuur die gekoppeld zijn aan de stappen in dit proces. Voeg koppelingen toe via de relaties in de Business/Application laag.'
+      : 'No systems found in the architecture linked to steps in this process. Add connections via relationships in the Business/Application layer.',
+      NL ? 'Systemen als kolommen' : 'Systems as columns');
+    return;
+  }
+
+  const existingColSrcIds = new Set(proc.columns.filter(c => c.sourceId).map(c => c.sourceId));
+
+  const overlay = document.createElement('div');
+  overlay.id = 'col-suggest-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:2000;display:flex;align-items:center;justify-content:center';
+
+  const rows = candidates.map(el => {
+    const already = existingColSrcIds.has(el.id);
+    return `<label style="display:flex;align-items:center;gap:.5rem;padding:.28rem .2rem;cursor:pointer;border-radius:4px"
+        onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background=''">
+      <input type="checkbox" name="colSysEl" value="${esc(el.id)}" ${already?'checked disabled':''} style="accent-color:var(--proc);flex-shrink:0">
+      <span style="font-size:.82rem;color:var(--white)">${esc(el.name)||'(unnamed)'}</span>
+      <span style="font-size:.67rem;color:var(--muted);margin-left:auto;flex-shrink:0">${esc(el.type)}</span>
+    </label>`;
+  }).join('');
+
+  overlay.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.3rem;min-width:360px;max-width:480px;max-height:78vh;overflow-y:auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
+        <strong style="color:var(--white);font-size:.92rem">${NL ? 'Systemen als kolommen' : 'Systems as columns'}</strong>
+        <button onclick="document.getElementById('col-suggest-overlay').remove()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;line-height:1">×</button>
+      </div>
+      <p style="font-size:.76rem;color:var(--muted);margin-bottom:.75rem">${NL
+        ? 'De onderstaande systemen zijn gekoppeld aan stappen in dit proces. Selecteer welke je als kolommen wilt toevoegen — zo zie je per stap welk systeem betrokken is.'
+        : 'The systems below are connected to steps in this process. Select which ones to add as columns — this shows per step which system is involved.'}</p>
+      <div>${rows}</div>
+      <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1.1rem">
+        <button onclick="document.getElementById('col-suggest-overlay').remove()" class="btn-add" style="padding:.32rem .8rem">${NL ? 'Annuleren' : 'Cancel'}</button>
+        <button onclick="importColumnsFromSuggest()" class="btn-add proc" style="padding:.32rem .8rem">${NL ? '+ Kolommen toevoegen' : '+ Add Columns'}</button>
+      </div>
+    </div>`;
+
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+
+function importColumnsFromSuggest() {
+  const proc = getActiveProc(); if (!proc) return;
+  if (!proc.columns) proc.columns = [];
+  [...document.querySelectorAll('[name=colSysEl]:checked:not(:disabled)')].forEach(cb => {
+    const el = (model.elements || []).find(e => e.id === cb.value);
+    if (el && !proc.columns.find(c => c.sourceId === el.id)) {
+      proc.columns.push({ id: genId(), name: el.name || '', sourceId: el.id });
+    }
+  });
+  document.getElementById('col-suggest-overlay')?.remove();
+  renderProcTab();
+}
+
 function addStep() {
   const proc = getActiveProc(); if (!proc) return;
   proc.steps.push({
