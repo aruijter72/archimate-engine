@@ -2329,6 +2329,14 @@ function applyTranslations() {
   if (genFlowBtn) genFlowBtn.title = L === 'nl'
     ? 'Genereer een swimlane-diagram vanuit uw architectuurmodel'
     : 'Generate a swimlane diagram from your architecture model';
+  // Narrative buttons
+  ['btn-narrative-arch-lbl','btn-narrative-sw-lbl'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.textContent = L === 'nl' ? 'Narratief' : 'Narrative';
+  });
+  ['btn-narrative-arch-el','btn-narrative-sw-el'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.title = L === 'nl' ? 'Begrijpelijke beschrijving van uw model' : 'Plain-language description of your model';
+  });
   // Mode switcher button tooltips
   const btnArchi = document.getElementById('mode-btn-archimate');
   if (btnArchi) btnArchi.title = L === 'nl' ? 'ArchiMate modelleren' : 'ArchiMate modelling';
@@ -4776,6 +4784,290 @@ function showStepInfo(procId, stepId) {
 function hideStepInfo() {
   const m = document.getElementById('stepInfoModal');
   if (m) m.style.display = '';
+}
+
+// ══════════════════════════════════════════════════════════════
+// NARRATIVE VIEW
+// ══════════════════════════════════════════════════════════════
+
+// ── Helper: list join ─────────────────────────────────────────
+// Joins an array into "A, B en C" (NL) or "A, B and C" (EN)
+function _narrJoin(arr, NL) {
+  if (!arr.length) return '';
+  if (arr.length === 1) return arr[0];
+  const conj = NL ? ' en ' : ' and ';
+  return arr.slice(0, -1).join(', ') + conj + arr[arr.length - 1];
+}
+
+// ── Context builder for one process element ───────────────────
+function _narrContext(procElem) {
+  const elems = model.elements  || [];
+  const rels  = model.relationships || [];
+  const pid   = procElem.id;
+
+  // Helper: find connected element ids by rel type + direction
+  const linked = (relTypes, srcId, dir) =>
+    rels.filter(r => relTypes.includes(r.type) &&
+      (dir === 'out' ? r.source === srcId : r.target === srcId))
+        .map(r => dir === 'out' ? r.target : r.source);
+
+  const ACTOR_TYPES   = new Set(['BusinessActor','BusinessRole','BusinessCollaboration']);
+  const SYS_TYPES     = new Set(['ApplicationComponent','ApplicationService','ApplicationFunction']);
+  const OBJECT_TYPES  = new Set(['BusinessObject','DataObject','Artifact']);
+  const EVENT_TYPES   = new Set(['BusinessEvent']);
+  const PROCESS_TYPES = new Set([
+    'BusinessProcess','BusinessFunction','BusinessService','BusinessInteraction',
+    'ApplicationProcess','ApplicationInteraction','TechnologyProcess','TechnologyService',
+  ]);
+
+  const byId = id => elems.find(e => e.id === id);
+
+  // Actors assigned to this process (Assignment, both directions)
+  const actorIds = new Set([
+    ...linked(['AssignmentRelationship'], pid, 'in'),
+    ...linked(['AssignmentRelationship'], pid, 'out'),
+  ]);
+  const actors = [...actorIds].map(byId).filter(e => e && ACTOR_TYPES.has(e.type)).map(e => e.name).filter(Boolean);
+
+  // Systems serving this process
+  const sysIds = linked(['ServingRelationship','RealizationRelationship'], pid, 'in');
+  const systems = sysIds.map(byId).filter(e => e && SYS_TYPES.has(e.type)).map(e => e.name).filter(Boolean);
+
+  // Also: process uses (Access) a system component
+  const usedIds = linked(['AccessRelationship','AssociationRelationship'], pid, 'out');
+  usedIds.forEach(id => {
+    const e = byId(id);
+    if (e && SYS_TYPES.has(e.type) && e.name && !systems.includes(e.name)) systems.push(e.name);
+  });
+
+  // Data objects accessed by this process
+  const objIds = [
+    ...linked(['AccessRelationship'], pid, 'out'),
+    ...linked(['AccessRelationship'], pid, 'in'),
+  ];
+  const objects = [...new Set(objIds)].map(byId).filter(e => e && OBJECT_TYPES.has(e.type)).map(e => e.name).filter(Boolean);
+
+  // Events triggering this process
+  const evtIds = linked(['TriggeringRelationship','FlowRelationship'], pid, 'in');
+  const events = evtIds.map(byId).filter(e => e && EVENT_TYPES.has(e.type)).map(e => e.name).filter(Boolean);
+
+  // Next processes (triggered by this one)
+  const nextIds = linked(['TriggeringRelationship','FlowRelationship'], pid, 'out');
+  const nextProcesses = nextIds.map(byId).filter(e => e && PROCESS_TYPES.has(e.type) && e.id !== pid).map(e => e.name).filter(Boolean);
+
+  // Collaborators (other actors via Association or Interaction)
+  const collabIds = [
+    ...linked(['AssociationRelationship'], pid, 'in'),
+    ...linked(['AssociationRelationship'], pid, 'out'),
+  ];
+  const collaborators = [...new Set(collabIds)]
+    .map(byId)
+    .filter(e => e && ACTOR_TYPES.has(e.type) && !actors.includes(e.name))
+    .map(e => e.name).filter(Boolean);
+
+  return { actors, systems, objects, events, nextProcesses, collaborators };
+}
+
+// ── Narrative for one process (NL or EN) ─────────────────────
+function _narrForProcess(procElem, NL) {
+  const { actors, systems, objects, events, nextProcesses, collaborators } = _narrContext(procElem);
+  const pName = procElem.name || procElem.type;
+  const sentences = [];
+
+  // 1. Event trigger
+  if (events.length) {
+    sentences.push(NL
+      ? `Het proces '${pName}' start wanneer ${_narrJoin(events, true)} plaatsvindt.`
+      : `The process '${pName}' starts when ${_narrJoin(events, false)} occurs.`
+    );
+  }
+
+  // 2. Actor + Process (+ System, combined early)
+  if (actors.length) {
+    const actorStr = _narrJoin(actors, NL);
+    if (systems.length) {
+      const sysStr = systems[0];
+      sentences.push(NL
+        ? `${actorStr} voert '${pName}' uit en gebruikt daarbij ${sysStr}.`
+        : `${actorStr} performs '${pName}' and uses ${sysStr}.`
+      );
+    } else {
+      sentences.push(NL
+        ? `${actorStr} voert het proces '${pName}' uit.`
+        : `${actorStr} performs the process '${pName}'.`
+      );
+    }
+  } else {
+    // No actor — still name the process
+    sentences.push(NL
+      ? `Het proces '${pName}' wordt uitgevoerd.`
+      : `The process '${pName}' is executed.`
+    );
+  }
+
+  // 3. Additional systems (skip first, already merged above)
+  if (systems.length > 1) {
+    const extra = _narrJoin(systems.slice(1), NL);
+    sentences.push(NL
+      ? `Daarnaast worden ook ${extra} gebruikt.`
+      : `Additionally, ${extra} ${systems.length - 1 === 1 ? 'is' : 'are'} involved.`
+    );
+  }
+
+  // 4. Data objects
+  if (objects.length) {
+    const objStr = _narrJoin(objects, NL);
+    sentences.push(NL
+      ? `Tijdens dit proces wordt gebruik gemaakt van ${objStr}.`
+      : `During this process, ${objStr} ${objects.length === 1 ? 'is' : 'are'} used.`
+    );
+  }
+
+  // 5. Collaborators
+  if (collaborators.length) {
+    const colStr = _narrJoin(collaborators, NL);
+    sentences.push(NL
+      ? `Hierbij wordt samengewerkt met ${colStr}.`
+      : `This involves collaboration with ${colStr}.`
+    );
+  }
+
+  // 6. Flow to next process
+  if (nextProcesses.length) {
+    const nxt = nextProcesses[0];
+    sentences.push(NL
+      ? `Na dit proces volgt '${nxt}'.`
+      : `This is followed by '${nxt}'.`
+    );
+  }
+
+  // Edge case: still only the bare-minimum passive sentence — enrich it a bit
+  if (sentences.length === 1 && !actors.length && !systems.length) {
+    return NL
+      ? `Dit model bevat het proces '${pName}', maar er is nog beperkte informatie over de betrokken rollen of systemen.`
+      : `The model contains the process '${pName}', but limited information is available about the roles or systems involved.`;
+  }
+
+  return sentences.join(' ');
+}
+
+// ── Model-level summary sentence ─────────────────────────────
+function _narrModelSummary(processes, NL) {
+  const elems = model.elements || [];
+  const allActors = [...new Set(
+    elems.filter(e => ['BusinessActor','BusinessRole'].includes(e.type) && e.name).map(e => e.name)
+  )];
+  const allSystems = [...new Set(
+    elems.filter(e => ['ApplicationComponent'].includes(e.type) && e.name).map(e => e.name)
+  )];
+
+  const nProc = processes.length;
+  const layers = [...new Set(elems.map(e => e.layer))].filter(Boolean);
+  const layerLabel = NL
+    ? layers.map(l => l === 'business' ? 'Business-laag' : l === 'application' ? 'Applicatielaag' : 'Technologielaag').join(', ')
+    : layers.map(l => l === 'business' ? 'Business layer' : l === 'application' ? 'Application layer' : 'Technology layer').join(', ');
+
+  let summary = NL
+    ? `Dit model beschrijft ${nProc} proces${nProc === 1 ? '' : 'sen'}`
+    : `This model describes ${nProc} process${nProc === 1 ? '' : 'es'}`;
+
+  if (layerLabel) summary += NL ? ` in de ${layerLabel}` : ` across the ${layerLabel}`;
+
+  if (allActors.length) {
+    summary += NL
+      ? `, waarbij ${_narrJoin(allActors.slice(0,3), true)}${allActors.length > 3 ? ' en anderen' : ''} betrokken ${allActors.length === 1 ? 'is' : 'zijn'}`
+      : `, involving ${_narrJoin(allActors.slice(0,3), false)}${allActors.length > 3 ? ' and others' : ''}`;
+  }
+
+  if (allSystems.length) {
+    summary += NL
+      ? ` via systemen als ${_narrJoin(allSystems.slice(0,3), true)}${allSystems.length > 3 ? ' e.a.' : ''}`
+      : ` via systems including ${_narrJoin(allSystems.slice(0,3), false)}${allSystems.length > 3 ? ' and others' : ''}`;
+  }
+
+  summary += '.';
+  return summary;
+}
+
+// ── Main: render narrative modal ──────────────────────────────
+function showNarrative() {
+  const NL = currentLang === 'nl';
+  const elems = model.elements || [];
+
+  // i18n labels
+  document.getElementById('narr-title').textContent = NL ? '📖 Narratieve weergave' : '📖 Narrative View';
+  document.getElementById('narr-sub').textContent = NL
+    ? 'Een begrijpelijke beschrijving van uw architectuurmodel — wat er gebeurt, wie het doet en welke systemen betrokken zijn.'
+    : 'A plain-language description of your architecture model — what happens, who does it, and which systems are involved.';
+  document.getElementById('narr-close-btn').textContent = NL ? 'Sluiten' : 'Close';
+  document.getElementById('narr-copy-btn').textContent = NL ? '📋 Tekst kopiëren' : '📋 Copy text';
+  document.getElementById('narr-empty-msg').textContent = NL
+    ? 'Geen elementen gevonden. Voeg Bedrijfsprocessen, Actoren of Componenten toe aan uw model.'
+    : 'No processable elements found. Add Business Processes, Actors, or Application Components to your model.';
+
+  // Process types to narrate
+  const PROC_TYPES = new Set([
+    'BusinessProcess','BusinessFunction','BusinessService','BusinessInteraction',
+    'ApplicationProcess','ApplicationFunction','ApplicationService',
+    'TechnologyProcess','TechnologyService',
+  ]);
+  const processes = elems.filter(e => PROC_TYPES.has(e.type) && e.name);
+
+  const body = document.getElementById('narr-body');
+
+  if (!processes.length) {
+    body.innerHTML = `<div class="narr-empty" id="narr-empty-msg">${NL
+      ? 'Geen elementen gevonden. Voeg Bedrijfsprocessen, Actoren of Componenten toe aan uw model.'
+      : 'No processable elements found. Add Business Processes, Actors, or Application Components to your model.'}</div>`;
+    document.getElementById('narrativeModal').style.display = 'flex';
+    return;
+  }
+
+  let html = '';
+
+  // Model-level summary
+  const summary = _narrModelSummary(processes, NL);
+  html += `<div class="narr-summary-box">
+    <div class="narr-summary-label">${NL ? 'Samenvatting' : 'Summary'}</div>
+    ${esc(summary)}
+  </div>`;
+
+  // Per-process paragraphs
+  html += `<div id="narr-procs">`;
+  for (const p of processes) {
+    const text = _narrForProcess(p, NL);
+    const typeLabel = p.type.replace(/([A-Z])/g, ' $1').trim();
+    html += `<div class="narr-proc-block">
+      <div class="narr-proc-name">${esc(p.name)} <span style="font-weight:400;opacity:.55;font-size:.65rem;margin-left:.4rem">${esc(typeLabel)}</span></div>
+      <div class="narr-proc-text">${esc(text)}</div>
+    </div>`;
+  }
+  html += `</div>`;
+
+  body.innerHTML = html;
+  document.getElementById('narrativeModal').style.display = 'flex';
+}
+
+function hideNarrative() {
+  const m = document.getElementById('narrativeModal');
+  if (m) m.style.display = '';
+}
+
+// Copy all narrative text to clipboard
+function copyNarrative() {
+  const NL = currentLang === 'nl';
+  const summaryEl = document.querySelector('.narr-summary-box');
+  const procEls   = document.querySelectorAll('.narr-proc-text');
+  const parts = [];
+  if (summaryEl) parts.push(summaryEl.textContent.trim());
+  procEls.forEach(el => parts.push(el.textContent.trim()));
+  const txt = parts.join('\n\n');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).then(() => {
+      const btn = document.getElementById('narr-copy-btn');
+      if (btn) { btn.textContent = NL ? '✓ Gekopieerd!' : '✓ Copied!'; setTimeout(() => { btn.textContent = NL ? '📋 Tekst kopiëren' : '📋 Copy text'; }, 1800); }
+    });
+  }
 }
 
 function applyMode() {
