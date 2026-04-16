@@ -8921,6 +8921,261 @@ function _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww, procId
   return out;
 }
 
+// ══════════════════════════════════════════════════════════════
+// SWIMLANE INTERACTIVE DRAG — step repositioning + flow reconnect
+// ══════════════════════════════════════════════════════════════
+
+let _procLayout   = null;  // layout snapshot from last renderProcPreview
+let _procDrag     = null;  // active drag state
+let _procDragMoved = false; // true if pointer moved >6px (suppresses click-through)
+
+// Convert pointer event → SVG coordinate, accounting for CSS zoom
+function _procSvgPt(e) {
+  const inner = document.getElementById('proc-svg-inner');
+  if (!inner) return { x: 0, y: 0 };
+  const rect  = inner.getBoundingClientRect();
+  const scale = _procZoom || 1;
+  return { x: (e.clientX - rect.left) / scale, y: (e.clientY - rect.top) / scale };
+}
+
+function _laneIdxFromY(y) {
+  if (!_procLayout) return -1;
+  const { PROC_HDR, COL_HDR_H, LANE_H } = _procLayout;
+  return Math.floor((y - PROC_HDR - COL_HDR_H) / LANE_H);
+}
+function _colIdxFromX(x) {
+  if (!_procLayout) return -1;
+  const { LANE_STRIP, COL_W } = _procLayout;
+  return Math.floor((x - LANE_STRIP) / COL_W);
+}
+
+// Attach drag listeners after SVG is injected into DOM
+function _initProcDrag() {
+  const wrap = document.getElementById('proc-svg-wrap');
+  const svg  = document.querySelector('#proc-svg-inner svg');
+  if (!wrap || !svg) return;
+
+  // Step drag handles
+  svg.querySelectorAll('[data-step-id]').forEach(el => {
+    el.addEventListener('pointerdown', e => {
+      if (e.target.classList.contains('step-info-dot')) return; // let info-dot click through
+      e.preventDefault(); e.stopPropagation();
+      _startStepDrag(e, el.dataset.stepId);
+    });
+  });
+
+  // Flow endpoint handle drag
+  svg.querySelectorAll('[data-flow-id]').forEach(el => {
+    el.addEventListener('pointerdown', e => {
+      e.preventDefault(); e.stopPropagation();
+      _startFlowDrag(e, el.dataset.flowId, el.dataset.end);
+    });
+  });
+
+  // Suppress click on the SVG if a drag occurred (prevents info popup mis-trigger)
+  svg.addEventListener('click', e => {
+    if (_procDragMoved) { e.stopPropagation(); e.preventDefault(); _procDragMoved = false; }
+  }, true);
+}
+
+function _startStepDrag(e, stepId) {
+  if (!_procLayout) return;
+  const svg = document.querySelector('#proc-svg-inner svg'); if (!svg) return;
+  const pos = _procLayout.sPos[stepId]; if (!pos) return;
+  const pt  = _procSvgPt(e);
+
+  _procDragMoved = false;
+
+  // Ghost: semi-transparent rect following the pointer
+  const ghost = document.createElementNS('http://www.w3.org/2000/svg','g');
+  ghost.setAttribute('pointer-events','none');
+  ghost.innerHTML = `<rect x="${-56}" y="${-21}" width="112" height="42" rx="5"
+    fill="#a78af5" fill-opacity="0.35" stroke="#7c5cbf" stroke-width="2" stroke-dasharray="5,3"/>
+    <circle r="14" fill="#a78af5" fill-opacity="0.2" stroke="#7c5cbf" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  ghost.setAttribute('transform', `translate(${pos.cx},${pos.cy})`);
+  svg.appendChild(ghost);
+
+  // Lane highlight rect
+  const hl = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  hl.setAttribute('pointer-events','none');
+  hl.setAttribute('fill','rgba(167,138,245,.18)');
+  hl.setAttribute('stroke','#a78af5');
+  hl.setAttribute('stroke-width','2');
+  hl.setAttribute('rx','4');
+  hl.setAttribute('display','none');
+  svg.insertBefore(hl, svg.firstChild.nextSibling); // insert near back
+
+  // Dim the original step
+  const origEl = svg.querySelector(`[data-step-id="${stepId}"]`);
+  if (origEl) origEl.setAttribute('opacity','0.28');
+
+  document.getElementById('proc-svg-wrap').classList.add('proc-dragging');
+
+  _procDrag = { type:'step', id:stepId, ghost, hl, origPos: pos,
+    startX:pt.x, startY:pt.y, offsetX:pt.x-pos.cx, offsetY:pt.y-pos.cy };
+
+  document.addEventListener('pointermove', _onProcDragMove);
+  document.addEventListener('pointerup',   _onProcDragEnd, { once: true });
+}
+
+function _startFlowDrag(e, flowId, end) {
+  if (!_procLayout) return;
+  const proc = getActiveProc(); if (!proc) return;
+  const svg  = document.querySelector('#proc-svg-inner svg'); if (!svg) return;
+  const flow = proc.flows.find(f => f.id === flowId); if (!flow) return;
+
+  _procDragMoved = false;
+  const pt = _procSvgPt(e);
+
+  const fixedId  = end === 'to' ? flow.from : flow.to;
+  const fixedPos = _procLayout.sPos[fixedId] || { cx: pt.x, cy: pt.y };
+
+  // Ghost dashed line from fixed end to pointer
+  const ghost = document.createElementNS('http://www.w3.org/2000/svg','line');
+  ghost.setAttribute('stroke','#a78af5');
+  ghost.setAttribute('stroke-width','2.5');
+  ghost.setAttribute('stroke-dasharray','7,4');
+  ghost.setAttribute('pointer-events','none');
+  ghost.setAttribute('marker-end','url(#pa)');
+  ghost.setAttribute('x1', fixedPos.cx); ghost.setAttribute('y1', fixedPos.cy);
+  ghost.setAttribute('x2', pt.x);        ghost.setAttribute('y2', pt.y);
+  svg.appendChild(ghost);
+
+  // Target-step highlight ring
+  const ring = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  ring.setAttribute('pointer-events','none');
+  ring.setAttribute('fill','rgba(167,138,245,.25)');
+  ring.setAttribute('stroke','#a78af5');
+  ring.setAttribute('stroke-width','2.5');
+  ring.setAttribute('r','28');
+  ring.setAttribute('display','none');
+  svg.appendChild(ring);
+
+  document.getElementById('proc-svg-wrap').classList.add('proc-dragging');
+
+  _procDrag = { type:'flow', id:flowId, end, fixedId, fixedPos, ghost, ring,
+    curX:pt.x, curY:pt.y };
+
+  document.addEventListener('pointermove', _onProcDragMove);
+  document.addEventListener('pointerup',   _onProcDragEnd, { once: true });
+}
+
+function _onProcDragMove(e) {
+  if (!_procDrag) return;
+  const pt = _procSvgPt(e);
+
+  if (_procDrag.type === 'step') {
+    const dx = pt.x - _procDrag.startX, dy = pt.y - _procDrag.startY;
+    if (!_procDragMoved && Math.hypot(dx, dy) > 6) _procDragMoved = true;
+    if (!_procDragMoved) return;
+
+    // Move ghost to pointer
+    const cx = pt.x - _procDrag.offsetX + _procDrag.origPos.cx - _procDrag.origPos.cx;
+    // ghost follows absolute SVG position
+    _procDrag.ghost.setAttribute('transform', `translate(${pt.x - _procDrag.offsetX},${pt.y - _procDrag.offsetY})`);
+
+    // Highlight target lane
+    const li = _laneIdxFromY(pt.y);
+    const { PROC_HDR, COL_HDR_H, LANE_H, LANE_STRIP, svgW, laneIds } = _procLayout;
+    if (li >= 0 && li < laneIds.length) {
+      const hy = PROC_HDR + COL_HDR_H + li * LANE_H;
+      const hl = _procDrag.hl;
+      hl.setAttribute('x', LANE_STRIP); hl.setAttribute('y', hy);
+      hl.setAttribute('width', svgW - LANE_STRIP); hl.setAttribute('height', LANE_H);
+      hl.removeAttribute('display');
+    } else {
+      _procDrag.hl.setAttribute('display','none');
+    }
+
+  } else if (_procDrag.type === 'flow') {
+    if (!_procDragMoved) _procDragMoved = true;
+    _procDrag.curX = pt.x; _procDrag.curY = pt.y;
+    _procDrag.ghost.setAttribute('x2', pt.x);
+    _procDrag.ghost.setAttribute('y2', pt.y);
+
+    // Highlight nearest step within snap radius
+    const SNAP = 44;
+    let closest = null, closestD = SNAP;
+    const proc = getActiveProc();
+    Object.entries(_procLayout.sPos).forEach(([sid, pos]) => {
+      if (sid === _procDrag.fixedId) return;
+      const d = Math.hypot(pos.cx - pt.x, pos.cy - pt.y);
+      if (d < closestD) { closestD = d; closest = { sid, pos }; }
+    });
+    if (closest) {
+      _procDrag.ring.setAttribute('cx', closest.pos.cx);
+      _procDrag.ring.setAttribute('cy', closest.pos.cy);
+      _procDrag.ring.removeAttribute('display');
+      // Snap ghost endpoint to step center
+      _procDrag.ghost.setAttribute('x2', closest.pos.cx);
+      _procDrag.ghost.setAttribute('y2', closest.pos.cy);
+    } else {
+      _procDrag.ring.setAttribute('display','none');
+    }
+  }
+}
+
+function _onProcDragEnd(e) {
+  document.removeEventListener('pointermove', _onProcDragMove);
+  document.getElementById('proc-svg-wrap')?.classList.remove('proc-dragging');
+
+  const drag = _procDrag;
+  _procDrag = null;
+
+  // Clean up ghost elements
+  drag?.ghost?.remove();
+  drag?.hl?.remove();
+  drag?.ring?.remove();
+
+  if (!_procDragMoved || !drag) return; // was a click, not a drag — do nothing
+
+  const proc = getActiveProc(); if (!proc) return;
+  const NL   = currentLang === 'nl';
+
+  if (drag.type === 'step') {
+    const step = proc.steps.find(s => s.id === drag.id); if (!step) return;
+    const pt   = _procSvgPt(e);
+    const { laneIds, colIds, hasColumns, LANE_H, LANE_STRIP, COL_W, PROC_HDR, COL_HDR_H } = _procLayout;
+
+    const li = _laneIdxFromY(pt.y);
+    if (li >= 0 && li < laneIds.length) step.laneId = laneIds[li];
+
+    if (hasColumns && colIds.length) {
+      const ci = _colIdxFromX(pt.x);
+      if (ci >= 0 && ci < colIds.length) step.columnId = colIds[ci];
+    }
+    renderProcTab();
+
+  } else if (drag.type === 'flow') {
+    const flow = proc.flows.find(f => f.id === drag.id); if (!flow) return;
+    const pt   = { x: drag.curX, y: drag.curY };
+
+    // Find nearest step within snap threshold
+    const SNAP = 44;
+    let closestId = null, closestD = SNAP;
+    Object.entries(_procLayout.sPos).forEach(([sid, pos]) => {
+      if (sid === drag.fixedId) return;
+      const d = Math.hypot(pos.cx - pt.x, pos.cy - pt.y);
+      if (d < closestD) { closestD = d; closestId = sid; }
+    });
+
+    if (!closestId) return; // didn't drop on a step — cancel
+
+    if (drag.end === 'to')   flow.to   = closestId;
+    if (drag.end === 'from') flow.from = closestId;
+
+    // Update flow label to reflect new connection
+    const fStep = proc.steps.find(s => s.id === flow.from);
+    const tStep = proc.steps.find(s => s.id === flow.to);
+    if (fStep && tStep) {
+      const arrow = NL ? ' → ' : ' → ';
+      flow.label = `${fStep.label||fStep.type}${arrow}${tStep.label||tStep.type}`;
+    }
+
+    renderProcTab();
+  }
+}
+
 // ── Flow renderer with draggable endpoint handles ─────────────
 function _renderFlowsSVG(flows, sPos) {
   let out = '';
