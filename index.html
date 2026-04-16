@@ -4537,10 +4537,49 @@ function cvSmartLayout() {
   if (typeof dagre === 'undefined') { showAlert('Dagre library not loaded — check your connection.'); return; }
 
   const {EW, EH, OX, OY, LG} = CV;
-  const HPAD = 36, VPAD = 30;  // horizontal/vertical padding inside each layer band
+  const HPAD = 44, VPAD = 32;
   const positions = {};
 
-  // Build per-layer sub-graphs, then stack layers vertically
+  // ── Pass 1: global graph with ALL relationships ─────────────────
+  // Determines the natural left-to-right ordering that respects
+  // cross-layer connections. This is what creates vertical alignment
+  // of related elements across Business → Application → Technology.
+  const gGlobal = new dagre.graphlib.Graph();
+  gGlobal.setGraph({ rankdir: 'LR', ranksep: VPAD * 2, nodesep: HPAD, marginx: HPAD, marginy: VPAD });
+  gGlobal.setDefaultEdgeLabel(() => ({}));
+
+  for (const el of model.elements) {
+    gGlobal.setNode(el.id, { width: EW, height: EH });
+  }
+  // Heavy layer-ordering edges keep Business above Application above Technology
+  let prevLayerTail = null;
+  for (const key of CV.LAYERS) {
+    const elems = model.elements.filter(e => e.layer === key);
+    if (!elems.length) continue;
+    if (prevLayerTail) gGlobal.setEdge(prevLayerTail, elems[0].id, { weight: 80, minlen: 3 });
+    prevLayerTail = elems[elems.length - 1].id;
+  }
+  // All actual relationships (light weight, just for ordering hints)
+  const edgeSeen = new Set();
+  for (const r of model.relationships) {
+    if (!r.sourceId || !r.targetId) continue;
+    if (!gGlobal.hasNode(r.sourceId) || !gGlobal.hasNode(r.targetId)) continue;
+    const key = r.sourceId + '>' + r.targetId;
+    if (!edgeSeen.has(key)) { gGlobal.setEdge(r.sourceId, r.targetId, { weight: 2 }); edgeSeen.add(key); }
+  }
+  let globalX = {};
+  try {
+    dagre.layout(gGlobal);
+    for (const el of model.elements) {
+      const n = gGlobal.node(el.id);
+      if (n && !isNaN(n.x)) globalX[el.id] = n.x; // centre-X from global pass
+    }
+  } catch(e) { globalX = {}; }
+
+  // ── Pass 2: per-layer layout seeded with global ordering ────────
+  // Within each layer, dagre does fine-grained intra-layer routing,
+  // but elements are pre-sorted by global X so vertically-connected
+  // elements land in the same column zone.
   let curY = OY;
   for (const layerKey of CV.LAYERS) {
     const elems = model.elements.filter(e => e.layer === layerKey);
@@ -4553,17 +4592,22 @@ function cvSmartLayout() {
     const elemSet = new Set(elems.map(e => e.id));
     for (const el of elems) g.setNode(el.id, { width: EW, height: EH });
 
-    // Add cross-layer edges as hints for within-layer ordering too, but only intra-layer ones
+    // Intra-layer relationships (strong)
     for (const r of model.relationships) {
       if (!r.sourceId || !r.targetId) continue;
-      if (elemSet.has(r.sourceId) && elemSet.has(r.targetId)) {
-        g.setEdge(r.sourceId, r.targetId, { weight: 1 });
-      }
+      if (elemSet.has(r.sourceId) && elemSet.has(r.targetId))
+        g.setEdge(r.sourceId, r.targetId, { weight: 3 });
+    }
+    // Soft ordering edges derived from global X (preserve cross-layer alignment)
+    const sorted = [...elems].sort((a, b) => (globalX[a.id] ?? 0) - (globalX[b.id] ?? 0));
+    for (let i = 0; i < sorted.length - 1; i++) {
+      const a = sorted[i], b = sorted[i + 1];
+      if (!g.hasEdge(a.id, b.id) && !g.hasEdge(b.id, a.id))
+        g.setEdge(a.id, b.id, { weight: 0.8, minlen: 1 });
     }
 
     try { dagre.layout(g); } catch(e) { continue; }
 
-    // Collect dagre positions (dagre uses centre coords), offset to absolute
     const nodes = elems.map(el => {
       const n = g.node(el.id);
       return n && !isNaN(n.x) ? { id: el.id, rx: Math.round(n.x - EW/2), ry: Math.round(n.y - EH/2) } : null;
@@ -4571,7 +4615,6 @@ function cvSmartLayout() {
 
     if (!nodes.length) continue;
 
-    // Normalise so min-x = OX, min-y = curY
     const minRX = Math.min(...nodes.map(n => n.rx));
     const minRY = Math.min(...nodes.map(n => n.ry));
     const layerH = Math.max(...nodes.map(n => n.ry)) - minRY + EH;
@@ -4582,14 +4625,14 @@ function cvSmartLayout() {
     curY += layerH + LG;
   }
 
-  // Fill any elements that dagre missed (isolated, no-layer)
+  // Fill fallbacks for any isolated or unprocessed elements
   const fallback = _cvDefaultLayout();
   for (const el of model.elements) {
     if (!positions[el.id]) positions[el.id] = fallback[el.id] || { x: OX, y: OY };
   }
 
   model.elementPositions = positions;
-  _cvVB = null; // reset zoom so the new layout fits
+  _cvVB = null;
   renderCanvas();
   const NL = currentLang === 'nl';
   showToast(NL ? '⚡ Slimme layout toegepast' : '⚡ Smart layout applied');
