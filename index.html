@@ -7928,7 +7928,7 @@ function _svgLaneLines(text, maxChars) {
   return line2 ? [line1, line2] : [line1];
 }
 
-function _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww) {
+function _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww, procId) {
   // Light-background fill/stroke/text triples per type
   const LIGHT = {
     start:    { fill:'#D4EDDA', stroke:'#28A745', text:'#155724' },
@@ -7944,38 +7944,55 @@ function _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww) {
     const { cx, cy } = pos;
     const c = LIGHT[s.type] || { fill:'#e8e8f0', stroke:'#888', text:'#333' };
     const lbl = s.label || s.type;
+    const hasInfo = !!(s.sourceId && procId);
+    const clickAttr = hasInfo ? ` onclick="showStepInfo('${procId}','${s.id}')" style="cursor:pointer"` : '';
+    const gOpen  = hasInfo ? `<g${clickAttr}>` : '';
+    const gClose = hasInfo ? `</g>` : '';
+
     if (s.type === 'start' || s.type === 'end') {
+      out += gOpen;
       out += `<circle cx="${cx}" cy="${cy}" r="${STEP_R}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2"/>`;
       if (s.type==='end') out += `<circle cx="${cx}" cy="${cy}" r="${STEP_R-6}" fill="${c.stroke}" opacity=".25"/>`;
       ww(lbl,10).forEach((ln,li,a) => {
         out += `<text x="${cx}" y="${cy+(li-(a.length-1)/2)*11+4}" text-anchor="middle" font-size="9" font-weight="700" fill="${c.text}">${esc(ln)}</text>`;
       });
+      if (hasInfo) out += `<circle cx="${cx+STEP_R-5}" cy="${cy-STEP_R+5}" r="5" fill="#C9A355" opacity=".85" class="step-info-dot"/><text x="${cx+STEP_R-5}" y="${cy-STEP_R+9}" text-anchor="middle" font-size="7" font-weight="700" fill="#1a1a2e" pointer-events="none">i</text>`;
+      out += gClose;
     } else if (s.type==='decision') {
       const hw=STEP_W/2-5, hh=STEP_H/2-2;
+      out += gOpen;
       out += `<polygon points="${cx},${cy-hh} ${cx+hw},${cy} ${cx},${cy+hh} ${cx-hw},${cy}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="1.5"/>`;
       ww(lbl,11).forEach((ln,li,a) => {
         out += `<text x="${cx}" y="${cy+(li-(a.length-1)/2)*11+4}" text-anchor="middle" font-size="9" font-weight="600" fill="${c.text}">${esc(ln)}</text>`;
       });
+      if (hasInfo) out += `<circle cx="${cx+hw-2}" cy="${cy-hh+6}" r="5" fill="#C9A355" opacity=".85" class="step-info-dot"/><text x="${cx+hw-2}" y="${cy-hh+10}" text-anchor="middle" font-size="7" font-weight="700" fill="#1a1a2e" pointer-events="none">i</text>`;
+      out += gClose;
     } else if (s.type==='document') {
-      // Document shape: rectangle with wavy bottom
       const x0=cx-STEP_W/2, y0=cy-STEP_H/2, w=STEP_W, h=STEP_H, wav=6;
-      const wavY = y0+h-wav;
+      out += gOpen;
       out += `<path d="M${x0},${y0} h${w} v${h-wav} q-${w/4},${wav*2} -${w/2},0 t-${w/2},0 Z" fill="${c.fill}" stroke="${c.stroke}" stroke-width="1.5"/>`;
       ww(lbl,13).forEach((ln,li,a) => {
         out += `<text x="${cx}" y="${cy-wav/2+(li-(a.length-1)/2)*12+4}" text-anchor="middle" font-size="10" font-weight="600" fill="${c.text}">${esc(ln)}</text>`;
       });
+      if (hasInfo) out += `<circle cx="${cx+STEP_W/2-5}" cy="${y0+5}" r="5" fill="#C9A355" opacity=".85" class="step-info-dot"/><text x="${cx+STEP_W/2-5}" y="${y0+9}" text-anchor="middle" font-size="7" font-weight="700" fill="#1a1a2e" pointer-events="none">i</text>`;
+      out += gClose;
     } else if (s.type==='label') {
-      // Label shape: pentagon with pointed left side
       const x0=cx-STEP_W/2, y0=cy-STEP_H/2, w=STEP_W, h=STEP_H, pt=8;
+      out += gOpen;
       out += `<polygon points="${x0+pt},${y0} ${x0+w},${y0} ${x0+w},${y0+h} ${x0+pt},${y0+h} ${x0},${cy}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="1.5"/>`;
       ww(lbl,12).forEach((ln,li,a) => {
         out += `<text x="${cx+pt/2}" y="${cy+(li-(a.length-1)/2)*12+4}" text-anchor="middle" font-size="10" font-weight="600" fill="${c.text}">${esc(ln)}</text>`;
       });
+      if (hasInfo) out += `<circle cx="${cx+STEP_W/2-5}" cy="${cy-STEP_H/2+5}" r="5" fill="#C9A355" opacity=".85" class="step-info-dot"/><text x="${cx+STEP_W/2-5}" y="${cy-STEP_H/2+9}" text-anchor="middle" font-size="7" font-weight="700" fill="#1a1a2e" pointer-events="none">i</text>`;
+      out += gClose;
     } else {
+      out += gOpen;
       out += `<rect x="${cx-STEP_W/2}" y="${cy-STEP_H/2}" width="${STEP_W}" height="${STEP_H}" rx="5" fill="${c.fill}" stroke="${c.stroke}" stroke-width="1.5"/>`;
       ww(lbl,13).forEach((ln,li,a) => {
         out += `<text x="${cx}" y="${cy+(li-(a.length-1)/2)*12+4}" text-anchor="middle" font-size="10" font-weight="600" fill="${c.text}">${esc(ln)}</text>`;
       });
+      if (hasInfo) out += `<circle cx="${cx+STEP_W/2-5}" cy="${cy-STEP_H/2+5}" r="5" fill="#C9A355" opacity=".85" class="step-info-dot"/><text x="${cx+STEP_W/2-5}" y="${cy-STEP_H/2+9}" text-anchor="middle" font-size="7" font-weight="700" fill="#1a1a2e" pointer-events="none">i</text>`;
+      out += gClose;
     }
   }
   return out;
