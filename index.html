@@ -1223,6 +1223,8 @@
     .search-trigger:hover { color:var(--white); }
     tr.elem-highlight { animation:rowflash .9s ease; }
     @keyframes rowflash { 0%,100%{ background:transparent } 30%{ background:rgba(201,163,85,.18) } }
+    tr.elem-highlight-persist { background:rgba(201,163,85,.10) !important; box-shadow:inset 3px 0 0 var(--gold); }
+    tr.elem-highlight-persist td { background:transparent !important; }
 
     /* ── Views modal ─────────────────────────────────────────── */
     .views-layout { display:grid; grid-template-columns:210px 1fr; gap:1.1rem; min-height:340px; }
