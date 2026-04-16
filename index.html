@@ -1362,6 +1362,12 @@
       </div>
     </div>
     <p style="font-size:.82rem;color:var(--text2);line-height:1.65" id="ob-tip">Every element type has a <strong style="color:var(--white)">? button</strong> next to it — hover over it for a plain-language explanation and real-world examples. The <strong style="color:var(--white)">Manual &amp; Legend</strong> tab has the full reference.</p>
+    <button class="ob-open-btn" id="ob-open-btn" onclick="closeOnboard(); triggerOpenProject()">
+      📂 <span>
+        <span id="ob-open-lbl">Open project</span>
+        <span class="ob-open-sub" id="ob-open-sub">Load a saved .json or .archimate file</span>
+      </span>
+    </button>
     <div class="onboard-actions">
       <label style="font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.4rem;cursor:pointer;margin-right:auto">
         <input type="checkbox" id="onboardNoShow" style="accent-color:var(--gold)" onchange="setOnboardPref(this.checked)">
