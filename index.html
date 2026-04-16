@@ -341,6 +341,55 @@
     .btn-export-proc:disabled { opacity: .38; cursor: not-allowed; }
     .layer-desc { font-size: .84rem; color: var(--text2); }
 
+    /* ── Generate Flow from Architecture ─────────────────────── */
+    .btn-gen-flow {
+      padding: .3rem .82rem; border-radius: 5px;
+      background: rgba(201,163,85,.13); border: 1px solid rgba(201,163,85,.35);
+      color: var(--gold); cursor: pointer; font-size: .78rem;
+      font-family: 'Catamaran', system-ui, sans-serif;
+      font-weight: 600; transition: all .18s; white-space: nowrap;
+    }
+    .btn-gen-flow:hover { background: rgba(201,163,85,.24); border-color: var(--gold); }
+    .btn-gen-flow:disabled { opacity: .38; cursor: not-allowed; }
+
+    /* Step info indicator */
+    .step-info-dot { cursor: pointer; }
+    .step-info-dot:hover { opacity: 1 !important; }
+
+    /* Step info popup */
+    #stepInfoModal .modal-box { max-width: 480px; }
+    .step-info-type-badge {
+      display: inline-block; padding: .18rem .55rem; border-radius: 4px;
+      font-size: .68rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; margin-bottom: .6rem;
+    }
+    .step-info-layer-biz  { background: rgba(245,176,92,.15); color: #f5b05c; border: 1px solid rgba(245,176,92,.3); }
+    .step-info-layer-app  { background: rgba(90,171,221,.15); color: #5aabd7; border: 1px solid rgba(90,171,221,.3); }
+    .step-info-layer-tech { background: rgba(106,186,154,.15); color: #6aba9a; border: 1px solid rgba(106,186,154,.3); }
+    .step-info-doc {
+      background: rgba(255,255,255,.04); border: 1px solid var(--border);
+      border-radius: 6px; padding: .6rem .75rem; font-size: .82rem;
+      color: var(--text2); white-space: pre-wrap; margin-top: .5rem;
+      max-height: 180px; overflow-y: auto; line-height: 1.5;
+    }
+    .step-info-props { margin-top: .65rem; }
+    .step-info-prop-row {
+      display: flex; gap: .5rem; padding: .22rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.05); font-size: .79rem;
+    }
+    .step-info-prop-key { color: var(--muted); flex-shrink: 0; min-width: 120px; }
+    .step-info-prop-val { color: var(--text2); word-break: break-word; }
+
+    /* Flow gen modal */
+    #flowGenModal .modal-box { max-width: 460px; }
+    .fgm-layer-row {
+      display: flex; align-items: center; gap: .65rem; padding: .4rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .fgm-layer-row:last-child { border-bottom: none; }
+    .fgm-layer-label { flex: 1; font-size: .85rem; color: var(--white); }
+    .fgm-layer-desc { font-size: .73rem; color: var(--muted); }
+
     /* ── Section (Active Structure / Behaviour / Passive) ─────── */
     .layer-section {
       margin-bottom: 2.5rem;
