@@ -8582,7 +8582,11 @@ function renderProcTab() {
             ? `<div class="proc-empty">${NL ? 'Nog geen rijstroken — voeg de actoren of rollen toe die deelnemen aan dit proces.' : 'No lanes yet — add the actors or roles that participate in this process.'}</div>`
             : proc.lanes.map((l, i) => `
               <div class="proc-row">
-                <span style="font-size:.68rem;color:var(--muted);width:16px;text-align:right;flex-shrink:0">${i+1}</span>
+                <span style="display:flex;flex-direction:column;gap:1px;flex-shrink:0">
+                  <button class="proc-zoom-btn" onclick="moveLane('${l.id}',-1)" title="${NL ? 'Omhoog' : 'Move up'}" style="width:18px;height:16px;font-size:.6rem" ${i===0?'disabled':''}>▲</button>
+                  <button class="proc-zoom-btn" onclick="moveLane('${l.id}',1)"  title="${NL ? 'Omlaag' : 'Move down'}" style="width:18px;height:16px;font-size:.6rem" ${i===proc.lanes.length-1?'disabled':''}>▼</button>
+                </span>
+                <span style="font-size:.68rem;color:var(--muted);width:14px;text-align:right;flex-shrink:0">${i+1}</span>
                 <input class="elem-input" value="${esc(l.name)}" oninput="updateLaneName('${l.id}',this.value)" placeholder="${NL ? 'Rijstreeknaam…' : 'Lane name…'}" style="flex:1">
                 <button class="btn-del-sm" onclick="deleteLane('${l.id}')" title="${NL ? 'Rijstrook verwijderen' : 'Remove lane'}">×</button>
               </div>`).join('')}
