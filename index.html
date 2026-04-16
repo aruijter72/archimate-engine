@@ -1277,6 +1277,13 @@
     .views-elem-row { display:flex; align-items:center; gap:.5rem; padding:.18rem 0; cursor:pointer; }
     .views-elem-row label { font-size:.8rem; color:var(--white); cursor:pointer; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .views-placeholder { color:var(--text2); font-size:.86rem; padding:.5rem 0; }
+    /* ── Swimlane interactive drag ───────────────────────────── */
+    .proc-step-drag { cursor: grab; }
+    .proc-step-drag:active { cursor: grabbing; }
+    .flow-end-handle { cursor: grab; transition: r .12s; }
+    .flow-end-handle:hover { r: 7; }
+    .proc-svg-wrap.proc-dragging { cursor: grabbing !important; user-select: none; }
+
     /* Inline dialogs (no browser prompt/confirm) */
     .view-inline-dlg { background:rgba(12,18,28,.98); border:1px solid rgba(201,163,85,.38); border-radius:7px; padding:.75rem 1rem; margin-top:.6rem; }
     .view-inline-dlg.danger { border-color:rgba(224,108,117,.4); }
