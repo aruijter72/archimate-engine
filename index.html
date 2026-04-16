@@ -2906,7 +2906,9 @@ async function _doWizAIGenerate() {
   _wizAILoading = true;
   renderWizAI();
 
-  const SYSTEM_PROMPT = `You are an ArchiMate 3 architecture modelling assistant. The user will describe their organisation and IT landscape in plain language. You must output ONLY valid JSON — no markdown, no code fences, no explanation — matching this exact schema:
+  const SYSTEM_PROMPT = `You are an ArchiMate 3 architecture modelling assistant. The user will describe their organisation and IT landscape in plain language. You must output ONLY valid JSON — no markdown, no code fences, no explanation — matching this exact schema.
+
+IMPORTANT: Write ALL "name" and "documentation" string values in ${NL ? 'Dutch (Nederlands)' : 'English'}. Do not use any other language.
 
 {
   "name": "string (model name, max 60 chars)",
