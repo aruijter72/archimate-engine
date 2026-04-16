@@ -4838,8 +4838,8 @@ function _narrContext(procElem) {
   // Helper: find connected element ids by rel type + direction
   const linked = (relTypes, srcId, dir) =>
     rels.filter(r => relTypes.includes(r.type) &&
-      (dir === 'out' ? r.source === srcId : r.target === srcId))
-        .map(r => dir === 'out' ? r.target : r.source);
+      (dir === 'out' ? r.sourceId === srcId : r.targetId === srcId))
+        .map(r => dir === 'out' ? r.targetId : r.sourceId);
 
   const ACTOR_TYPES   = new Set(['BusinessActor','BusinessRole','BusinessCollaboration']);
   const SYS_TYPES     = new Set(['ApplicationComponent','ApplicationService','ApplicationFunction']);
