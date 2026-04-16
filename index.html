@@ -3121,6 +3121,131 @@ Rules:
   _wizAILoading = false;
 }
 
+// ══════════════════════════════════════════════════════════════
+// BULK TRANSLATE MODEL DOCUMENTATION
+// ══════════════════════════════════════════════════════════════
+async function translateModelDocs() {
+  const NL  = currentLang === 'nl';
+  const key = getActiveKey();
+  if (!key) {
+    showAlert(
+      NL ? 'Stel eerst een API-sleutel in via Instellingen.' : 'Set an API key in Settings first.',
+      NL ? 'Vertalen' : 'Translate');
+    return;
+  }
+
+  const targetLang = NL ? 'Dutch (Nederlands)' : 'English';
+  const targetLangShort = NL ? 'Dutch' : 'English';
+
+  // Collect all doc strings that are non-empty
+  const items = []; // { obj, field }
+  (model.elements || []).forEach(e => {
+    if (e.documentation?.trim()) items.push({ obj: e, field: 'documentation' });
+    if (e.name?.trim())          items.push({ obj: e, field: 'name' });
+  });
+  (model.relationships || []).forEach(r => {
+    if (r.documentation?.trim()) items.push({ obj: r, field: 'documentation' });
+  });
+  if (model.documentation?.trim()) items.push({ obj: model, field: 'documentation' });
+
+  if (!items.length) {
+    showAlert(
+      NL ? 'Het model heeft geen documentatietekst om te vertalen.' : 'The model has no documentation text to translate.',
+      NL ? 'Vertalen' : 'Translate');
+    return;
+  }
+
+  showConfirm(
+    NL ? `🌐 Vertalen naar ${targetLangShort}` : `🌐 Translate to ${targetLangShort}`,
+    NL
+      ? `Dit vertaalt alle namen en documentatievelden (${items.length} teksten) naar ${targetLangShort} via AI. De huidige teksten worden overschreven.`
+      : `This will translate all names and documentation fields (${items.length} texts) to ${targetLangShort} via AI. Current text will be overwritten.`,
+    NL ? 'Vertalen' : 'Translate', true,
+    () => _doTranslateModelDocs(items, targetLang, key)
+  );
+}
+
+async function _doTranslateModelDocs(items, targetLang, key) {
+  const NL = currentLang === 'nl';
+
+  // Show progress toast
+  showToast(NL ? '🌐 Bezig met vertalen…' : '🌐 Translating…', 'togaf');
+
+  // Build a compact JSON batch: [{id, text}]
+  const batch = items.map((it, i) => ({ id: i, text: it.obj[it.field] || '' }));
+  const batchStr = JSON.stringify(batch);
+
+  const TRANSLATE_PROMPT = `You are a translation assistant. Translate the "text" value of each object in the JSON array to ${targetLang}. Keep proper nouns (system names, brand names, acronyms) unchanged. Return ONLY a valid JSON array with the same structure [{\"id\":0,\"text\":\"...\"},...]. No explanation, no markdown.`;
+
+  try {
+    const provider = getProvider();
+    let raw = '';
+
+    if (provider === 'openai') {
+      const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          max_tokens: 8192,
+          messages: [
+            { role: 'system', content: TRANSLATE_PROMPT },
+            { role: 'user',   content: batchStr }
+          ]
+        })
+      });
+      if (!resp.ok) { const e = await resp.json().catch(()=>{}); throw new Error(`OpenAI ${resp.status}: ${e?.error?.message||''}`); }
+      const d = await resp.json();
+      raw = d.choices?.[0]?.message?.content || '';
+    } else {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': key,
+          'Content-Type': 'application/json',
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 8192,
+          system: TRANSLATE_PROMPT,
+          messages: [{ role: 'user', content: batchStr }]
+        })
+      });
+      if (!resp.ok) { const e = await resp.json().catch(()=>{}); throw new Error(`Anthropic ${resp.status}: ${e?.error?.message||e?.message||''}`); }
+      const d = await resp.json();
+      raw = d.content?.[0]?.text || '';
+    }
+
+    // Strip code fences if present
+    raw = raw.replace(/^```[a-z]*\n?/i,'').replace(/\n?```$/,'').trim();
+    const results = JSON.parse(raw);
+
+    if (!Array.isArray(results)) throw new Error('Unexpected response format');
+
+    // Apply translations back
+    results.forEach(r => {
+      const it = items[r.id];
+      if (it && typeof r.text === 'string') it.obj[it.field] = r.text;
+    });
+
+    // Refresh UI
+    document.getElementById('modelName').value = model.name || '';
+    document.getElementById('modelDoc').value  = model.documentation || '';
+    renderAll(); updateStats();
+
+    showToast(
+      NL ? `✅ ${results.length} teksten vertaald naar ${currentLang === 'nl' ? 'Nederlands' : 'English'}` : `✅ ${results.length} texts translated to English`,
+      'togaf');
+
+  } catch(err) {
+    showAlert(
+      (NL ? 'Vertaalfout: ' : 'Translation error: ') + err.message,
+      NL ? 'Fout' : 'Error');
+  }
+}
+
 function _wizSaveCurrent() {
   if (_wiz.step===1) _wiz.name      = (document.getElementById('wizName')     ?.value||'').trim();
   if (_wiz.step===2) _wiz.actors    = (document.getElementById('wizActors')   ?.value||'').trim();
