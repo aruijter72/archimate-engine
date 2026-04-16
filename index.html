@@ -8380,10 +8380,12 @@ function renderProcPreview() {
     svg += _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww, proc.id);
     svg += '</svg>';
     const unassignedG = steps.filter(s => laneIdx[s.laneId] === undefined).length;
-    wrap.innerHTML = svg + (unassignedG
+    wrap.innerHTML = `<div id="proc-svg-inner" style="transform-origin:top left;display:inline-block">`
+      + svg + (unassignedG
       ? `<div style="font-size:.73rem;color:var(--muted);margin-top:.4rem;padding:0 .25rem">
            ⚠ ${unassignedG} step${unassignedG>1?'s':''} not shown — assign a lane in the Steps table above.
-         </div>` : '');
+         </div>` : '') + `</div>`;
+    _applyProcZoom();
 
   } else {
     // ── Flow mode: auto-layout via toposort ──────────────────────
@@ -8433,10 +8435,12 @@ function renderProcPreview() {
     svg += _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww, proc.id);
     svg += '</svg>';
     const unassigned = steps.filter(s => laneIdx[s.laneId] === undefined).length;
-    wrap.innerHTML = svg + (unassigned
+    wrap.innerHTML = `<div id="proc-svg-inner" style="transform-origin:top left;display:inline-block">`
+      + svg + (unassigned
       ? `<div style="font-size:.73rem;color:var(--muted);margin-top:.4rem;padding:0 .25rem">
            ⚠ ${unassigned} step${unassigned>1?'s':''} not shown — assign a lane in the Steps table above.
-         </div>` : '');
+         </div>` : '') + `</div>`;
+    _applyProcZoom();
   }
 }
 
