@@ -1226,6 +1226,41 @@
     tr.elem-highlight-persist { background:rgba(201,163,85,.10) !important; box-shadow:inset 3px 0 0 var(--gold); }
     tr.elem-highlight-persist td { background:transparent !important; }
 
+    /* ── Open project button on welcome screen ───────────────── */
+    .ob-open-btn {
+      display: flex; align-items: center; gap: .55rem;
+      width: 100%; padding: .52rem .9rem; border-radius: 7px;
+      background: rgba(201,163,85,.08); border: 1px solid rgba(201,163,85,.28);
+      color: var(--gold); cursor: pointer; font-size: .84rem; font-weight: 600;
+      font-family: 'Catamaran', system-ui, sans-serif;
+      transition: all .18s; text-align: left; margin-bottom: .55rem;
+    }
+    .ob-open-btn:hover { background: rgba(201,163,85,.17); border-color: rgba(201,163,85,.55); }
+    .ob-open-btn .ob-open-sub { font-size: .72rem; font-weight: 400; color: var(--muted); display: block; margin-top: .1rem; }
+
+    /* ── Lane drag-reorder ───────────────────────────────────── */
+    .lane-drag-handle {
+      cursor: grab; color: var(--muted); font-size: .9rem; padding: 0 .2rem;
+      user-select: none; flex-shrink: 0; opacity: .55; transition: opacity .15s;
+    }
+    .lane-drag-handle:hover { opacity: 1; }
+    .proc-row.lane-dragging { opacity: .4; }
+    .proc-row.lane-drag-over { box-shadow: 0 -2px 0 var(--proc); }
+
+    /* ── Swimlane preview zoom controls ─────────────────────── */
+    .proc-zoom-controls {
+      display: flex; align-items: center; gap: .3rem;
+    }
+    .proc-zoom-btn {
+      width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text2); cursor: pointer;
+      font-size: .82rem; font-weight: 700; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s;
+    }
+    .proc-zoom-btn:hover { background: rgba(167,138,245,.15); border-color: var(--proc-border); color: var(--proc-text); }
+    .proc-zoom-pct { font-size: .68rem; color: var(--muted); min-width: 28px; text-align: center; }
+
     /* ── Views modal ─────────────────────────────────────────── */
     .views-layout { display:grid; grid-template-columns:210px 1fr; gap:1.1rem; min-height:340px; }
     .views-list-panel { border-right:1px solid var(--border); padding-right:1rem; display:flex; flex-direction:column; gap:.3rem; }
