@@ -1,0 +1,610 @@
+{
+  "name": "Supplier Order-to-Cash Process Model",
+  "documentation": "End-to-end order management process from supplier customer service through order creation, warehouse fulfillment, logistics, delivery, invoicing, and payment reconciliation.",
+  "elements": [
+    {
+      "id": "id-mo20r3jq0p4ki",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Supplier Customer Service Representative",
+      "documentation": "Reviews customer sales figures and inventory levels to initiate orders",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jq1qlwp",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Customer",
+      "documentation": "Validates and approves orders, receives goods, and processes payments",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jq2esvg",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Warehouse Manager",
+      "documentation": "Receives orders and initiates warehouse picking process",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jq3kwa9",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Warehouse Worker",
+      "documentation": "Picks goods and prepares shipment for transport",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jq4av9t",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Transport Provider",
+      "documentation": "Scans and loads goods into trucks for delivery",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jq5hv1g",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Supplier Accountant",
+      "documentation": "Verifies payment receipt and closes order process",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jq6labs",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Order Creation and Proposal",
+      "documentation": "Customer service reviews inventory and creates order based on customer needs",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jq7madj",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Order Validation",
+      "documentation": "Customer reviews and validates proposed order",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jq8k8p4",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Warehouse Fulfillment",
+      "documentation": "Warehouse manager and workers pick and prepare goods for shipment",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jq99mzm",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Goods Shipment",
+      "documentation": "Transport provider loads and ships goods to customer",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqaq4xr",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Goods Receipt Confirmation",
+      "documentation": "Customer receives goods and confirms receipt",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqb8cn7",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Payment Processing",
+      "documentation": "Customer payment is transmitted to supplier via bank",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqc6k4s",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Order Closure",
+      "documentation": "Accountant verifies payment and closes order",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqdgvf5",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Supplier ERP System",
+      "documentation": "Core enterprise resource planning system managing orders, inventory, and accounting",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqedr8p",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Customer ERP System",
+      "documentation": "Customer system for order validation and payment processing",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqfuo1c",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Warehouse Management System",
+      "documentation": "Logistics system generating and tracking pick orders",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqgwl1e",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Transport Provider System",
+      "documentation": "Carrier system tracking shipment status",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqh7o3k",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Middleware Integration Layer",
+      "documentation": "Middleware connecting supplier ERP, customer ERP, warehouse and logistics systems",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqif3ns",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Customer Sales Data",
+      "documentation": "Historical sales figures and current inventory levels",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqjs0e0",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Order",
+      "documentation": "Purchase order containing items, quantities, and delivery details",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqkln5j",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Pick Order",
+      "documentation": "Warehouse task to locate and collect items for fulfillment",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqlh7yl",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Shipment Status",
+      "documentation": "Tracking information from transport provider",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqme5z7",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Invoice",
+      "documentation": "Billing document generated upon shipment",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqnhyso",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Payment",
+      "documentation": "Customer payment instruction transmitted through banking system",
+      "properties": []
+    },
+    {
+      "id": "id-mo20r3jqo8zrs",
+      "layer": "technology",
+      "type": "TechnologyService",
+      "name": "Banking System",
+      "documentation": "Financial institution processing supplier-customer payments",
+      "properties": []
+    }
+  ],
+  "relationships": [
+    {
+      "id": "id-mo20r3jqpylye",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo20r3jq0p4ki",
+      "targetId": "id-mo20r3jq6labs",
+      "name": "",
+      "documentation": "Customer service representative creates orders",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jqqfcpg",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo20r3jq1qlwp",
+      "targetId": "id-mo20r3jq7madj",
+      "name": "",
+      "documentation": "Customer validates and approves orders",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jqr7xoy",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo20r3jq2esvg",
+      "targetId": "id-mo20r3jq8k8p4",
+      "name": "",
+      "documentation": "Warehouse manager initiates fulfillment process",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jqseu9k",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo20r3jq3kwa9",
+      "targetId": "id-mo20r3jq8k8p4",
+      "name": "",
+      "documentation": "Warehouse worker picks and prepares goods",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jqtf74c",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo20r3jq4av9t",
+      "targetId": "id-mo20r3jq99mzm",
+      "name": "",
+      "documentation": "Transport provider loads and ships goods",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jqubb8y",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo20r3jq1qlwp",
+      "targetId": "id-mo20r3jqaq4xr",
+      "name": "",
+      "documentation": "Customer receives goods and confirms receipt",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jqv52s0",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo20r3jq1qlwp",
+      "targetId": "id-mo20r3jqb8cn7",
+      "name": "",
+      "documentation": "Customer initiates payment",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jqwtq4j",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo20r3jq5hv1g",
+      "targetId": "id-mo20r3jqc6k4s",
+      "name": "",
+      "documentation": "Accountant verifies payment and closes order",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jrx6f2z",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo20r3jqdgvf5",
+      "targetId": "id-mo20r3jq6labs",
+      "name": "",
+      "documentation": "ERP supports order creation process",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jryddvu",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo20r3jqh7o3k",
+      "targetId": "id-mo20r3jq7madj",
+      "name": "",
+      "documentation": "Middleware transmits orders to customer for validation",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jrz4lha",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo20r3jqdgvf5",
+      "targetId": "id-mo20r3jq8k8p4",
+      "name": "",
+      "documentation": "ERP routes validated orders to warehouse management system",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr10inad",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo20r3jqfuo1c",
+      "targetId": "id-mo20r3jq8k8p4",
+      "name": "",
+      "documentation": "Warehouse system generates pick orders and tracks fulfillment",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr11lchp",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo20r3jqgwl1e",
+      "targetId": "id-mo20r3jq99mzm",
+      "name": "",
+      "documentation": "Transport system tracks and manages shipments",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr12twzy",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo20r3jqh7o3k",
+      "targetId": "id-mo20r3jqaq4xr",
+      "name": "",
+      "documentation": "Middleware transmits receipt status from customer to ERP",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr13eo0d",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo20r3jqdgvf5",
+      "targetId": "id-mo20r3jqc6k4s",
+      "name": "",
+      "documentation": "ERP enables order closure and accounting functions",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr143inb",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo20r3jqjs0e0",
+      "targetId": "id-mo20r3jq7madj",
+      "name": "",
+      "documentation": "Order data realizes validation process",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr153pso",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo20r3jqkln5j",
+      "targetId": "id-mo20r3jq8k8p4",
+      "name": "",
+      "documentation": "Pick order realizes warehouse fulfillment",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr16hvvr",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo20r3jqlh7yl",
+      "targetId": "id-mo20r3jq99mzm",
+      "name": "",
+      "documentation": "Shipment status data realizes transport process",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr178kl4",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo20r3jqme5z7",
+      "targetId": "id-mo20r3jqb8cn7",
+      "name": "",
+      "documentation": "Invoice realizes billing upon shipment",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr18xouj",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo20r3jqnhyso",
+      "targetId": "id-mo20r3jqb8cn7",
+      "name": "",
+      "documentation": "Payment data realizes payment process",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr197fj7",
+      "type": "AccessRelationship",
+      "sourceId": "id-mo20r3jq0p4ki",
+      "targetId": "id-mo20r3jqif3ns",
+      "name": "",
+      "documentation": "Customer service accesses sales and inventory data",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr1ahbhr",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo20r3jq6labs",
+      "targetId": "id-mo20r3jq7madj",
+      "name": "",
+      "documentation": "Order creation flows to customer validation",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr1b063i",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo20r3jq7madj",
+      "targetId": "id-mo20r3jq8k8p4",
+      "name": "",
+      "documentation": "Validated order flows to warehouse fulfillment",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr1ctv4k",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo20r3jq8k8p4",
+      "targetId": "id-mo20r3jq99mzm",
+      "name": "",
+      "documentation": "Prepared goods flow to transport provider",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr1dlkfd",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo20r3jq99mzm",
+      "targetId": "id-mo20r3jqaq4xr",
+      "name": "",
+      "documentation": "Shipment flows to customer receipt confirmation",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr1e8i5h",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo20r3jqaq4xr",
+      "targetId": "id-mo20r3jqb8cn7",
+      "name": "",
+      "documentation": "Receipt confirmation triggers payment processing",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo20r3jr1fvg15",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo20r3jqb8cn7",
+      "targetId": "id-mo20r3jqc6k4s",
+      "name": "",
+      "documentation": "Payment flows to order closure",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    }
+  ],
+  "views": [],
+  "snapshots": [],
+  "processes": [],
+  "elementPositions": {
+    "id-mo20r3jq0p4ki": {
+      "x": 40,
+      "y": 70
+    },
+    "id-mo20r3jq1qlwp": {
+      "x": 212,
+      "y": 70
+    },
+    "id-mo20r3jq2esvg": {
+      "x": 384,
+      "y": 70
+    },
+    "id-mo20r3jq3kwa9": {
+      "x": 40,
+      "y": 148
+    },
+    "id-mo20r3jq4av9t": {
+      "x": 212,
+      "y": 148
+    },
+    "id-mo20r3jq5hv1g": {
+      "x": 384,
+      "y": 148
+    },
+    "id-mo20r3jq6labs": {
+      "x": 589,
+      "y": 70
+    },
+    "id-mo20r3jq7madj": {
+      "x": 761,
+      "y": 70
+    },
+    "id-mo20r3jq8k8p4": {
+      "x": 933,
+      "y": 70
+    },
+    "id-mo20r3jq99mzm": {
+      "x": 589,
+      "y": 148
+    },
+    "id-mo20r3jqaq4xr": {
+      "x": 761,
+      "y": 148
+    },
+    "id-mo20r3jqb8cn7": {
+      "x": 933,
+      "y": 148
+    },
+    "id-mo20r3jqc6k4s": {
+      "x": 589,
+      "y": 226
+    },
+    "id-mo20r3jqdgvf5": {
+      "x": 40,
+      "y": 424
+    },
+    "id-mo20r3jqedr8p": {
+      "x": 212,
+      "y": 424
+    },
+    "id-mo20r3jqfuo1c": {
+      "x": 384,
+      "y": 424
+    },
+    "id-mo20r3jqgwl1e": {
+      "x": 40,
+      "y": 502
+    },
+    "id-mo20r3jqh7o3k": {
+      "x": 212,
+      "y": 502
+    },
+    "id-mo20r3jqif3ns": {
+      "x": 1138,
+      "y": 424
+    },
+    "id-mo20r3jqjs0e0": {
+      "x": 1310,
+      "y": 424
+    },
+    "id-mo20r3jqkln5j": {
+      "x": 1482,
+      "y": 424
+    },
+    "id-mo20r3jqlh7yl": {
+      "x": 1138,
+      "y": 502
+    },
+    "id-mo20r3jqme5z7": {
+      "x": 1310,
+      "y": 502
+    },
+    "id-mo20r3jqnhyso": {
+      "x": 1482,
+      "y": 502
+    },
+    "id-mo20r3jqo8zrs": {
+      "x": 589,
+      "y": 700
+    }
+  }
+}
