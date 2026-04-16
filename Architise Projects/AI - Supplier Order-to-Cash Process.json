@@ -1,0 +1,1854 @@
+{
+  "name": "Supplier Order-to-Cash Process",
+  "documentation": "End-to-end order management process from supplier customer service through order creation, warehouse fulfillment, logistics, and payment reconciliation.",
+  "elements": [
+    {
+      "id": "id-mo1ed69o03xbx",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Customer Service Representative",
+      "documentation": "Supplier employee who reviews customer sales figures, inventory, and creates orders",
+      "properties": [
+        {
+          "key": "Rol",
+          "value": "Proceseigenaar voor klant"
+        }
+      ]
+    },
+    {
+      "id": "id-mo1ed69p1p8fu",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Warehouse Manager",
+      "documentation": "Manages warehouse operations and converts orders to pick orders",
+      "properties": [
+        {
+          "key": "Rol",
+          "value": "Proceseigenaar binnen warehouse"
+        }
+      ]
+    },
+    {
+      "id": "id-mo1ed69p2nl34",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Warehouse Worker",
+      "documentation": "Picks items, registers completion, and places goods on dock",
+      "properties": [
+        {
+          "key": "Rol",
+          "value": "Verantwoordelijke voor orderverzameling"
+        }
+      ]
+    },
+    {
+      "id": "id-mo1ed69p3ecuc",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Carrier",
+      "documentation": "Transport provider who loads and scans goods for shipment",
+      "properties": [
+        {
+          "key": "Rol",
+          "value": "Verantwoordelijk voor tijdige en volledige aflevering"
+        }
+      ]
+    },
+    {
+      "id": "id-mo1ed69p4mojj",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Customer",
+      "documentation": "External customer who validates orders and receives goods",
+      "properties": [
+        {
+          "key": "Rol",
+          "value": "Ontvanger van product, communicator en betalen van factuur"
+        }
+      ]
+    },
+    {
+      "id": "id-mo1ed69p5uhtt",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Accountant",
+      "documentation": "Reconciles payments and closes orders",
+      "properties": [
+        {
+          "key": "Rol",
+          "value": "Verifiëren van betaling"
+        }
+      ]
+    },
+    {
+      "id": "id-mo1ed69p6pibt",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Order Creation",
+      "documentation": "Process of creating order based on customer inventory and sales data",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69p7f229",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Order Validation",
+      "documentation": "Customer validates and confirms order",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69p8myqv",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Warehouse Fulfillment",
+      "documentation": "Converting order to pick order and assembling goods",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69p9mmuk",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Shipment and Tracking",
+      "documentation": "Loading goods, scanning, and tracking shipment status",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69paxre2",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Goods Receipt",
+      "documentation": "Customer receives and registers goods as received",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pbapdi",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Invoice Generation",
+      "documentation": "Automatic invoice creation upon shipment",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pc01bm",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Payment Processing",
+      "documentation": "Customer payment via bank to supplier",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pdqdwz",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Order Closure",
+      "documentation": "Accountant reconciles payment and closes order",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pe9wga",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Supplier ERP",
+      "documentation": "Enterprise Resource Planning system for supplier",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pfah9z",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Customer ERP",
+      "documentation": "Enterprise Resource Planning system for customer",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pgoj29",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Warehouse Management System",
+      "documentation": "Logistics system managing picks, inventory, and warehouse operations",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69ph4he7",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Carrier Management System",
+      "documentation": "Transport provider system tracking shipments and status",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pi8ysz",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Middleware",
+      "documentation": "Integration layer connecting supplier and customer ERPs",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pjed2t",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Order",
+      "documentation": "Order document containing items and quantities",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pkttsv",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Pick Order",
+      "documentation": "Warehouse instruction for picking items from stock",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pllsq8",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Invoice",
+      "documentation": "Billing document sent to customer",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pmm4wt",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Shipment Status",
+      "documentation": "Tracking information from carrier",
+      "properties": []
+    },
+    {
+      "id": "id-mo1ed69pnv32g",
+      "layer": "technology",
+      "type": "Node",
+      "name": "Bank System",
+      "documentation": "Financial institution processing payment",
+      "properties": []
+    },
+    {
+      "id": "id-mo1eso734ot1zn",
+      "layer": "business",
+      "type": "BusinessObject",
+      "name": "Salesorder",
+      "documentation": "Customer order generated by Customer Service Representative ",
+      "properties": []
+    },
+    {
+      "id": "id-mo1euc044pfxk7",
+      "layer": "business",
+      "type": "BusinessObject",
+      "name": "Invoice",
+      "documentation": "Invoice to be paid by customer and validated by Accountant",
+      "properties": []
+    }
+  ],
+  "relationships": [
+    {
+      "id": "id-mo1ed69po3ye8",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69o03xbx",
+      "targetId": "id-mo1ed69p6pibt",
+      "name": "creates",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69ppp70j",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69p4mojj",
+      "targetId": "id-mo1ed69p7f229",
+      "name": "performs",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pq73ai",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69p1p8fu",
+      "targetId": "id-mo1ed69p8myqv",
+      "name": "manages",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69prqdad",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69p2nl34",
+      "targetId": "id-mo1ed69p8myqv",
+      "name": "executes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pssj1c",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69p3ecuc",
+      "targetId": "id-mo1ed69p9mmuk",
+      "name": "performs",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pt1i1d",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69p4mojj",
+      "targetId": "id-mo1ed69paxre2",
+      "name": "performs",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pukm2s",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo1ed69p5uhtt",
+      "targetId": "id-mo1ed69pdqdwz",
+      "name": "performs",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pvjmwm",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pe9wga",
+      "targetId": "id-mo1ed69p6pibt",
+      "name": "supports",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pwsz9x",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pi8ysz",
+      "targetId": "id-mo1ed69p6pibt",
+      "name": "connects",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pxmu8x",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pe9wga",
+      "targetId": "id-mo1ed69pbapdi",
+      "name": "generates",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pykh1j",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pgoj29",
+      "targetId": "id-mo1ed69p8myqv",
+      "name": "executes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69pzryac",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pgoj29",
+      "targetId": "id-mo1ed69p9mmuk",
+      "name": "tracks",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p10oxob",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69ph4he7",
+      "targetId": "id-mo1ed69p9mmuk",
+      "name": "manages",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p11c21m",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pfah9z",
+      "targetId": "id-mo1ed69p7f229",
+      "name": "supports",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p12r7br",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pfah9z",
+      "targetId": "id-mo1ed69paxre2",
+      "name": "receives",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p13n2e5",
+      "type": "ServingRelationship",
+      "sourceId": "id-mo1ed69pnv32g",
+      "targetId": "id-mo1ed69pc01bm",
+      "name": "processes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p14xwp8",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo1ed69pjed2t",
+      "targetId": "id-mo1ed69p6pibt",
+      "name": "realizes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p15u7fb",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo1ed69pkttsv",
+      "targetId": "id-mo1ed69p8myqv",
+      "name": "realizes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p16shlf",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo1ed69pllsq8",
+      "targetId": "id-mo1ed69pbapdi",
+      "name": "realizes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p177wqt",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo1ed69pmm4wt",
+      "targetId": "id-mo1ed69p9mmuk",
+      "name": "realizes",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p18f9or",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo1ed69p6pibt",
+      "targetId": "id-mo1ed69p7f229",
+      "name": "flows to",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p19gyzl",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo1ed69p7f229",
+      "targetId": "id-mo1ed69p8myqv",
+      "name": "flows to",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p1afsnr",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo1ed69p8myqv",
+      "targetId": "id-mo1ed69p9mmuk",
+      "name": "flows to",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p1b0t05",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo1ed69p9mmuk",
+      "targetId": "id-mo1ed69paxre2",
+      "name": "flows to",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p1c1ub7",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo1ed69paxre2",
+      "targetId": "id-mo1ed69pc01bm",
+      "name": "triggers",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo1ed69p1dktge",
+      "type": "FlowRelationship",
+      "sourceId": "id-mo1ed69pc01bm",
+      "targetId": "id-mo1ed69pdqdwz",
+      "name": "flows to",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    }
+  ],
+  "views": [],
+  "snapshots": [],
+  "processes": [
+    {
+      "id": "id-mo1edwlf23exid",
+      "name": "Supplier Order-to-Cash Process — Swimlane",
+      "lanes": [
+        {
+          "id": "id-mo1edwlf1el4go",
+          "name": "Customer Service Representative",
+          "sourceId": "id-mo1ed69o03xbx"
+        },
+        {
+          "id": "id-mo1edwlf1fw16a",
+          "name": "Warehouse Manager",
+          "sourceId": "id-mo1ed69p1p8fu"
+        },
+        {
+          "id": "id-mo1edwlf1g7fg7",
+          "name": "Warehouse Worker",
+          "sourceId": "id-mo1ed69p2nl34"
+        },
+        {
+          "id": "id-mo1edwlf1hdtp1",
+          "name": "Carrier",
+          "sourceId": "id-mo1ed69p3ecuc"
+        },
+        {
+          "id": "id-mo1edwlf1ivp5o",
+          "name": "Customer",
+          "sourceId": "id-mo1ed69p4mojj"
+        },
+        {
+          "id": "id-mo1edwlf1jz31x",
+          "name": "Accountant",
+          "sourceId": "id-mo1ed69p5uhtt"
+        },
+        {
+          "id": "id-mo1edwlf1k3c8i",
+          "name": "Supplier ERP",
+          "sourceId": "id-mo1ed69pe9wga"
+        },
+        {
+          "id": "id-mo1edwlf1lnlvf",
+          "name": "Customer ERP",
+          "sourceId": "id-mo1ed69pfah9z"
+        },
+        {
+          "id": "id-mo1edwlf1m9g3n",
+          "name": "Warehouse Management System",
+          "sourceId": "id-mo1ed69pgoj29"
+        },
+        {
+          "id": "id-mo1edwlf1n54jw",
+          "name": "Carrier Management System",
+          "sourceId": "id-mo1ed69ph4he7"
+        },
+        {
+          "id": "id-mo1edwlf1o34lm",
+          "name": "Middleware",
+          "sourceId": "id-mo1ed69pi8ysz"
+        },
+        {
+          "id": "id-mo1edwlf1p3jjd",
+          "name": "Bank System",
+          "sourceId": "id-mo1ed69pnv32g"
+        },
+        {
+          "id": "id-mo1edwlf1r2yjd",
+          "name": "Other"
+        }
+      ],
+      "steps": [
+        {
+          "id": "id-mo1edwlf1q5tbo",
+          "laneId": "id-mo1edwlf1r2yjd",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Creation",
+          "sourceId": "id-mo1ed69p6pibt",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Process of creating order based on customer inventory and sales data",
+          "properties": []
+        },
+        {
+          "id": "id-mo1edwlf1seved",
+          "laneId": "id-mo1edwlf1r2yjd",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Validation",
+          "sourceId": "id-mo1ed69p7f229",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer validates and confirms order",
+          "properties": []
+        },
+        {
+          "id": "id-mo1edwlf1t84vb",
+          "laneId": "id-mo1edwlf1r2yjd",
+          "columnId": "",
+          "type": "task",
+          "label": "Warehouse Fulfillment",
+          "sourceId": "id-mo1ed69p8myqv",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Converting order to pick order and assembling goods",
+          "properties": []
+        },
+        {
+          "id": "id-mo1edwlf1u8cf7",
+          "laneId": "id-mo1edwlf1r2yjd",
+          "columnId": "",
+          "type": "task",
+          "label": "Shipment and Tracking",
+          "sourceId": "id-mo1ed69p9mmuk",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Loading goods, scanning, and tracking shipment status",
+          "properties": []
+        },
+        {
+          "id": "id-mo1edwlf1vsklw",
+          "laneId": "id-mo1edwlf1r2yjd",
+          "columnId": "",
+          "type": "task",
+          "label": "Goods Receipt",
+          "sourceId": "id-mo1ed69paxre2",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer receives and registers goods as received",
+          "properties": []
+        },
+        {
+          "id": "id-mo1edwlf1wy4zp",
+          "laneId": "id-mo1edwlf1r2yjd",
+          "columnId": "",
+          "type": "task",
+          "label": "Invoice Generation",
+          "sourceId": "id-mo1ed69pbapdi",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Automatic invoice creation upon shipment",
+          "properties": []
+        },
+        {
+          "id": "id-mo1edwlf1xzfgf",
+          "laneId": "id-mo1edwlf1r2yjd",
+          "columnId": "",
+          "type": "task",
+          "label": "Payment Processing",
+          "sourceId": "id-mo1ed69pc01bm",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer payment via bank to supplier",
+          "properties": []
+        },
+        {
+          "id": "id-mo1edwlf1yfgmo",
+          "laneId": "id-mo1edwlf1r2yjd",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Closure",
+          "sourceId": "id-mo1ed69pdqdwz",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Accountant reconciles payment and closes order",
+          "properties": []
+        },
+        {
+          "id": "id-mo1edwlf1zzxsh",
+          "laneId": "id-mo1edwlf1r2yjd",
+          "columnId": "",
+          "type": "document",
+          "label": "Order",
+          "sourceId": "id-mo1ed69pjed2t",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Order document containing items and quantities",
+          "properties": []
+        },
+        {
+          "id": "id-mo1edwlf20cgmu",
+          "laneId": "id-mo1edwlf1r2yjd",
+          "columnId": "",
+          "type": "document",
+          "label": "Pick Order",
+          "sourceId": "id-mo1ed69pkttsv",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Warehouse instruction for picking items from stock",
+          "properties": []
+        },
+        {
+          "id": "id-mo1edwlf21zkrg",
+          "laneId": "id-mo1edwlf1r2yjd",
+          "columnId": "",
+          "type": "document",
+          "label": "Invoice",
+          "sourceId": "id-mo1ed69pllsq8",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Billing document sent to customer",
+          "properties": []
+        },
+        {
+          "id": "id-mo1edwlf228r9m",
+          "laneId": "id-mo1edwlf1r2yjd",
+          "columnId": "",
+          "type": "document",
+          "label": "Shipment Status",
+          "sourceId": "id-mo1ed69pmm4wt",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Tracking information from carrier",
+          "properties": []
+        }
+      ],
+      "flows": [],
+      "columns": [],
+      "_generatedFromArch": true
+    },
+    {
+      "id": "id-mo1eeku82aer3f",
+      "name": "Supplier Order-to-Cash Process — Swimlane",
+      "lanes": [
+        {
+          "id": "id-mo1eeku824c021",
+          "name": "Customer Service Representative",
+          "sourceId": "id-mo1ed69o03xbx"
+        },
+        {
+          "id": "id-mo1eeku825y08k",
+          "name": "Warehouse Manager",
+          "sourceId": "id-mo1ed69p1p8fu"
+        },
+        {
+          "id": "id-mo1eeku826mpyk",
+          "name": "Warehouse Worker",
+          "sourceId": "id-mo1ed69p2nl34"
+        },
+        {
+          "id": "id-mo1eeku827lc7s",
+          "name": "Carrier",
+          "sourceId": "id-mo1ed69p3ecuc"
+        },
+        {
+          "id": "id-mo1eeku828i89f",
+          "name": "Customer",
+          "sourceId": "id-mo1ed69p4mojj"
+        },
+        {
+          "id": "id-mo1eeku829hpak",
+          "name": "Accountant",
+          "sourceId": "id-mo1ed69p5uhtt"
+        }
+      ],
+      "steps": [],
+      "flows": [],
+      "columns": []
+    },
+    {
+      "id": "id-mo1eep6t3090vz",
+      "name": "Supplier Order-to-Cash Process — Swimlane",
+      "lanes": [
+        {
+          "id": "id-mo1eep6t2b9igs",
+          "name": "Customer Service Representative",
+          "sourceId": "id-mo1ed69o03xbx"
+        },
+        {
+          "id": "id-mo1eep6t2c605j",
+          "name": "Warehouse Manager",
+          "sourceId": "id-mo1ed69p1p8fu"
+        },
+        {
+          "id": "id-mo1eep6t2di8fm",
+          "name": "Warehouse Worker",
+          "sourceId": "id-mo1ed69p2nl34"
+        },
+        {
+          "id": "id-mo1eep6t2e76db",
+          "name": "Carrier",
+          "sourceId": "id-mo1ed69p3ecuc"
+        },
+        {
+          "id": "id-mo1eep6t2f61md",
+          "name": "Customer",
+          "sourceId": "id-mo1ed69p4mojj"
+        },
+        {
+          "id": "id-mo1eep6t2guga2",
+          "name": "Accountant",
+          "sourceId": "id-mo1ed69p5uhtt"
+        },
+        {
+          "id": "id-mo1eep6t2h9z4x",
+          "name": "Supplier ERP",
+          "sourceId": "id-mo1ed69pe9wga"
+        },
+        {
+          "id": "id-mo1eep6t2if46q",
+          "name": "Customer ERP",
+          "sourceId": "id-mo1ed69pfah9z"
+        },
+        {
+          "id": "id-mo1eep6t2jb2sd",
+          "name": "Warehouse Management System",
+          "sourceId": "id-mo1ed69pgoj29"
+        },
+        {
+          "id": "id-mo1eep6t2khidy",
+          "name": "Carrier Management System",
+          "sourceId": "id-mo1ed69ph4he7"
+        },
+        {
+          "id": "id-mo1eep6t2ljkyp",
+          "name": "Middleware",
+          "sourceId": "id-mo1ed69pi8ysz"
+        },
+        {
+          "id": "id-mo1eep6t2mmdd5",
+          "name": "Bank System",
+          "sourceId": "id-mo1ed69pnv32g"
+        },
+        {
+          "id": "id-mo1eep6t2o5qsg",
+          "name": "Other"
+        }
+      ],
+      "steps": [
+        {
+          "id": "id-mo1eep6t2ny2l1",
+          "laneId": "id-mo1eep6t2o5qsg",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Creation",
+          "sourceId": "id-mo1ed69p6pibt",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Process of creating order based on customer inventory and sales data",
+          "properties": []
+        },
+        {
+          "id": "id-mo1eep6t2ptp9w",
+          "laneId": "id-mo1eep6t2o5qsg",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Validation",
+          "sourceId": "id-mo1ed69p7f229",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer validates and confirms order",
+          "properties": []
+        },
+        {
+          "id": "id-mo1eep6t2qiw4c",
+          "laneId": "id-mo1eep6t2o5qsg",
+          "columnId": "",
+          "type": "task",
+          "label": "Warehouse Fulfillment",
+          "sourceId": "id-mo1ed69p8myqv",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Converting order to pick order and assembling goods",
+          "properties": []
+        },
+        {
+          "id": "id-mo1eep6t2r09bt",
+          "laneId": "id-mo1eep6t2o5qsg",
+          "columnId": "",
+          "type": "task",
+          "label": "Shipment and Tracking",
+          "sourceId": "id-mo1ed69p9mmuk",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Loading goods, scanning, and tracking shipment status",
+          "properties": []
+        },
+        {
+          "id": "id-mo1eep6t2sc0hs",
+          "laneId": "id-mo1eep6t2o5qsg",
+          "columnId": "",
+          "type": "task",
+          "label": "Goods Receipt",
+          "sourceId": "id-mo1ed69paxre2",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer receives and registers goods as received",
+          "properties": []
+        },
+        {
+          "id": "id-mo1eep6t2tywoa",
+          "laneId": "id-mo1eep6t2o5qsg",
+          "columnId": "",
+          "type": "task",
+          "label": "Invoice Generation",
+          "sourceId": "id-mo1ed69pbapdi",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Automatic invoice creation upon shipment",
+          "properties": []
+        },
+        {
+          "id": "id-mo1eep6t2uivj2",
+          "laneId": "id-mo1eep6t2o5qsg",
+          "columnId": "",
+          "type": "task",
+          "label": "Payment Processing",
+          "sourceId": "id-mo1ed69pc01bm",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer payment via bank to supplier",
+          "properties": []
+        },
+        {
+          "id": "id-mo1eep6t2vi8zo",
+          "laneId": "id-mo1eep6t2o5qsg",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Closure",
+          "sourceId": "id-mo1ed69pdqdwz",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Accountant reconciles payment and closes order",
+          "properties": []
+        },
+        {
+          "id": "id-mo1eep6t2wr1wq",
+          "laneId": "id-mo1eep6t2o5qsg",
+          "columnId": "",
+          "type": "document",
+          "label": "Order",
+          "sourceId": "id-mo1ed69pjed2t",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Order document containing items and quantities",
+          "properties": []
+        },
+        {
+          "id": "id-mo1eep6t2x28jf",
+          "laneId": "id-mo1eep6t2o5qsg",
+          "columnId": "",
+          "type": "document",
+          "label": "Pick Order",
+          "sourceId": "id-mo1ed69pkttsv",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Warehouse instruction for picking items from stock",
+          "properties": []
+        },
+        {
+          "id": "id-mo1eep6t2yw9ps",
+          "laneId": "id-mo1eep6t2o5qsg",
+          "columnId": "",
+          "type": "document",
+          "label": "Invoice",
+          "sourceId": "id-mo1ed69pllsq8",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Billing document sent to customer",
+          "properties": []
+        },
+        {
+          "id": "id-mo1eep6t2z8jhx",
+          "laneId": "id-mo1eep6t2o5qsg",
+          "columnId": "",
+          "type": "document",
+          "label": "Shipment Status",
+          "sourceId": "id-mo1ed69pmm4wt",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Tracking information from carrier",
+          "properties": []
+        }
+      ],
+      "flows": [],
+      "columns": [],
+      "_generatedFromArch": true
+    },
+    {
+      "id": "id-mo1ej0iv3qkp93",
+      "name": "Supplier Order-to-Cash Process — Swimlane",
+      "lanes": [
+        {
+          "id": "id-mo1ej0iv312vf2",
+          "name": "Customer Service Representative",
+          "sourceId": "id-mo1ed69o03xbx"
+        },
+        {
+          "id": "id-mo1ej0iv32bzq7",
+          "name": "Warehouse Manager",
+          "sourceId": "id-mo1ed69p1p8fu"
+        },
+        {
+          "id": "id-mo1ej0iv330fhe",
+          "name": "Warehouse Worker",
+          "sourceId": "id-mo1ed69p2nl34"
+        },
+        {
+          "id": "id-mo1ej0iv34gk07",
+          "name": "Carrier",
+          "sourceId": "id-mo1ed69p3ecuc"
+        },
+        {
+          "id": "id-mo1ej0iv35ggpu",
+          "name": "Customer",
+          "sourceId": "id-mo1ed69p4mojj"
+        },
+        {
+          "id": "id-mo1ej0iv36ao6d",
+          "name": "Accountant",
+          "sourceId": "id-mo1ed69p5uhtt"
+        },
+        {
+          "id": "id-mo1ej0iv37vpv3",
+          "name": "Supplier ERP",
+          "sourceId": "id-mo1ed69pe9wga"
+        },
+        {
+          "id": "id-mo1ej0iv38tkm7",
+          "name": "Customer ERP",
+          "sourceId": "id-mo1ed69pfah9z"
+        },
+        {
+          "id": "id-mo1ej0iv396gxd",
+          "name": "Warehouse Management System",
+          "sourceId": "id-mo1ed69pgoj29"
+        },
+        {
+          "id": "id-mo1ej0iv3ar6c6",
+          "name": "Carrier Management System",
+          "sourceId": "id-mo1ed69ph4he7"
+        },
+        {
+          "id": "id-mo1ej0iv3bt9zi",
+          "name": "Middleware",
+          "sourceId": "id-mo1ed69pi8ysz"
+        },
+        {
+          "id": "id-mo1ej0iv3c8fg0",
+          "name": "Bank System",
+          "sourceId": "id-mo1ed69pnv32g"
+        },
+        {
+          "id": "id-mo1ej0iv3eqnix",
+          "name": "Other"
+        }
+      ],
+      "steps": [
+        {
+          "id": "id-mo1ej0iv3dm20m",
+          "laneId": "id-mo1ej0iv3eqnix",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Creation",
+          "sourceId": "id-mo1ed69p6pibt",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Process of creating order based on customer inventory and sales data",
+          "properties": []
+        },
+        {
+          "id": "id-mo1ej0iv3fvzgs",
+          "laneId": "id-mo1ej0iv3eqnix",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Validation",
+          "sourceId": "id-mo1ed69p7f229",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer validates and confirms order",
+          "properties": []
+        },
+        {
+          "id": "id-mo1ej0iv3ghz3q",
+          "laneId": "id-mo1ej0iv3eqnix",
+          "columnId": "",
+          "type": "task",
+          "label": "Warehouse Fulfillment",
+          "sourceId": "id-mo1ed69p8myqv",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Converting order to pick order and assembling goods",
+          "properties": []
+        },
+        {
+          "id": "id-mo1ej0iv3hyetn",
+          "laneId": "id-mo1ej0iv3eqnix",
+          "columnId": "",
+          "type": "task",
+          "label": "Shipment and Tracking",
+          "sourceId": "id-mo1ed69p9mmuk",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Loading goods, scanning, and tracking shipment status",
+          "properties": []
+        },
+        {
+          "id": "id-mo1ej0iv3i27hk",
+          "laneId": "id-mo1ej0iv3eqnix",
+          "columnId": "",
+          "type": "task",
+          "label": "Goods Receipt",
+          "sourceId": "id-mo1ed69paxre2",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer receives and registers goods as received",
+          "properties": []
+        },
+        {
+          "id": "id-mo1ej0iv3jgiy8",
+          "laneId": "id-mo1ej0iv3eqnix",
+          "columnId": "",
+          "type": "task",
+          "label": "Invoice Generation",
+          "sourceId": "id-mo1ed69pbapdi",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Automatic invoice creation upon shipment",
+          "properties": []
+        },
+        {
+          "id": "id-mo1ej0iv3kgqvq",
+          "laneId": "id-mo1ej0iv3eqnix",
+          "columnId": "",
+          "type": "task",
+          "label": "Payment Processing",
+          "sourceId": "id-mo1ed69pc01bm",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer payment via bank to supplier",
+          "properties": []
+        },
+        {
+          "id": "id-mo1ej0iv3lbq32",
+          "laneId": "id-mo1ej0iv3eqnix",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Closure",
+          "sourceId": "id-mo1ed69pdqdwz",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Accountant reconciles payment and closes order",
+          "properties": []
+        },
+        {
+          "id": "id-mo1ej0iv3m7a2u",
+          "laneId": "id-mo1ej0iv3eqnix",
+          "columnId": "",
+          "type": "document",
+          "label": "Order",
+          "sourceId": "id-mo1ed69pjed2t",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Order document containing items and quantities",
+          "properties": []
+        },
+        {
+          "id": "id-mo1ej0iv3naezj",
+          "laneId": "id-mo1ej0iv3eqnix",
+          "columnId": "",
+          "type": "document",
+          "label": "Pick Order",
+          "sourceId": "id-mo1ed69pkttsv",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Warehouse instruction for picking items from stock",
+          "properties": []
+        },
+        {
+          "id": "id-mo1ej0iv3otlj0",
+          "laneId": "id-mo1ej0iv3eqnix",
+          "columnId": "",
+          "type": "document",
+          "label": "Invoice",
+          "sourceId": "id-mo1ed69pllsq8",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Billing document sent to customer",
+          "properties": []
+        },
+        {
+          "id": "id-mo1ej0iv3p046e",
+          "laneId": "id-mo1ej0iv3eqnix",
+          "columnId": "",
+          "type": "document",
+          "label": "Shipment Status",
+          "sourceId": "id-mo1ed69pmm4wt",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Tracking information from carrier",
+          "properties": []
+        }
+      ],
+      "flows": [],
+      "columns": [],
+      "_generatedFromArch": true
+    },
+    {
+      "id": "id-mo1erdzf3xeyxk",
+      "name": "Supplier Order-to-Cash Process — Swimlane",
+      "lanes": [
+        {
+          "id": "id-mo1erdzf3rrncf",
+          "name": "Customer Service Representative",
+          "sourceId": "id-mo1ed69o03xbx"
+        },
+        {
+          "id": "id-mo1erdzf3si8kj",
+          "name": "Warehouse Manager",
+          "sourceId": "id-mo1ed69p1p8fu"
+        },
+        {
+          "id": "id-mo1erdzf3t5z86",
+          "name": "Warehouse Worker",
+          "sourceId": "id-mo1ed69p2nl34"
+        },
+        {
+          "id": "id-mo1erdzf3u1q4c",
+          "name": "Carrier",
+          "sourceId": "id-mo1ed69p3ecuc"
+        },
+        {
+          "id": "id-mo1erdzf3vg0yj",
+          "name": "Customer",
+          "sourceId": "id-mo1ed69p4mojj"
+        },
+        {
+          "id": "id-mo1erdzf3wdizb",
+          "name": "Accountant",
+          "sourceId": "id-mo1ed69p5uhtt"
+        }
+      ],
+      "steps": [],
+      "flows": [],
+      "columns": []
+    },
+    {
+      "id": "id-mo1erh0q4n8gkx",
+      "name": "Supplier Order-to-Cash Process — Swimlane",
+      "lanes": [
+        {
+          "id": "id-mo1erh0q3ywh09",
+          "name": "Customer Service Representative",
+          "sourceId": "id-mo1ed69o03xbx"
+        },
+        {
+          "id": "id-mo1erh0q3z0u8h",
+          "name": "Warehouse Manager",
+          "sourceId": "id-mo1ed69p1p8fu"
+        },
+        {
+          "id": "id-mo1erh0q40zfet",
+          "name": "Warehouse Worker",
+          "sourceId": "id-mo1ed69p2nl34"
+        },
+        {
+          "id": "id-mo1erh0q413cut",
+          "name": "Carrier",
+          "sourceId": "id-mo1ed69p3ecuc"
+        },
+        {
+          "id": "id-mo1erh0q42r5yn",
+          "name": "Customer",
+          "sourceId": "id-mo1ed69p4mojj"
+        },
+        {
+          "id": "id-mo1erh0q43e7io",
+          "name": "Accountant",
+          "sourceId": "id-mo1ed69p5uhtt"
+        },
+        {
+          "id": "id-mo1erh0q44jo9a",
+          "name": "Supplier ERP",
+          "sourceId": "id-mo1ed69pe9wga"
+        },
+        {
+          "id": "id-mo1erh0q45rrer",
+          "name": "Customer ERP",
+          "sourceId": "id-mo1ed69pfah9z"
+        },
+        {
+          "id": "id-mo1erh0q46j89m",
+          "name": "Warehouse Management System",
+          "sourceId": "id-mo1ed69pgoj29"
+        },
+        {
+          "id": "id-mo1erh0q47sh4y",
+          "name": "Carrier Management System",
+          "sourceId": "id-mo1ed69ph4he7"
+        },
+        {
+          "id": "id-mo1erh0q48ehn0",
+          "name": "Middleware",
+          "sourceId": "id-mo1ed69pi8ysz"
+        },
+        {
+          "id": "id-mo1erh0q49hl4q",
+          "name": "Bank System",
+          "sourceId": "id-mo1ed69pnv32g"
+        },
+        {
+          "id": "id-mo1erh0q4bacu4",
+          "name": "Overig"
+        }
+      ],
+      "steps": [
+        {
+          "id": "id-mo1erh0q4azexg",
+          "laneId": "id-mo1erh0q4bacu4",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Creation",
+          "sourceId": "id-mo1ed69p6pibt",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Process of creating order based on customer inventory and sales data",
+          "properties": []
+        },
+        {
+          "id": "id-mo1erh0q4ctm1h",
+          "laneId": "id-mo1erh0q4bacu4",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Validation",
+          "sourceId": "id-mo1ed69p7f229",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer validates and confirms order",
+          "properties": []
+        },
+        {
+          "id": "id-mo1erh0q4dd6hl",
+          "laneId": "id-mo1erh0q4bacu4",
+          "columnId": "",
+          "type": "task",
+          "label": "Warehouse Fulfillment",
+          "sourceId": "id-mo1ed69p8myqv",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Converting order to pick order and assembling goods",
+          "properties": []
+        },
+        {
+          "id": "id-mo1erh0q4eo42i",
+          "laneId": "id-mo1erh0q4bacu4",
+          "columnId": "",
+          "type": "task",
+          "label": "Shipment and Tracking",
+          "sourceId": "id-mo1ed69p9mmuk",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Loading goods, scanning, and tracking shipment status",
+          "properties": []
+        },
+        {
+          "id": "id-mo1erh0q4fq3zl",
+          "laneId": "id-mo1erh0q4bacu4",
+          "columnId": "",
+          "type": "task",
+          "label": "Goods Receipt",
+          "sourceId": "id-mo1ed69paxre2",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer receives and registers goods as received",
+          "properties": []
+        },
+        {
+          "id": "id-mo1erh0q4g5hhv",
+          "laneId": "id-mo1erh0q4bacu4",
+          "columnId": "",
+          "type": "task",
+          "label": "Invoice Generation",
+          "sourceId": "id-mo1ed69pbapdi",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Automatic invoice creation upon shipment",
+          "properties": []
+        },
+        {
+          "id": "id-mo1erh0q4htyoi",
+          "laneId": "id-mo1erh0q4bacu4",
+          "columnId": "",
+          "type": "task",
+          "label": "Payment Processing",
+          "sourceId": "id-mo1ed69pc01bm",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer payment via bank to supplier",
+          "properties": []
+        },
+        {
+          "id": "id-mo1erh0q4izuud",
+          "laneId": "id-mo1erh0q4bacu4",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Closure",
+          "sourceId": "id-mo1ed69pdqdwz",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Accountant reconciles payment and closes order",
+          "properties": []
+        },
+        {
+          "id": "id-mo1erh0q4javh1",
+          "laneId": "id-mo1erh0q4bacu4",
+          "columnId": "",
+          "type": "document",
+          "label": "Order",
+          "sourceId": "id-mo1ed69pjed2t",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Order document containing items and quantities",
+          "properties": []
+        },
+        {
+          "id": "id-mo1erh0q4k1tfw",
+          "laneId": "id-mo1erh0q4bacu4",
+          "columnId": "",
+          "type": "document",
+          "label": "Pick Order",
+          "sourceId": "id-mo1ed69pkttsv",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Warehouse instruction for picking items from stock",
+          "properties": []
+        },
+        {
+          "id": "id-mo1erh0q4lconi",
+          "laneId": "id-mo1erh0q4bacu4",
+          "columnId": "",
+          "type": "document",
+          "label": "Invoice",
+          "sourceId": "id-mo1ed69pllsq8",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Billing document sent to customer",
+          "properties": []
+        },
+        {
+          "id": "id-mo1erh0q4mcd10",
+          "laneId": "id-mo1erh0q4bacu4",
+          "columnId": "",
+          "type": "document",
+          "label": "Shipment Status",
+          "sourceId": "id-mo1ed69pmm4wt",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Tracking information from carrier",
+          "properties": []
+        }
+      ],
+      "flows": [],
+      "columns": [],
+      "_generatedFromArch": true
+    },
+    {
+      "id": "id-mo1eveug4wcrrg",
+      "name": "Supplier Order-to-Cash Process — Swimlane",
+      "lanes": [
+        {
+          "id": "id-mo1eveug4q04af",
+          "name": "Customer Service Representative",
+          "sourceId": "id-mo1ed69o03xbx"
+        },
+        {
+          "id": "id-mo1eveug4r6eyi",
+          "name": "Warehouse Manager",
+          "sourceId": "id-mo1ed69p1p8fu"
+        },
+        {
+          "id": "id-mo1eveug4s55ki",
+          "name": "Warehouse Worker",
+          "sourceId": "id-mo1ed69p2nl34"
+        },
+        {
+          "id": "id-mo1eveug4tvph3",
+          "name": "Carrier",
+          "sourceId": "id-mo1ed69p3ecuc"
+        },
+        {
+          "id": "id-mo1eveug4ubwnb",
+          "name": "Customer",
+          "sourceId": "id-mo1ed69p4mojj"
+        },
+        {
+          "id": "id-mo1eveug4vf98n",
+          "name": "Accountant",
+          "sourceId": "id-mo1ed69p5uhtt"
+        }
+      ],
+      "steps": [],
+      "flows": [],
+      "columns": []
+    },
+    {
+      "id": "id-mo1evis55mj9uk",
+      "name": "Supplier Order-to-Cash Process — Swimlane",
+      "lanes": [
+        {
+          "id": "id-mo1evis44x6jss",
+          "name": "Customer Service Representative",
+          "sourceId": "id-mo1ed69o03xbx"
+        },
+        {
+          "id": "id-mo1evis44yyv13",
+          "name": "Warehouse Manager",
+          "sourceId": "id-mo1ed69p1p8fu"
+        },
+        {
+          "id": "id-mo1evis54zhjx0",
+          "name": "Warehouse Worker",
+          "sourceId": "id-mo1ed69p2nl34"
+        },
+        {
+          "id": "id-mo1evis550o2jt",
+          "name": "Carrier",
+          "sourceId": "id-mo1ed69p3ecuc"
+        },
+        {
+          "id": "id-mo1evis5516gk8",
+          "name": "Customer",
+          "sourceId": "id-mo1ed69p4mojj"
+        },
+        {
+          "id": "id-mo1evis5521ng6",
+          "name": "Accountant",
+          "sourceId": "id-mo1ed69p5uhtt"
+        },
+        {
+          "id": "id-mo1evis553n78v",
+          "name": "Supplier ERP",
+          "sourceId": "id-mo1ed69pe9wga"
+        },
+        {
+          "id": "id-mo1evis5543mel",
+          "name": "Customer ERP",
+          "sourceId": "id-mo1ed69pfah9z"
+        },
+        {
+          "id": "id-mo1evis555vaof",
+          "name": "Warehouse Management System",
+          "sourceId": "id-mo1ed69pgoj29"
+        },
+        {
+          "id": "id-mo1evis556gd9p",
+          "name": "Carrier Management System",
+          "sourceId": "id-mo1ed69ph4he7"
+        },
+        {
+          "id": "id-mo1evis557debj",
+          "name": "Middleware",
+          "sourceId": "id-mo1ed69pi8ysz"
+        },
+        {
+          "id": "id-mo1evis558mwry",
+          "name": "Bank System",
+          "sourceId": "id-mo1ed69pnv32g"
+        },
+        {
+          "id": "id-mo1evis55ae7dj",
+          "name": "Overig"
+        }
+      ],
+      "steps": [
+        {
+          "id": "id-mo1evis559ona3",
+          "laneId": "id-mo1evis55ae7dj",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Creation",
+          "sourceId": "id-mo1ed69p6pibt",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Process of creating order based on customer inventory and sales data",
+          "properties": []
+        },
+        {
+          "id": "id-mo1evis55bh1zi",
+          "laneId": "id-mo1evis55ae7dj",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Validation",
+          "sourceId": "id-mo1ed69p7f229",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer validates and confirms order",
+          "properties": []
+        },
+        {
+          "id": "id-mo1evis55clv6z",
+          "laneId": "id-mo1evis55ae7dj",
+          "columnId": "",
+          "type": "task",
+          "label": "Warehouse Fulfillment",
+          "sourceId": "id-mo1ed69p8myqv",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Converting order to pick order and assembling goods",
+          "properties": []
+        },
+        {
+          "id": "id-mo1evis55dzdy1",
+          "laneId": "id-mo1evis55ae7dj",
+          "columnId": "",
+          "type": "task",
+          "label": "Shipment and Tracking",
+          "sourceId": "id-mo1ed69p9mmuk",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Loading goods, scanning, and tracking shipment status",
+          "properties": []
+        },
+        {
+          "id": "id-mo1evis55e4v3r",
+          "laneId": "id-mo1evis55ae7dj",
+          "columnId": "",
+          "type": "task",
+          "label": "Goods Receipt",
+          "sourceId": "id-mo1ed69paxre2",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer receives and registers goods as received",
+          "properties": []
+        },
+        {
+          "id": "id-mo1evis55f1ukg",
+          "laneId": "id-mo1evis55ae7dj",
+          "columnId": "",
+          "type": "task",
+          "label": "Invoice Generation",
+          "sourceId": "id-mo1ed69pbapdi",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Automatic invoice creation upon shipment",
+          "properties": []
+        },
+        {
+          "id": "id-mo1evis55gfqsa",
+          "laneId": "id-mo1evis55ae7dj",
+          "columnId": "",
+          "type": "task",
+          "label": "Payment Processing",
+          "sourceId": "id-mo1ed69pc01bm",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Customer payment via bank to supplier",
+          "properties": []
+        },
+        {
+          "id": "id-mo1evis55hcf58",
+          "laneId": "id-mo1evis55ae7dj",
+          "columnId": "",
+          "type": "task",
+          "label": "Order Closure",
+          "sourceId": "id-mo1ed69pdqdwz",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Accountant reconciles payment and closes order",
+          "properties": []
+        },
+        {
+          "id": "id-mo1evis55ii4v3",
+          "laneId": "id-mo1evis55ae7dj",
+          "columnId": "",
+          "type": "document",
+          "label": "Order",
+          "sourceId": "id-mo1ed69pjed2t",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Order document containing items and quantities",
+          "properties": []
+        },
+        {
+          "id": "id-mo1evis55jg8eu",
+          "laneId": "id-mo1evis55ae7dj",
+          "columnId": "",
+          "type": "document",
+          "label": "Pick Order",
+          "sourceId": "id-mo1ed69pkttsv",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Warehouse instruction for picking items from stock",
+          "properties": []
+        },
+        {
+          "id": "id-mo1evis55kaimy",
+          "laneId": "id-mo1evis55ae7dj",
+          "columnId": "",
+          "type": "document",
+          "label": "Invoice",
+          "sourceId": "id-mo1ed69pllsq8",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Billing document sent to customer",
+          "properties": []
+        },
+        {
+          "id": "id-mo1evis55llpqk",
+          "laneId": "id-mo1evis55ae7dj",
+          "columnId": "",
+          "type": "document",
+          "label": "Shipment Status",
+          "sourceId": "id-mo1ed69pmm4wt",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Tracking information from carrier",
+          "properties": []
+        }
+      ],
+      "flows": [],
+      "columns": [],
+      "_generatedFromArch": true
+    }
+  ],
+  "elementPositions": {
+    "id-mo1ed69o03xbx": {
+      "x": 404,
+      "y": 264
+    },
+    "id-mo1ed69p1p8fu": {
+      "x": 1132,
+      "y": 142
+    },
+    "id-mo1ed69p2nl34": {
+      "x": 1314,
+      "y": 192
+    },
+    "id-mo1ed69p3ecuc": {
+      "x": 1678,
+      "y": 70
+    },
+    "id-mo1ed69p4mojj": {
+      "x": 586,
+      "y": 223
+    },
+    "id-mo1ed69p5uhtt": {
+      "x": 2406,
+      "y": 141
+    },
+    "id-mo1ed69p6pibt": {
+      "x": 768,
+      "y": 324
+    },
+    "id-mo1ed69p7f229": {
+      "x": 1496,
+      "y": 314
+    },
+    "id-mo1ed69p8myqv": {
+      "x": 1860,
+      "y": 263
+    },
+    "id-mo1ed69p9mmuk": {
+      "x": 2042,
+      "y": 202
+    },
+    "id-mo1ed69paxre2": {
+      "x": 2224,
+      "y": 172
+    },
+    "id-mo1ed69pbapdi": {
+      "x": 950,
+      "y": 142
+    },
+    "id-mo1ed69pc01bm": {
+      "x": 2588,
+      "y": 212
+    },
+    "id-mo1ed69pdqdwz": {
+      "x": 2770,
+      "y": 182
+    },
+    "id-mo1eso734ot1zn": {
+      "x": 40,
+      "y": 264
+    },
+    "id-mo1euc044pfxk7": {
+      "x": 222,
+      "y": 264
+    },
+    "id-mo1ed69pe9wga": {
+      "x": 40,
+      "y": 502
+    },
+    "id-mo1ed69pfah9z": {
+      "x": 768,
+      "y": 502
+    },
+    "id-mo1ed69pgoj29": {
+      "x": 950,
+      "y": 502
+    },
+    "id-mo1ed69ph4he7": {
+      "x": 1496,
+      "y": 502
+    },
+    "id-mo1ed69pi8ysz": {
+      "x": 222,
+      "y": 502
+    },
+    "id-mo1ed69pjed2t": {
+      "x": 404,
+      "y": 502
+    },
+    "id-mo1ed69pkttsv": {
+      "x": 1132,
+      "y": 502
+    },
+    "id-mo1ed69pllsq8": {
+      "x": 586,
+      "y": 502
+    },
+    "id-mo1ed69pmm4wt": {
+      "x": 1314,
+      "y": 502
+    },
+    "id-mo1ed69pnv32g": {
+      "x": 40,
+      "y": 680
+    }
+  }
+}
