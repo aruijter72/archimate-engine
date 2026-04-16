@@ -3948,6 +3948,19 @@ function toggleHealthDrop(type, pill) {
         <span class="health-drop-name">${esc(lbl)}</span>
         <span class="health-drop-arrow">→</span></div>`;
     }
+  } else if (type === 'orphaned') {
+    const NL2 = currentLang === 'nl';
+    for (const el of items) {
+      const hint = _orphanHint(el, NL2);
+      html += `<div class="health-drop-item" style="flex-direction:column;align-items:flex-start;gap:.2rem;padding:.55rem .75rem" onclick="navigateToElement('${el.id}');closeHealthDrop()">
+        <div style="display:flex;align-items:center;gap:.5rem;width:100%">
+          <span class="health-drop-name">${esc(el.name||'—')}</span>
+          <span class="health-drop-type">${TYPE_LABELS[el.type]||el.type}</span>
+          <span class="health-drop-arrow" style="margin-left:auto">→</span>
+        </div>
+        <div style="font-size:.72rem;color:var(--muted);line-height:1.4">${esc(hint)}</div>
+      </div>`;
+    }
   } else {
     for (const el of items) {
       html += `<div class="health-drop-item" onclick="navigateToElement('${el.id}');closeHealthDrop()">
@@ -4994,16 +5007,14 @@ function showNarrative() {
   const NL = currentLang === 'nl';
   const elems = model.elements || [];
 
-  // i18n labels
-  document.getElementById('narr-title').textContent = NL ? '📖 Narratieve weergave' : '📖 Narrative View';
-  document.getElementById('narr-sub').textContent = NL
+  // i18n labels — use optional chaining so repeated calls never crash on missing elements
+  const _setText = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  _setText('narr-title',     NL ? '📖 Narratieve weergave' : '📖 Narrative View');
+  _setText('narr-sub',       NL
     ? 'Een begrijpelijke beschrijving van uw architectuurmodel — wat er gebeurt, wie het doet en welke systemen betrokken zijn.'
-    : 'A plain-language description of your architecture model — what happens, who does it, and which systems are involved.';
-  document.getElementById('narr-close-btn').textContent = NL ? 'Sluiten' : 'Close';
-  document.getElementById('narr-copy-btn').textContent = NL ? '📋 Tekst kopiëren' : '📋 Copy text';
-  document.getElementById('narr-empty-msg').textContent = NL
-    ? 'Geen elementen gevonden. Voeg Bedrijfsprocessen, Actoren of Componenten toe aan uw model.'
-    : 'No processable elements found. Add Business Processes, Actors, or Application Components to your model.';
+    : 'A plain-language description of your architecture model — what happens, who does it, and which systems are involved.');
+  _setText('narr-close-btn', NL ? 'Sluiten' : 'Close');
+  _setText('narr-copy-btn',  NL ? '📋 Tekst kopiëren' : '📋 Copy text');
 
   // Process types to narrate
   const PROC_TYPES = new Set([
@@ -5014,12 +5025,13 @@ function showNarrative() {
   const processes = elems.filter(e => PROC_TYPES.has(e.type) && e.name);
 
   const body = document.getElementById('narr-body');
+  if (!body) return;
 
   if (!processes.length) {
-    body.innerHTML = `<div class="narr-empty" id="narr-empty-msg">${NL
+    body.innerHTML = `<div class="narr-empty">${NL
       ? 'Geen elementen gevonden. Voeg Bedrijfsprocessen, Actoren of Componenten toe aan uw model.'
       : 'No processable elements found. Add Business Processes, Actors, or Application Components to your model.'}</div>`;
-    document.getElementById('narrativeModal').style.display = 'flex';
+    document.getElementById('narrativeModal').classList.add('open');
     return;
   }
 
@@ -5045,12 +5057,11 @@ function showNarrative() {
   html += `</div>`;
 
   body.innerHTML = html;
-  document.getElementById('narrativeModal').style.display = 'flex';
+  document.getElementById('narrativeModal').classList.add('open');
 }
 
 function hideNarrative() {
-  const m = document.getElementById('narrativeModal');
-  if (m) m.style.display = '';
+  document.getElementById('narrativeModal')?.classList.remove('open');
 }
 
 // Copy all narrative text to clipboard
