@@ -5537,20 +5537,50 @@ function handleOpenProject(ev) {
     };
     r.readAsText(f);
   } else {
-    // JSON
+    // JSON — could be a full model OR a standalone swimlane process file
     const r = new FileReader();
     r.onload = e => {
+      const NL = currentLang === 'nl';
       try {
-        model = JSON.parse(e.target.result);
+        const parsed = JSON.parse(e.target.result);
+
+        // Detect swimlane-only file (saved from the Swimlane "Save" menu)
+        const isProcFile = Array.isArray(parsed.lanes) &&
+                           Array.isArray(parsed.steps) &&
+                           Array.isArray(parsed.flows);
+        if (isProcFile) {
+          // Load it as a swimlane process, same logic as handleLoadProcFile
+          const proc = parsed;
+          if (!proc.id)      proc.id      = genId();
+          if (!proc.columns) proc.columns = [];
+          if (!model.processes) model.processes = [];
+          const idx = model.processes.findIndex(p => p.id === proc.id);
+          if (idx >= 0) model.processes[idx] = proc;
+          else          model.processes.push(proc);
+          _activeProcId = proc.id;
+          switchMode('swimlane');
+          return;
+        }
+
+        // Full model JSON
+        model = parsed;
+        if (!model.elements)         model.elements         = [];
+        if (!model.relationships)    model.relationships    = [];
         if (!model.views)            model.views            = [];
         if (!model.snapshots)        model.snapshots        = [];
         if (!model.processes)        model.processes        = [];
         if (!model.elementPositions) model.elementPositions = {};
         document.getElementById('modelName').value = model.name || '';
         document.getElementById('modelDoc').value  = model.documentation || '';
+        // If model has processes but no elements, switch to swimlane
+        const hasSwimlane = model.processes.length > 0;
+        const hasArchi    = model.elements.length  > 0;
         renderAll(); updateStats();
+        if (hasSwimlane && !hasArchi) {
+          _activeProcId = model.processes[0].id;
+          switchMode('swimlane');
+        }
       } catch(err) {
-        const NL = currentLang === 'nl';
         showAlert((NL ? 'Kan bestand niet laden: ' : 'Could not load file: ') + err.message, NL ? 'Fout' : 'Error');
       }
     };
@@ -5586,6 +5616,8 @@ function handleLoadFile(ev) {
   r.onload = e => {
     try {
       model = JSON.parse(e.target.result);
+      if (!model.elements)         model.elements         = [];
+      if (!model.relationships)    model.relationships    = [];
       if (!model.views)            model.views            = [];
       if (!model.snapshots)        model.snapshots        = [];
       if (!model.processes)        model.processes        = [];
