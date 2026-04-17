@@ -3269,8 +3269,7 @@ Rules:
     _postGenMode = null;
 
     if (wantSwimlane && genProc) {
-      renderProcTab();
-      switchMode('swimlane');
+      switchMode('swimlane');  // applyMode() will call renderProcTab()
     } else {
       showTab('business');
     }
