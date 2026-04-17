@@ -4892,14 +4892,20 @@ function hideFlowGenModal() {
   if (m) m.style.display = '';
 }
 
-function generateFlowFromArch() {
+function generateFlowFromArch(auto) {
   const NL = currentLang === 'nl';
-  const inclApp  = document.getElementById('fgm-app')?.checked  ?? true;
-  const inclTech = document.getElementById('fgm-tech')?.checked ?? false;
-  const procName = (document.getElementById('fgm-proc-name')?.value.trim())
-    || (NL ? 'Gegenereerde stroom' : 'Generated Flow');
-
-  hideFlowGenModal();
+  let inclApp, inclTech, procName;
+  if (auto) {
+    inclApp  = true;
+    inclTech = false;
+    procName = model.name || (NL ? 'Gegenereerde stroom' : 'Generated Flow');
+  } else {
+    inclApp  = document.getElementById('fgm-app')?.checked  ?? true;
+    inclTech = document.getElementById('fgm-tech')?.checked ?? false;
+    procName = (document.getElementById('fgm-proc-name')?.value.trim())
+      || (NL ? 'Gegenereerde stroom' : 'Generated Flow');
+    hideFlowGenModal();
+  }
 
   const elems = model.elements || [];
   const rels  = model.relationships || [];
@@ -9071,6 +9077,7 @@ function _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww, procId
 let _procLayout   = null;  // layout snapshot from last renderProcPreview
 let _procDrag     = null;  // active drag state
 let _procDragMoved = false; // true if pointer moved >6px (suppresses click-through)
+let _postGenMode  = null;  // 'swimlane'|'archimate'|null — which mode to show after generation
 
 // Convert pointer event → SVG coordinate, accounting for CSS zoom
 function _procSvgPt(e) {
