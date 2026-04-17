@@ -5075,14 +5075,19 @@ function generateFlowFromArch(auto) {
   model.processes.push(newProc);
   _activeProcId = newProc.id;
 
-  switchMode('swimlane');
+  if (!auto) {
+    switchMode('swimlane');
+  }
 
   const nLanes = lanes.length, nSteps = steps.length, nFlows = flows.length;
-  showToast(
-    NL ? `⟳ Stroom gegenereerd: ${nLanes} banen, ${nSteps} stappen, ${nFlows} verbindingen.`
-       : `⟳ Flow generated: ${nLanes} lanes, ${nSteps} steps, ${nFlows} connections.`,
-    'proc'
-  );
+  if (!auto) {
+    showToast(
+      NL ? `⟳ Stroom gegenereerd: ${nLanes} banen, ${nSteps} stappen, ${nFlows} verbindingen.`
+         : `⟳ Flow generated: ${nLanes} lanes, ${nSteps} steps, ${nFlows} connections.`,
+      'proc'
+    );
+  }
+  return newProc;
 }
 
 function showStepInfo(procId, stepId) {
