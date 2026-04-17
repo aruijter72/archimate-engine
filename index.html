@@ -3612,7 +3612,7 @@ function _doWizGenerate() {
 function renderTemplateGrid() {
   const NL = currentLang === 'nl';
   const grid = document.getElementById('tmplGrid');
-  grid.innerHTML = TEMPLATES.map((tmpl, i) => {
+  const builtIn = TEMPLATES.map((tmpl, i) => {
     const tags = tmpl.tags.map(tag => `<span class="tmpl-meta-tag">${tag}</span>`).join('');
     const blank = tmpl.isBlank ? ' tmpl-blank' : '';
     const elCount = tmpl.isBlank ? '' : `<span class="tmpl-meta-tag">${tmpl.model.elements.length} ${NL?'elem.':'elements'}</span>`;
@@ -3628,6 +3628,76 @@ function renderTemplateGrid() {
         <div class="tmpl-card-meta">${tags}${elCount}</div>
       </button>`;
   }).join('');
+
+  // Custom templates from localStorage
+  const customs = _getCustomTemplates();
+  let customHtml = '';
+  if (customs.length) {
+    customHtml = `<div style="grid-column:1/-1;margin-top:.8rem;padding-top:.7rem;border-top:1px solid var(--border)">
+      <span style="font-size:.75rem;font-weight:700;color:var(--gold);letter-spacing:.04em">${NL ? '⭐ MIJN SJABLONEN' : '⭐ MY TEMPLATES'}</span>
+    </div>` + customs.map((ct, ci) => {
+      const elCount = ct.model?.elements?.length || 0;
+      const ts = new Date(ct.timestamp).toLocaleDateString();
+      return `
+      <div class="tmpl-card" style="position:relative">
+        <button onclick="loadCustomTemplate(${ci})" style="all:unset;display:contents;cursor:pointer">
+          <div class="tmpl-card-icon">⭐</div>
+          <div class="tmpl-card-name">${esc(ct.name)}</div>
+          <div class="tmpl-card-desc" style="font-size:.7rem;color:var(--muted)">${ts} · ${elCount} ${NL?'elem.':'elements'}</div>
+        </button>
+        <button onclick="deleteCustomTemplate(${ci})" title="${NL?'Verwijderen':'Delete'}"
+          style="position:absolute;top:4px;right:4px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:2px 4px;border-radius:3px"
+          onmouseover="this.style.color='#ef6060'" onmouseout="this.style.color=''">✕</button>
+      </div>`;
+    }).join('');
+  }
+
+  grid.innerHTML = builtIn + customHtml;
+}
+
+// ── Custom template helpers ───────────────────────────────────
+const CUSTOM_TMPL_KEY = 'architise-custom-templates';
+function _getCustomTemplates() {
+  try { return JSON.parse(localStorage.getItem(CUSTOM_TMPL_KEY) || '[]'); } catch { return []; }
+}
+function saveAsTemplate() {
+  const NL = currentLang === 'nl';
+  const defaults = model.name || (NL ? 'Mijn sjabloon' : 'My Template');
+  const name = prompt(NL ? 'Sjabloonnaam:' : 'Template name:', defaults);
+  if (!name) return;
+  const customs = _getCustomTemplates();
+  customs.push({ name, model: JSON.parse(JSON.stringify(model)), timestamp: Date.now() });
+  try { localStorage.setItem(CUSTOM_TMPL_KEY, JSON.stringify(customs)); } catch { showAlert('localStorage not available.'); return; }
+  showToast(NL ? `⭐ Sjabloon opgeslagen: "${name}"` : `⭐ Template saved: "${name}"`, 'gold');
+}
+function loadCustomTemplate(ci) {
+  const NL = currentLang === 'nl';
+  const customs = _getCustomTemplates();
+  const ct = customs[ci]; if (!ct) return;
+  const doLoad = () => {
+    _snapshot();
+    model = JSON.parse(JSON.stringify(ct.model));
+    model.elements = model.elements || []; model.relationships = model.relationships || [];
+    model.views = model.views || []; model.snapshots = model.snapshots || []; model.processes = model.processes || [];
+    document.getElementById('modelName').value = model.name || '';
+    document.getElementById('modelDoc').value  = model.documentation || '';
+    hideTemplates(); renderAll(); updateStats();
+    const genProc = generateFlowFromArch(true);
+    if (genProc) renderProcTab();
+    showToast(NL ? `📋 Sjabloon geladen: "${ct.name}"` : `📋 Template loaded: "${ct.name}"`, 'proc');
+  };
+  if (model.elements.length > 0)
+    showConfirm(NL ? `Sjabloon laden: ${ct.name}` : `Load template: ${ct.name}`,
+      NL ? 'Het huidige model wordt vervangen.' : 'Your current model will be replaced.', NL ? 'Laden' : 'Load', true, doLoad);
+  else doLoad();
+}
+function deleteCustomTemplate(ci) {
+  const NL = currentLang === 'nl';
+  const customs = _getCustomTemplates();
+  customs.splice(ci, 1);
+  localStorage.setItem(CUSTOM_TMPL_KEY, JSON.stringify(customs));
+  renderTemplateGrid();
+  showToast(NL ? 'Sjabloon verwijderd.' : 'Template deleted.', 'gold');
 }
 function loadTemplate(idx) {
   const tmpl = TEMPLATES[idx];
