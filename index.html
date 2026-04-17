@@ -9491,6 +9491,7 @@ function _onProcDragEnd(e) {
   // Clean up ghost elements
   drag?.ghost?.remove();
   drag?.hl?.remove();
+  if (drag && _procDragMoved) _snapshot();
   drag?.ring?.remove();
 
   if (!_procDragMoved || !drag) return; // was a click, not a drag — do nothing
