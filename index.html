@@ -8201,6 +8201,7 @@ function deleteLane(laneId) {
 }
 
 function moveLane(laneId, dir) {
+  _snapshot();
   const proc = getActiveProc(); if (!proc) return;
   const idx = proc.lanes.findIndex(l => l.id === laneId);
   if (idx < 0) return;
@@ -8212,6 +8213,7 @@ function moveLane(laneId, dir) {
 
 // ── Column mutations ──────────────────────────────────────────
 function addColumn() {
+  _snapshot();
   const proc = getActiveProc(); if (!proc) return;
   if (!proc.columns) proc.columns = [];
   proc.columns.push({ id: genId(), name: '' });
@@ -8219,6 +8221,7 @@ function addColumn() {
 }
 
 function deleteColumn(colId) {
+  _snapshot();
   const proc = getActiveProc(); if (!proc) return;
   proc.columns = proc.columns.filter(c => c.id !== colId);
   proc.steps.forEach(s => { if (s.columnId === colId) s.columnId = ''; });
