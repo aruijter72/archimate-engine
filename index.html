@@ -9962,7 +9962,7 @@ function exportDrawio() {
 
   if (hasColumns) {
     // ── Grid mode ─────────────────────────────────────────────
-    const COL_W = 180;
+    const COL_W = proc.colW || 180;
     const colIdx = {}; columns.forEach((c, i) => colIdx[c.id] = i);
 
     // Compute LANE_H from max steps stacked in any cell (skip unassigned)
