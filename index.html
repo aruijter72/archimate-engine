@@ -3623,10 +3623,9 @@ function _doLoadTemplate(idx) {
   _postGenMode = null;
 
   if (generatedProc) {
-    renderProcTab();
     const nLanes = generatedProc.lanes.length, nSteps = generatedProc.steps.length, nFlows = generatedProc.flows.length;
     if (wantSwimlane) {
-      switchMode('swimlane');
+      switchMode('swimlane');  // applyMode() will call renderProcTab()
       showToast(
         NL ? `📋 Sjabloon geladen — ${nSteps} stappen, ${nFlows} verbindingen.`
            : `📋 Template loaded — ${nSteps} steps, ${nFlows} connections.`,
