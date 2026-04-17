@@ -3698,6 +3698,7 @@ function elemLabel(e) {
 // ELEMENT OPERATIONS
 // ══════════════════════════════════════════════════════════════
 function addElement(layer, type) {
+  _snapshot();
   const el = { id:genId(), layer, type, name:'', documentation:'', properties:[] };
   model.elements.push(el);
   renderLayer(layer);
@@ -10107,11 +10108,14 @@ function navigateToElement(elemId) {
 }
 
 document.addEventListener('keydown', ev => {
+  const inputFocused = ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName);
   if ((ev.metaKey || ev.ctrlKey) && ev.key === 'k') { ev.preventDefault(); _searchOpen ? closeSearch() : showSearch(); }
   if ((ev.metaKey || ev.ctrlKey) && ev.key === 's') {
     ev.preventDefault();
     if (currentMode === 'archimate') quickSaveModel(); else quickSaveProcJSON();
   }
+  if ((ev.metaKey || ev.ctrlKey) && ev.key === 'z' && !ev.shiftKey && !inputFocused) { ev.preventDefault(); undo(); }
+  if ((ev.metaKey || ev.ctrlKey) && (ev.key === 'y' || (ev.key === 'z' && ev.shiftKey)) && !inputFocused) { ev.preventDefault(); redo(); }
   if (ev.key === 'Escape' && _searchOpen) closeSearch();
   if (ev.key === 'Escape') closeHealthDrop();
 });
