@@ -1239,6 +1239,43 @@
     tr.elem-highlight-persist { background:rgba(201,163,85,.10) !important; box-shadow:inset 3px 0 0 var(--gold); }
     tr.elem-highlight-persist td { background:transparent !important; }
 
+    /* ── Welcome screen mode tiles ──────────────────────────── */
+    .ob-mode-tile {
+      border-radius: 9px; padding: .9rem; display: flex; flex-direction: column; gap: .55rem;
+      border: 1px solid var(--border); background: var(--surface2);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .ob-tile-sw { border-color: rgba(167,138,245,.3); background: rgba(167,138,245,.05); }
+    .ob-tile-ar { border-color: rgba(90,171,221,.25); background: rgba(90,171,221,.04); }
+    .ob-tile-sw:hover { border-color: rgba(167,138,245,.55); box-shadow: 0 0 0 3px rgba(167,138,245,.08); }
+    .ob-tile-ar:hover { border-color: rgba(90,171,221,.45); box-shadow: 0 0 0 3px rgba(90,171,221,.07); }
+    .ob-tile-header { display: flex; align-items: center; gap: .5rem; }
+    .ob-tile-icon { font-size: 1.15rem; line-height: 1; }
+    .ob-tile-name { font-size: .92rem; font-weight: 800; color: var(--white); flex: 1; }
+    .ob-tile-badge {
+      font-size: .62rem; font-weight: 700; padding: .15rem .45rem; border-radius: 10px;
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+    .ob-badge-sw { background: rgba(167,138,245,.2); color: var(--proc-text); border: 1px solid rgba(167,138,245,.3); }
+    .ob-badge-ar { background: rgba(90,171,221,.15); color: #7ec8e3; border: 1px solid rgba(90,171,221,.25); }
+    .ob-tile-desc {
+      font-size: .77rem; color: var(--text2); line-height: 1.55; margin: 0;
+    }
+    .ob-tile-svg { width: 100%; height: auto; border: 1px solid var(--border); display: block; }
+    .ob-tile-actions { display: flex; gap: .4rem; margin-top: .1rem; }
+    .ob-tile-btn {
+      flex: 1; padding: .35rem .5rem; border-radius: 6px; font-size: .78rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: all .18s; text-align: center;
+    }
+    .ob-tile-btn-sw     { background: rgba(167,138,245,.18); border: 1px solid rgba(167,138,245,.4); color: var(--proc-text); }
+    .ob-tile-btn-sw:hover { background: rgba(167,138,245,.32); }
+    .ob-tile-btn-sw-sec { background: transparent; border: 1px solid rgba(167,138,245,.25); color: var(--muted); }
+    .ob-tile-btn-sw-sec:hover { color: var(--proc-text); border-color: rgba(167,138,245,.4); }
+    .ob-tile-btn-ar     { background: rgba(90,171,221,.15); border: 1px solid rgba(90,171,221,.35); color: #7ec8e3; }
+    .ob-tile-btn-ar:hover { background: rgba(90,171,221,.28); }
+    .ob-tile-btn-ar-sec { background: transparent; border: 1px solid rgba(90,171,221,.2); color: var(--muted); }
+    .ob-tile-btn-ar-sec:hover { color: #7ec8e3; border-color: rgba(90,171,221,.35); }
+
     /* ── Open project button on welcome screen ───────────────── */
     .ob-open-btn {
       display: flex; align-items: center; gap: .55rem;
@@ -1347,55 +1384,118 @@
 
 <!-- ── Onboarding Modal ──────────────────────────────────── -->
 <div id="onboardModal" class="modal-overlay">
-  <div class="modal-box" style="max-width:620px">
-    <div class="modal-header">
-      <div class="modal-title" id="ob-title">⬡ Welcome to Architise</div>
+  <div class="modal-box" style="max-width:660px;padding:1.6rem 1.8rem 1.4rem">
+    <div class="modal-header" style="margin-bottom:.5rem">
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <img src="Architise-Logo-A.png" alt="Architise" style="height:36px;width:auto">
+        <div class="modal-title" id="ob-title" style="font-size:1.1rem">Welcome to Architise</div>
+      </div>
       <button class="modal-close" onclick="closeOnboard()">×</button>
     </div>
-    <img src="Architise-Logo-A.png" alt="Architise" class="ar-logo-modal" style="height:72px;width:auto;display:block;margin:0 auto .9rem;">
-    <p class="modal-sub" id="ob-sub">This tool helps you create <strong style="color:var(--white)">architecture models</strong> — structured diagrams showing how an organisation works, what software supports it, and what technology runs underneath. You don't need to be a technical expert.</p>
-    <p style="font-size:.82rem;font-weight:700;color:var(--white);margin-bottom:.4rem" id="ob-floors">Think of it as three floors of a building:</p>
-    <div class="onboard-layers">
-      <div class="onboard-layer biz">
-        <div class="onboard-layer-icon">🏢</div>
-        <div>
-          <div class="onboard-layer-name" id="ob-biz-name">Business Layer</div>
-          <div class="onboard-layer-q" id="ob-biz-q">"Who does what in the organisation?"</div>
-          <div class="onboard-layer-ex" id="ob-biz-ex">People, teams, steps, processes, documents, rules, services</div>
+    <p style="font-size:.82rem;color:var(--text2);margin-bottom:1.1rem;line-height:1.6" id="ob-sub">Map how your organisation works — who does what, which systems are involved, and how everything connects. No technical background needed.</p>
+
+    <!-- ── Mode tiles ─────────────────────────────────────────── -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem">
+
+      <!-- Swimlane tile -->
+      <div class="ob-mode-tile ob-tile-sw" id="ob-tile-swimlane">
+        <div class="ob-tile-header">
+          <span class="ob-tile-icon">☰</span>
+          <span class="ob-tile-name" id="ob-tile-sw-name">Swimlane</span>
+          <span class="ob-tile-badge ob-badge-sw" id="ob-tile-sw-badge">Easy start</span>
+        </div>
+        <p class="ob-tile-desc" id="ob-tile-sw-desc">Draw process flows as swimlane diagrams — who does what, in what order, using which system.</p>
+        <!-- Mini swimlane SVG preview -->
+        <svg viewBox="0 0 220 90" class="ob-tile-svg" style="border-radius:5px;background:#f8f8ff">
+          <rect x="0" y="0" width="220" height="22" fill="#f0eef8" stroke="#ddd" stroke-width=".5"/>
+          <text x="110" y="14" text-anchor="middle" font-size="8" font-weight="700" fill="#5e35b1" font-family="system-ui">Order to Cash</text>
+          <rect x="0" y="22" width="55" height="34" fill="#EFF6FF" stroke="#ddd" stroke-width=".5"/>
+          <rect x="0" y="56" width="55" height="34" fill="#FFFBEB" stroke="#ddd" stroke-width=".5"/>
+          <text x="27" y="41" text-anchor="middle" font-size="7" font-weight="600" fill="#555" font-family="system-ui">Sales</text>
+          <text x="27" y="75" text-anchor="middle" font-size="7" font-weight="600" fill="#555" font-family="system-ui">Finance</text>
+          <rect x="62"  y="27" width="44" height="22" rx="4" fill="#D1ECF1" stroke="#0C7A9D" stroke-width="1"/>
+          <rect x="115" y="27" width="44" height="22" rx="4" fill="#D1ECF1" stroke="#0C7A9D" stroke-width="1"/>
+          <rect x="168" y="61" width="44" height="22" rx="4" fill="#D4EDDA" stroke="#28A745" stroke-width="1"/>
+          <text x="84"  y="40" text-anchor="middle" font-size="7" font-weight="600" fill="#0C5460" font-family="system-ui">Quote</text>
+          <text x="137" y="40" text-anchor="middle" font-size="7" font-weight="600" fill="#0C5460" font-family="system-ui">Invoice</text>
+          <text x="190" y="74" text-anchor="middle" font-size="7" font-weight="600" fill="#155724" font-family="system-ui">Paid ✓</text>
+          <line x1="106" y1="38" x2="115" y2="38" stroke="#7c5cbf" stroke-width="1.2" marker-end="url(#oba)"/>
+          <path d="M159 38 C164 38 163 72 168 72" fill="none" stroke="#7c5cbf" stroke-width="1.2" marker-end="url(#oba)"/>
+          <defs><marker id="oba" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5 z" fill="#7c5cbf"/></marker></defs>
+        </svg>
+        <div class="ob-tile-actions">
+          <button class="ob-tile-btn ob-tile-btn-sw" id="ob-sw-scratch" onclick="closeOnboard(); switchMode('swimlane')">
+            <span id="ob-sw-scratch-lbl">Start blank →</span>
+          </button>
+          <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-tmpl" onclick="closeOnboard(); showTemplates(); switchMode('swimlane')">
+            <span id="ob-sw-tmpl-lbl">From template</span>
+          </button>
         </div>
       </div>
-      <div class="onboard-layer app">
-        <div class="onboard-layer-icon">💻</div>
-        <div>
-          <div class="onboard-layer-name" id="ob-app-name">Application Layer</div>
-          <div class="onboard-layer-q" id="ob-app-q">"Which software supports the business?"</div>
-          <div class="onboard-layer-ex" id="ob-app-ex">Systems, apps, databases, APIs, data files</div>
+
+      <!-- ArchiMate tile -->
+      <div class="ob-mode-tile ob-tile-ar" id="ob-tile-archimate">
+        <div class="ob-tile-header">
+          <span class="ob-tile-icon">⬡</span>
+          <span class="ob-tile-name" id="ob-tile-ar-name">ArchiMate</span>
+          <span class="ob-tile-badge ob-badge-ar" id="ob-tile-ar-badge">Full model</span>
         </div>
-      </div>
-      <div class="onboard-layer tech">
-        <div class="onboard-layer-icon">🔧</div>
-        <div>
-          <div class="onboard-layer-name" id="ob-tech-name">Technology Layer</div>
-          <div class="onboard-layer-q" id="ob-tech-q">"What infrastructure runs the software?"</div>
-          <div class="onboard-layer-ex" id="ob-tech-ex">Servers, networks, cloud platforms, hardware, storage</div>
+        <p class="ob-tile-desc" id="ob-tile-ar-desc">Build a structured architecture model with business, application and technology layers — export to Archi.</p>
+        <!-- Mini ArchiMate layer SVG -->
+        <svg viewBox="0 0 220 90" class="ob-tile-svg" style="border-radius:5px;background:#f8f8ff">
+          <rect x="4" y="6"  width="212" height="23" rx="4" fill="#EFF6FF" stroke="#93c5fd" stroke-width="1"/>
+          <rect x="4" y="34" width="212" height="23" rx="4" fill="#F0FDF4" stroke="#86efac" stroke-width="1"/>
+          <rect x="4" y="62" width="212" height="23" rx="4" fill="#FFF7ED" stroke="#fdba74" stroke-width="1"/>
+          <text x="12" y="21" font-size="8" font-weight="700" fill="#1d4ed8" font-family="system-ui">Business</text>
+          <text x="12" y="49" font-size="8" font-weight="700" fill="#166534" font-family="system-ui">Application</text>
+          <text x="12" y="77" font-size="8" font-weight="700" fill="#9a3412" font-family="system-ui">Technology</text>
+          <rect x="70"  y="10" width="46" height="14" rx="2" fill="#bfdbfe" stroke="#3b82f6" stroke-width=".8"/>
+          <rect x="124" y="10" width="46" height="14" rx="2" fill="#bfdbfe" stroke="#3b82f6" stroke-width=".8"/>
+          <rect x="70"  y="38" width="46" height="14" rx="2" fill="#bbf7d0" stroke="#22c55e" stroke-width=".8"/>
+          <rect x="124" y="38" width="46" height="14" rx="2" fill="#bbf7d0" stroke="#22c55e" stroke-width=".8"/>
+          <rect x="97"  y="66" width="46" height="14" rx="2" fill="#fed7aa" stroke="#f97316" stroke-width=".8"/>
+          <text x="93"  y="20" text-anchor="middle" font-size="6" fill="#1e40af" font-family="system-ui">Actor</text>
+          <text x="147" y="20" text-anchor="middle" font-size="6" fill="#1e40af" font-family="system-ui">Process</text>
+          <text x="93"  y="48" text-anchor="middle" font-size="6" fill="#166534" font-family="system-ui">System</text>
+          <text x="147" y="48" text-anchor="middle" font-size="6" fill="#166534" font-family="system-ui">Service</text>
+          <text x="120" y="76" text-anchor="middle" font-size="6" fill="#9a3412" font-family="system-ui">Server</text>
+          <line x1="93" y1="24" x2="93" y2="38" stroke="#94a3b8" stroke-width=".8" stroke-dasharray="2,1.5"/>
+          <line x1="147" y1="24" x2="147" y2="38" stroke="#94a3b8" stroke-width=".8" stroke-dasharray="2,1.5"/>
+          <line x1="120" y1="52" x2="120" y2="66" stroke="#94a3b8" stroke-width=".8" stroke-dasharray="2,1.5"/>
+        </svg>
+        <div class="ob-tile-actions">
+          <button class="ob-tile-btn ob-tile-btn-ar" id="ob-ar-scratch" onclick="closeOnboard()">
+            <span id="ob-ar-scratch-lbl">Start blank →</span>
+          </button>
+          <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-wizard" onclick="closeOnboard(); showWizard()">
+            <span id="ob-ar-wizard-lbl">🪄 Guided</span>
+          </button>
         </div>
       </div>
     </div>
-    <p style="font-size:.82rem;color:var(--text2);line-height:1.65" id="ob-tip">Every element type has a <strong style="color:var(--white)">? button</strong> next to it — hover over it for a plain-language explanation and real-world examples. The <strong style="color:var(--white)">Manual &amp; Legend</strong> tab has the full reference.</p>
-    <button class="ob-open-btn" id="ob-open-btn" onclick="closeOnboard(); triggerOpenProject()">
-      📂 <span>
-        <span id="ob-open-lbl">Open project</span>
-        <span class="ob-open-sub" id="ob-open-sub">Load a saved .json or .archimate file</span>
-      </span>
-    </button>
-    <div class="onboard-actions">
+
+    <!-- Open + Templates row -->
+    <div style="display:flex;gap:.55rem;margin-bottom:.9rem">
+      <button class="ob-open-btn" id="ob-open-btn" onclick="closeOnboard(); triggerOpenProject()" style="flex:1;margin-bottom:0">
+        📂 <span>
+          <span id="ob-open-lbl">Open project</span>
+          <span class="ob-open-sub" id="ob-open-sub">Load a saved .json or .archimate file</span>
+        </span>
+      </button>
+      <button class="ob-open-btn" id="ob-tmpl-btn" onclick="closeOnboard(); showTemplates()" style="flex:1;margin-bottom:0">
+        📋 <span>
+          <span id="ob-tmpl-lbl2">Browse templates</span>
+          <span class="ob-open-sub" id="ob-tmpl-sub2">Ready-made models to get started</span>
+        </span>
+      </button>
+    </div>
+
+    <div class="onboard-actions" style="padding-top:.6rem;border-top:1px solid var(--border)">
       <label style="font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.4rem;cursor:pointer;margin-right:auto">
         <input type="checkbox" id="onboardNoShow" style="accent-color:var(--gold)" onchange="setOnboardPref(this.checked)">
         <span id="ob-noshow-lbl">Don't show again</span>
       </label>
-      <button class="btn btn-secondary" id="ob-wizard-btn" onclick="closeOnboard(); showWizard()">🪄 Build step by step</button>
-      <button class="btn btn-secondary" id="ob-tmpl-btn" onclick="closeOnboard(); showTemplates()">📋 Start from a template</button>
-      <button class="btn btn-primary" id="ob-scratch-btn" onclick="closeOnboard()">Start from scratch →</button>
+      <button class="btn btn-secondary" id="ob-wizard-btn" onclick="closeOnboard(); showWizard()">🪄 <span id="ob-wizard-lbl2">AI-guided start</span></button>
     </div>
   </div>
 </div>
