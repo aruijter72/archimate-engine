@@ -5168,6 +5168,138 @@ function generateFlowFromArch(auto) {
   return newProc;
 }
 
+// ── Refresh Swimlane from ArchiMate (merge, preserving manual edits) ──
+function refreshSwimlaneFromArch() {
+  const NL  = currentLang === 'nl';
+  const proc = getActiveProc();
+  if (!proc) { showAlert(NL ? 'Geen actief proces.' : 'No active process.'); return; }
+  if (!proc._generatedFromArch) {
+    showAlert(NL
+      ? 'Dit swimlane is niet gegenereerd vanuit een architectuurmodel en kan niet automatisch worden bijgewerkt.'
+      : 'This swimlane was not generated from an architecture model and cannot be automatically refreshed.');
+    return;
+  }
+
+  showConfirm(
+    NL ? '↺ Swimlane vernieuwen' : '↺ Refresh Swimlane',
+    NL ? 'Nieuwe en gewijzigde elementen uit het ArchiMate-model worden samengevoegd. Handmatige aanpassingen (kolomtoewijzingen, namen) blijven behouden.'
+       : 'New and changed elements from the ArchiMate model will be merged in. Manual edits (column assignments, labels) are preserved.',
+    NL ? 'Vernieuwen' : 'Refresh', true,
+    _doRefreshSwimlane
+  );
+}
+
+function _doRefreshSwimlane() {
+  const NL   = currentLang === 'nl';
+  const proc = getActiveProc(); if (!proc) return;
+  _snapshot();
+
+  const elems = model.elements  || [];
+  const rels  = model.relationships || [];
+
+  // Re-run same categorisation as generateFlowFromArch
+  const allowedLayers = new Set(['business','application']);
+  const scopedElems = elems.filter(e => allowedLayers.has(e.layer));
+
+  const LANE_TYPES = new Set(['BusinessActor','BusinessRole','BusinessCollaboration','ApplicationComponent','Node','SystemSoftware','Device']);
+  const STEP_TYPES = new Set(['BusinessProcess','BusinessFunction','BusinessService','BusinessInteraction','BusinessEvent','ApplicationService','ApplicationFunction','ApplicationProcess','ApplicationInteraction','TechnologyService','TechnologyFunction','TechnologyProcess','DataObject','Artifact']);
+  const FLOW_REL_TYPES = new Set(['TriggeringRelationship','FlowRelationship','ServingRelationship','AssociationRelationship']);
+
+  const laneElems = scopedElems.filter(e => LANE_TYPES.has(e.type) && e.name);
+  const stepElems = scopedElems.filter(e => STEP_TYPES.has(e.type) && e.name);
+
+  // Build maps: sourceId → existing lane/step
+  const existingLaneBySource = {};
+  proc.lanes.forEach(l => { if (l.sourceId) existingLaneBySource[l.sourceId] = l; });
+  const existingStepBySource = {};
+  proc.steps.forEach(s => { if (s.sourceId) existingStepBySource[s.sourceId] = s; });
+
+  // ── Merge lanes ───────────────────────────────────────────────
+  // Update names of existing lanes; add new ones; remove those whose source element is gone
+  const laneElemIds = new Set(laneElems.map(e => e.id));
+  // Remove lanes whose source element was deleted (only auto-generated lanes)
+  proc.lanes = proc.lanes.filter(l => !l.sourceId || laneElemIds.has(l.sourceId));
+  // Update names + add new
+  const newLaneIdMap = {};
+  laneElems.forEach(e => {
+    if (existingLaneBySource[e.id]) {
+      existingLaneBySource[e.id].name = e.name; // update name
+      newLaneIdMap[e.id] = existingLaneBySource[e.id].id;
+    } else {
+      const lid = genId();
+      proc.lanes.push({ id: lid, name: e.name, sourceId: e.id });
+      newLaneIdMap[e.id] = lid;
+    }
+  });
+
+  // ── Re-compute step→lane assignments ─────────────────────────
+  const ASSIGN_RELS = new Set(['AssignmentRelationship','CompositionRelationship','AggregationRelationship','RealizationRelationship','ServingRelationship']);
+  const laneIds = new Set(laneElems.map(e => e.id));
+  const stepIds = new Set(stepElems.map(e => e.id));
+  const stepToLaneElemId = {};
+  rels.forEach(r => {
+    if (!ASSIGN_RELS.has(r.type)) return;
+    const srcIsLane = laneIds.has(r.sourceId), srcIsStep = stepIds.has(r.sourceId);
+    const tgtIsLane = laneIds.has(r.targetId), tgtIsStep = stepIds.has(r.targetId);
+    if (srcIsLane && tgtIsStep && !stepToLaneElemId[r.targetId]) stepToLaneElemId[r.targetId] = r.sourceId;
+    if (tgtIsLane && srcIsStep && !stepToLaneElemId[r.sourceId]) stepToLaneElemId[r.sourceId] = r.targetId;
+  });
+
+  // ── Merge steps ───────────────────────────────────────────────
+  const stepElemIds = new Set(stepElems.map(e => e.id));
+  // Remove steps whose source element was deleted (only auto-generated)
+  proc.steps = proc.steps.filter(s => !s.sourceId || stepElemIds.has(s.sourceId));
+  // Update existing + add new
+  const newStepIdMap = {};
+  let addedSteps = 0, updatedSteps = 0;
+  stepElems.forEach(e => {
+    const laneElemId = stepToLaneElemId[e.id];
+    const newLaneId  = laneElemId ? (newLaneIdMap[laneElemId] || null) : null;
+    if (existingStepBySource[e.id]) {
+      const s = existingStepBySource[e.id];
+      s.label = e.name || s.label; // update label from model
+      s.documentation = e.documentation || s.documentation;
+      if (newLaneId && !s.laneId) s.laneId = newLaneId; // assign lane if not yet set
+      newStepIdMap[e.id] = s.id;
+      updatedSteps++;
+    } else {
+      const sid = genId();
+      proc.steps.push({
+        id: sid, laneId: newLaneId || (proc.lanes[0]?.id || ''),
+        columnId: proc.columns[0]?.id || '',
+        type: _archTypeToStepType(e.type),
+        label: e.name || e.type, sourceId: e.id, sourceType: e.type, sourceLayer: e.layer,
+        documentation: e.documentation || '', properties: e.properties || []
+      });
+      newStepIdMap[e.id] = sid;
+      addedSteps++;
+    }
+  });
+
+  // ── Rebuild flows ─────────────────────────────────────────────
+  // Keep manually-created flows (no sourceId); rebuild arch-sourced flows
+  proc.flows = proc.flows.filter(f => !f._fromArch);
+  const flowRels = rels.filter(r => FLOW_REL_TYPES.has(r.type));
+  flowRels.forEach(r => {
+    if (stepIds.has(r.sourceId) && stepIds.has(r.targetId)) {
+      const fromId = newStepIdMap[r.sourceId] || existingStepBySource[r.sourceId]?.id;
+      const toId   = newStepIdMap[r.targetId] || existingStepBySource[r.targetId]?.id;
+      if (fromId && toId && !proc.flows.find(f => f.from===fromId && f.to===toId)) {
+        proc.flows.push({ id: genId(), from: fromId, to: toId, label: r.name || '', _fromArch: true });
+      }
+    }
+  });
+
+  renderProcTab();
+  // Show refresh button since this proc is arch-linked
+  const btn = document.getElementById('btn-refresh-sw-el');
+  if (btn) btn.style.display = '';
+
+  showToast(NL
+    ? `↺ Bijgewerkt: ${addedSteps} nieuw, ${updatedSteps} bijgewerkt`
+    : `↺ Refreshed: ${addedSteps} added, ${updatedSteps} updated`, 'proc');
+}
+
 function showStepInfo(procId, stepId) {
   const NL = currentLang === 'nl';
   const proc = (model.processes || []).find(p => p.id === procId);
