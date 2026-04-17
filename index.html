@@ -9618,7 +9618,13 @@ function renderProcTab() {
       <div class="proc-preview-pane">
         <div class="proc-preview-header">
           <span class="proc-preview-label">${NL ? 'Voorbeeld' : 'Preview'} ${hasCols ? `<span style="font-size:.65rem;color:var(--proc-text);margin-left:.3rem">${NL ? 'rastermodus' : 'grid mode'}</span>` : ''}</span>
-          <div class="proc-zoom-controls">
+          <div class="proc-zoom-controls" style="gap:.25rem">
+            <span style="font-size:.62rem;color:var(--muted);margin-right:.1rem">${NL ? 'Rijhoogte' : 'Row H'}</span>
+            <button class="proc-zoom-btn" onclick="setProcLaneH(-${LANE_H_STEP})" title="${NL ? 'Rijhoogte verkleinen' : 'Decrease row height'}">−</button>
+            <span class="proc-zoom-pct" id="proc-laneh-lbl" style="${proc?.laneH ? 'color:var(--gold)' : ''}">${proc?.laneH ? proc.laneH+'px' : 'auto'}</span>
+            <button class="proc-zoom-btn" onclick="setProcLaneH(+${LANE_H_STEP})" title="${NL ? 'Rijhoogte vergroten' : 'Increase row height'}">+</button>
+            <button class="proc-zoom-btn" onclick="resetProcLaneH()" title="${NL ? 'Automatisch' : 'Auto'}" style="width:auto;padding:0 .3rem;font-size:.6rem">⊡</button>
+            <span style="color:var(--border);margin:0 .2rem">│</span>
             <button class="proc-zoom-btn" onclick="setProcZoom(-0.15)" title="${NL ? 'Uitzoomen' : 'Zoom out'}">−</button>
             <span class="proc-zoom-pct" id="proc-zoom-pct-lbl">100%</span>
             <button class="proc-zoom-btn" onclick="setProcZoom(+0.15)" title="${NL ? 'Inzoomen' : 'Zoom in'}">+</button>
