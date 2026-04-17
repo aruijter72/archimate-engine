@@ -2552,6 +2552,8 @@ function applyTranslations() {
     'proc-mi-save':           L === 'nl' ? '💾 Opslaan'                 : '💾 Save',
     'proc-mi-saveas':         L === 'nl' ? '💾 Opslaan als…'            : '💾 Save As…',
     'proc-mi-drawio':         L === 'nl' ? '⬇ Exporteer draw.io XML'    : '⬇ Export draw.io XML',
+    'proc-mi-svg-lbl':        L === 'nl' ? 'Exporteer SVG…'             : 'Export SVG…',
+    'proc-mi-png-lbl':        L === 'nl' ? 'Exporteer PNG…'             : 'Export PNG…',
     'btn-export-drawio-el':   L === 'nl' ? '⬇ Exporteer draw.io XML'    : '⬇ Export draw.io XML',
     'btn-gen-flow-lbl':       L === 'nl' ? 'Stroom genereren'            : 'Generate Flow',
   };
@@ -10312,6 +10314,66 @@ document.addEventListener('click', ev => {
   if (drop && drop.style.display !== 'none' && !drop.contains(ev.target) && !ev.target.closest('.health-pill'))
     closeHealthDrop();
 });
+
+// ══════════════════════════════════════════════════════════════
+// ── Export Swimlane as SVG / PNG ──────────────────────────────
+function exportSwimlaneImage(format) {
+  const NL   = currentLang === 'nl';
+  const proc = getActiveProc();
+  if (!proc) { showAlert(NL ? 'Geen actief proces.' : 'No active process.'); return; }
+
+  // Find the rendered SVG
+  const svgEl = document.querySelector('#proc-svg-wrap svg');
+  if (!svgEl) { showAlert(NL ? 'Geen diagram om te exporteren.' : 'No diagram to export.'); return; }
+
+  // Clone SVG and embed fonts / styles inline
+  const clone = svgEl.cloneNode(true);
+  // Reset any zoom transform on the inner group
+  const inner = clone.querySelector('#proc-svg-inner') || clone;
+  inner.style.transform = '';
+
+  const svgWidth  = parseFloat(svgEl.getAttribute('width')  || svgEl.viewBox?.baseVal?.width  || 800);
+  const svgHeight = parseFloat(svgEl.getAttribute('height') || svgEl.viewBox?.baseVal?.height || 600);
+  clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  clone.setAttribute('width',  svgWidth);
+  clone.setAttribute('height', svgHeight);
+
+  // Inject a white background rect
+  const bg = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  bg.setAttribute('width','100%'); bg.setAttribute('height','100%'); bg.setAttribute('fill','#ffffff');
+  clone.insertBefore(bg, clone.firstChild);
+
+  const svgStr  = new XMLSerializer().serializeToString(clone);
+  const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+  const fname   = (proc.name || 'swimlane').replace(/[^\w-]/g,'_');
+
+  if (format === 'svg') {
+    const url = URL.createObjectURL(svgBlob);
+    const a   = Object.assign(document.createElement('a'), { href: url, download: fname + '.svg' });
+    a.click(); URL.revokeObjectURL(url);
+    return;
+  }
+
+  // PNG: draw onto canvas
+  const scale  = 2; // 2× for retina quality
+  const canvas = document.createElement('canvas');
+  canvas.width  = svgWidth  * scale;
+  canvas.height = svgHeight * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(scale, scale);
+  const img = new Image();
+  const url = URL.createObjectURL(svgBlob);
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0, svgWidth, svgHeight);
+    URL.revokeObjectURL(url);
+    canvas.toBlob(blob => {
+      const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: fname + '.png' });
+      a.click();
+    }, 'image/png');
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); showAlert(NL ? 'PNG-export mislukt.' : 'PNG export failed.'); };
+  img.src = url;
+}
 
 // ══════════════════════════════════════════════════════════════
 // VIEWS (Named Export Views)
