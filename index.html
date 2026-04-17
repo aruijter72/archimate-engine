@@ -364,6 +364,14 @@
     }
     .btn-gen-flow:hover { background: rgba(201,163,85,.24); border-color: var(--gold); }
     .btn-gen-flow:disabled { opacity: .38; cursor: not-allowed; }
+    .undo-btn {
+      width: 28px; height: 28px; border-radius: 5px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text2); cursor: pointer;
+      font-size: .9rem; display: flex; align-items: center; justify-content: center;
+      transition: all .15s; flex-shrink: 0;
+    }
+    .undo-btn:hover:not(:disabled) { background: rgba(167,138,245,.15); border-color: var(--proc-border); color: var(--white); }
+    .undo-btn:disabled { opacity: .3; cursor: not-allowed; }
 
     /* Step info indicator */
     .step-info-dot { cursor: pointer; }
