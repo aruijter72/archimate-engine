@@ -8444,6 +8444,7 @@ function _selectColDim(dimId) {
 }
 
 function importColumnsFromSuggest() {
+  _snapshot();
   const proc = getActiveProc(); if (!proc) return;
   if (!proc.columns) proc.columns = [];
   const dim = COLUMN_DIMS.find(d => d.id === _colSuggestDim);
