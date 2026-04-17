@@ -9070,7 +9070,33 @@ function _applyProcZoom() {
 }
 
 // ── Lane height override ──────────────────────────────────────
-const LANE_H_MIN = 48, LANE_H_MAX = 600, LANE_H_STEP = 20;
+const LANE_H_MIN = 48,  LANE_H_MAX = 600, LANE_H_STEP = 20;
+const COL_W_MIN  = 80,  COL_W_MAX  = 400, COL_W_STEP  = 20;
+function setProcColW(delta) {
+  const proc = getActiveProc(); if (!proc) return;
+  const current = proc.colW || 150;
+  proc.colW = Math.min(COL_W_MAX, Math.max(COL_W_MIN, current + delta));
+  renderProcPreview();
+  _updateColWLabel();
+}
+function resetProcColW() {
+  const proc = getActiveProc(); if (!proc) return;
+  proc.colW = null;
+  renderProcPreview();
+  _updateColWLabel();
+}
+function _updateColWLabel() {
+  const proc = getActiveProc();
+  const lbl  = document.getElementById('proc-colw-lbl');
+  if (!lbl) return;
+  if (proc?.colW) {
+    lbl.textContent = proc.colW + 'px';
+    lbl.style.color = 'var(--gold)';
+  } else {
+    lbl.textContent = 'auto';
+    lbl.style.color = '';
+  }
+}
 function setProcLaneH(delta) {
   const proc = getActiveProc(); if (!proc) return;
   const current = proc.laneH || _autoLaneH(proc);
@@ -9155,7 +9181,7 @@ function renderProcPreview() {
 
   if (hasColumns) {
     // ── Grid mode: x = column slot, y = lane slot, stack multiple steps per cell ──
-    const COL_W = 150, MARGIN = 14;
+    const COL_W = proc.colW || 150, MARGIN = 14;
     const numCols = columns.length;
     const colIdx = {}; columns.forEach((c, i) => colIdx[c.id] = i);
 
