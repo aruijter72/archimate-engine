@@ -2561,6 +2561,8 @@ function applyTranslations() {
   if (genFlowBtn) genFlowBtn.title = L === 'nl'
     ? 'Genereer een swimlane-diagram vanuit uw architectuurmodel'
     : 'Generate a swimlane diagram from your architecture model';
+  const refreshSwLbl = document.getElementById('btn-refresh-sw-lbl');
+  if (refreshSwLbl) refreshSwLbl.textContent = L === 'nl' ? 'Vernieuwen' : 'Refresh';
   // Narrative buttons
   ['btn-narrative-arch-lbl','btn-narrative-sw-lbl'].forEach(id => {
     const el = document.getElementById(id); if (el) el.textContent = L === 'nl' ? 'Narratief' : 'Narrative';
@@ -9711,6 +9713,9 @@ function renderProcTab() {
     const el = document.getElementById(id);
     if (el) el.disabled = !proc;
   });
+  // Show/hide Refresh button (only for arch-generated processes)
+  const refreshBtn = document.getElementById('btn-refresh-sw-el');
+  if (refreshBtn) refreshBtn.style.display = (proc?._generatedFromArch) ? '' : 'none';
 
   panel.innerHTML = `
     <div class="layer-intro">
