@@ -9033,7 +9033,7 @@ function renderProcPreview() {
   } else {
     // ── Flow mode: auto-layout via toposort ──────────────────────
     const COL_W = 160, MARGIN = 22;
-    LANE_H = 110;
+    LANE_H = proc.laneH ? Math.max(STEP_H + 16, proc.laneH) : 110;
 
     const colMap = procColMap(steps, flows);
     const maxCol = steps.length ? Math.max(...steps.map(s => colMap[s.id])) : 0;
