@@ -8498,6 +8498,7 @@ function _hasSuggestedColumns(proc) {
 }
 
 function addStep() {
+  _snapshot();
   const proc = getActiveProc(); if (!proc) return;
   proc.steps.push({
     id: genId(),
