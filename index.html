@@ -8166,6 +8166,7 @@ function getActiveProc() {
 
 // ── Data mutations ────────────────────────────────────────────
 function addProcess() {
+  _snapshot();
   if (!model.processes) model.processes = [];
   const id = genId();
   model.processes.push({ id, name: 'New Process', columns: [], lanes: [], steps: [], flows: [] });
@@ -8174,6 +8175,7 @@ function addProcess() {
 }
 
 function deleteProcess(id) {
+  _snapshot();
   model.processes = model.processes.filter(p => p.id !== id);
   if (_activeProcId === id)
     _activeProcId = model.processes.length ? model.processes[0].id : null;
