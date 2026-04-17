@@ -1431,15 +1431,20 @@
           <path d="M159 38 C164 38 163 72 168 72" fill="none" stroke="#7c5cbf" stroke-width="1.2" marker-end="url(#oba)"/>
           <defs><marker id="oba" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5 z" fill="#7c5cbf"/></marker></defs>
         </svg>
-        <div class="ob-tile-actions">
-          <button class="ob-tile-btn ob-tile-btn-sw" id="ob-sw-scratch" onclick="closeOnboard(); switchMode('swimlane')">
-            <span id="ob-sw-scratch-lbl">Start blank →</span>
-          </button>
-          <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-tmpl" onclick="closeOnboard(); _postGenMode='swimlane'; showTemplates();">
-            <span id="ob-sw-tmpl-lbl">From template</span>
-          </button>
-          <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-wizard" onclick="closeOnboard(); _postGenMode='swimlane'; showWizard();">
-            <span id="ob-sw-wizard-lbl">🪄 Guided</span>
+        <div class="ob-tile-actions" style="flex-direction:column">
+          <div style="display:flex;gap:.4rem">
+            <button class="ob-tile-btn ob-tile-btn-sw" id="ob-sw-scratch" onclick="closeOnboard(); switchMode('swimlane')">
+              <span id="ob-sw-scratch-lbl">Start blank →</span>
+            </button>
+            <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-tmpl" onclick="closeOnboard(); _postGenMode='swimlane'; showTemplates();">
+              <span id="ob-sw-tmpl-lbl">From template</span>
+            </button>
+            <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-wizard" onclick="closeOnboard(); _postGenMode='swimlane'; showWizard();">
+              <span id="ob-sw-wizard-lbl">🪄 Guided</span>
+            </button>
+          </div>
+          <button class="ob-tile-btn-open" id="ob-sw-open" onclick="closeOnboard(); triggerOpenProject()">
+            📂 <span id="ob-sw-open-lbl">Open project</span>
           </button>
         </div>
       </div>
@@ -1474,12 +1479,20 @@
           <line x1="147" y1="24" x2="147" y2="38" stroke="#94a3b8" stroke-width=".8" stroke-dasharray="2,1.5"/>
           <line x1="120" y1="52" x2="120" y2="66" stroke="#94a3b8" stroke-width=".8" stroke-dasharray="2,1.5"/>
         </svg>
-        <div class="ob-tile-actions">
-          <button class="ob-tile-btn ob-tile-btn-ar" id="ob-ar-scratch" onclick="closeOnboard()">
-            <span id="ob-ar-scratch-lbl">Start blank →</span>
-          </button>
-          <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-wizard" onclick="closeOnboard(); showWizard()">
-            <span id="ob-ar-wizard-lbl">🪄 Guided</span>
+        <div class="ob-tile-actions" style="flex-direction:column">
+          <div style="display:flex;gap:.4rem">
+            <button class="ob-tile-btn ob-tile-btn-ar" id="ob-ar-scratch" onclick="closeOnboard()">
+              <span id="ob-ar-scratch-lbl">Start blank →</span>
+            </button>
+            <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-tmpl" onclick="closeOnboard(); showTemplates();">
+              <span id="ob-ar-tmpl-lbl">From template</span>
+            </button>
+            <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-wizard" onclick="closeOnboard(); showWizard()">
+              <span id="ob-ar-wizard-lbl">🪄 Guided</span>
+            </button>
+          </div>
+          <button class="ob-tile-btn-open" id="ob-ar-open" onclick="closeOnboard(); triggerOpenProject()">
+            📂 <span id="ob-ar-open-lbl">Open project</span>
           </button>
         </div>
       </div>
