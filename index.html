@@ -137,20 +137,33 @@
     .lang-sep { color: var(--muted); opacity: .35; font-size: .7rem; }
 
     /* ── Mode switcher ────────────────────────────────────────── */
+    /* ── Mode switcher (header) ──────────────────────────────── */
     .mode-switcher {
-      display: flex; gap: 2px; background: rgba(255,255,255,.06);
-      border: 1px solid var(--border); border-radius: 6px; padding: 3px; flex-shrink: 0;
+      display: flex; gap: 4px; flex-shrink: 0;
     }
     .mode-btn {
-      background: transparent; border: none; color: var(--muted);
-      font-size: .78rem; font-weight: 700; padding: .28rem .75rem;
-      border-radius: 4px; cursor: pointer; font-family: inherit;
-      transition: all .18s; display: flex; align-items: center; gap: .35rem;
+      background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
+      font-size: .78rem; font-weight: 700; padding: .38rem .9rem;
+      border-radius: 7px; cursor: pointer; font-family: inherit;
+      transition: all .2s; display: flex; align-items: center; gap: .4rem;
+      letter-spacing: .01em; position: relative; overflow: hidden;
     }
-    .mode-btn.active { background: var(--surface2); color: var(--white); box-shadow: 0 1px 3px rgba(0,0,0,.3); }
-    .mode-btn.active.archimate { border: 1px solid var(--biz-border); color: var(--biz-text); }
-    .mode-btn.active.swimlane  { border: 1px solid var(--proc-border); color: var(--proc-text); }
-    .mode-btn:not(.active):hover { color: var(--white); background: rgba(255,255,255,.07); }
+    .mode-btn::before {
+      content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity .2s;
+    }
+    .mode-btn.archimate::before { background: linear-gradient(135deg, rgba(90,171,221,.1), rgba(201,163,85,.07)); }
+    .mode-btn.swimlane::before  { background: linear-gradient(135deg, rgba(167,138,245,.12), rgba(122,245,160,.07)); }
+    .mode-btn.active { color: var(--white); box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+    .mode-btn.active::before { opacity: 1; }
+    .mode-btn.active.archimate { border-color: var(--biz-border); background: rgba(90,171,221,.08); }
+    .mode-btn.active.swimlane  { border-color: var(--proc-border); background: rgba(167,138,245,.10); }
+    .mode-btn:not(.active):hover { color: var(--white); background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.14); }
+    .mode-btn .mode-btn-sub {
+      font-size: .62rem; font-weight: 400; color: var(--muted); display: block;
+      line-height: 1.2; margin-top: 1px; letter-spacing: 0;
+    }
+    .mode-btn.active .mode-btn-sub { color: rgba(255,255,255,.6); }
+    .mode-btn-inner { display: flex; flex-direction: column; align-items: flex-start; }
     /* ── Bridge button ───────────────────────────────────────── */
     .btn-open-swimlane {
       display: inline-flex; align-items: center; gap: .45rem;
@@ -1686,11 +1699,19 @@
     <div class="app-logo" style="font-weight:400"><span class="logo-blue">by Arnold Ruijter IT</span></div>
     <!-- Mode switcher -->
     <div class="mode-switcher">
-      <button class="mode-btn archimate active" id="mode-btn-archimate" onclick="switchMode('archimate')" title="ArchiMate modelling">
-        ⬡ ArchiMate
-      </button>
       <button class="mode-btn swimlane" id="mode-btn-swimlane" onclick="switchMode('swimlane')" title="Swimlane / process diagrams">
-        ⟳ Swimlane
+        <span style="font-size:1.05rem;line-height:1">☰</span>
+        <span class="mode-btn-inner">
+          <span id="mode-lbl-swimlane">Swimlane</span>
+          <span class="mode-btn-sub" id="mode-sub-swimlane">Process flows &amp; steps</span>
+        </span>
+      </button>
+      <button class="mode-btn archimate active" id="mode-btn-archimate" onclick="switchMode('archimate')" title="ArchiMate modelling">
+        <span style="font-size:1.05rem;line-height:1">⬡</span>
+        <span class="mode-btn-inner">
+          <span id="mode-lbl-archimate">ArchiMate</span>
+          <span class="mode-btn-sub" id="mode-sub-archimate">Architecture model</span>
+        </span>
       </button>
     </div>
     <!-- Model name — ArchiMate mode only -->
