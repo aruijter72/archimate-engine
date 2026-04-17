@@ -9223,6 +9223,51 @@ let _procDrag     = null;  // active drag state
 let _procDragMoved = false; // true if pointer moved >6px (suppresses click-through)
 let _postGenMode  = null;  // 'swimlane'|'archimate'|null — which mode to show after generation
 
+// ── Undo / Redo ───────────────────────────────────────────────
+const _undoStack = [], _redoStack = [];
+const UNDO_MAX   = 60;
+function _snapshot() {
+  _undoStack.push(JSON.stringify({ model, _activeProcId }));
+  if (_undoStack.length > UNDO_MAX) _undoStack.shift();
+  _redoStack.length = 0;
+  _updateUndoUI();
+}
+function undo() {
+  if (!_undoStack.length) return;
+  _redoStack.push(JSON.stringify({ model, _activeProcId }));
+  const s = JSON.parse(_undoStack.pop());
+  model = s.model; _activeProcId = s._activeProcId;
+  _afterUndoRedo();
+}
+function redo() {
+  if (!_redoStack.length) return;
+  _undoStack.push(JSON.stringify({ model, _activeProcId }));
+  const s = JSON.parse(_redoStack.pop());
+  model = s.model; _activeProcId = s._activeProcId;
+  _afterUndoRedo();
+}
+function _afterUndoRedo() {
+  model.elements         = model.elements         || [];
+  model.relationships    = model.relationships    || [];
+  model.processes        = model.processes        || [];
+  model.views            = model.views            || [];
+  model.snapshots        = model.snapshots        || [];
+  model.elementPositions = model.elementPositions || {};
+  const mn = document.getElementById('modelName'); if (mn) mn.value = model.name || '';
+  const md = document.getElementById('modelDoc');  if (md) md.value = model.documentation || '';
+  renderAll(); updateStats();
+  if (currentMode === 'swimlane') renderProcTab();
+  _updateUndoUI();
+}
+function _updateUndoUI() {
+  ['btn-undo-arch','btn-undo-sw'].forEach(id => {
+    const b = document.getElementById(id); if (b) b.disabled = !_undoStack.length;
+  });
+  ['btn-redo-arch','btn-redo-sw'].forEach(id => {
+    const b = document.getElementById(id); if (b) b.disabled = !_redoStack.length;
+  });
+}
+
 // Convert pointer event → SVG coordinate, accounting for CSS zoom
 function _procSvgPt(e) {
   const inner = document.getElementById('proc-svg-inner');
