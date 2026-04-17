@@ -1427,7 +1427,7 @@
           <button class="ob-tile-btn ob-tile-btn-sw" id="ob-sw-scratch" onclick="closeOnboard(); switchMode('swimlane')">
             <span id="ob-sw-scratch-lbl">Start blank →</span>
           </button>
-          <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-tmpl" onclick="closeOnboard(); showTemplates(); switchMode('swimlane')">
+          <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-tmpl" onclick="closeOnboard(); _postGenMode='swimlane'; showTemplates();">
             <span id="ob-sw-tmpl-lbl">From template</span>
           </button>
         </div>
@@ -3250,17 +3250,32 @@ Rules:
     model = {
       name: (parsed.name||'AI Architecture Model').slice(0,80),
       documentation: (parsed.documentation||'').slice(0,1000),
-      elements, relationships, views:[], snapshots:[]
+      elements, relationships, views:[], snapshots:[], processes:[]
     };
     document.getElementById('modelName').value = model.name;
     document.getElementById('modelDoc').value  = model.documentation;
     renderAll(); updateStats();
     hideWizard();
-    showTab('business');
+
+    // Auto-generate swimlane from the AI model
+    const genProc = generateFlowFromArch(true);
+    const wantSwimlane = _postGenMode === 'swimlane';
+    _postGenMode = null;
+
+    if (wantSwimlane && genProc) {
+      renderProcTab();
+      switchMode('swimlane');
+    } else {
+      showTab('business');
+    }
+
     const prov = getProvider() === 'openai' ? 'OpenAI' : 'Anthropic';
+    const procSuffix = genProc
+      ? (NL ? ` + Swimlane (${genProc.steps.length} stappen)` : ` + Swimlane (${genProc.steps.length} steps)`)
+      : '';
     showToast(NL
-      ? `✨ ${prov} model geladen — ${elements.length} elementen, ${relationships.length} relaties`
-      : `✨ ${prov} model loaded — ${elements.length} elements, ${relationships.length} relationships`, 'togaf');
+      ? `✨ ${prov} model geladen — ${elements.length} elementen, ${relationships.length} relaties${procSuffix}`
+      : `✨ ${prov} model loaded — ${elements.length} elements, ${relationships.length} relationships${procSuffix}`, 'togaf');
 
   } catch(err) {
     _wizAILoading = false;
