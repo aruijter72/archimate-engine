@@ -8510,6 +8510,7 @@ function addStep() {
 }
 
 function deleteStep(stepId) {
+  _snapshot();
   const proc = getActiveProc(); if (!proc) return;
   proc.steps = proc.steps.filter(s => s.id !== stepId);
   proc.flows = proc.flows.filter(f => f.from !== stepId && f.to !== stepId);
@@ -8517,6 +8518,7 @@ function deleteStep(stepId) {
 }
 
 function addFlow() {
+  _snapshot();
   const proc = getActiveProc(); if (!proc) return;
   if (proc.steps.length < 2) { const NL = currentLang === 'nl'; showAlert(NL ? 'Voeg eerst minimaal twee stappen toe.' : 'Add at least two steps first.', NL ? 'Verbinding toevoegen' : 'Add Flow'); return; }
   proc.flows.push({ id: genId(), from: proc.steps[0].id, to: proc.steps[proc.steps.length-1].id, label: '' });
@@ -8524,6 +8526,7 @@ function addFlow() {
 }
 
 function deleteFlow(flowId) {
+  _snapshot();
   const proc = getActiveProc(); if (!proc) return;
   proc.flows = proc.flows.filter(f => f.id !== flowId);
   renderProcPreview();
