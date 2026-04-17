@@ -1481,13 +1481,13 @@
         </svg>
         <div class="ob-tile-actions" style="flex-direction:column">
           <div style="display:flex;gap:.4rem">
-            <button class="ob-tile-btn ob-tile-btn-ar" id="ob-ar-scratch" onclick="closeOnboard()">
+            <button class="ob-tile-btn ob-tile-btn-ar" id="ob-ar-scratch" onclick="closeOnboard(); switchMode('archimate')">
               <span id="ob-ar-scratch-lbl">Start blank →</span>
             </button>
-            <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-tmpl" onclick="closeOnboard(); showTemplates();">
+            <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-tmpl" onclick="closeOnboard(); switchMode('archimate'); showTemplates();">
               <span id="ob-ar-tmpl-lbl">From template</span>
             </button>
-            <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-wizard" onclick="closeOnboard(); showWizard()">
+            <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-wizard" onclick="closeOnboard(); switchMode('archimate'); showWizard()">
               <span id="ob-ar-wizard-lbl">🪄 Guided</span>
             </button>
           </div>
