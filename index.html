@@ -5381,6 +5381,128 @@ function _doRefreshSwimlane() {
     : `↺ Refreshed: ${addedSteps} added, ${updatedSteps} updated`, 'proc');
 }
 
+// ── Generate ArchiMate from Swimlane (reverse direction) ──────
+function generateArchFromSwimlane() {
+  const NL   = currentLang === 'nl';
+  const proc = getActiveProc();
+  if (!proc) { showAlert(NL ? 'Geen actief proces.' : 'No active process.'); return; }
+
+  const hasExistingModel = model.elements.length > 0;
+  const title = NL ? '⬡ ArchiMate genereren vanuit Swimlane' : '⬡ Generate ArchiMate from Swimlane';
+  const msg   = hasExistingModel
+    ? (NL ? 'Het huidige ArchiMate-model wordt samengevoegd met de swimlane-elementen. Wilt u doorgaan?'
+          : 'The current ArchiMate model will be merged with swimlane elements. Continue?')
+    : (NL ? 'Er wordt een ArchiMate-model gegenereerd vanuit uw swimlane.'
+          : 'An ArchiMate model will be generated from your swimlane.');
+  showConfirm(title, msg, NL ? 'Genereren' : 'Generate', true, () => _doGenerateArchFromSwimlane(proc));
+}
+
+function _doGenerateArchFromSwimlane(proc) {
+  const NL = currentLang === 'nl';
+  _snapshot();
+
+  const existingBySourceId = {};
+  (model.elements || []).forEach(e => { if (e.id) existingBySourceId[e.id] = e; });
+
+  const newElements     = [];
+  const newRelationships = [];
+  const laneElemIds     = {}; // lane.id → element.id
+  const stepElemIds     = {}; // step.id → element.id
+  const colElemIds      = {}; // column.id → element.id
+
+  // ── Lanes → BusinessActors ──────────────────────────────────
+  (proc.lanes || []).forEach(l => {
+    if (l.sourceId && existingBySourceId[l.sourceId]) {
+      laneElemIds[l.id] = l.sourceId; // already exists in model
+      return;
+    }
+    const eid = l.sourceId || genId();
+    newElements.push({ id: eid, layer: 'business', type: 'BusinessActor',
+      name: l.name || (NL ? 'Baan' : 'Lane'), documentation: '', properties: [] });
+    laneElemIds[l.id] = eid;
+  });
+
+  // ── Columns → ApplicationComponents ────────────────────────
+  (proc.columns || []).forEach(c => {
+    if (c.sourceId && existingBySourceId[c.sourceId]) {
+      colElemIds[c.id] = c.sourceId;
+      return;
+    }
+    const eid = c.sourceId || genId();
+    newElements.push({ id: eid, layer: 'application', type: 'ApplicationComponent',
+      name: c.name || (NL ? 'Systeem' : 'System'), documentation: '', properties: [] });
+    colElemIds[c.id] = eid;
+  });
+
+  // ── Steps → BusinessProcess / ApplicationService ────────────
+  (proc.steps || []).forEach(s => {
+    if (s.sourceId && existingBySourceId[s.sourceId]) {
+      stepElemIds[s.id] = s.sourceId;
+      return;
+    }
+    const eid = s.sourceId || genId();
+    // Map step type to ArchiMate type
+    const archType = s.sourceType ||
+      (s.type === 'start' || s.type === 'end' ? 'BusinessEvent'
+      : s.type === 'decision' ? 'BusinessFunction'
+      : s.sourceLayer === 'application' ? 'ApplicationService'
+      : 'BusinessProcess');
+    const layer = s.sourceLayer ||
+      (archType.startsWith('Application') ? 'application' : 'business');
+    newElements.push({ id: eid, layer, type: archType,
+      name: s.label || s.type, documentation: s.documentation || '', properties: s.properties || [] });
+    stepElemIds[s.id] = eid;
+  });
+
+  // ── Lane → Step: AssignmentRelationship ─────────────────────
+  (proc.steps || []).forEach(s => {
+    const laneEid = laneElemIds[s.laneId];
+    const stepEid = stepElemIds[s.id];
+    if (laneEid && stepEid) {
+      newRelationships.push({ id: genId(), type: 'AssignmentRelationship',
+        sourceId: laneEid, targetId: stepEid, name: '', documentation: '', directed: false, accessType: 'ReadWrite', strength: '' });
+    }
+  });
+
+  // ── Step → Column: ServingRelationship ──────────────────────
+  (proc.steps || []).forEach(s => {
+    const colEid  = colElemIds[s.columnId];
+    const stepEid = stepElemIds[s.id];
+    if (colEid && stepEid) {
+      newRelationships.push({ id: genId(), type: 'ServingRelationship',
+        sourceId: colEid, targetId: stepEid, name: '', documentation: '', directed: false, accessType: 'ReadWrite', strength: '' });
+    }
+  });
+
+  // ── Flows → TriggeringRelationship ──────────────────────────
+  (proc.flows || []).forEach(f => {
+    const fromEid = stepElemIds[f.from];
+    const toEid   = stepElemIds[f.to];
+    if (fromEid && toEid) {
+      newRelationships.push({ id: genId(), type: 'TriggeringRelationship',
+        sourceId: fromEid, targetId: toEid, name: f.label || '', documentation: '', directed: true, accessType: 'ReadWrite', strength: '' });
+    }
+  });
+
+  // ── Merge into model ─────────────────────────────────────────
+  if (!model.elements)      model.elements      = [];
+  if (!model.relationships) model.relationships = [];
+  // Avoid duplicating existing elements
+  const existingIds = new Set(model.elements.map(e => e.id));
+  newElements.forEach(e => { if (!existingIds.has(e.id)) model.elements.push(e); });
+  model.relationships.push(...newRelationships);
+
+  if (!model.name && proc.name) { model.name = proc.name; document.getElementById('modelName').value = model.name; }
+
+  renderAll(); updateStats();
+  switchMode('archimate');
+  showTab('business');
+
+  showToast(NL
+    ? `⬡ ArchiMate gegenereerd: ${newElements.length} elementen, ${newRelationships.length} relaties`
+    : `⬡ ArchiMate generated: ${newElements.length} elements, ${newRelationships.length} relationships`, 'togaf');
+}
+
 function showStepInfo(procId, stepId) {
   const NL = currentLang === 'nl';
   const proc = (model.processes || []).find(p => p.id === procId);
