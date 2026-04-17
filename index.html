@@ -3585,14 +3585,40 @@ function loadTemplate(idx) {
   _doLoadTemplate(idx);
 }
 function _doLoadTemplate(idx) {
+  const NL = currentLang === 'nl';
   const tmpl = TEMPLATES[idx];
   model = JSON.parse(JSON.stringify(tmpl.model));
   model.views     = model.views     || [];
   model.snapshots = model.snapshots || [];
+  model.processes = [];  // always re-generate swimlane fresh from this template
   document.getElementById('modelName').value = model.name || '';
   document.getElementById('modelDoc').value  = model.documentation || '';
   hideTemplates();
   renderAll(); updateStats();
+
+  // Auto-generate swimlane from the loaded template
+  const generatedProc = generateFlowFromArch(true);
+  const wantSwimlane  = _postGenMode === 'swimlane';
+  _postGenMode = null;
+
+  if (generatedProc) {
+    renderProcTab();
+    const nLanes = generatedProc.lanes.length, nSteps = generatedProc.steps.length, nFlows = generatedProc.flows.length;
+    if (wantSwimlane) {
+      switchMode('swimlane');
+      showToast(
+        NL ? `📋 Sjabloon geladen — ${nSteps} stappen, ${nFlows} verbindingen.`
+           : `📋 Template loaded — ${nSteps} steps, ${nFlows} connections.`,
+        'proc'
+      );
+    } else {
+      showToast(
+        NL ? `📋 Sjabloon geladen + Swimlane gegenereerd (${nLanes} banen, ${nSteps} stappen).`
+           : `📋 Template loaded + Swimlane generated (${nLanes} lanes, ${nSteps} steps).`,
+        'proc'
+      );
+    }
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
