@@ -9732,7 +9732,7 @@ function exportDrawio() {
   } else {
     // ── Flow mode ─────────────────────────────────────────────
     const COL_W = 190;
-    LANE_H = 120;
+    LANE_H = proc.laneH ? Math.max(STEP_H + 20, proc.laneH) : 120;
 
     const colMap = procColMap(steps, flows);
     const validSteps = steps.filter(s => laneIdx[s.laneId] !== undefined);
