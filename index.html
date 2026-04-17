@@ -2424,12 +2424,22 @@ function applyTranslations() {
   if (obOpenLbl) obOpenLbl.textContent = t('ob-open');
   const obOpenSub = document.getElementById('ob-open-sub');
   if (obOpenSub) obOpenSub.textContent = t('ob-open-sub');
-  const obWiz = document.getElementById('ob-wizard-btn');
-  if (obWiz) obWiz.textContent = t('ob-wizard');
-  const obTmpl = document.getElementById('ob-tmpl-btn');
-  if (obTmpl) obTmpl.textContent = t('ob-tmpl');
-  const obScratch = document.getElementById('ob-scratch-btn');
-  if (obScratch) obScratch.textContent = t('ob-scratch');
+  // Tile labels
+  const _tid = (id, key) => { const el=document.getElementById(id); if(el) el.textContent=t(key); };
+  _tid('ob-sub',           'ob-sub');
+  _tid('ob-tile-sw-name',  'ob-tile-sw-name');
+  _tid('ob-tile-sw-badge', 'ob-tile-sw-badge');
+  _tid('ob-tile-sw-desc',  'ob-tile-sw-desc');
+  _tid('ob-sw-scratch-lbl','ob-sw-scratch');
+  _tid('ob-sw-tmpl-lbl',   'ob-sw-tmpl');
+  _tid('ob-tile-ar-name',  'ob-tile-ar-name');
+  _tid('ob-tile-ar-badge', 'ob-tile-ar-badge');
+  _tid('ob-tile-ar-desc',  'ob-tile-ar-desc');
+  _tid('ob-ar-scratch-lbl','ob-ar-scratch');
+  _tid('ob-ar-wizard-lbl', 'ob-ar-wizard');
+  _tid('ob-tmpl-lbl2',     'ob-tmpl-lbl2');
+  _tid('ob-tmpl-sub2',     'ob-tmpl-sub2');
+  _tid('ob-wizard-lbl2',   'ob-wizard-lbl2');
   // Template modal
   const tmplTitle = document.getElementById('tmpl-title-el');
   if (tmplTitle) tmplTitle.textContent = t('tmpl-title');
