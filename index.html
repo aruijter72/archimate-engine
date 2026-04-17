@@ -8186,12 +8186,14 @@ function selectProcess(id) {
 }
 
 function addLane() {
+  _snapshot();
   const proc = getActiveProc(); if (!proc) return;
   proc.lanes.push({ id: genId(), name: '' });
   renderProcTab();
 }
 
 function deleteLane(laneId) {
+  _snapshot();
   const proc = getActiveProc(); if (!proc) return;
   proc.lanes = proc.lanes.filter(l => l.id !== laneId);
   proc.steps.forEach(s => { if (s.laneId === laneId) s.laneId = ''; });
