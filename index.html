@@ -1498,23 +1498,7 @@
       </div>
     </div>
 
-    <!-- Open + Templates row -->
-    <div style="display:flex;gap:.55rem;margin-bottom:.9rem">
-      <button class="ob-open-btn" id="ob-open-btn" onclick="closeOnboard(); triggerOpenProject()" style="flex:1;margin-bottom:0">
-        📂 <span>
-          <span id="ob-open-lbl">Open project</span>
-          <span class="ob-open-sub" id="ob-open-sub">Load a saved .json or .archimate file</span>
-        </span>
-      </button>
-      <button class="ob-open-btn" id="ob-tmpl-btn" onclick="closeOnboard(); showTemplates()" style="flex:1;margin-bottom:0">
-        📋 <span>
-          <span id="ob-tmpl-lbl2">Browse templates</span>
-          <span class="ob-open-sub" id="ob-tmpl-sub2">Ready-made models to get started</span>
-        </span>
-      </button>
-    </div>
-
-    <div class="onboard-actions" style="padding-top:.6rem;border-top:1px solid var(--border)">
+    <div class="onboard-actions" style="padding-top:.6rem;border-top:1px solid var(--border)"  >
       <label style="font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.4rem;cursor:pointer;margin-right:auto">
         <input type="checkbox" id="onboardNoShow" style="accent-color:var(--gold)" onchange="setOnboardPref(this.checked)">
         <span id="ob-noshow-lbl">Don't show again</span>
