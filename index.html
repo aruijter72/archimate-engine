@@ -8858,6 +8858,53 @@ function _applyProcZoom() {
   if (lbl) lbl.textContent = Math.round(_procZoom * 100) + '%';
 }
 
+// ── Lane height override ──────────────────────────────────────
+const LANE_H_MIN = 48, LANE_H_MAX = 600, LANE_H_STEP = 20;
+function setProcLaneH(delta) {
+  const proc = getActiveProc(); if (!proc) return;
+  const current = proc.laneH || _autoLaneH(proc);
+  proc.laneH = Math.min(LANE_H_MAX, Math.max(LANE_H_MIN, current + delta));
+  renderProcPreview();
+  _updateLaneHLabel();
+}
+function resetProcLaneH() {
+  const proc = getActiveProc(); if (!proc) return;
+  proc.laneH = null;
+  renderProcPreview();
+  _updateLaneHLabel();
+}
+function _autoLaneH(proc) {
+  // Estimate the auto height without a full render pass
+  if (!proc || !proc.steps) return 110;
+  const hasColumns = proc.columns && proc.columns.length > 0;
+  if (!hasColumns) return 110;
+  // Grid mode auto-size
+  const STEP_H = 42;
+  const cellCount = {};
+  const laneIdx = {}; (proc.lanes||[]).forEach((l,i) => laneIdx[l.id]=i);
+  const colIdx  = {}; (proc.columns||[]).forEach((c,i) => colIdx[c.id]=i);
+  (proc.steps||[]).forEach(s => {
+    const li = laneIdx[s.laneId]; if (li === undefined) return;
+    const ci = colIdx[s.columnId] ?? 0;
+    const k = `${li}_${ci}`;
+    cellCount[k] = (cellCount[k]||0) + 1;
+  });
+  const maxStack = Math.max(1, ...Object.values(cellCount));
+  return Math.max(80, maxStack * (STEP_H + 8) + 24);
+}
+function _updateLaneHLabel() {
+  const proc = getActiveProc();
+  const lbl  = document.getElementById('proc-laneh-lbl');
+  if (!lbl) return;
+  if (proc?.laneH) {
+    lbl.textContent = proc.laneH + 'px';
+    lbl.style.color = 'var(--gold)';
+  } else {
+    lbl.textContent = 'auto';
+    lbl.style.color = '';
+  }
+}
+
 // ── SVG Preview ───────────────────────────────────────────────
 function renderProcPreview() {
   const wrap = document.getElementById('proc-svg-wrap');
@@ -8910,7 +8957,8 @@ function renderProcPreview() {
       cellCount[k] = (cellCount[k] || 0) + 1;
     });
     const maxStack = Math.max(1, ...Object.values(cellCount));
-    LANE_H = Math.max(80, maxStack * (STEP_H + 8) + 24);
+    const autoH = Math.max(80, maxStack * (STEP_H + 8) + 24);
+    LANE_H = proc.laneH ? Math.max(STEP_H + 16, proc.laneH) : autoH;
 
     svgW = LANE_STRIP + numCols * COL_W;
     svgH = PROC_HDR + COL_HDR_H + numLanes * LANE_H;
