@@ -9681,7 +9681,8 @@ function exportDrawio() {
       cellCount[k] = (cellCount[k]||0)+1;
     });
     const maxStack = Math.max(1, ...Object.values(cellCount));
-    LANE_H = Math.max(80, maxStack*(STEP_H+14)+20);
+    const autoHdx = Math.max(80, maxStack*(STEP_H+14)+20);
+    LANE_H = proc.laneH ? Math.max(STEP_H + 20, proc.laneH) : autoHdx;
 
     totalW = LANE_STRIP + columns.length * COL_W;
     const poolH = COL_HDR_H + numLanes * LANE_H;
