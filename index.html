@@ -1895,6 +1895,9 @@
         <button class="mi-btn gold" id="proc-mi-drawio" onclick="exportDrawio();closeMenus()">⬇ Export draw.io XML</button>
       </div>
     </div>
+    <!-- ── Undo / Redo ──────────────────────────────────────── -->
+    <button class="undo-btn" id="btn-undo-sw" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↩</button>
+    <button class="undo-btn" id="btn-redo-sw" onclick="redo()" title="Redo (Ctrl+Y)" disabled>↪</button>
     <button class="btn-narrative" id="btn-narrative-sw-el" onclick="showNarrative()" title="Plain-language description of your model">📖 <span id="btn-narrative-sw-lbl">Narrative</span></button>
     <button class="btn-gen-flow" id="btn-gen-flow-el" onclick="showFlowGenModal()" title="Generate a swimlane diagram from your architecture model">⟳ <span id="btn-gen-flow-lbl">Generate Flow</span></button>
     <button class="btn btn-primary" id="btn-export-drawio-el" onclick="exportDrawio()">⬇ Export draw.io XML</button>
