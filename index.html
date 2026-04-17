@@ -3707,6 +3707,7 @@ function addElement(layer, type) {
 }
 
 function deleteElement(id) {
+  _snapshot();
   const el = model.elements.find(e => e.id === id);
   model.elements      = model.elements.filter(e => e.id !== id);
   model.relationships = model.relationships.filter(r => r.sourceId !== id && r.targetId !== id);
@@ -3962,6 +3963,7 @@ function filterHelp(query) {
 // RELATIONSHIP OPERATIONS
 // ══════════════════════════════════════════════════════════════
 function addRelationship() {
+  _snapshot();
   model.relationships.push({
     id: genId(), type:'AssociationRelationship',
     sourceId:'', targetId:'', name:'', documentation:'',
@@ -3973,6 +3975,7 @@ function addRelationship() {
 }
 
 function deleteRel(id) {
+  _snapshot();
   model.relationships = model.relationships.filter(r => r.id !== id);
   renderRelationships();
   updateStats();
