@@ -2425,6 +2425,14 @@ function applyTranslations() {
   if (btnArchi) btnArchi.title = L === 'nl' ? 'ArchiMate modelleren' : 'ArchiMate modelling';
   const btnSw = document.getElementById('mode-btn-swimlane');
   if (btnSw) btnSw.title = L === 'nl' ? 'Swimlane / procesdiagrammen' : 'Swimlane / process diagrams';
+  const modeLblSw  = document.getElementById('mode-lbl-swimlane');
+  if (modeLblSw) modeLblSw.textContent = L === 'nl' ? 'Swimlane' : 'Swimlane';
+  const modeSubSw  = document.getElementById('mode-sub-swimlane');
+  if (modeSubSw) modeSubSw.textContent = L === 'nl' ? 'Processtromen & stappen' : 'Process flows & steps';
+  const modeLblAr  = document.getElementById('mode-lbl-archimate');
+  if (modeLblAr) modeLblAr.textContent = L === 'nl' ? 'ArchiMate' : 'ArchiMate';
+  const modeSubAr  = document.getElementById('mode-sub-archimate');
+  if (modeSubAr) modeSubAr.textContent = L === 'nl' ? 'Architectuurmodel' : 'Architecture model';
   // Auto Layout button tooltip
   const btnAl = document.getElementById('btn-autolayout');
   if (btnAl) btnAl.title = L === 'nl'
