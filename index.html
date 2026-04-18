@@ -154,11 +154,12 @@
     }
     .mode-btn.archimate::before { background: linear-gradient(135deg, rgba(90,171,221,.1), rgba(201,163,85,.07)); }
     .mode-btn.swimlane::before  { background: linear-gradient(135deg, rgba(167,138,245,.12), rgba(122,245,160,.07)); }
-    .mode-btn.active { color: var(--white); box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+    .mode-btn:not(.active) { opacity: .55; }
+    .mode-btn:not(.active):hover { opacity: 1; color: var(--white); background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.14); }
+    .mode-btn.active { color: var(--white); box-shadow: 0 2px 12px rgba(0,0,0,.45); border-width: 2px; opacity: 1; }
     .mode-btn.active::before { opacity: 1; }
-    .mode-btn.active.archimate { border-color: var(--biz-border); background: rgba(90,171,221,.08); }
-    .mode-btn.active.swimlane  { border-color: var(--proc-border); background: rgba(167,138,245,.10); }
-    .mode-btn:not(.active):hover { color: var(--white); background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.14); }
+    .mode-btn.active.archimate { border-color: rgba(201,163,85,.85); background: rgba(201,163,85,.07); box-shadow: 0 0 0 1px rgba(201,163,85,.18), 0 3px 12px rgba(0,0,0,.4); }
+    .mode-btn.active.swimlane  { border-color: rgba(167,138,245,.85); background: rgba(167,138,245,.10); box-shadow: 0 0 0 1px rgba(167,138,245,.2), 0 3px 12px rgba(0,0,0,.4); }
     .mode-btn .mode-btn-sub {
       font-size: .62rem; font-weight: 400; color: var(--muted); display: block;
       line-height: 1.2; margin-top: 1px; letter-spacing: 0;
@@ -1897,6 +1898,7 @@
            oninput="model.name = this.value">
   </div>
   <button class="search-trigger" id="btn-search-global" onclick="showSearch()" title="Search elements (⌘K / Ctrl+K)">🔍</button>
+  <button class="search-trigger" id="btn-help-global" onclick="showHelp()" title="Help &amp; About" style="font-size:1rem;font-weight:700">?</button>
   <button class="search-trigger" id="btn-settings" onclick="showSettings()" title="Settings (AI provider &amp; API keys)" style="font-size:1.1rem">⚙</button>
   <div class="lang-toggle">
     <button class="lang-btn" data-lang="nl" onclick="setLanguage('nl')">NL</button>
