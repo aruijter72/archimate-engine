@@ -4874,7 +4874,7 @@ function newModel() {
 }
 function _doNewModel() {
   const NL = currentLang === 'nl';
-  model = { name: NL ? 'Nieuw Model' : 'New Model', documentation: '', elements: [], relationships: [], views: [], snapshots: [], elementPositions: {} };
+  model = { name: NL ? 'Nieuw Model' : 'New Model', documentation: '', platformIntro: '', elements: [], relationships: [], views: [], snapshots: [], elementPositions: {} };
   document.getElementById('modelName').value = model.name;
   document.getElementById('modelDoc').value  = '';
   _modelSaveHandle = null; _modelSavedOnce = false;
