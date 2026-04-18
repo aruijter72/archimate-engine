@@ -2606,7 +2606,7 @@ function applyTranslations() {
     'proc-mi-png-lbl':          L === 'nl' ? 'Exporteer PNG…'             : 'Export PNG…',
     'proc-mi-save-tmpl-lbl':    L === 'nl' ? 'Opslaan als sjabloon…'      : 'Save as template…',
     'btn-export-drawio-el':     L === 'nl' ? '⬇ Exporteer draw.io XML'    : '⬇ Export draw.io XML',
-    'proc-tools-gen-flow-lbl':  L === 'nl' ? 'Stroom genereren vanuit ArchiMate…' : 'Generate Flow from ArchiMate…',
+    'proc-tools-gen-flow-lbl':  L === 'nl' ? 'Flow genereren vanuit ArchiMate…'   : 'Generate Flow from ArchiMate…',
     'proc-tools-refresh-lbl':   L === 'nl' ? 'Vernieuwen vanuit ArchiMate' : 'Refresh from ArchiMate',
     'proc-tools-gen-arch-lbl':  L === 'nl' ? 'ArchiMate genereren vanuit Swimlane…' : 'Generate ArchiMate from Swimlane…',
   };
@@ -5046,8 +5046,8 @@ function showFlowGenModal() {
 
   // Update bilingual labels
   const t = {
-    title:     NL ? '⟳ Stroomdiagram genereren uit Architectuur' : '⟳ Generate Flow from Architecture',
-    sub:       NL ? 'Genereert automatisch een swimlane-diagram door relaties over architectuurlagen te traceren. Actoren en Rollen worden rijstroken; Processen en Services worden stappen; Triggering / Stroom / Serving-relaties worden verbindingen.'
+    title:     NL ? '⟳ Flow-diagram genereren uit Architectuur' : '⟳ Generate Flow from Architecture',
+    sub:       NL ? 'Genereert automatisch een swimlane-diagram door relaties over architectuurlagen te traceren. Actoren en Rollen worden rijstroken; Processen en Services worden stappen; Triggering / Flow / Serving-relaties worden verbindingen.'
                   : 'Auto-generate a swimlane diagram by tracing relationships across your architecture layers. Actors and Roles become lanes; Processes and Services become steps; Triggering / Flow / Serving relationships become connections.',
     nameLbl:   NL ? 'Procesnaam' : 'Process name',
     layersLbl: NL ? 'Lagen opnemen' : 'Include layers',
