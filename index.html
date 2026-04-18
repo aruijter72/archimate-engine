@@ -2535,27 +2535,38 @@ function applyTranslations() {
   // Swimlane header controls
   const swFileLabel = document.getElementById('proc-file-btn-label');
   if (swFileLabel) swFileLabel.textContent = L === 'nl' ? 'Bestand' : 'File';
-  // ArchiMate File menu — full set
+  // ArchiMate File / Tools / View menu labels
   const fileMenuLabel = document.getElementById('menu-file-label');
   if (fileMenuLabel) fileMenuLabel.textContent = L === 'nl' ? 'Bestand' : 'File';
+  const toolsMenuLabel = document.getElementById('menu-tools-label');
+  if (toolsMenuLabel) toolsMenuLabel.textContent = L === 'nl' ? 'Gereedschappen' : 'Tools';
+  const viewMenuLabel = document.getElementById('menu-view-label');
+  if (viewMenuLabel) viewMenuLabel.textContent = L === 'nl' ? 'Weergave' : 'View';
+  // Swimlane Tools / View menu labels
+  const procToolsLabel = document.getElementById('menu-proc-tools-label');
+  if (procToolsLabel) procToolsLabel.textContent = L === 'nl' ? 'Gereedschappen' : 'Tools';
+  const procViewLabel = document.getElementById('menu-proc-view-label');
+  if (procViewLabel) procViewLabel.textContent = L === 'nl' ? 'Weergave' : 'View';
+  // ArchiMate menu items
   const archiMenuMap = {
-    'btn-newmodel-el':        L === 'nl' ? '🆕 Nieuw model'              : '🆕 New Model',
-    'btn-openjson-el':        L === 'nl' ? '📂 JSON openen…'             : '📂 Open JSON…',
-    'btn-import-archimate-el':L === 'nl' ? '📥 Importeer .archimate…'    : '📥 Import .archimate…',
-    'btn-savejson-el':        L === 'nl' ? '💾 JSON opslaan'             : '💾 Save JSON',
-    'btn-saveas-el':          L === 'nl' ? '💾 Opslaan als…'             : '💾 Save As…',
-    'btn-translate-lbl':      L === 'nl' ? 'Documentatie vertalen…'      : 'Translate documentation…',
-    'btn-export-arc-menu-el': L === 'nl' ? '⬇ Exporteer .archimate'      : '⬇ Export .archimate',
-    'btn-export-ameff-menu-el':L === 'nl' ? '⬇ Exporteer AMEFF XML'      : '⬇ Export AMEFF XML',
-    'btn-snapshot-el':        L === 'nl' ? '📸 Snapshot opslaan…'        : '📸 Save Snapshot…',
-    'btn-history-el':         L === 'nl' ? '📜 Versiegeschiedenis…'       : '📜 Version History…',
+    'btn-newmodel-el':          L === 'nl' ? '🆕 Nieuw model'              : '🆕 New Model',
+    'btn-openjson-el':          L === 'nl' ? '📂 JSON openen…'             : '📂 Open JSON…',
+    'btn-import-archimate-el':  L === 'nl' ? '📥 Importeer .archimate…'    : '📥 Import .archimate…',
+    'btn-savejson-el':          L === 'nl' ? '💾 JSON opslaan'             : '💾 Save JSON',
+    'btn-saveas-el':            L === 'nl' ? '💾 Opslaan als…'             : '💾 Save As…',
+    'btn-print-lbl':            L === 'nl' ? 'Afdrukken / Opslaan als PDF' : 'Print / Save as PDF',
+    'btn-export-arc-menu-el':   L === 'nl' ? '⬇ Exporteer .archimate'      : '⬇ Export .archimate',
+    'btn-export-ameff-menu-el': L === 'nl' ? '⬇ Exporteer AMEFF XML'       : '⬇ Export AMEFF XML',
+    'btn-snapshot-el':          L === 'nl' ? '📸 Snapshot opslaan…'        : '📸 Save Snapshot…',
+    'btn-history-el':           L === 'nl' ? '📜 Versiegeschiedenis…'       : '📜 Version History…',
+    'btn-gen-flow-arch-lbl':    L === 'nl' ? 'Stroom genereren…'            : 'Generate Flow…',
+    'btn-translate-lbl':        L === 'nl' ? 'Documentatie vertalen…'       : 'Translate documentation…',
+    'btn-share-lbl':            L === 'nl' ? 'Delen (alleen-lezen link)'    : 'Share (read-only link)',
+    'btn-views-lbl':            L === 'nl' ? 'Weergaven…'                   : 'Views…',
   };
   for (const [id, txt] of Object.entries(archiMenuMap)) {
     const el = document.getElementById(id); if (el) el.textContent = txt;
   }
-  // Views button
-  const viewsLabel = document.getElementById('btn-views-label');
-  if (viewsLabel) viewsLabel.textContent = 'Views';
   // Views modal strings
   const viewsTitle = document.getElementById('views-title-el');
   if (viewsTitle) viewsTitle.textContent = '📐 Views';
