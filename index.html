@@ -1864,6 +1864,29 @@
   </div>
 </div>
 
+<!-- ── Platform Settings Modal ──────────────────────────────── -->
+<div id="platformModal" class="modal-overlay" onclick="if(event.target===this)hidePlatformSettings()" style="z-index:2350">
+  <div class="modal-box" style="max-width:680px;max-height:88vh;overflow-y:auto">
+    <div class="modal-header">
+      <div class="modal-title" id="plat-title">🌐 Platform inrichten</div>
+      <button class="modal-close" onclick="hidePlatformSettings()">×</button>
+    </div>
+    <p class="modal-sub" id="plat-sub">Stel de introductietekst in voor het HTML-platform. Deze tekst verschijnt op de startpagina als uitleg voor de lezer.</p>
+    <div style="padding:0 0 .5rem">
+      <label style="font-size:.8rem;font-weight:700;color:var(--text2);display:block;margin-bottom:.4rem" id="plat-intro-lbl">Introductietekst voor de startpagina</label>
+      <textarea id="platformIntroTA"
+        style="width:100%;min-height:160px;background:var(--surface2);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:.7rem .9rem;font-family:'Catamaran',system-ui,sans-serif;font-size:.88rem;line-height:1.6;resize:vertical"
+        placeholder="Beschrijf hier het doel en de scope van dit architectuurmodel. Deze tekst zal bovenaan het platform verschijnen."
+        oninput="model.platformIntro = this.value"></textarea>
+      <p style="font-size:.73rem;color:var(--muted);margin-top:.4rem" id="plat-hint">Platte tekst. Alinea's worden gesplitst op lege regels.</p>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:1rem;gap:.5rem">
+      <button class="btn btn-secondary" onclick="hidePlatformSettings()" id="plat-close-btn">Sluiten</button>
+      <button class="btn btn-primary" onclick="generateHTMLPlatform();hidePlatformSettings()" id="plat-export-btn">🌐 Platform exporteren</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── About Modal ───────────────────────────────────────────── -->
 <div id="aboutModal" class="modal-overlay" onclick="if(event.target===this)hideAbout()" style="z-index:2300">
   <div class="modal-box" style="max-width:760px;max-height:88vh;overflow-y:auto">
