@@ -11010,6 +11010,10 @@ function renderViewsModal() {
            onclick="selectViewForEdit('${v.id}')">
         <span class="view-item-name">${esc(v.name)}</span>
         <span class="view-item-count">${v.elementIds.length} ${NL?'elem.':'elem.'}</span>
+        <button class="snap-restore" style="font-size:.65rem;padding:.1rem .4rem;margin-left:auto"
+          onclick="event.stopPropagation();setViewFilter('${v.id}');hideViews()" title="${NL?'Filter lagen tot deze view':'Filter layers to this view'}">
+          ${_activeViewFilter===v.id ? '✓ '+( NL?'Actief':'Active') : (NL?'Filter':'Filter')}
+        </button>
         <button class="view-del" onclick="event.stopPropagation();deleteView('${v.id}')" title="${NL?'Verwijder':'Delete'}">×</button>
       </div>`).join('');
 
