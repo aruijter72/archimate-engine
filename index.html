@@ -4981,8 +4981,8 @@ function checkWhatsNew() {
   try {
     const seen = localStorage.getItem('architise-seen-version');
     if (seen === CURRENT_VERSION) return;
-    // Add gold dot to Manual & Legend tab button
-    const helpBtn = document.getElementById('tab-btn-help');
+    // Add gold dot to global Help button
+    const helpBtn = document.getElementById('btn-help-global');
     if (helpBtn && !helpBtn.querySelector('.tab-new-dot')) {
       const dot = document.createElement('span');
       dot.className = 'tab-new-dot';
@@ -4995,7 +4995,7 @@ function checkWhatsNew() {
 function markWhatsNewSeen() {
   try {
     localStorage.setItem('architise-seen-version', CURRENT_VERSION);
-    const dot = document.querySelector('#tab-btn-help .tab-new-dot');
+    const dot = document.querySelector('#btn-help-global .tab-new-dot');
     if (dot) dot.remove();
   } catch(e) {}
 }
@@ -5075,13 +5075,12 @@ function switchMode(mode) {
 }
 
 function showHelp() {
-  // Always available — switch to ArchiMate mode if needed, then open Help tab
-  if (currentMode !== 'archimate') {
-    switchMode('archimate');
-    setTimeout(() => showTab('help'), 60);
-  } else {
-    showTab('help');
-  }
+  renderHelp(); // re-render in case language changed
+  document.getElementById('helpModal').classList.add('open');
+  markWhatsNewSeen();
+}
+function hideHelpModal() {
+  document.getElementById('helpModal').classList.remove('open');
 }
 
 function openAsSwimlane() {
