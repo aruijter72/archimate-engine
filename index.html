@@ -1833,7 +1833,7 @@
         </span>
       </button>
     </div>
-    <!-- Model name — ArchiMate mode only -->
+    <!-- Model name — always visible -->
     <input type="text" id="modelName" class="model-name-input"
            value="My Architecture Model" placeholder="Model name…"
            oninput="model.name = this.value">
@@ -5893,9 +5893,7 @@ function applyMode() {
   // Header controls
   document.getElementById('archimate-header-controls').style.display = isArchi ? 'flex' : 'none';
   document.getElementById('swimlane-header-controls').style.display  = isArchi ? 'none' : 'flex';
-  // Model name input
-  const mn = document.getElementById('modelName');
-  if (mn) mn.style.display = isArchi ? '' : 'none';
+  // Model name input — always visible (shared across both modes)
   // Doc bar & stats bar
   document.getElementById('archimate-doc-bar').style.display  = isArchi ? '' : 'none';
   document.getElementById('archimate-stats-bar').style.display = isArchi ? '' : 'none';
