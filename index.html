@@ -10220,7 +10220,14 @@ function _onProcDragEnd(e) {
   if (drag && _procDragMoved) _snapshot();
   drag?.ring?.remove();
 
-  if (!_procDragMoved || !drag) return; // was a click, not a drag — do nothing
+  if (!_procDragMoved || !drag) {
+    // Was a click, not a drag — restore opacity of dimmed step
+    if (drag?.type === 'step') {
+      const origEl = document.querySelector(`#proc-svg-inner [data-step-id="${drag.id}"]`);
+      if (origEl) origEl.removeAttribute('opacity');
+    }
+    return;
+  }
 
   const proc = getActiveProc(); if (!proc) return;
   const NL   = currentLang === 'nl';
