@@ -2754,6 +2754,10 @@ function applyTranslations() {
   ['btn-narrative-arch-lbl','btn-narrative-sw-lbl'].forEach(id => {
     const el = document.getElementById(id); if (el) el.textContent = L === 'nl' ? 'Narratief' : 'Narrative';
   });
+  // Platform menu items
+  ['btn-platform-arch-lbl','btn-platform-sw-lbl'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.textContent = L === 'nl' ? 'Platform inrichten…' : 'Configure Platform…';
+  });
   // Mode switcher button tooltips
   const btnArchi = document.getElementById('mode-btn-archimate');
   if (btnArchi) btnArchi.title = L === 'nl' ? 'ArchiMate modelleren' : 'ArchiMate modelling';
