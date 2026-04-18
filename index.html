@@ -6347,6 +6347,7 @@ const _CV_TYPE_ASPECT = (() => {
 function cvSmartLayout() {
   if (!model.elements.length) return;
   if (typeof dagre === 'undefined') { showAlert('Dagre library not loaded — check your connection.'); return; }
+  _snapshot(); // allow undo of layout change
 
   const {EW, EH, OX, OY, LG} = CV;
   const HPAD = 44, VPAD = 32;
