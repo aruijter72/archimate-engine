@@ -9767,6 +9767,203 @@ function _updateUndoUI() {
   });
 }
 
+// ══════════════════════════════════════════════════════════════
+// MULTI-SELECT + COPY/PASTE
+// ══════════════════════════════════════════════════════════════
+let _selectedElemIds = new Set();
+let _clipboard = { elements: [], relationships: [] };
+
+function _elemRowClick(id, ev) {
+  if (ev.target.tagName === 'INPUT' || ev.target.tagName === 'TEXTAREA' ||
+      ev.target.tagName === 'SELECT' || ev.target.closest('button')) return;
+  if (ev.shiftKey) {
+    _rangeSelectTo(id);
+  } else {
+    if (_selectedElemIds.has(id)) _selectedElemIds.delete(id);
+    else _selectedElemIds.add(id);
+  }
+  _renderSelBar();
+  const row = document.querySelector(`tr[data-elem-id="${id}"]`);
+  if (row) row.classList.toggle('elem-row-sel', _selectedElemIds.has(id));
+}
+
+function _rangeSelectTo(toId) {
+  const rows = [...document.querySelectorAll('tr[data-elem-id]')];
+  const ids  = rows.map(r => r.dataset.elemId);
+  const last = [..._selectedElemIds].pop();
+  if (!last) { _selectedElemIds.add(toId); return; }
+  const fi = ids.indexOf(last), ti = ids.indexOf(toId);
+  if (fi === -1 || ti === -1) { _selectedElemIds.add(toId); return; }
+  const [s, e] = fi < ti ? [fi, ti] : [ti, fi];
+  for (let i = s; i <= e; i++) _selectedElemIds.add(ids[i]);
+  document.querySelectorAll('tr[data-elem-id]').forEach(r => {
+    r.classList.toggle('elem-row-sel', _selectedElemIds.has(r.dataset.elemId));
+  });
+}
+
+function _renderSelBar() {
+  const bar  = document.getElementById('sel-bar');
+  const cnt  = document.getElementById('sel-bar-count');
+  const paste= document.getElementById('sel-bar-paste-btn');
+  if (!bar) return;
+  const n = _selectedElemIds.size;
+  bar.classList.toggle('active', n > 0 || _clipboard.elements.length > 0);
+  if (cnt) {
+    const NL = currentLang === 'nl';
+    cnt.textContent = n > 0 ? (NL ? `${n} geselecteerd` : `${n} selected`) : '';
+    cnt.style.display = n > 0 ? '' : 'none';
+  }
+  if (paste) paste.style.display = _clipboard.elements.length ? '' : 'none';
+  // Only show bar if something is selected or clipboard has content
+  bar.classList.toggle('active', n > 0 || _clipboard.elements.length > 0);
+}
+
+function _clearSelection() {
+  _selectedElemIds.clear();
+  document.querySelectorAll('tr.elem-row-sel').forEach(r => r.classList.remove('elem-row-sel'));
+  _renderSelBar();
+}
+
+function copySelected() {
+  if (!_selectedElemIds.size) return;
+  const NL   = currentLang === 'nl';
+  const elems = model.elements.filter(e => _selectedElemIds.has(e.id));
+  const rels  = model.relationships.filter(r =>
+    _selectedElemIds.has(r.sourceId) && _selectedElemIds.has(r.targetId));
+  _clipboard = { elements: JSON.parse(JSON.stringify(elems)), relationships: JSON.parse(JSON.stringify(rels)) };
+  _renderSelBar();
+  showToast(NL
+    ? `📋 ${elems.length} element${elems.length !== 1 ? 'en' : ''} gekopieerd`
+    : `📋 ${elems.length} element${elems.length !== 1 ? 's' : ''} copied`, 'proc');
+}
+
+function pasteElements() {
+  if (!_clipboard.elements.length) return;
+  const NL   = currentLang === 'nl';
+  _snapshot();
+  const idMap = {};
+  _clipboard.elements.forEach(e => {
+    const newId  = genId();
+    idMap[e.id]  = newId;
+    const newEl  = { ...JSON.parse(JSON.stringify(e)), id: newId };
+    if (newEl.name) newEl.name += NL ? ' (kopie)' : ' (copy)';
+    model.elements.push(newEl);
+  });
+  _clipboard.relationships.forEach(r => {
+    model.relationships.push({ ...JSON.parse(JSON.stringify(r)), id: genId(),
+      sourceId: idMap[r.sourceId], targetId: idMap[r.targetId] });
+  });
+  renderAll(); updateStats();
+  const n = _clipboard.elements.length;
+  showToast(NL ? `📋 ${n} element${n !== 1 ? 'en' : ''} geplakt` : `📋 ${n} element${n !== 1 ? 's' : ''} pasted`, 'proc');
+}
+
+function deleteSelected() {
+  if (!_selectedElemIds.size) return;
+  const NL = currentLang === 'nl';
+  _snapshot();
+  const n = _selectedElemIds.size;
+  _selectedElemIds.forEach(id => {
+    model.elements     = model.elements.filter(e => e.id !== id);
+    model.relationships= model.relationships.filter(r => r.sourceId !== id && r.targetId !== id);
+  });
+  _clearSelection();
+  renderAll(); updateStats();
+  showToast(NL ? `🗑 ${n} element${n !== 1 ? 'en' : ''} verwijderd` : `🗑 ${n} element${n !== 1 ? 's' : ''} deleted`, 'proc');
+}
+
+// ══════════════════════════════════════════════════════════════
+// IMPACT ANALYSIS
+// ══════════════════════════════════════════════════════════════
+let _impactActiveId = null;
+
+function showImpactPanel(id) {
+  const NL  = currentLang === 'nl';
+  const el  = model.elements.find(e => e.id === id);
+  if (!el) return;
+  _impactActiveId = id;
+
+  const rels       = model.relationships;
+  const outgoingIds= rels.filter(r => r.sourceId === id).map(r => r.targetId);
+  const incomingIds= rels.filter(r => r.targetId === id).map(r => r.sourceId);
+  const allIds     = new Set([...outgoingIds, ...incomingIds]);
+
+  // Highlight connected rows
+  document.querySelectorAll('tr[data-elem-id]').forEach(r => {
+    const rid = r.dataset.elemId;
+    r.classList.remove('elem-row-impact-hi','elem-row-impact-dim');
+    if (rid === id) r.classList.add('elem-row-impact-hi');
+    else if (allIds.has(rid)) r.classList.add('elem-row-impact-hi');
+    else r.classList.add('elem-row-impact-dim');
+  });
+
+  // Build panel content
+  const nameEl  = document.getElementById('impact-panel-name');
+  const bodyEl  = document.getElementById('impact-panel-body');
+  if (nameEl) nameEl.textContent = el.name || el.type;
+
+  const fmt = (ids, relType) => ids.map(eid => {
+    const e2  = model.elements.find(e => e.id === eid);
+    const rel = rels.find(r =>
+      (r.sourceId === id && r.targetId === eid) ||
+      (r.targetId === id && r.sourceId === eid));
+    const relLabel = rel ? rel.type.replace(/Relationship$/,'') : '';
+    return `<div class="impact-panel-item">→ ${esc(e2?.name || e2?.type || eid)} <span style="font-size:.65rem;color:var(--text2)">${relLabel}</span></div>`;
+  }).join('') || `<div class="impact-panel-item" style="opacity:.45">${NL ? 'Geen' : 'None'}</div>`;
+
+  if (bodyEl) bodyEl.innerHTML = `
+    <div class="impact-panel-section">${NL ? 'Gebruikt door' : 'Used by'} (${incomingIds.length})</div>
+    ${fmt(incomingIds)}
+    <div class="impact-panel-section">${NL ? 'Gebruikt' : 'Uses'} (${outgoingIds.length})</div>
+    ${fmt(outgoingIds)}`;
+
+  const panel = document.getElementById('impact-panel');
+  if (panel) panel.classList.add('active');
+}
+
+function closeImpactPanel() {
+  _impactActiveId = null;
+  document.getElementById('impact-panel')?.classList.remove('active');
+  document.querySelectorAll('tr[data-elem-id]').forEach(r => {
+    r.classList.remove('elem-row-impact-hi','elem-row-impact-dim');
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// NAMED VIEW FILTER
+// ══════════════════════════════════════════════════════════════
+let _activeViewFilter = null; // view id, or null = show all
+
+function setViewFilter(viewId) {
+  _activeViewFilter = viewId;
+  renderAll();
+  // Show/hide filter bar
+  _renderViewFilterBar();
+}
+
+function clearViewFilter() {
+  _activeViewFilter = null;
+  renderAll();
+  _renderViewFilterBar();
+}
+
+function _renderViewFilterBar() {
+  const existing = document.getElementById('view-filter-bar');
+  if (existing) existing.remove();
+  if (!_activeViewFilter) return;
+  const view = (model.views || []).find(v => v.id === _activeViewFilter);
+  if (!view) return;
+  const NL  = currentLang === 'nl';
+  const bar = document.createElement('div');
+  bar.id    = 'view-filter-bar';
+  bar.className = 'view-filter-bar';
+  bar.innerHTML = `<span class="view-filter-label">📐 ${NL ? 'Weergave' : 'View'}:</span>
+    <span class="view-filter-name">${esc(view.name)}</span>
+    <button class="view-filter-clear" onclick="clearViewFilter()">✕ ${NL ? 'Alles tonen' : 'Show all'}</button>`;
+  const tabNav = document.getElementById('archimate-tab-nav');
+  if (tabNav) tabNav.insertAdjacentElement('afterend', bar);
+}
+
 // Convert pointer event → SVG coordinate, accounting for CSS zoom
 function _procSvgPt(e) {
   const inner = document.getElementById('proc-svg-inner');
