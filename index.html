@@ -1864,6 +1864,17 @@
   </div>
 </div>
 
+<!-- ── About Modal ───────────────────────────────────────────── -->
+<div id="aboutModal" class="modal-overlay" onclick="if(event.target===this)hideAbout()" style="z-index:2300">
+  <div class="modal-box" style="max-width:760px;max-height:88vh;overflow-y:auto">
+    <div class="modal-header">
+      <div class="modal-title">✦ About Architise</div>
+      <button class="modal-close" onclick="hideAbout()">×</button>
+    </div>
+    <div id="about-modal-body"></div>
+  </div>
+</div>
+
 <!-- ── Help Modal (global, works in both modes) ──────────────── -->
 <div id="helpModal" class="modal-overlay" onclick="if(event.target===this)hideHelpModal()" style="z-index:2200;align-items:stretch;padding:0">
   <div class="modal-box" style="max-width:100%;width:100%;height:100vh;max-height:100vh;border-radius:0;overflow-y:auto;margin:0">
@@ -1909,7 +1920,16 @@
            oninput="model.name = this.value">
   </div>
   <button class="search-trigger" id="btn-search-global" onclick="showSearch()" title="Search elements (⌘K / Ctrl+K)">🔍</button>
-  <button class="search-trigger" id="btn-help-global" onclick="showHelp()" title="Help &amp; About" style="font-size:1rem;font-weight:700">?</button>
+  <div class="menu-item" id="menu-help-item" style="position:relative">
+    <button class="menu-trigger" id="menu-help-btn" id="btn-help-global" onclick="toggleMenu('help')" style="font-size:.85rem;padding:.32rem .7rem">
+      ❓ <span style="font-size:.62rem;opacity:.65">▾</span>
+    </button>
+    <div class="menu-dropdown" id="menu-help-dd" style="right:0;left:auto;min-width:180px">
+      <button class="mi-btn" onclick="showHelp();closeMenus()">📖 Architise Help</button>
+      <div class="mi-sep"></div>
+      <button class="mi-btn" onclick="showAbout();closeMenus()">✦ About Architise</button>
+    </div>
+  </div>
   <button class="search-trigger" id="btn-settings" onclick="showSettings()" title="Settings (AI provider &amp; API keys)" style="font-size:1.1rem">⚙</button>
   <div class="lang-toggle">
     <button class="lang-btn" data-lang="nl" onclick="setLanguage('nl')">NL</button>
