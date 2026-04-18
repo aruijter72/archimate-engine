@@ -2076,6 +2076,22 @@
 <input type="file" id="procLoadFile" accept=".json,.swimlane.json" style="display:none" onchange="handleLoadProcFile(event)">
 <input type="file" id="importDrawioFile" accept=".xml,.drawio" style="display:none" onchange="handleImportDrawio(event)">
 
+<!-- ── Multi-select action bar ──────────────────────────────── -->
+<div id="sel-bar" class="sel-bar">
+  <span id="sel-bar-count" class="sel-bar-count">0 selected</span>
+  <button class="sel-bar-btn" onclick="copySelected()" title="Copy (Ctrl+C)">📋 Copy</button>
+  <button class="sel-bar-btn" onclick="pasteElements()" title="Paste (Ctrl+V)" id="sel-bar-paste-btn">📋 Paste</button>
+  <button class="sel-bar-btn danger" onclick="deleteSelected()" title="Delete selected">🗑 Delete</button>
+  <button class="sel-bar-btn" onclick="_clearSelection()" title="Clear selection (Esc)">✕</button>
+</div>
+
+<!-- ── Impact analysis panel ────────────────────────────────── -->
+<div id="impact-panel" class="impact-panel">
+  <button class="impact-panel-close" onclick="closeImpactPanel()">✕</button>
+  <div class="impact-panel-hd" id="impact-panel-name"></div>
+  <div id="impact-panel-body"></div>
+</div>
+
 <footer class="app-footer">
   <a href="https://arnoldruijterit.nl" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
     <img src="Logo Huisstijl geel.png" alt="Arnold Ruijter IT" class="ar-logo ar-logo-footer">
