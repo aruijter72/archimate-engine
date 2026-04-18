@@ -5409,10 +5409,7 @@ function _doRefreshSwimlane() {
     }
   });
 
-  renderProcTab();
-  // Show refresh button since this proc is arch-linked
-  const btn = document.getElementById('btn-refresh-sw-el');
-  if (btn) btn.style.display = '';
+  renderProcTab(); // renderProcTab() enables the Refresh menu item when proc._generatedFromArch is true
 
   showToast(NL
     ? `↺ Bijgewerkt: ${addedSteps} nieuw, ${updatedSteps} bijgewerkt`
