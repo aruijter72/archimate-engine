@@ -69,6 +69,7 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: .75rem 1.5rem; background: var(--surface);
       border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,.55);
       position: sticky; top: 0; z-index: 100;
       gap: 1rem;
     }
@@ -594,6 +595,8 @@
       .mode-switcher { order: 3; width: 100%; justify-content: stretch; }
       .mode-btn { flex: 1; justify-content: center; }
       #modelName { min-width: 0; width: 100%; order: 4; }
+      #swimlane-header-controls { order: 5; width: 100%; flex-wrap: wrap; }
+      #archimate-header-controls { order: 5; width: 100%; flex-wrap: wrap; }
       .tab-bar { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch;
                  scrollbar-width: none; gap: 0; }
       .tab-bar::-webkit-scrollbar { display: none; }
