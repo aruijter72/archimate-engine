@@ -1864,6 +1864,17 @@
   </div>
 </div>
 
+<!-- ── Help Modal (global, works in both modes) ──────────────── -->
+<div id="helpModal" class="modal-overlay" onclick="if(event.target===this)hideHelpModal()" style="z-index:2200">
+  <div class="modal-box" style="max-width:860px;max-height:88vh;overflow-y:auto">
+    <div class="modal-header">
+      <div class="modal-title">❓ Help &amp; About</div>
+      <button class="modal-close" onclick="hideHelpModal()">×</button>
+    </div>
+    <div id="help-modal-body"></div>
+  </div>
+</div>
+
 <!-- Floating tooltip -->
 <div id="tipPopup"></div>
 
@@ -8041,8 +8052,8 @@ const REL_RULES = {
   SpecializationRelationship: 'Any concept → same type'
 };
 
-function renderHelp() {
-  const panel = document.getElementById('tab-help');
+function renderHelp(targetId) {
+  const panel = document.getElementById(targetId || 'help-modal-body');
   const NL = currentLang === 'nl';
 
   // ── Layer descriptions ──────────────────────────────────────
