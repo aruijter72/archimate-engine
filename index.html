@@ -4926,7 +4926,7 @@ function showTab(tab) {
   if (panel) panel.classList.add('active');
   const btn = document.getElementById(`tab-btn-${tab}`);
   if (btn) btn.classList.add('active');
-  if (tab === 'help')   markWhatsNewSeen();
+  if (tab === 'help')   { showHelp(); return; } // redirect to modal
   if (tab === 'canvas') renderCanvas();
 }
 
