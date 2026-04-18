@@ -5211,7 +5211,7 @@ function generateFlowFromArch(auto) {
   // If no lane elements, create one generic lane
   if (!lanes.length) {
     const lid = genId();
-    lanes.push({ id: lid, name: NL ? 'Architectuurstroom' : 'Architecture Flow' });
+    lanes.push({ id: lid, name: NL ? 'Architecture Flow' : 'Architecture Flow' });
     laneElems.forEach(e => { newLaneIdMap[e.id] = lid; });
   }
 
@@ -5279,7 +5279,7 @@ function generateFlowFromArch(auto) {
   const nLanes = lanes.length, nSteps = steps.length, nFlows = flows.length;
   if (!auto) {
     showToast(
-      NL ? `⟳ Stroom gegenereerd: ${nLanes} banen, ${nSteps} stappen, ${nFlows} verbindingen.`
+      NL ? `⟳ Flow gegenereerd: ${nLanes} banen, ${nSteps} stappen, ${nFlows} verbindingen.`
          : `⟳ Flow generated: ${nLanes} lanes, ${nSteps} steps, ${nFlows} connections.`,
       'proc'
     );
@@ -7496,7 +7496,7 @@ const TEMPLATES = [
   },
   {
     icon:'🛒', name:'Order-to-Cash',
-    desc:{ en:'End-to-end flow from customer order intake through fulfilment and invoicing.', nl:'End-to-end stroom van klantorderinname tot levering en facturering.' },
+    desc:{ en:'End-to-end flow from customer order intake through fulfilment and invoicing.', nl:'End-to-end flow van klantorderinname tot levering en facturering.' },
     tags:['Business','Application','Technology'], togafPhase:'Phase B',
     model:{
       name:'Order-to-Cash Process',
