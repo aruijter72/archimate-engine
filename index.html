@@ -2007,6 +2007,7 @@
       <div class="menu-dropdown" id="menu-view-dd">
         <button class="mi-btn" id="btn-views-el" onclick="showViews();closeMenus()">📐 <span id="btn-views-lbl">Views…</span></button>
         <button class="mi-btn" id="btn-narrative-arch-el" onclick="showNarrative();closeMenus()">📖 <span id="btn-narrative-arch-lbl">Narrative</span></button>
+        <button class="mi-btn" id="btn-platform-arch-el" onclick="showPlatformSettings();closeMenus()">🌐 <span id="btn-platform-arch-lbl">Platform inrichten…</span></button>
       </div>
     </div>
     <input type="file" id="loadFile" accept=".json" style="display:none" onchange="handleLoadFile(event)">
@@ -5251,6 +5252,25 @@ function showAbout() {
 }
 function hideAbout() {
   document.getElementById('aboutModal').classList.remove('open');
+}
+
+// ── Platform Settings ─────────────────────────────────────────
+function showPlatformSettings() {
+  const NL = currentLang === 'nl';
+  const _t = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  _t('plat-title',       NL ? '🌐 Platform inrichten' : '🌐 Configure Platform');
+  _t('plat-sub',         NL ? 'Stel de introductietekst in voor het HTML-platform. Deze tekst verschijnt op de startpagina als uitleg voor de lezer.'
+                             : 'Set the introductory text for the HTML platform. This text appears on the home page for readers.');
+  _t('plat-intro-lbl',   NL ? 'Introductietekst voor de startpagina' : 'Home page introduction text');
+  _t('plat-hint',        NL ? 'Platte tekst. Alinea\'s worden gesplitst op lege regels.' : 'Plain text. Paragraphs are separated by blank lines.');
+  _t('plat-close-btn',   NL ? 'Sluiten' : 'Close');
+  _t('plat-export-btn',  NL ? '🌐 Platform exporteren' : '🌐 Export Platform');
+  const ta = document.getElementById('platformIntroTA');
+  if (ta) ta.value = model.platformIntro || '';
+  document.getElementById('platformModal').classList.add('open');
+}
+function hidePlatformSettings() {
+  document.getElementById('platformModal').classList.remove('open');
 }
 
 function openAsSwimlane() {
