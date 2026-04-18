@@ -6600,6 +6600,670 @@ section{margin-bottom:3rem;scroll-margin-top:1.5rem}
   URL.revokeObjectURL(url);
 }
 
+// ══════════════════════════════════════════════════════════════
+// HTML PLATFORM EXPORT  (SPA — één bestand, meerdere views)
+// ══════════════════════════════════════════════════════════════
+
+// ── Static canvas SVG (geen drag / event handlers) ───────────
+function _platformCanvasSVG(viewFilter) {
+  const elems = model.elements || [];
+  if (!elems.length) return '';
+  if (!model.elementPositions || !Object.keys(model.elementPositions).length) {
+    // Positions not yet computed — fall back to a simple grid layout
+    const tmpPos = {};
+    const {EW, EH, OX, OY, COLS, HG, VG} = CV;
+    let col = 0, row = 0, prevLayer = null;
+    let yOff = OY;
+    const byLayer = {};
+    CV.LAYERS.forEach(l => byLayer[l] = elems.filter(e => e.layer === l));
+    CV.LAYERS.forEach(lk => {
+      (byLayer[lk]||[]).forEach((e, i) => {
+        tmpPos[e.id] = { x: OX + (i % COLS) * (EW + HG), y: yOff + Math.floor(i / COLS) * (EH + VG) };
+      });
+      if ((byLayer[lk]||[]).length) {
+        const rows = Math.ceil((byLayer[lk]||[]).length / COLS);
+        yOff += rows * (EH + VG) + 60;
+      }
+    });
+    return _buildCanvasSVG(elems, tmpPos, viewFilter);
+  }
+  return _buildCanvasSVG(elems, model.elementPositions, viewFilter);
+}
+
+function _buildCanvasSVG(elems, pos, viewFilter) {
+  const {EW, EH, PAD} = CV;
+  const viewSet = viewFilter
+    ? new Set(((model.views||[]).find(v=>v.id===viewFilter)?.elementIds)||[])
+    : null;
+  const visElems = viewSet ? elems.filter(e => viewSet.has(e.id)) : elems;
+  if (!visElems.length) return '';
+  const allPos = visElems.map(e => pos[e.id]).filter(Boolean);
+  if (!allPos.length) return '';
+  const minX = Math.min(...allPos.map(p=>p.x)) - PAD;
+  const minY = Math.min(...allPos.map(p=>p.y)) - PAD - 20;
+  const maxX = Math.max(...allPos.map(p=>p.x)) + EW + PAD;
+  const maxY = Math.max(...allPos.map(p=>p.y)) + EH + PAD;
+  const vw = maxX - minX, vh = maxY - minY;
+  const e2 = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  // Layer bands
+  const layerBands = {};
+  for (const key of CV.LAYERS) {
+    const le = visElems.filter(el => el.layer === key && pos[el.id]);
+    if (!le.length) continue;
+    const lxs = le.map(el=>pos[el.id].x), lys = le.map(el=>pos[el.id].y);
+    layerBands[key] = {
+      x: Math.min(...lxs)-PAD/2, y: Math.min(...lys)-PAD/2-14,
+      w: Math.max(...lxs)+EW-Math.min(...lxs)+PAD,
+      h: Math.max(...lys)+EH-Math.min(...lys)+PAD+14
+    };
+  }
+
+  // Light-theme fills for the platform canvas
+  const LIGHT_FILL = {
+    business:    { elem:'#FEF9E0', band:'#FFFEF5', stroke:'#c4a820', text:'#7a5c00', lbl:'BUSINESS'    },
+    application: { elem:'#E0F4FB', band:'#F5FCFF', stroke:'#2a9dbf', text:'#0a5070', lbl:'APPLICATION' },
+    technology:  { elem:'#E2F9EC', band:'#F4FFF8', stroke:'#28a060', text:'#1a5c38', lbl:'TECHNOLOGY'  },
+    motivation:  { elem:'#EFE8FC', band:'#FAF6FF', stroke:'#8a5cd8', text:'#4a2090', lbl:'MOTIVATION'  },
+    strategy:    { elem:'#FEF0D8', band:'#FFFDF5', stroke:'#c4880a', text:'#7a4800', lbl:'STRATEGY'    },
+  };
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${minX} ${minY} ${vw} ${vh}" style="width:100%;display:block;background:#fff;border-radius:8px">
+  <defs>
+    <marker id="pca-fill" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="rgba(100,110,140,0.65)"/></marker>
+    <marker id="pca-open" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polyline points="0 0,8 3,0 6" fill="none" stroke="rgba(100,110,140,0.65)" stroke-width="1.3"/></marker>
+    <marker id="pca-tri"  markerWidth="8" markerHeight="7" refX="0" refY="3.5" orient="auto"><polygon points="8 0,0 3.5,8 7" fill="none" stroke="rgba(100,110,140,0.65)" stroke-width="1.2"/></marker>
+    <marker id="pca-dot"  markerWidth="6" markerHeight="6" refX="0" refY="3" orient="auto"><circle cx="3" cy="3" r="2.5" fill="rgba(100,110,140,0.65)"/></marker>
+    <marker id="pca-dia-o" markerWidth="11" markerHeight="7" refX="0" refY="3.5" orient="auto"><polygon points="0 3.5,5 0,10 3.5,5 7" fill="none" stroke="rgba(100,110,140,0.6)" stroke-width="1.1"/></marker>
+    <marker id="pca-dia-f" markerWidth="11" markerHeight="7" refX="0" refY="3.5" orient="auto"><polygon points="0 3.5,5 0,10 3.5,5 7" fill="rgba(100,110,140,0.6)"/></marker>
+  </defs>`;
+
+  // Band backgrounds
+  svg += `<rect x="${minX}" y="${minY}" width="${vw}" height="${vh}" fill="#f8f9fc"/>`;
+  for (const [key, b] of Object.entries(layerBands)) {
+    const f = LIGHT_FILL[key] || LIGHT_FILL.business;
+    svg += `<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" fill="${f.band}" stroke="${f.stroke}" stroke-opacity="0.3" stroke-width="1" rx="6"/>`;
+    svg += `<text x="${b.x+10}" y="${b.y+12}" font-size="8" font-weight="800" letter-spacing="0.1em" fill="${f.text}" fill-opacity="0.6" font-family="Catamaran,system-ui">${f.lbl}</text>`;
+  }
+
+  // Relationships (light style, no markers on id refs)
+  const PC_REL = {
+    AssociationRelationship:   ['5 4',1.2,'pca-open',0.35,null],
+    RealizationRelationship:   ['7 3',1.4,'pca-open',0.5,null],
+    AssignmentRelationship:    ['',1.5,'pca-fill',0.55,'pca-dot'],
+    AggregationRelationship:   ['',1.5,null,0.5,'pca-dia-o'],
+    CompositionRelationship:   ['',1.5,null,0.55,'pca-dia-f'],
+    ServingRelationship:       ['',1.5,'pca-open',0.55,null],
+    AccessRelationship:        ['3 3',1.2,'pca-open',0.4,null],
+    InfluenceRelationship:     ['7 3',1.2,'pca-open',0.4,null],
+    TriggeringRelationship:    ['',2,'pca-fill',0.65,null],
+    FlowRelationship:          ['6 3',1.8,'pca-fill',0.5,null],
+    SpecializationRelationship:['',1.5,'pca-tri',0.5,null],
+  };
+  for (const r of (model.relationships||[])) {
+    if (!r.sourceId || !r.targetId) continue;
+    const sp = pos[r.sourceId], tp = pos[r.targetId]; if (!sp||!tp) continue;
+    if (viewSet && (!viewSet.has(r.sourceId) || !viewSet.has(r.targetId))) continue;
+    const [dash,sw,mEnd,op,mStart] = PC_REL[r.type] || ['',1.5,'pca-fill',0.45,null];
+    const stroke = `rgba(100,110,140,${op})`;
+    const path = _cvElbowPath(sp.x,sp.y,EW,EH,tp.x,tp.y,EW,EH,mEnd,mStart);
+    svg += `<path d="${path}" fill="none" stroke="${stroke}" stroke-width="${sw}"${dash?` stroke-dasharray="${dash}"`:''}${mEnd?` marker-end="url(#${mEnd})"`:''}${mStart?` marker-start="url(#${mStart})"`:''} pointer-events="none"/>`;
+  }
+
+  // Elements
+  for (const el of visElems) {
+    const p = pos[el.id]; if (!p) continue;
+    const f = LIGHT_FILL[el.layer] || LIGHT_FILL.business;
+    const nm   = (el.name||'—').length > 21 ? (el.name||'—').slice(0,20)+'…' : (el.name||'—');
+    const tp   = (TYPE_LABELS[el.type]||el.type).length>25?(TYPE_LABELS[el.type]||el.type).slice(0,24)+'…':(TYPE_LABELS[el.type]||el.type);
+    svg += `<g transform="translate(${p.x},${p.y})">
+      <rect width="${EW}" height="${EH}" rx="4" fill="${f.elem}" stroke="${f.stroke}" stroke-width="1.3"/>
+      <text x="${EW/2}" y="17" text-anchor="middle" font-size="8" font-weight="700" letter-spacing="0.04em" fill="${f.text}" fill-opacity="0.75" font-family="Catamaran,system-ui">${e2(tp)}</text>
+      <line x1="10" x2="${EW-10}" y1="22" y2="22" stroke="${f.stroke}" stroke-opacity="0.3" stroke-width="0.8"/>
+      <text x="${EW/2}" y="39" text-anchor="middle" font-size="11" font-weight="600" fill="${f.text}" font-family="Catamaran,system-ui">${e2(nm)}</text>
+    </g>`;
+  }
+  svg += `</svg>`;
+  return svg;
+}
+
+// ── Hoofdfunctie: genereer het HTML platform ─────────────────
+function generateHTMLPlatform() {
+  const NL  = currentLang === 'nl';
+  const e   = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const mName  = model.name || (NL ? 'Architectuurmodel' : 'Architecture Model');
+  const now    = new Date().toLocaleDateString(NL ? 'nl-NL' : 'en-GB', {year:'numeric',month:'long',day:'numeric'});
+  const elems  = model.elements     || [];
+  const rels   = model.relationships || [];
+  const procs  = (model.processes   || []).slice().sort((a,b) => (a.name||'').localeCompare(b.name||''));
+  const views  = (model.views       || []).slice().sort((a,b) => (a.name||'').localeCompare(b.name||''));
+
+  // ── Pre-render al SVGs ──
+  const canvasSVG = _platformCanvasSVG(null);
+  const procSVGs  = {};
+  for (const p of procs) procSVGs[p.id] = _reportProcSVG(p) || '';
+
+  // ── Bouw lookup maps ──
+  const elemById = {}; elems.forEach(el => elemById[el.id] = el);
+  const relTypeMap = {}; REL_TYPES.forEach(rt => relTypeMap[rt.id] = rt);
+
+  // ── Serialize data for embedding in the platform ──
+  // We embed: model (minus elementPositions for size), pre-rendered SVGs
+  const safeModel = {
+    name: model.name,
+    documentation: model.documentation || '',
+    platformIntro: model.platformIntro || '',
+    elements: elems,
+    relationships: rels,
+    views: views,
+    processes: procs
+  };
+  const modelJSON = JSON.stringify(safeModel)
+    .replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
+  const procSVGsJSON = JSON.stringify(procSVGs)
+    .replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
+
+  // ── TYPE_LABELS / REL_TYPES voor in-platform rendering ──
+  const typeLabelsJSON = JSON.stringify(TYPE_LABELS)
+    .replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
+  const relTypesJSON = JSON.stringify(REL_TYPES.map(rt => ({
+    id: rt.id, label: rt.label,
+    desc: { en: rt.desc?.en||'', nl: rt.desc?.nl||'' }
+  }))).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
+
+  const brandLine = `<span class="brand-arnold">Arnold</span> <span class="brand-ruijter">Ruijter IT</span>`;
+
+  // ── Canvas SVG voor inlining ──
+  const canvasSVGEncoded = canvasSVG
+    .replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
+
+  const doc = `<!DOCTYPE html>
+<html lang="${NL?'nl':'en'}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${e(mName)} — Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@300;400;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Catamaran',system-ui,sans-serif;background:#f4f5f7;color:#1a1f2e;font-size:15px;line-height:1.6;overflow-x:hidden}
+
+/* ── Layout ── */
+.layout{display:flex;min-height:100vh}
+.sidebar{width:240px;min-width:240px;background:#1a1f2e;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100;transition:transform .22s}
+.sidebar-brand{padding:1.2rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-brand .model-nm{font-size:.92rem;font-weight:700;color:#fff;line-height:1.35;word-break:break-word}
+.sidebar-brand .model-dt{font-size:.68rem;color:rgba(255,255,255,.38);margin-top:.2rem}
+.brand-line{font-size:.65rem;color:rgba(255,255,255,.28);margin-top:.45rem}
+.brand-arnold{font-weight:400;color:rgba(255,255,255,.5)}
+.brand-ruijter{font-weight:700;color:#C9A355}
+nav{flex:1;padding:.5rem 0 1.5rem;overflow-y:auto}
+.nav-section{padding:.6rem 1.1rem .2rem;font-size:.62rem;font-weight:800;letter-spacing:.1em;color:rgba(255,255,255,.28);text-transform:uppercase;margin-top:.3rem}
+.nav-link{display:flex;align-items:center;gap:.5rem;padding:.42rem 1.1rem;text-decoration:none;color:rgba(255,255,255,.65);font-size:.82rem;font-weight:500;cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:background .12s,color .12s;border-left:3px solid transparent}
+.nav-link:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-link.active{background:rgba(201,163,85,.1);color:#C9A355;border-left-color:#C9A355;font-weight:700}
+.nav-link.proc-link.active{background:rgba(167,138,245,.1);color:#b09af5;border-left-color:#b09af5}
+.nav-link.view-link.active{background:rgba(74,159,212,.1);color:#7adaf5;border-left-color:#7adaf5}
+.main{flex:1;margin-left:240px;min-width:0;min-height:100vh}
+.page{display:none;padding:2.5rem 3rem;max-width:1200px}
+.page.active{display:block}
+
+/* ── Top bar ── */
+.topbar{background:#fff;border-bottom:1px solid #e2e4ea;padding:.7rem 3rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:50;margin-left:0}
+.topbar-title{font-size:1rem;font-weight:700;color:#1a1f2e;flex:1}
+.topbar-breadcrumb{font-size:.75rem;color:#aaa}
+
+/* ── Hero / home ── */
+.home-hero{background:linear-gradient(135deg,#1a1f2e 0%,#252d42 100%);color:#fff;border-radius:14px;padding:2.5rem 3rem;margin-bottom:2.2rem}
+.home-hero h1{font-size:2rem;font-weight:800;margin-bottom:.4rem}
+.home-hero .hero-sub{font-size:.95rem;color:rgba(255,255,255,.65);margin-bottom:1.5rem}
+.hero-stats{display:flex;gap:.8rem;flex-wrap:wrap}
+.hero-stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.4rem .9rem;font-size:.8rem;color:rgba(255,255,255,.7)}
+.hero-stat strong{color:#fff;font-weight:700}
+.intro-text{white-space:pre-wrap;font-size:.95rem;color:#444;line-height:1.7}
+.intro-box{background:#fff;border:1px solid #e2e4ea;border-left:4px solid #C9A355;border-radius:8px;padding:1.2rem 1.5rem;margin-bottom:2rem}
+
+/* ── Section headings ── */
+.section-h{font-size:1.1rem;font-weight:700;color:#1a1f2e;margin-bottom:1.1rem;padding-bottom:.4rem;border-bottom:1px solid #eef0f4;display:flex;align-items:center;gap:.5rem}
+.section-count{font-size:.72rem;color:#bbb;font-weight:600;margin-left:auto}
+section{margin-bottom:2.5rem}
+
+/* ── Layer cards on home ── */
+.layer-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:2rem}
+.layer-card{background:#fff;border:1px solid #e2e4ea;border-radius:10px;padding:1.1rem 1.2rem;cursor:pointer;transition:box-shadow .15s,border-color .15s;text-decoration:none;display:block}
+.layer-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.08);border-color:#c9a355}
+.layer-card-badge{font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:4px;letter-spacing:.05em;display:inline-block;margin-bottom:.5rem}
+.layer-card-name{font-size:.95rem;font-weight:700;color:#1a1f2e;margin-bottom:.2rem}
+.layer-card-count{font-size:.78rem;color:#aaa}
+
+/* ── Element cards ── */
+.elem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.85rem;margin-bottom:1rem}
+.elem-card{background:#fff;border:1px solid #e8eaf0;border-radius:10px;padding:.9rem 1rem}
+.elem-card-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:.4rem;margin-bottom:.3rem}
+.elem-name{font-size:.92rem;font-weight:700;color:#1a1f2e;line-height:1.3}
+.elem-type-badge{font-size:.62rem;font-weight:700;white-space:nowrap;margin-top:.12rem;text-align:right}
+.elem-doc{font-size:.82rem;color:#555;line-height:1.5;margin-top:.3rem}
+.elem-doc.empty{color:#ccc;font-style:italic}
+
+/* ── Process page ── */
+.proc-hero{background:#fff;border:1px solid #e2e4ea;border-radius:12px;padding:1.4rem 1.6rem;margin-bottom:1.5rem}
+.proc-hero-name{font-size:1.4rem;font-weight:800;color:#1a1f2e;margin-bottom:.3rem}
+.proc-hero-doc{font-size:.88rem;color:#666;line-height:1.6}
+.proc-svg-wrap{overflow-x:auto;background:#fff;border:1px solid #e2e4ea;border-radius:10px;padding:.8rem;margin-bottom:1.5rem}
+.proc-svg-wrap svg{max-width:100%;height:auto;display:block}
+.steps-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e2e4ea;font-size:.83rem;margin-bottom:1.5rem}
+.steps-table thead tr{background:#f4f5f7}
+.steps-table th{text-align:left;padding:.5rem .85rem;font-size:.72rem;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e2e4ea}
+.steps-table td{padding:.48rem .85rem;border-bottom:1px solid #f0f2f7;vertical-align:top}
+.steps-table tr:last-child td{border-bottom:none}
+.step-type-pill{display:inline-block;font-size:.68rem;font-weight:700;padding:.1rem .42rem;border-radius:4px;border:1px solid}
+.step-type-start{background:#d4edda;color:#155724;border-color:#28a745}
+.step-type-end{background:#f8d7da;color:#721c24;border-color:#dc3545}
+.step-type-task{background:#d1ecf1;color:#0c5460;border-color:#0c7a9d}
+.step-type-decision{background:#fff3cd;color:#664d03;border-color:#d4a000}
+.step-type-document{background:#e8eaf6;color:#283593;border-color:#5c6bc0}
+.step-type-label{background:#fff9e6;color:#7a5c00;border-color:#c9a355}
+
+/* ── Rel table ── */
+.rel-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e2e4ea;font-size:.83rem}
+.rel-table thead tr{background:#f4f5f7}
+.rel-table th{text-align:left;padding:.5rem .85rem;font-size:.72rem;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e2e4ea}
+.rel-table td{padding:.48rem .85rem;border-bottom:1px solid #f0f2f7;vertical-align:top}
+.rel-table tr:last-child td{border-bottom:none}
+.rel-table tbody tr:hover td{background:#fafbff}
+.rel-elem-name{font-weight:600;color:#1a1f2e}
+.rel-elem-type{font-size:.7rem;color:#aaa}
+.rel-type-badge{display:inline-block;font-size:.7rem;background:#eef0f7;border:1px solid #dde0ec;border-radius:4px;padding:.1rem .42rem;color:#555;font-weight:600}
+.rel-desc{color:#777;font-size:.78rem}
+
+/* ── View page ── */
+.view-hero{background:#fff;border:1px solid #e2e4ea;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem}
+.view-hero-name{font-size:1.3rem;font-weight:800;color:#1a1f2e}
+
+/* ── Misc ── */
+.empty-note{color:#bbb;font-style:italic;font-size:.87rem}
+.canvas-wrap{background:#fff;border:1px solid #e2e4ea;border-radius:10px;padding:1rem;overflow:auto;margin-bottom:2rem}
+.canvas-wrap svg{max-width:100%;height:auto;display:block}
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;color:#666;cursor:pointer;background:none;border:none;padding:.3rem 0;margin-bottom:1.2rem;font-family:inherit}
+.back-btn:hover{color:#1a1f2e}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.mob-open{transform:translateX(0)}
+  .main{margin-left:0}
+  .page{padding:1.5rem 1rem}
+  .home-hero{padding:1.5rem 1.2rem}
+  .topbar{padding:.7rem 1rem}
+}
+@media print{.sidebar{display:none}.main{margin-left:0}.page{padding:1rem}}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="model-nm">${e(mName)}</div>
+    <div class="model-dt">${e(now)}</div>
+    <div class="brand-line">${NL?'Gegenereerd door':'Generated by'} ${brandLine}</div>
+  </div>
+  <nav id="main-nav">
+    <a class="nav-link active" id="nav-home" onclick="showPage('home')" role="button">🏠 ${NL?'Overzicht':'Overview'}</a>
+    ${procs.length ? `<div class="nav-section">${NL?'Processen':'Processes'}</div>
+    ${procs.map(p=>`<a class="nav-link proc-link" id="nav-proc-${e(p.id)}" onclick="showPage('proc-${e(p.id)}')" role="button">⬡ ${e(p.name||(NL?'Naamloos':'Unnamed'))}</a>`).join('\n    ')}` : ''}
+    ${views.length ? `<div class="nav-section">${NL?'Views':'Views'}</div>
+    ${views.map(v=>`<a class="nav-link view-link" id="nav-view-${e(v.id)}" onclick="showPage('view-${e(v.id)}')" role="button">◈ ${e(v.name||(NL?'Naamloos':'Unnamed'))}</a>`).join('\n    ')}` : ''}
+  </nav>
+</aside>
+
+<!-- ── Main content ── -->
+<div class="main" id="main">
+
+  <!-- Topbar with breadcrumb -->
+  <div class="topbar" id="topbar">
+    <button class="back-btn" id="mob-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('mob-open')" style="margin:0;padding:.2rem .5rem;border:1px solid #e2e4ea;border-radius:6px;font-size:.85rem">☰</button>
+    <div class="topbar-title" id="topbar-title">${e(mName)}</div>
+    <div class="topbar-breadcrumb" id="topbar-bc">${NL?'Overzicht':'Overview'}</div>
+  </div>
+
+  <!-- ── HOME PAGE ── -->
+  <div class="page active" id="page-home">
+    <div class="home-hero">
+      <h1>${e(mName)}</h1>
+      <div class="hero-sub">${NL?'Architectuurplatform':'Architecture Platform'} &middot; ${e(now)}</div>
+      <div class="hero-stats">
+        <div class="hero-stat">${NL?'Elementen':'Elements'}: <strong id="hs-elems">0</strong></div>
+        <div class="hero-stat">${NL?'Relaties':'Relationships'}: <strong id="hs-rels">0</strong></div>
+        <div class="hero-stat">${NL?'Processen':'Processes'}: <strong id="hs-procs">0</strong></div>
+        <div class="hero-stat">Business: <strong id="hs-biz">0</strong></div>
+        <div class="hero-stat">Application: <strong id="hs-app">0</strong></div>
+        <div class="hero-stat">Technology: <strong id="hs-tech">0</strong></div>
+      </div>
+    </div>
+    <div id="home-intro-box"></div>
+    <section>
+      <div class="section-h">🗺 ${NL?'Architectuuroverzicht':'Architecture Overview'}</div>
+      <div class="canvas-wrap" id="home-canvas"></div>
+    </section>
+    <section>
+      <div class="section-h">📦 ${NL?'Lagen':'Layers'}</div>
+      <div class="layer-cards" id="home-layer-cards"></div>
+    </section>
+  </div>
+
+  <!-- ── PROCESS PAGES (rendered per-process by JS) ── -->
+  <div class="page" id="page-proc">
+    <button class="back-btn" onclick="showPage('home')">← ${NL?'Terug naar overzicht':'Back to overview'}</button>
+    <div class="proc-hero">
+      <div class="proc-hero-name" id="pp-name"></div>
+      <div class="proc-hero-doc" id="pp-doc"></div>
+    </div>
+    <div class="proc-svg-wrap" id="pp-svg"></div>
+    <section>
+      <div class="section-h">📋 ${NL?'Stappen':'Steps'} <span class="section-count" id="pp-step-count"></span></div>
+      <table class="steps-table" id="pp-steps-table">
+        <thead><tr>
+          <th>#</th>
+          <th>${NL?'Type':'Type'}</th>
+          <th>${NL?'Naam':'Name'}</th>
+          <th>${NL?'Lane':'Lane'}</th>
+          <th>${NL?'Documentatie':'Documentation'}</th>
+        </tr></thead>
+        <tbody id="pp-steps-body"></tbody>
+      </table>
+    </section>
+    <section id="pp-elems-section">
+      <div class="section-h">🔗 ${NL?'Betrokken ArchiMate-elementen':'Linked ArchiMate elements'} <span class="section-count" id="pp-elem-count"></span></div>
+      <div class="elem-grid" id="pp-elems-grid"></div>
+    </section>
+    <section id="pp-rels-section">
+      <div class="section-h">↔ ${NL?'Relaties':'Relationships'} <span class="section-count" id="pp-rel-count"></span></div>
+      <table class="rel-table" id="pp-rels-table">
+        <thead><tr>
+          <th>${NL?'Van':'From'}</th><th>${NL?'Relatie':'Rel.'}</th><th>${NL?'Naar':'To'}</th><th>${NL?'Betekenis':'Meaning'}</th>
+        </tr></thead>
+        <tbody id="pp-rels-body"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- ── VIEW PAGES ── -->
+  <div class="page" id="page-view">
+    <button class="back-btn" onclick="showPage('home')">← ${NL?'Terug naar overzicht':'Back to overview'}</button>
+    <div class="view-hero">
+      <div class="view-hero-name" id="vp-name"></div>
+    </div>
+    <div class="canvas-wrap" id="vp-canvas"></div>
+    <section>
+      <div class="section-h">📦 ${NL?'Elementen in deze view':'Elements in this view'} <span class="section-count" id="vp-elem-count"></span></div>
+      <div class="elem-grid" id="vp-elems-grid"></div>
+    </section>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+// ── Embedded data ──
+const NL    = ${NL};
+const MODEL = ${modelJSON};
+const PROC_SVGS  = ${procSVGsJSON};
+const CANVAS_SVG = ${JSON.stringify(canvasSVG).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026')};
+const TYPE_LABELS = ${typeLabelsJSON};
+const REL_TYPES   = ${relTypesJSON};
+
+// ── Build fast lookups ──
+const elemById   = {};  MODEL.elements.forEach(e => elemById[e.id] = e);
+const procById   = {};  MODEL.processes.forEach(p => procById[p.id] = p);
+const viewById   = {};  MODEL.views.forEach(v => viewById[v.id] = v);
+const relTypeMap = {};  REL_TYPES.forEach(rt => relTypeMap[rt.id] = rt);
+const laneById   = {};  MODEL.processes.forEach(p => (p.lanes||[]).forEach(l => laneById[l.id] = l));
+
+// ── HTML escape ──
+const he = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ── Layer config ──
+const LAYER_CFG = {
+  business:    { label: NL?'Business-laag':'Business Layer',     accent:'#2563eb', badge:'BIZ',  icon:'🏢' },
+  application: { label: NL?'Applicatielaag':'Application Layer', accent:'#16a34a', badge:'APP',  icon:'⚙️' },
+  technology:  { label: NL?'Technologielaag':'Technology Layer', accent:'#9333ea', badge:'TECH', icon:'🖥️' },
+  motivation:  { label: NL?'Motivatielaag':'Motivation Layer',   accent:'#d97706', badge:'MOT',  icon:'🎯' },
+};
+
+// ── Init home stats ──
+(function initHome() {
+  document.getElementById('hs-elems').textContent = MODEL.elements.length;
+  document.getElementById('hs-rels').textContent  = MODEL.relationships.length;
+  document.getElementById('hs-procs').textContent = MODEL.processes.length;
+  document.getElementById('hs-biz').textContent   = MODEL.elements.filter(e=>e.layer==='business').length;
+  document.getElementById('hs-app').textContent   = MODEL.elements.filter(e=>e.layer==='application').length;
+  document.getElementById('hs-tech').textContent  = MODEL.elements.filter(e=>e.layer==='technology').length;
+
+  // Canvas
+  const canvasEl = document.getElementById('home-canvas');
+  if (CANVAS_SVG) canvasEl.innerHTML = CANVAS_SVG;
+  else canvasEl.innerHTML = '<p class="empty-note" style="padding:1rem">'+(NL?'Geen canvas beschikbaar.':'No canvas available.')+'</p>';
+
+  // Intro box
+  if (MODEL.platformIntro && MODEL.platformIntro.trim()) {
+    document.getElementById('home-intro-box').innerHTML =
+      '<div class="intro-box"><p class="intro-text">'+he(MODEL.platformIntro)+'</p></div>';
+  }
+
+  // Layer cards
+  const cardWrap = document.getElementById('home-layer-cards');
+  Object.entries(LAYER_CFG).forEach(([layerId, cfg]) => {
+    const cnt = MODEL.elements.filter(e=>e.layer===layerId).length;
+    if (!cnt) return;
+    const card = document.createElement('a');
+    card.className = 'layer-card';
+    card.href = '#';
+    card.onclick = e => { e.preventDefault(); showLayerSection(layerId); };
+    card.innerHTML = '<span class="layer-card-badge" style="background:'+cfg.accent+'20;color:'+cfg.accent+';border:1px solid '+cfg.accent+'40">'+cfg.badge+'</span>'
+      + '<div class="layer-card-name">'+cfg.icon+' '+he(cfg.label)+'</div>'
+      + '<div class="layer-card-count">'+cnt+' '+(NL?'elementen':'elements')+'</div>';
+    cardWrap.appendChild(card);
+  });
+})();
+
+// ── Navigation ──
+let _currentPage = 'home';
+let _lastSection = null;
+
+function showPage(pageId) {
+  // Hide all pages
+  ['page-home','page-proc','page-view'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  });
+  // Deactivate all nav links
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+  _currentPage = pageId;
+
+  if (pageId === 'home') {
+    document.getElementById('page-home').classList.add('active');
+    const navEl = document.getElementById('nav-home');
+    if (navEl) navEl.classList.add('active');
+    document.getElementById('topbar-bc').textContent = NL?'Overzicht':'Overview';
+    document.getElementById('topbar-title').textContent = MODEL.name || '';
+    document.getElementById('main').scrollTo(0,0);
+    return;
+  }
+
+  if (pageId.startsWith('proc-')) {
+    const procId = pageId.slice(5);
+    const proc = procById[procId];
+    document.getElementById('page-proc').classList.add('active');
+    const navEl = document.getElementById('nav-proc-'+procId);
+    if (navEl) navEl.classList.add('active');
+    renderProcPage(proc);
+    document.getElementById('main').scrollTo(0,0);
+    return;
+  }
+
+  if (pageId.startsWith('view-')) {
+    const viewId = pageId.slice(5);
+    const view = viewById[viewId];
+    document.getElementById('page-view').classList.add('active');
+    const navEl = document.getElementById('nav-view-'+viewId);
+    if (navEl) navEl.classList.add('active');
+    renderViewPage(view);
+    document.getElementById('main').scrollTo(0,0);
+    return;
+  }
+}
+
+// ── Layer section (opens home, scrolls to layer ── use layer sub-page approach)
+function showLayerSection(layerId) {
+  // Build a mini view for this layer by faking a view object
+  const layerElems = MODEL.elements.filter(e => e.layer === layerId);
+  const cfg = LAYER_CFG[layerId] || {};
+  const vp = document.getElementById('vp-name');
+  if (vp) vp.textContent = (cfg.icon||'') + ' ' + (cfg.label || layerId);
+  const vCanvas = document.getElementById('vp-canvas');
+  vCanvas.innerHTML = '<p class="empty-note" style="padding:.5rem">'+(NL?'Laagdiagram niet beschikbaar in deze view.':'Layer diagram not available in this view.')+'</p>';
+  // Elements
+  const grid = document.getElementById('vp-elems-grid');
+  grid.innerHTML = layerElems.map(el => buildElemCard(el, cfg.accent||'#555')).join('');
+  document.getElementById('vp-elem-count').textContent = layerElems.length;
+  // Nav
+  ['page-home','page-proc','page-view'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-view').classList.add('active');
+  document.getElementById('topbar-bc').textContent = cfg.label || layerId;
+  document.getElementById('main').scrollTo(0,0);
+}
+
+// ── Process page renderer ──
+function renderProcPage(proc) {
+  if (!proc) return;
+  const name = proc.name || (NL?'Naamloos proces':'Unnamed Process');
+  document.getElementById('pp-name').textContent = name;
+  document.getElementById('pp-doc').textContent  = proc.documentation || (NL?'Geen documentatie.':'No documentation.');
+  document.getElementById('topbar-bc').textContent = name;
+  document.getElementById('topbar-title').textContent = MODEL.name || '';
+
+  // SVG
+  const svgWrap = document.getElementById('pp-svg');
+  svgWrap.innerHTML = PROC_SVGS[proc.id] || '<p class="empty-note" style="padding:.5rem">'+(NL?'Geen diagram beschikbaar.':'No diagram available.')+'</p>';
+
+  // Steps table
+  const tbody = document.getElementById('pp-steps-body');
+  const laneMap = {};
+  (proc.lanes||[]).forEach(l => laneMap[l.id] = l.name);
+  const steps = proc.steps || [];
+  document.getElementById('pp-step-count').textContent = steps.length;
+  tbody.innerHTML = steps.map((s,i) => {
+    const typeClass = 'step-type-'+(s.type||'task');
+    return '<tr>'
+      + '<td style="color:#aaa;font-size:.78rem">'+(i+1)+'</td>'
+      + '<td><span class="step-type-pill '+typeClass+'">'+(s.type||'task')+'</span></td>'
+      + '<td style="font-weight:600">'+he(s.label||s.type||'')+'</td>'
+      + '<td style="color:#888;font-size:.8rem">'+he(laneMap[s.laneId]||'—')+'</td>'
+      + '<td style="color:#666;font-size:.82rem">'+he(s.documentation||'')+'</td>'
+      + '</tr>';
+  }).join('');
+
+  // Linked ArchiMate elements (via sourceId on steps)
+  const linkedElemIds = new Set();
+  steps.forEach(s => { if (s.sourceId) linkedElemIds.add(s.sourceId); });
+  const linkedElems = [...linkedElemIds].map(id => elemById[id]).filter(Boolean);
+  document.getElementById('pp-elem-count').textContent = linkedElems.length;
+  const elemsGrid = document.getElementById('pp-elems-grid');
+  elemsGrid.innerHTML = linkedElems.length
+    ? linkedElems.map(el => buildElemCard(el, (LAYER_CFG[el.layer]||{}).accent||'#555')).join('')
+    : '<p class="empty-note">'+(NL?'Geen gekoppelde elementen.':'No linked elements.')+'</p>';
+
+  // Relationships involving linked elements
+  const linkedSet = new Set(linkedElemIds);
+  const procRels = MODEL.relationships.filter(r => linkedSet.has(r.sourceId) || linkedSet.has(r.targetId));
+  document.getElementById('pp-rel-count').textContent = procRels.length;
+  const rBody = document.getElementById('pp-rels-body');
+  rBody.innerHTML = procRels.length
+    ? procRels.map(rel => {
+        const src = elemById[rel.sourceId], tgt = elemById[rel.targetId];
+        if (!src || !tgt) return '';
+        const rt = relTypeMap[rel.type] || { label: rel.type, desc:{en:'',nl:''} };
+        const desc = NL ? (rt.desc?.nl||rt.desc?.en||'') : (rt.desc?.en||'');
+        return '<tr>'
+          + '<td><span class="rel-elem-name">'+he(src.name||'?')+'</span><br><span class="rel-elem-type">'+he(TYPE_LABELS[src.type]||src.type)+'</span></td>'
+          + '<td><span class="rel-type-badge">'+he(rt.label)+'</span></td>'
+          + '<td><span class="rel-elem-name">'+he(tgt.name||'?')+'</span><br><span class="rel-elem-type">'+he(TYPE_LABELS[tgt.type]||tgt.type)+'</span></td>'
+          + '<td class="rel-desc">'+he(desc)+'</td>'
+          + '</tr>';
+      }).join('')
+    : '<tr><td colspan="4" class="empty-note" style="padding:.7rem">'+(NL?'Geen relaties gevonden.':'No relationships found.')+'</td></tr>';
+}
+
+// ── View page renderer ──
+function renderViewPage(view) {
+  if (!view) return;
+  const name = view.name || (NL?'Naamloze view':'Unnamed view');
+  document.getElementById('vp-name').textContent = name;
+  document.getElementById('topbar-bc').textContent = name;
+  document.getElementById('topbar-title').textContent = MODEL.name || '';
+
+  // Canvas filtered to this view
+  // (SVG was pre-rendered without view filters; we show a note here)
+  document.getElementById('vp-canvas').innerHTML =
+    '<p class="empty-note" style="padding:.5rem">'+(NL?'View-gefilterd diagram: exporteer opnieuw na het instellen van de view in Architise.':'View-filtered diagram: re-export after configuring the view in Architise.')+'</p>';
+
+  const viewElemIds = new Set(view.elementIds || []);
+  const viewElems   = MODEL.elements.filter(e => viewElemIds.has(e.id));
+  document.getElementById('vp-elem-count').textContent = viewElems.length;
+  const grid = document.getElementById('vp-elems-grid');
+  grid.innerHTML = viewElems.length
+    ? viewElems.map(el => buildElemCard(el, (LAYER_CFG[el.layer]||{}).accent||'#555')).join('')
+    : '<p class="empty-note">'+(NL?'Geen elementen in deze view.':'No elements in this view.')+'</p>';
+}
+
+// ── Element card builder ──
+function buildElemCard(el, accent) {
+  const typeLabel = TYPE_LABELS[el.type] || el.type;
+  const doc = el.documentation || '';
+  return '<div class="elem-card">'
+    + '<div class="elem-card-hd"><span class="elem-name">'+he(el.name||'(unnamed)')+'</span>'
+    + '<span class="elem-type-badge" style="color:'+accent+'">'+he(typeLabel)+'</span></div>'
+    + (doc
+        ? '<div class="elem-doc">'+he(doc)+'</div>'
+        : '<div class="elem-doc empty">'+(NL?'Geen documentatie.':'No documentation.')+'</div>')
+    + '</div>';
+}
+
+// ── Handle URL hash for direct linking ──
+(function initRoute() {
+  const hash = location.hash.replace('#','');
+  if (hash && (hash.startsWith('proc-') || hash.startsWith('view-') || hash === 'home')) {
+    showPage(hash);
+  }
+})();
+
+// Update URL hash on navigate (optional, for bookmarking)
+const _origShowPage = showPage;
+function showPage(id) {
+  _origShowPage(id);
+  history.replaceState(null, '', '#'+id);
+}
+</script>
+</body>
+</html>`;
+
+  // ── Trigger download ──
+  const blob = new Blob([doc], {type:'text/html;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = (model.name||'platform').replace(/[^\w\s\-]/g,'').trim().replace(/\s+/g,'-').toLowerCase() + '-platform.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function applyMode() {
   const isArchi = currentMode === 'archimate';
   // Mode buttons
