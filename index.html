@@ -10839,20 +10839,26 @@ function _orphanHint(el, NL) {
 function navigateToElement(elemId) {
   const el = model.elements.find(e => e.id === elemId);
   if (!el) return;
-  showTab(el.layer);
-  setTimeout(() => {
-    // Clear any existing persistent highlights
-    document.querySelectorAll('.elem-highlight-persist').forEach(r => r.classList.remove('elem-highlight-persist'));
-    const row = document.querySelector(`tr[data-elem-id="${elemId}"]`);
-    if (row) {
-      row.scrollIntoView({ behavior:'smooth', block:'center' });
-      row.classList.add('elem-highlight-persist');
-      // Remove on next user interaction with that row
-      const clear = () => { row.classList.remove('elem-highlight-persist'); row.removeEventListener('click', clear); row.removeEventListener('focusin', clear); };
-      row.addEventListener('click', clear);
-      row.addEventListener('focusin', clear);
-    }
-  }, 120);
+  const doNav = () => {
+    showTab(el.layer);
+    setTimeout(() => {
+      document.querySelectorAll('.elem-highlight-persist').forEach(r => r.classList.remove('elem-highlight-persist'));
+      const row = document.querySelector(`tr[data-elem-id="${elemId}"]`);
+      if (row) {
+        row.scrollIntoView({ behavior:'smooth', block:'center' });
+        row.classList.add('elem-highlight-persist');
+        const clear = () => { row.classList.remove('elem-highlight-persist'); row.removeEventListener('click', clear); row.removeEventListener('focusin', clear); };
+        row.addEventListener('click', clear);
+        row.addEventListener('focusin', clear);
+      }
+    }, 120);
+  };
+  if (currentMode !== 'archimate') {
+    switchMode('archimate');
+    setTimeout(doNav, 80); // wait for applyMode() to show ArchiMate panels
+  } else {
+    doNav();
+  }
 }
 
 document.addEventListener('keydown', ev => {
