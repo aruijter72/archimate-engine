@@ -5146,12 +5146,11 @@ function showAbout() {
     </div>
     <div style="margin-bottom:1.2rem">
       ${[
-        [NL?'Gratis':'Free','rgba(122,245,160,.12)','#7af5a0','rgba(122,245,160,.3)'],
-        [NL?'Geen installatie':'No install','rgba(74,159,212,.12)','#7adaf5','rgba(74,159,212,.3)'],
         ['ArchiMate 3','rgba(245,230,122,.1)','#d4c050','rgba(245,230,122,.3)'],
         ['Swimlane','rgba(167,138,245,.1)','#b09af5','rgba(167,138,245,.3)'],
         [NL?'Export naar Archi':'Exports to Archi','rgba(201,163,85,.1)','var(--gold)','rgba(201,163,85,.3)'],
         ['draw.io XML','rgba(255,255,255,.06)','var(--muted)','rgba(255,255,255,.12)'],
+        [NL?'Browser-gebaseerd':'Browser-based','rgba(74,159,212,.12)','#7adaf5','rgba(74,159,212,.3)'],
       ].map(([lbl,bg,col,bdr]) => `<span style="${pill};background:${bg};color:${col};border:1px solid ${bdr}">${lbl}</span>`).join('')}
     </div>
   </div>
