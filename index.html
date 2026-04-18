@@ -5068,15 +5068,15 @@ function showFlowGenModal() {
   // Pre-fill process name
   const nameInput = document.getElementById('fgm-proc-name');
   if (nameInput) {
-    const base = model.name || (NL ? 'Architectuurstroom' : 'Architecture Flow');
+    const base = model.name || (NL ? 'Architecture Flow' : 'Architecture Flow');
     nameInput.value = base + ' — ' + (NL ? 'Swimlane' : 'Swimlane');
   }
 
   if (!hasArchi) {
     showAlert(
-      NL ? 'Nog geen architectuurelementen. Voeg elementen toe in de Business-, Applicatie- of Technologielaag voordat u een stroom genereert.'
+      NL ? 'Nog geen architectuurelementen. Voeg elementen toe in de Business-, Applicatie- of Technologielaag voordat u een flow genereert.'
          : 'No architecture elements yet. Add elements in the Business, Application, or Technology layer before generating a flow.',
-      NL ? 'Stroom genereren' : 'Generate Flow'
+      NL ? 'Flow genereren' : 'Generate Flow'
     );
     return;
   }
@@ -5095,12 +5095,12 @@ function generateFlowFromArch(auto) {
   if (auto) {
     inclApp  = true;
     inclTech = false;
-    procName = model.name || (NL ? 'Gegenereerde stroom' : 'Generated Flow');
+    procName = model.name || (NL ? 'Gegenereerde Flow' : 'Generated Flow');
   } else {
     inclApp  = document.getElementById('fgm-app')?.checked  ?? true;
     inclTech = document.getElementById('fgm-tech')?.checked ?? false;
     procName = (document.getElementById('fgm-proc-name')?.value.trim())
-      || (NL ? 'Gegenereerde stroom' : 'Generated Flow');
+      || (NL ? 'Gegenereerde Flow' : 'Generated Flow');
     hideFlowGenModal();
   }
 
