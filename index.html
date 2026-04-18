@@ -9976,9 +9976,9 @@ function renderProcTab() {
     const el = document.getElementById(id);
     if (el) el.disabled = !proc;
   });
-  // Show/hide Refresh button (only for arch-generated processes)
-  const refreshBtn = document.getElementById('btn-refresh-sw-el');
-  if (refreshBtn) refreshBtn.style.display = (proc?._generatedFromArch) ? '' : 'none';
+  // Enable/disable Refresh menu item (only for arch-generated processes)
+  const refreshBtn = document.getElementById('proc-tools-refresh');
+  if (refreshBtn) refreshBtn.disabled = !(proc?._generatedFromArch);
 
   panel.innerHTML = `
     <div class="layer-intro">
