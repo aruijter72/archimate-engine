@@ -4242,6 +4242,14 @@ function renderLayer(layer) {
       const emptyKey = secName === 'Active Structure' ? 'empty-active' : secName === 'Behaviour' ? 'empty-behav' : 'empty-passive';
       html += `<div class="empty-state">${t(emptyKey)}</div>`;
     } else {
+      // Compute view-filter set for this render
+      const viewElemSet = _activeViewFilter
+        ? new Set(((model.views||[]).find(v=>v.id===_activeViewFilter)?.elementIds)||[])
+        : null;
+      // Compute connected IDs for orphan indicator
+      const connSet = new Set();
+      model.relationships.forEach(r => { connSet.add(r.sourceId); connSet.add(r.targetId); });
+
       html += `
       <table class="elem-table">
         <thead><tr>
@@ -4249,12 +4257,16 @@ function renderLayer(layer) {
           <th style="width:210px">${t('col-name')}</th>
           <th>${t('col-doc')}</th>
           <th style="width:220px">${t('col-props')}</th>
-          <th style="width:32px"></th>
+          <th style="width:56px"></th>
         </tr></thead>
         <tbody>`;
       for (const el of elems) {
+        const isSel    = _selectedElemIds.has(el.id);
+        const isOrphan = !connSet.has(el.id);
+        const notInView= viewElemSet && !viewElemSet.has(el.id);
+        const rowCls   = [isSel?'elem-row-sel':'', isOrphan?'elem-row-orphan':'', notInView?'elem-row-not-in-view':''].filter(Boolean).join(' ');
         html += `
-        <tr data-elem-id="${el.id}">
+        <tr data-elem-id="${el.id}" class="${rowCls}" onclick="_elemRowClick('${el.id}',event)">
           <td><span class="type-badge ${cc}">${TYPE_LABELS[el.type]}</span></td>
           <td>
             <input type="text" class="elem-input" data-eid="${el.id}"
@@ -4290,7 +4302,10 @@ function renderLayer(layer) {
             </div>
             <button class="btn-add-prop" onclick="addProp('${el.id}')">${t('add-prop')}</button>
           </td>
-          <td><button class="btn-del-sm" style="font-size:1.1rem" onclick="deleteElement('${el.id}')" title="Delete element">🗑</button></td>
+          <td style="display:flex;gap:.25rem;align-items:center">
+            <button class="btn-del-sm" style="font-size:.8rem;padding:.12rem .35rem" onclick="showImpactPanel('${el.id}')" title="${NL?'Impact bekijken':'Show impact'}">🔍</button>
+            <button class="btn-del-sm" style="font-size:1.1rem" onclick="deleteElement('${el.id}')" title="Delete element">🗑</button>
+          </td>
         </tr>`;
       }
       html += `</tbody></table>`;
