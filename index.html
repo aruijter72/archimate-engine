@@ -5102,6 +5102,130 @@ function hideHelpModal() {
   document.getElementById('helpModal').classList.remove('open');
 }
 
+// ══════════════════════════════════════════════════════════════
+// ABOUT MODAL
+// ══════════════════════════════════════════════════════════════
+function showAbout() {
+  const NL = currentLang === 'nl';
+  const body = document.getElementById('about-modal-body');
+  if (!body) return;
+
+  // ── shared styles ──────────────────────────────────────────
+  const sec  = 'margin:0 0 2rem;';
+  const h2   = 'font-size:1.1rem;font-weight:800;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;margin:0 0 .6rem';
+  const h3   = 'font-size:.95rem;font-weight:700;color:var(--white);margin:.9rem 0 .25rem';
+  const p    = 'font-size:.88rem;color:var(--text2);line-height:1.75;margin:0 0 .65rem';
+  const pill = 'display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.2rem .6rem;border-radius:20px;margin:.15rem .2rem .15rem 0';
+  const div  = (style, inner) => `<div style="${style}">${inner}</div>`;
+  const esc2 = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+  const pillarStyle = 'display:flex;gap:.75rem;align-items:flex-start;margin-bottom:1rem';
+  const iconStyle   = 'font-size:1.3rem;flex-shrink:0;width:2rem;text-align:center;padding-top:.1rem';
+  const pillar = (icon, title, desc) =>
+    `<div style="${pillarStyle}"><div style="${iconStyle}">${icon}</div><div><div style="${h3}">${title}</div><p style="${p};margin:0">${desc}</p></div></div>`;
+
+  body.innerHTML = `
+  <!-- ── Architise section ──────────────────────────────── -->
+  <div style="${sec}">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
+      <img src="Architise-Logo-A.png" alt="Architise" style="height:48px;width:auto;border-radius:8px" onerror="this.style.display='none'">
+      <div>
+        <div style="font-size:1.5rem;font-weight:800;color:var(--gold);letter-spacing:-.01em">Architise</div>
+        <div style="font-size:.8rem;color:var(--muted);margin-top:.1rem">${NL ? 'ArchiMate 3 en Swimlane editor — alles in één bestand' : 'ArchiMate 3 &amp; Swimlane editor — everything in one file'}</div>
+      </div>
+    </div>
+    <div style="${p}">
+      ${NL
+        ? 'Architise is ontstaan uit een simpele frustratie: goede enterprise architecture tools vereisen zware installaties, dure licenties of het aanmaken van accounts. Dat staat haaks op de manier waarop veel architecten en adviseurs werken — ad-hoc, op locatie, in overleg. Er was behoefte aan iets dat gewoon werkt, overal, direct.'
+        : 'Architise was born from a simple frustration: good enterprise architecture tools require heavy installations, expensive licences, or account sign-ups. That clashes with how many architects and advisors actually work — on-site, ad hoc, in a conversation. There was a need for something that just works, anywhere, immediately.'}
+    </div>
+    <div style="${p}">
+      ${NL
+        ? 'Het resultaat is een volledig functionele ArchiMate 3-editor én Swimlane-tool, verpakt in één HTML-bestand. Geen server, geen database, geen verbinding nodig. Open in een browser en begin.'
+        : 'The result is a fully functional ArchiMate 3 editor and Swimlane tool, packaged as a single HTML file. No server, no database, no connection required. Open it in a browser and start.'}
+    </div>
+    <div style="margin-bottom:1.2rem">
+      ${[
+        [NL?'Gratis':'Free','rgba(122,245,160,.12)','#7af5a0','rgba(122,245,160,.3)'],
+        [NL?'Geen installatie':'No install','rgba(74,159,212,.12)','#7adaf5','rgba(74,159,212,.3)'],
+        ['ArchiMate 3','rgba(245,230,122,.1)','#d4c050','rgba(245,230,122,.3)'],
+        ['Swimlane','rgba(167,138,245,.1)','#b09af5','rgba(167,138,245,.3)'],
+        [NL?'Export naar Archi':'Exports to Archi','rgba(201,163,85,.1)','var(--gold)','rgba(201,163,85,.3)'],
+        ['draw.io XML','rgba(255,255,255,.06)','var(--muted)','rgba(255,255,255,.12)'],
+      ].map(([lbl,bg,col,bdr]) => `<span style="${pill};background:${bg};color:${col};border:1px solid ${bdr}">${lbl}</span>`).join('')}
+    </div>
+  </div>
+
+  <div style="height:1px;background:var(--border);margin:0 0 1.8rem"></div>
+
+  <!-- ── Philosophy ─────────────────────────────────────── -->
+  <div style="${sec}">
+    <div style="${h2}">${NL ? 'Filosofie' : 'Philosophy'}</div>
+    ${pillar('🧅', NL?'Progressive disclosure':'Progressive disclosure',
+      NL ? 'De meest gebruikte functies zijn altijd zichtbaar. Geavanceerde opties schuilen achter menu\'s — aanwezig voor wie ze nodig heeft, onzichtbaar voor wie dat niet heeft. Architectuur hoeft niet ingewikkeld te zijn.'
+         : 'The most-used features are always visible. Advanced options live behind menus — present for those who need them, out of sight for those who don\'t. Architecture does not need to be complicated.')}
+    ${pillar('🔗', NL?'Twee werelden, één model':'Two worlds, one model',
+      NL ? 'Swimlane-diagrammen en ArchiMate-modellen leven doorgaans gescheiden. Architise verbindt ze bewust: stappen in een flow kunnen direct gekoppeld worden aan elementen in de architectuur. Zo wordt de kloof tussen proces en systeem kleiner.'
+         : 'Swimlane diagrams and ArchiMate models usually live apart. Architise deliberately connects them: steps in a flow can be linked directly to elements in the architecture. This closes the gap between process and system.')}
+    ${pillar('📦', NL?'Één bestand, volledige controle':'One file, full control',
+      NL ? 'Er is geen back-end, geen vendor lock-in, geen abonnement. Het model is van jou — als JSON exporteerbaar, als .archimate importeerbaar in Archi, als draw.io XML deelbaar met andere tools.'
+         : 'No back-end, no vendor lock-in, no subscription. Your model is yours — exportable as JSON, importable into Archi as .archimate, shareable with other tools as draw.io XML.')}
+    ${pillar('🌍', NL?'NL &amp; EN, door en voor professionals':'NL &amp; EN, by and for professionals',
+      NL ? 'Architise is tweetalig omdat architectuurwerk tweetalig is. De tool is gemaakt door een practitioner, voor practitioners.'
+         : 'Architise is bilingual because architecture work is bilingual. The tool is built by a practitioner, for practitioners.')}
+  </div>
+
+  <div style="height:1px;background:var(--border);margin:0 0 1.8rem"></div>
+
+  <!-- ── Arnold Ruijter IT ──────────────────────────────── -->
+  <div style="${sec}">
+    <div style="${h2}"><span style="font-weight:400;color:var(--white)">Arnold</span> Ruijter IT</div>
+    <div style="${p}">
+      ${NL
+        ? 'Arnold Ruijter heeft meer dan 20 jaar ervaring in complexe enterprise IT-omgevingen — van domeinarchitectuur tot strategische advisering op organisatieniveau. TOGAF gecertificeerd, met een achtergrond in SAP-integratie, enterprise architectuur en IT-leiderschap.'
+        : 'Arnold Ruijter brings over 20 years of experience in complex enterprise IT environments — from domain architecture to strategic advisory at organisational level. TOGAF certified, with a background in SAP integration, enterprise architecture and IT leadership.'}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+      ${[
+        ['✨', NL?'Transparantie boven politiek':'Transparency over politics',
+          NL?'Open, direct en eerlijk. Geen halve waarheden — iedereen weet waar hij of zij aan toe is.'
+            :'Open, direct and honest. No half-truths — everyone knows exactly where they stand.'],
+        ['🤝', NL?'Leiderschap door vertrouwen':'Leadership through trust',
+          NL?'Vertrouwen als uitgangspunt, niet als beloning. Teams die zelfstandig beslissingen nemen binnen afgesproken kaders.'
+            :'Trust as a starting point, not a reward. Teams that make their own decisions within agreed boundaries.'],
+        ['🔄', NL?'Jezelf overbodig maken':'Making yourself redundant',
+          NL?'Het doel van goed leiderschap is een team dat jou niet meer nodig heeft om te weten wat het moet doen.'
+            :'The goal of good leadership is a team that no longer needs you to know what to do.'],
+        ['⚡', NL?'Hands-on als het nodig is':'Hands-on when needed',
+          NL?'Van strategisch tot operationeel niveau — nieuwsgierigheid en betrokkenheid zijn altijd de basis geweest.'
+            :'From strategic to operational level — curiosity and hands-on involvement have always been the foundation.'],
+      ].map(([icon,title,desc]) => `
+        <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:.85rem 1rem">
+          <div style="font-size:1.1rem;margin-bottom:.35rem">${icon}</div>
+          <div style="font-size:.8rem;font-weight:700;color:var(--white);margin-bottom:.3rem">${title}</div>
+          <div style="font-size:.77rem;color:var(--muted);line-height:1.6">${desc}</div>
+        </div>`).join('')}
+    </div>
+    <div style="${p};font-style:italic;border-left:3px solid rgba(201,163,85,.4);padding-left:.9rem;margin-top:.5rem;color:var(--muted)">
+      "${NL
+        ? 'What you see is what you get — ik ben open, direct en transparant. Ik houd geen halve waarheden bij, en iedereen weet waar hij aan toe is.'
+        : 'What you see is what you get — I am open, direct, and transparent. I do not maintain half-truths, and everyone knows where they stand.'}"
+    </div>
+  </div>
+
+  <div style="height:1px;background:var(--border);margin:0 0 1.4rem"></div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
+    <div style="font-size:.75rem;color:var(--muted)">© ${new Date().getFullYear()} <span style="color:var(--white);font-weight:400">Arnold</span> <strong style="color:var(--gold)">Ruijter IT</strong> — ${NL?'Alle rechten voorbehouden':'All rights reserved'}</div>
+    <a href="https://arnoldruijterit.nl" target="_blank" rel="noopener" style="font-size:.75rem;color:var(--gold);text-decoration:none">arnoldruijterit.nl ↗</a>
+  </div>`;
+
+  document.getElementById('aboutModal').classList.add('open');
+}
+function hideAbout() {
+  document.getElementById('aboutModal').classList.remove('open');
+}
+
 function openAsSwimlane() {
   const NL = currentLang === 'nl';
   // Collect Business Actors and Business Roles as lane candidates
