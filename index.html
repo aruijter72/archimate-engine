@@ -10400,8 +10400,12 @@ function renderProcTab() {
                         <input type="color" class="step-color-btn" value="${s.color||'#cccccc'}"
                           title="${NL?'Klik om stapkleur in te stellen':'Click to set step colour'}"
                           oninput="updateStepField('${s.id}','color',this.value)"
+                          onchange="renderProcTab()"
                           style="opacity:${s.color?'1':'.45'}">
-                        ${s.color ? `<button class="btn-del-sm" style="font-size:.8rem;padding:.1rem .28rem;color:var(--muted)" onclick="updateStepField('${s.id}','color',null);renderProcTab()" title="${NL?'Kleur verwijderen':'Remove colour'}">↺</button>` : ''}
+                        <button class="btn-del-sm" style="font-size:.8rem;padding:.1rem .28rem;${s.color?'color:var(--gold)':'color:var(--muted);opacity:.4;pointer-events:none'}"
+                          onclick="updateStepField('${s.id}','color',null);renderProcTab()"
+                          title="${NL?'Kleur verwijderen':'Remove colour'}"
+                          ${s.color?'':'disabled'}>↺</button>
                         <button class="btn-del-sm" title="${NL?'Stap verwijderen':'Delete step'}" onclick="deleteStep('${s.id}')">×</button>
                       </td>
                     </tr>`).join('')}
@@ -11019,17 +11023,30 @@ function renderViewsModal() {
   const listPanel = document.getElementById('viewsListPanel');
   listPanel.innerHTML = views.length === 0
     ? `<div class="views-placeholder">${NL ? 'Nog geen views. Klik "View toevoegen".' : 'No views yet. Click "Add View".'}</div>`
-    : views.map(v => `
+    : views.map(v => {
+      const isActiveFilter = _activeViewFilter === v.id;
+      const filterBtnStyle = isActiveFilter
+        ? 'font-size:.7rem;padding:.18rem .55rem;margin-left:auto;background:rgba(201,163,85,.18);color:var(--gold);border-color:rgba(201,163,85,.6);font-weight:700'
+        : 'font-size:.7rem;padding:.18rem .55rem;margin-left:auto';
+      const filterBtnLabel = isActiveFilter
+        ? '✓ ' + (NL ? 'Actief — klik om te wissen' : 'Active — click to clear')
+        : (NL ? '🔎 Activeer filter' : '🔎 Apply filter');
+      const filterBtnAction = isActiveFilter
+        ? `event.stopPropagation();clearViewFilter();hideViews()`
+        : `event.stopPropagation();setViewFilter('${v.id}');hideViews()`;
+      return `
       <div class="view-item${v.id === _activeViewId ? ' active' : ''}" data-vid="${v.id}"
            onclick="selectViewForEdit('${v.id}')">
         <span class="view-item-name">${esc(v.name)}</span>
         <span class="view-item-count">${v.elementIds.length} ${NL?'elem.':'elem.'}</span>
-        <button class="snap-restore" style="font-size:.65rem;padding:.1rem .4rem;margin-left:auto"
-          onclick="event.stopPropagation();setViewFilter('${v.id}');hideViews()" title="${NL?'Filter lagen tot deze view':'Filter layers to this view'}">
-          ${_activeViewFilter===v.id ? '✓ '+( NL?'Actief':'Active') : (NL?'Filter':'Filter')}
+        <button class="snap-restore" style="${filterBtnStyle}"
+          onclick="${filterBtnAction}"
+          title="${NL?'Filter lagen tot deze view':'Filter layers to this view'}">
+          ${filterBtnLabel}
         </button>
         <button class="view-del" onclick="event.stopPropagation();deleteView('${v.id}')" title="${NL?'Verwijder':'Delete'}">×</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
   // Element selection panel
   const elemPanel = document.getElementById('viewsElemPanel');
