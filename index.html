@@ -10822,8 +10822,27 @@ document.addEventListener('keydown', ev => {
   }
   if ((ev.metaKey || ev.ctrlKey) && ev.key === 'z' && !ev.shiftKey && !inputFocused) { ev.preventDefault(); undo(); }
   if ((ev.metaKey || ev.ctrlKey) && (ev.key === 'y' || (ev.key === 'z' && ev.shiftKey)) && !inputFocused) { ev.preventDefault(); redo(); }
-  if (ev.key === 'Escape' && _searchOpen) closeSearch();
-  if (ev.key === 'Escape') closeHealthDrop();
+  // Multi-select shortcuts
+  if ((ev.metaKey || ev.ctrlKey) && ev.key === 'a' && !inputFocused && currentMode === 'archimate') {
+    const activeTab = document.querySelector('.tab-btn.active')?.id?.replace('tab-btn-','');
+    if (activeTab && !['relationships','canvas','help','motivation','strategy'].includes(activeTab)) {
+      ev.preventDefault();
+      model.elements.filter(e => e.layer === activeTab).forEach(e => _selectedElemIds.add(e.id));
+      _renderSelBar();
+      document.querySelectorAll('tr[data-elem-id]').forEach(r =>
+        r.classList.toggle('elem-row-sel', _selectedElemIds.has(r.dataset.elemId)));
+    }
+  }
+  if ((ev.metaKey || ev.ctrlKey) && ev.key === 'c' && !inputFocused && _selectedElemIds.size) { ev.preventDefault(); copySelected(); }
+  if ((ev.metaKey || ev.ctrlKey) && ev.key === 'v' && !inputFocused && _clipboard.elements.length) { ev.preventDefault(); pasteElements(); }
+  if ((ev.metaKey || ev.ctrlKey) && ev.key === '0') { ev.preventDefault(); if (currentMode === 'archimate') cvZoomFit(); else resetProcZoom(); }
+  // Close panels on Escape
+  if (ev.key === 'Escape') {
+    if (_searchOpen) { closeSearch(); return; }
+    if (_selectedElemIds.size) { _clearSelection(); return; }
+    if (_impactActiveId) { closeImpactPanel(); return; }
+    closeHealthDrop();
+  }
 });
 document.addEventListener('click', ev => {
   const drop = document.getElementById('healthDrop');
