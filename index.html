@@ -9676,7 +9676,13 @@ function _renderStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, STEP_C, ww, procId
   for (const s of steps) {
     const pos = sPos[s.id]; if (!pos) continue;
     const { cx, cy } = pos;
-    const c = LIGHT[s.type] || { fill:'#e8e8f0', stroke:'#888', text:'#333' };
+    let c = { ...(LIGHT[s.type] || { fill:'#e8e8f0', stroke:'#888', text:'#333' }) };
+    if (s.color) {
+      // Apply custom colour: fill = colour at 30% opacity over white, stroke = colour, text = dark
+      c.fill   = s.color + '55'; // semi-transparent fill
+      c.stroke = s.color;
+      c.text   = '#1a1a2e';
+    }
     const lbl = s.label || s.type;
     const hasInfo = !!(s.sourceId && procId);
 
