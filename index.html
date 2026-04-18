@@ -1905,6 +1905,7 @@
   </div>
   <!-- Swimlane-mode header controls -->
   <div id="swimlane-header-controls" style="display:none;align-items:center;gap:.5rem">
+    <!-- ── File menu ───────────────────────────────────────── -->
     <div class="menu-item" id="menu-proc-file-item">
       <button class="menu-trigger" id="menu-proc-file-btn" onclick="toggleMenu('proc-file')">
         📁 <span id="proc-file-btn-label">File</span> <span style="font-size:.62rem;opacity:.65">▾</span>
@@ -1921,17 +1922,34 @@
         <button class="mi-btn" id="proc-mi-svg" onclick="exportSwimlaneImage('svg');closeMenus()">🖼 <span id="proc-mi-svg-lbl">Export SVG…</span></button>
         <button class="mi-btn" id="proc-mi-png" onclick="exportSwimlaneImage('png');closeMenus()">🖼 <span id="proc-mi-png-lbl">Export PNG…</span></button>
         <div class="mi-sep"></div>
-        <button class="mi-btn" id="proc-mi-gen-arch" onclick="generateArchFromSwimlane();closeMenus()">⬡ <span id="proc-mi-gen-arch-lbl">Generate ArchiMate from Swimlane…</span></button>
-        <div class="mi-sep"></div>
         <button class="mi-btn" id="proc-mi-save-tmpl" onclick="saveAsTemplate();closeMenus()">⭐ <span id="proc-mi-save-tmpl-lbl">Save as template…</span></button>
+      </div>
+    </div>
+    <!-- ── Tools menu ──────────────────────────────────────── -->
+    <div class="menu-item" id="menu-proc-tools-item">
+      <button class="menu-trigger" id="menu-proc-tools-btn" onclick="toggleMenu('proc-tools')">
+        🔧 <span id="menu-proc-tools-label">Tools</span> <span style="font-size:.62rem;opacity:.65">▾</span>
+      </button>
+      <div class="menu-dropdown" id="menu-proc-tools-dd">
+        <button class="mi-btn" id="proc-tools-gen-flow" onclick="showFlowGenModal();closeMenus()">⟳ <span id="proc-tools-gen-flow-lbl">Generate Flow from ArchiMate…</span></button>
+        <button class="mi-btn" id="proc-tools-refresh" onclick="refreshSwimlaneFromArch();closeMenus()" disabled title="Only available when this swimlane was generated from ArchiMate">↺ <span id="proc-tools-refresh-lbl">Refresh from ArchiMate</span></button>
+        <div class="mi-sep"></div>
+        <button class="mi-btn" id="proc-tools-gen-arch" onclick="generateArchFromSwimlane();closeMenus()">⬡ <span id="proc-tools-gen-arch-lbl">Generate ArchiMate from Swimlane…</span></button>
+      </div>
+    </div>
+    <!-- ── View menu ───────────────────────────────────────── -->
+    <div class="menu-item" id="menu-proc-view-item">
+      <button class="menu-trigger" id="menu-proc-view-btn" onclick="toggleMenu('proc-view')">
+        👁 <span id="menu-proc-view-label">View</span> <span style="font-size:.62rem;opacity:.65">▾</span>
+      </button>
+      <div class="menu-dropdown" id="menu-proc-view-dd">
+        <button class="mi-btn" id="btn-narrative-sw-el" onclick="showNarrative();closeMenus()">📖 <span id="btn-narrative-sw-lbl">Narrative</span></button>
       </div>
     </div>
     <!-- ── Undo / Redo ──────────────────────────────────────── -->
     <button class="undo-btn" id="btn-undo-sw" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↩</button>
     <button class="undo-btn" id="btn-redo-sw" onclick="redo()" title="Redo (Ctrl+Y)" disabled>↪</button>
-    <button class="btn-narrative" id="btn-narrative-sw-el" onclick="showNarrative()" title="Plain-language description of your model">📖 <span id="btn-narrative-sw-lbl">Narrative</span></button>
-    <button class="btn-gen-flow" id="btn-gen-flow-el" onclick="showFlowGenModal()" title="Generate a swimlane diagram from your architecture model">⟳ <span id="btn-gen-flow-lbl">Generate Flow</span></button>
-    <button class="btn-gen-flow" id="btn-refresh-sw-el" onclick="refreshSwimlaneFromArch()" title="Merge latest ArchiMate changes into the current swimlane" style="display:none">↺ <span id="btn-refresh-sw-lbl">Refresh</span></button>
+    <!-- ── Primary action ──────────────────────────────────── -->
     <button class="btn btn-primary" id="btn-export-drawio-el" onclick="exportDrawio()">⬇ Export draw.io XML</button>
   </div>
 </header>
