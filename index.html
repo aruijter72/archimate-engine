@@ -10401,8 +10401,8 @@ function renderProcTab() {
                           title="${NL?'Klik om stapkleur in te stellen':'Click to set step colour'}"
                           oninput="updateStepField('${s.id}','color',this.value)"
                           style="opacity:${s.color?'1':'.45'}">
-                        ${s.color ? `<button class="btn-del-sm" style="font-size:.65rem;padding:.1rem .28rem" onclick="updateStepField('${s.id}','color',null);renderProcTab()" title="${NL?'Kleur verwijderen':'Remove colour'}">✕</button>` : ''}
-                        <button class="btn-del-sm" onclick="deleteStep('${s.id}')">×</button>
+                        ${s.color ? `<button class="btn-del-sm" style="font-size:.8rem;padding:.1rem .28rem;color:var(--muted)" onclick="updateStepField('${s.id}','color',null);renderProcTab()" title="${NL?'Kleur verwijderen':'Remove colour'}">↺</button>` : ''}
+                        <button class="btn-del-sm" title="${NL?'Stap verwijderen':'Delete step'}" onclick="deleteStep('${s.id}')">×</button>
                       </td>
                     </tr>`).join('')}
                 </tbody>
