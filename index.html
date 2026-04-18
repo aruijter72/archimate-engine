@@ -5063,6 +5063,16 @@ function switchMode(mode) {
   applyMode();
 }
 
+function showHelp() {
+  // Always available — switch to ArchiMate mode if needed, then open Help tab
+  if (currentMode !== 'archimate') {
+    switchMode('archimate');
+    setTimeout(() => showTab('help'), 60);
+  } else {
+    showTab('help');
+  }
+}
+
 function openAsSwimlane() {
   const NL = currentLang === 'nl';
   // Collect Business Actors and Business Roles as lane candidates
