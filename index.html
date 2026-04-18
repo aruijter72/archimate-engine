@@ -4452,6 +4452,8 @@ function renderAll() {
   renderProcTab();
   // Always refresh canvas so it stays in sync with model changes
   renderCanvas();
+  // Restore view filter bar if one is active
+  _renderViewFilterBar();
 }
 
 function updateStats() {
