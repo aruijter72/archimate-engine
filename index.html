@@ -7157,7 +7157,7 @@ function generateHTMLPlatform() {
     .filter(lk => elems.some(el => el.layer === lk))
     .map(lk =>
       `<button class="nav-link layer-link" id="nav-layer-${lk}" onclick="showPage('layer-${lk}')">` +
-      `${LICONS[lk]} <span data-en="${LEN[lk]}" data-nl="${LNL[lk]}"></span></button>`
+      `${LICONS[lk]} <span data-en="${LEN[lk]}" data-nl="${LNL[lk]}">${LEN[lk]}</span></button>`
     ).join('');
 
   // ── Home page process cards ───────────────────────────────────
