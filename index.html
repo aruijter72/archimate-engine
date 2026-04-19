@@ -7352,10 +7352,10 @@ section{margin-bottom:2rem}
     <div class="brand-line" id="sb-brand"></div>
   </div>
   <nav id="main-nav">
-    <button class="nav-link active" id="nav-home" onclick="showPage('home')">🏠 <span data-en="Home" data-nl="Home"></span></button>
-    ${procs.length ? `<div class="nav-section" data-en="Processes" data-nl="Processen"></div>${procNavHTML}` : ''}
-    ${views.length ? `<div class="nav-section" data-en="Views" data-nl="Views"></div>${viewNavHTML}` : ''}
-    ${layerNavHTML ? `<div class="nav-section" data-en="Layers" data-nl="Lagen"></div>${layerNavHTML}` : ''}
+    <button class="nav-link active" id="nav-home" onclick="showPage('home')">🏠 <span data-en="Home" data-nl="Home">Home</span></button>
+    ${procs.length ? `<div class="nav-section" data-en="Processes" data-nl="Processen">Processes</div>${procNavHTML}` : ''}
+    ${views.length ? `<div class="nav-section" data-en="Views" data-nl="Views">Views</div>${viewNavHTML}` : ''}
+    ${layerNavHTML ? `<div class="nav-section" data-en="Layers" data-nl="Lagen">Layers</div>${layerNavHTML}` : ''}
   </nav>
 </aside>
 
@@ -7382,15 +7382,15 @@ section{margin-bottom:2rem}
 
     <!-- Application Landscape (from Business Systems) -->
     <section id="home-landscape-section">
-      <div class="section-h">🗂 <span data-en="Application Landscape" data-nl="Applicatielandschap"></span></div>
+      <div class="section-h">🗂 <span data-en="Application Landscape" data-nl="Applicatielandschap">Application Landscape</span></div>
       <div class="canvas-wrap">
         <div class="canvas-toolbar">
-          <span data-en="Click a system to see related processes" data-nl="Klik op een systeem om gerelateerde processen te zien"></span>
+          <span data-en="Click a system to see related processes" data-nl="Klik op een systeem om gerelateerde processen te zien">Click a system to see related processes</span>
           <button class="cv-btn" onclick="cvZoom('home-ls-cv',-1)">−</button>
           <button class="cv-btn" onclick="cvReset('home-ls-cv')">⊡</button>
           <button class="cv-btn" onclick="cvZoom('home-ls-cv',1)">+</button>
         </div>
-        <div class="canvas-inner" id="home-ls-cv">${bsLandscapeSVG || '<p class="empty-note" style="padding:1.2rem" data-en="No systems defined yet. Add systems in Business Systems first." data-nl="Nog geen systemen gedefinieerd. Voeg systemen toe in Business Systems."></p>'}</div>
+        <div class="canvas-inner" id="home-ls-cv">${bsLandscapeSVG || '<p class="empty-note" style="padding:1.2rem" data-en="No systems defined yet. Add systems in Business Systems first." data-nl="Nog geen systemen gedefinieerd. Voeg systemen toe in Business Systems.">No systems defined yet. Add systems in Business Systems first.</p>'}</div>
       </div>
       <!-- Panel: processes linked to a clicked app -->
       <div id="app-proc-panel" style="display:none;margin-top:1.4rem">
@@ -7411,39 +7411,39 @@ section{margin-bottom:2rem}
 
   <!-- PROCESS — ARCHITECTURE PAGE -->
   <div class="page page-content" id="page-proc-archi">
-    <button class="back-btn" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
+    <button class="back-btn" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht">Back to overview</span></button>
     <div class="proc-hero">
       <div class="proc-hero-name" id="pa-name"></div>
       <div class="proc-hero-doc" id="pa-doc"></div>
       <div class="proc-hero-links">
-        <button class="proc-switch-btn" id="pa-switch-swim" onclick="switchToSwim()">🌊 <span data-en="Also view Swimlane" data-nl="Bekijk ook Swimlane"></span></button>
+        <button class="proc-switch-btn" id="pa-switch-swim" onclick="switchToSwim()">🌊 <span data-en="Also view Swimlane" data-nl="Bekijk ook Swimlane">Also view Swimlane</span></button>
       </div>
     </div>
     <section>
-      <div class="section-h"><span data-en="Linked Elements" data-nl="Gekoppelde elementen"></span><span class="section-count" id="pa-elem-count"></span></div>
+      <div class="section-h"><span data-en="Linked Elements" data-nl="Gekoppelde elementen">Linked Elements</span><span class="section-count" id="pa-elem-count"></span></div>
       <div class="elem-grid" id="pa-elems-grid"></div>
     </section>
     <section>
-      <div class="section-h"><span data-en="Relationships" data-nl="Relaties"></span><span class="section-count" id="pa-rel-count"></span></div>
+      <div class="section-h"><span data-en="Relationships" data-nl="Relaties">Relationships</span><span class="section-count" id="pa-rel-count"></span></div>
       <table class="data-table" id="pa-rels-table">
         <thead><tr>
-          <th data-en="From" data-nl="Van"></th>
-          <th data-en="Relationship" data-nl="Relatie"></th>
-          <th data-en="To" data-nl="Naar"></th>
-          <th data-en="Meaning" data-nl="Betekenis"></th>
+          <th data-en="From" data-nl="Van">From</th>
+          <th data-en="Relationship" data-nl="Relatie">Relationship</th>
+          <th data-en="To" data-nl="Naar">To</th>
+          <th data-en="Meaning" data-nl="Betekenis">Meaning</th>
         </tr></thead>
         <tbody id="pa-rels-body"></tbody>
       </table>
     </section>
     <section>
-      <div class="section-h"><span data-en="Steps" data-nl="Stappen"></span><span class="section-count" id="pa-step-count"></span></div>
+      <div class="section-h"><span data-en="Steps" data-nl="Stappen">Steps</span><span class="section-count" id="pa-step-count"></span></div>
       <table class="data-table">
         <thead><tr>
           <th>#</th>
-          <th data-en="Type" data-nl="Type"></th>
-          <th data-en="Name" data-nl="Naam"></th>
-          <th data-en="Lane" data-nl="Lane"></th>
-          <th data-en="Documentation" data-nl="Documentatie"></th>
+          <th data-en="Type" data-nl="Type">Type</th>
+          <th data-en="Name" data-nl="Naam">Name</th>
+          <th data-en="Lane" data-nl="Lane">Lane</th>
+          <th data-en="Documentation" data-nl="Documentatie">Documentation</th>
         </tr></thead>
         <tbody id="pa-steps-body"></tbody>
       </table>
@@ -7452,17 +7452,17 @@ section{margin-bottom:2rem}
 
   <!-- PROCESS — SWIMLANE PAGE -->
   <div class="page page-content" id="page-proc-swim">
-    <button class="back-btn" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
+    <button class="back-btn" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht">Back to overview</span></button>
     <div class="proc-hero">
       <div class="proc-hero-name" id="ps-name"></div>
       <div class="proc-hero-doc" id="ps-doc"></div>
       <div class="proc-hero-links">
-        <button class="proc-switch-btn" id="ps-switch-archi" onclick="switchToArchi()">🏛 <span data-en="Also view Architecture" data-nl="Bekijk ook Architectuur"></span></button>
+        <button class="proc-switch-btn" id="ps-switch-archi" onclick="switchToArchi()">🏛 <span data-en="Also view Architecture" data-nl="Bekijk ook Architectuur">Also view Architecture</span></button>
       </div>
     </div>
     <div class="canvas-wrap">
       <div class="canvas-toolbar">
-        <span data-en="Use +/− to zoom" data-nl="Gebruik +/− om te zoomen"></span>
+        <span data-en="Use +/− to zoom" data-nl="Gebruik +/− om te zoomen">Use +/− to zoom</span>
         <button class="cv-btn" onclick="cvZoom('swim-cv',-1)">−</button>
         <button class="cv-btn" onclick="cvReset('swim-cv')">⊡</button>
         <button class="cv-btn" onclick="cvZoom('swim-cv',1)">+</button>
@@ -7473,13 +7473,13 @@ section{margin-bottom:2rem}
 
   <!-- VIEW PAGE -->
   <div class="page page-content" id="page-view">
-    <button class="back-btn" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
+    <button class="back-btn" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht">Back to overview</span></button>
     <div class="view-hero"><div class="view-hero-name" id="vp-name"></div></div>
     <section>
-      <div class="section-h"><span data-en="Diagram" data-nl="Diagram"></span></div>
+      <div class="section-h"><span data-en="Diagram" data-nl="Diagram">Diagram</span></div>
       <div class="canvas-wrap">
         <div class="canvas-toolbar">
-          <span data-en="Use +/− to zoom" data-nl="Gebruik +/− om te zoomen"></span>
+          <span data-en="Use +/− to zoom" data-nl="Gebruik +/− om te zoomen">Use +/− to zoom</span>
           <button class="cv-btn" onclick="cvZoom('view-cv',-1)">−</button>
           <button class="cv-btn" onclick="cvReset('view-cv')">⊡</button>
           <button class="cv-btn" onclick="cvZoom('view-cv',1)">+</button>
@@ -7488,20 +7488,20 @@ section{margin-bottom:2rem}
       </div>
     </section>
     <section>
-      <div class="section-h"><span data-en="Elements in this view" data-nl="Elementen in deze view"></span><span class="section-count" id="vp-elem-count"></span></div>
+      <div class="section-h"><span data-en="Elements in this view" data-nl="Elementen in deze view">Elements in this view</span><span class="section-count" id="vp-elem-count"></span></div>
       <div class="elem-grid" id="vp-elems-grid"></div>
     </section>
   </div>
 
   <!-- LAYER PAGE -->
   <div class="page page-content" id="page-layer">
-    <button class="back-btn" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
+    <button class="back-btn" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht">Back to overview</span></button>
     <div class="view-hero"><div class="view-hero-name" id="lp-name"></div></div>
     <section>
-      <div class="section-h"><span data-en="Diagram" data-nl="Diagram"></span></div>
+      <div class="section-h"><span data-en="Diagram" data-nl="Diagram">Diagram</span></div>
       <div class="canvas-wrap">
         <div class="canvas-toolbar">
-          <span data-en="Use +/− to zoom" data-nl="Gebruik +/− om te zoomen"></span>
+          <span data-en="Use +/− to zoom" data-nl="Gebruik +/− om te zoomen">Use +/− to zoom</span>
           <button class="cv-btn" onclick="cvZoom('layer-cv',-1)">−</button>
           <button class="cv-btn" onclick="cvReset('layer-cv')">⊡</button>
           <button class="cv-btn" onclick="cvZoom('layer-cv',1)">+</button>
@@ -7510,7 +7510,7 @@ section{margin-bottom:2rem}
       </div>
     </section>
     <section>
-      <div class="section-h"><span data-en="Elements" data-nl="Elementen"></span><span class="section-count" id="lp-elem-count"></span></div>
+      <div class="section-h"><span data-en="Elements" data-nl="Elementen">Elements</span><span class="section-count" id="lp-elem-count"></span></div>
       <div class="elem-grid" id="lp-elems-grid"></div>
     </section>
   </div>
@@ -7827,7 +7827,7 @@ function lsAppClick(el, appId) {
           + '<div class="proc-card-name">⬡ ' + he(p.name||'…') + '</div>'
           + (doc ? '<div class="proc-card-doc">' + he(doc) + '</div>' : '')
           + '<div class="proc-card-actions">'
-          + '<button class="pca-btn" onclick="event.stopPropagation();showPage(\'proc-' + p.id + '-archi\')">🏛 <span data-en="Architecture" data-nl="Architectuur"></span></button>'
+          + '<button class="pca-btn" onclick="event.stopPropagation();showPage(\'proc-' + p.id + '-archi\')">🏛 <span data-en="Architecture" data-nl="Architectuur">Architecture</span></button>'
           + '<button class="pca-btn pca-swim" onclick="event.stopPropagation();showPage(\'proc-' + p.id + '-swim\')">🌊 Swimlane</button>'
           + '</div></div>';
       }).join('')
