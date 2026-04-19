@@ -1460,7 +1460,7 @@
 /* ══════════════════════════════════════════════════════
    BUSINESS SYSTEMS MODULE
 ══════════════════════════════════════════════════════ */
-#bs-main { display:none; height:calc(100vh - 96px); overflow:hidden; }
+#bs-main { height:calc(100vh - 96px); overflow:hidden; }
 .bs-tab-nav { display:flex; gap:0; border-bottom:2px solid #e8eaf2; background:#fff; padding:0 1.2rem; flex-shrink:0; }
 .bs-tab-btn { background:none; border:none; border-bottom:2px solid transparent; margin-bottom:-2px;
   padding:.55rem 1.1rem; font-size:.82rem; font-weight:600; color:#888; cursor:pointer;
@@ -7814,7 +7814,7 @@ function applyMode() {
   document.getElementById('archimate-tab-nav').style.display = isArchi ? '' : 'none';
   document.getElementById('archimate-main').style.display    = isArchi ? '' : 'none';
   document.getElementById('swimlane-main').style.display     = isSwim  ? '' : 'none';
-  document.getElementById('bs-main').style.display           = isBS    ? '' : 'none';
+  document.getElementById('bs-main').style.display           = isBS    ? 'block' : 'none';
   // Mode-specific init
   if (isSwim) renderProcTab();
   if (isBS)   renderBsPanel();
