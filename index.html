@@ -2311,6 +2311,7 @@
     <button class="bs-tab-btn active" id="bs-tab-btn-apps"   onclick="showBsTab('apps')">🖥 Systems</button>
     <button class="bs-tab-btn"        id="bs-tab-btn-depts"  onclick="showBsTab('depts')">🏢 Departments</button>
     <button class="bs-tab-btn"        id="bs-tab-btn-roles"  onclick="showBsTab('roles')">👤 Roles</button>
+    <button class="bs-tab-btn"        id="bs-tab-btn-procs"  onclick="showBsTab('procs')">⬡ Processes</button>
     <button class="bs-tab-btn"        id="bs-tab-btn-canvas" onclick="showBsTab('canvas')">🗺 Landscape</button>
   </div>
   <!-- Systems tab -->
@@ -2476,6 +2477,7 @@ setInterval(() => Storage.save(model), 60000);
   if (!bs.roles)         bs.roles         = [];
   if (!bs.roleRelations) bs.roleRelations = [];
   if (!bs.appRelations)  bs.appRelations  = [];
+  if (!bs.bsProcesses)   bs.bsProcesses   = [];
   if (!model.platformConfig) model.platformConfig = { defaultLang:'en', processes:{}, views:{} };
   // Sync BS catalogue to ArchiMate elements on load
   setTimeout(syncBsToArchiMate, 0);
