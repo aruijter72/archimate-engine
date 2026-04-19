@@ -1539,6 +1539,47 @@
     <p style="font-size:.82rem;color:var(--text2);margin-bottom:1.1rem;line-height:1.6" id="ob-sub">Map how your organisation works — who does what, which systems are involved, and how everything connects. No technical background needed.</p>
 
     <!-- ── Mode tiles ─────────────────────────────────────────── -->
+
+    <!-- Business Systems — foundation tile (full width) -->
+    <div class="ob-mode-tile" id="ob-tile-bs"
+         style="display:flex;align-items:center;gap:1.2rem;padding:.85rem 1.1rem;margin-bottom:.75rem;
+                background:linear-gradient(135deg,#1a1f2e 0%,#252d42 100%);border:1.5px solid #C9A355;
+                border-radius:10px;cursor:pointer"
+         onclick="closeOnboard(); switchMode('business-systems')">
+      <div style="font-size:2rem;flex-shrink:0">🗂</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.2rem">
+          <span style="font-size:.95rem;font-weight:800;color:#fff" id="ob-tile-bs-name">Business Systems</span>
+          <span style="font-size:.62rem;font-weight:800;background:#C9A355;color:#1a1f2e;
+                       padding:.1rem .45rem;border-radius:4px;letter-spacing:.04em">START HERE</span>
+        </div>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.55);margin:0;line-height:1.5" id="ob-tile-bs-desc">
+          Define your IT landscape — apps, systems, departments and roles. This becomes the foundation for every ArchiMate and Swimlane diagram you build.
+        </p>
+      </div>
+      <svg viewBox="0 0 140 70" width="140" height="70" style="flex-shrink:0;border-radius:6px;background:#f4f5f7">
+        <rect x="8"  y="8"  width="38" height="24" rx="4" fill="#fff" stroke="#C9A355" stroke-width="1.5"/>
+        <rect x="51" y="8"  width="38" height="24" rx="4" fill="#fff" stroke="#cbd0dc" stroke-width="1.2"/>
+        <rect x="94" y="8"  width="38" height="24" rx="4" fill="#fff" stroke="#cbd0dc" stroke-width="1.2"/>
+        <rect x="8"  y="38" width="38" height="24" rx="4" fill="#fff" stroke="#cbd0dc" stroke-width="1.2"/>
+        <rect x="51" y="38" width="38" height="24" rx="4" fill="#fff" stroke="#cbd0dc" stroke-width="1.2"/>
+        <rect x="94" y="38" width="38" height="24" rx="4" fill="#fff" stroke="#C9A355" stroke-width="1.5"/>
+        <text x="27" y="23" text-anchor="middle" font-size="7" font-weight="700" fill="#1a1f2e" font-family="system-ui">SAP</text>
+        <text x="70" y="23" text-anchor="middle" font-size="7" font-weight="700" fill="#888" font-family="system-ui">CRM</text>
+        <text x="113" y="23" text-anchor="middle" font-size="7" font-weight="700" fill="#888" font-family="system-ui">Azure</text>
+        <text x="27" y="53" text-anchor="middle" font-size="7" font-weight="700" fill="#888" font-family="system-ui">ERP</text>
+        <text x="70" y="53" text-anchor="middle" font-size="7" font-weight="700" fill="#888" font-family="system-ui">Portal</text>
+        <text x="113" y="53" text-anchor="middle" font-size="7" font-weight="700" fill="#1a1f2e" font-family="system-ui">Teams</text>
+        <line x1="46" y1="20" x2="51" y2="20" stroke="#C9A355" stroke-width="1" marker-end="url(#obc)"/>
+        <line x1="89" y1="20" x2="94" y2="20" stroke="#aaa" stroke-width="1" marker-end="url(#obc)"/>
+        <line x1="46" y1="50" x2="51" y2="50" stroke="#aaa" stroke-width="1" marker-end="url(#obc)"/>
+        <line x1="89" y1="50" x2="94" y2="50" stroke="#C9A355" stroke-width="1" marker-end="url(#obc)"/>
+        <line x1="27" y1="32" x2="27" y2="38" stroke="#aaa" stroke-width="1" stroke-dasharray="2,1.5"/>
+        <line x1="113" y1="32" x2="113" y2="38" stroke="#aaa" stroke-width="1" stroke-dasharray="2,1.5"/>
+        <defs><marker id="obc" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5 z" fill="#aaa"/></marker></defs>
+      </svg>
+    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem">
 
       <!-- Swimlane tile -->
