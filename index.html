@@ -8002,9 +8002,10 @@ function bsId() {
   return 'bs-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
 }
 function bsGet() {
-  if (!model.businessSystems) model.businessSystems = { orgName:'', apps:[], departments:[], roles:[], roleRelations:[], appRelations:[] };
+  if (!model.businessSystems) model.businessSystems = { orgName:'', apps:[], departments:[], roles:[], roleRelations:[], appRelations:[], bsProcesses:[] };
   const bs = model.businessSystems;
-  if (bs.orgName === undefined) bs.orgName = '';
+  if (bs.orgName     === undefined) bs.orgName     = '';
+  if (!bs.bsProcesses)              bs.bsProcesses = [];
   return bs;
 }
 function bsSetOrgName(val) {
