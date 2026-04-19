@@ -7107,6 +7107,7 @@ function generateHTMLPlatform() {
 
   // ── Pre-render SVGs ──────────────────────────────────────────
   const canvasSVG = _platformCanvasSVG(null);
+  const bsLandscapeSVG = _bsLandscapeSVG();
   const procSVGs  = {};
   for (const p of procs) procSVGs[p.id] = _reportProcSVG(p) || '';
   const layerSVGs = {};
