@@ -4651,9 +4651,10 @@ function renderLayer(layer) {
         <tbody>`;
       // Build BS datalists for types that have a BS catalogue counterpart
       const BS_DATALIST_MAP = {
-        BusinessActor:        { listId:'dl-bs-depts', src: () => bsGet().departments },
-        BusinessRole:         { listId:'dl-bs-roles', src: () => bsGet().roles },
-        ApplicationComponent: { listId:'dl-bs-apps',  src: () => bsGet().apps }
+        BusinessActor:        { listId:'dl-bs-depts',  src: () => bsGet().departments },
+        BusinessRole:         { listId:'dl-bs-roles',  src: () => bsGet().roles },
+        ApplicationComponent: { listId:'dl-bs-apps',   src: () => bsGet().apps },
+        BusinessProcess:      { listId:'dl-bs-procs',  src: () => bsGet().bsProcesses }
       };
       // Inject datalist elements (once per layer render)
       const neededLists = new Set(types.filter(tp => BS_DATALIST_MAP[tp]).map(tp => BS_DATALIST_MAP[tp].listId));
