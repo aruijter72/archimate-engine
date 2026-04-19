@@ -2298,6 +2298,15 @@
 </div>
 <!-- ── Business Systems Mode Panel ─────────────────────────── -->
 <div id="bs-main" style="display:none">
+  <!-- Organisation name bar -->
+  <div style="display:flex;align-items:center;gap:.6rem;padding:.55rem 1.1rem .45rem;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02)">
+    <label style="font-size:.65rem;font-weight:800;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;white-space:nowrap;flex-shrink:0">Organisation</label>
+    <input id="bs-org-name"
+           class="elem-input"
+           style="flex:1;font-size:.82rem;font-weight:600;padding:.22rem .55rem"
+           placeholder="e.g. Ruijter IT — appears in Visual Architise…"
+           oninput="bsSetOrgName(this.value)">
+  </div>
   <div class="bs-tab-nav">
     <button class="bs-tab-btn active" id="bs-tab-btn-apps"   onclick="showBsTab('apps')">🖥 Systems</button>
     <button class="bs-tab-btn"        id="bs-tab-btn-depts"  onclick="showBsTab('depts')">🏢 Departments</button>
