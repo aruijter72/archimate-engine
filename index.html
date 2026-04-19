@@ -7374,8 +7374,8 @@ section{margin-bottom:2rem}
   <!-- HOME PAGE -->
   <div class="page active page-content" id="page-home">
     <div class="home-hero">
-      <h1 id="hero-title">${e(mName || 'Visual Architise')}</h1>
-      <div class="hero-sub" id="hero-sub">Architecture Platform · ${nowEN}</div>
+      <h1 id="hero-title">Visual Architise</h1>
+      <div class="hero-sub" id="hero-sub">${e(mName) ? e(mName) + ' · ' : ''}${nowEN}</div>
       <div class="hero-stats" id="hero-stats">
         ${procs.length ? `<div class="hero-stat">Processes: <strong>${procs.length}</strong></div>` : ''}
         <div class="hero-stat">Elements: <strong>${elems.length}</strong></div>
