@@ -6854,33 +6854,29 @@ function generateHTMLPlatform() {
   const mName  = model.name || 'Architecture Model';
   const nowEN  = new Date().toLocaleDateString('en-GB', {year:'numeric',month:'long',day:'numeric'});
   const nowNL  = new Date().toLocaleDateString('nl-NL', {year:'numeric',month:'long',day:'numeric'});
-  const elems  = model.elements     || [];
+  const elems  = model.elements      || [];
   const rels   = model.relationships || [];
-  // Filter by platformConfig include flags (default = include)
   const allProcs = (model.processes || []).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   const allViews = (model.views     || []).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   const procs  = allProcs.filter(p => (cfg.processes[p.id]?.include) !== false);
   const views  = allViews.filter(v => (cfg.views[v.id]?.include)     !== false);
 
-  // Pre-render SVGs
+  // ── Pre-render SVGs ──────────────────────────────────────────
   const canvasSVG = _platformCanvasSVG(null);
   const procSVGs  = {};
   for (const p of procs) procSVGs[p.id] = _reportProcSVG(p) || '';
-  // Per-layer canvas SVGs
   const layerSVGs = {};
   for (const lk of ['business','application','technology','motivation','strategy']) {
     const le = elems.filter(el => el.layer === lk);
     if (le.length && model.elementPositions && Object.keys(model.elementPositions).length)
       layerSVGs[lk] = _buildCanvasSVG(le, model.elementPositions, null) || '';
   }
-  // Per-view canvas SVGs
   const viewSVGs = {};
   for (const v of views) {
     if (model.elementPositions && Object.keys(model.elementPositions).length)
       viewSVGs[v.id] = _platformCanvasSVG(v.id) || '';
   }
 
-  // Safe JSON embedding
   const J = obj => JSON.stringify(obj)
     .replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
 
@@ -6889,6 +6885,48 @@ function generateHTMLPlatform() {
     platformIntro: model.platformIntro||'',
     elements: elems, relationships: rels, views, processes: procs
   };
+
+  // ── Sidebar: process groups with sub-items ───────────────────
+  const procNavHTML = procs.map(p =>
+    `<div class="nav-proc-group" id="npg-${e(p.id)}">` +
+    `<button class="nav-link proc-link" id="nav-proc-${e(p.id)}" onclick="toggleProcNav('${e(p.id)}')">` +
+    `<span class="np-icon">⬡</span><span class="np-name">${e(p.name||'…')}</span><span class="np-arrow" id="npa-${e(p.id)}">›</span>` +
+    `</button>` +
+    `<div class="nav-sub" id="nps-${e(p.id)}">` +
+    `<button class="nav-link nav-sub-link" id="nav-proc-${e(p.id)}-archi" onclick="showPage('proc-${e(p.id)}-archi')">` +
+    `🏛 <span data-en="Architecture" data-nl="Architectuur"></span></button>` +
+    `<button class="nav-link nav-sub-link" id="nav-proc-${e(p.id)}-swim" onclick="showPage('proc-${e(p.id)}-swim')">🌊 Swimlane</button>` +
+    `</div></div>`
+  ).join('');
+
+  const viewNavHTML = views.map(v =>
+    `<button class="nav-link view-link" id="nav-view-${e(v.id)}" onclick="showPage('view-${e(v.id)}')">◈ ${e(v.name||'…')}</button>`
+  ).join('');
+
+  const layerKeys = ['business','application','technology','motivation','strategy'];
+  const LICONS = {business:'🏢',application:'⚙️',technology:'🖥️',motivation:'🎯',strategy:'♟'};
+  const LEN    = {business:'Business',application:'Application',technology:'Technology',motivation:'Motivation',strategy:'Strategy'};
+  const LNL    = {business:'Business',application:'Applicatie',technology:'Technologie',motivation:'Motivatie',strategy:'Strategie'};
+  const layerNavHTML = layerKeys
+    .filter(lk => elems.some(el => el.layer === lk))
+    .map(lk =>
+      `<button class="nav-link layer-link" id="nav-layer-${lk}" onclick="showPage('layer-${lk}')">` +
+      `${LICONS[lk]} <span data-en="${LEN[lk]}" data-nl="${LNL[lk]}"></span></button>`
+    ).join('');
+
+  // ── Home page process cards ───────────────────────────────────
+  const procCardsHTML = procs.map(p => {
+    const rawDoc = p.documentation || '';
+    const shortDoc = rawDoc.length > 140 ? rawDoc.slice(0,140) + '…' : rawDoc;
+    return `<div class="proc-card" onclick="showPage('proc-${e(p.id)}-archi')">` +
+      `<div class="proc-card-name">⬡ ${e(p.name||'…')}</div>` +
+      (shortDoc ? `<div class="proc-card-doc">${e(shortDoc)}</div>` : '') +
+      `<div class="proc-card-actions">` +
+      `<button class="pca-btn" onclick="event.stopPropagation();showPage('proc-${e(p.id)}-archi')">` +
+      `🏛 <span data-en="Architecture" data-nl="Architectuur"></span></button>` +
+      `<button class="pca-btn pca-swim" onclick="event.stopPropagation();showPage('proc-${e(p.id)}-swim')">🌊 Swimlane</button>` +
+      `</div></div>`;
+  }).join('');
 
   const doc = `<!DOCTYPE html>
 <html lang="${defLang}">
@@ -6900,114 +6938,153 @@ function generateHTMLPlatform() {
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Catamaran',system-ui,sans-serif;background:#f4f5f7;color:#1a1f2e;font-size:15px;line-height:1.6;overflow-x:hidden}
 .layout{display:flex;min-height:100vh}
-/* Sidebar */
-.sidebar{width:240px;min-width:240px;background:#1a1f2e;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100}
-.sidebar-brand{padding:1.2rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,.08)}
-.sidebar-brand .model-nm{font-size:.9rem;font-weight:700;color:#fff;line-height:1.35;word-break:break-word}
-.sidebar-brand .model-dt{font-size:.67rem;color:rgba(255,255,255,.35);margin-top:.2rem}
-.brand-line{font-size:.63rem;color:rgba(255,255,255,.25);margin-top:.4rem}
-.brand-arnold{font-weight:400;color:rgba(255,255,255,.45)}
+
+/* ── Sidebar ── */
+.sidebar{width:252px;min-width:252px;background:#1a1f2e;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100}
+.sidebar-brand{padding:1.1rem 1.1rem .9rem;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.sidebar-brand .model-nm{font-size:.85rem;font-weight:700;color:#fff;line-height:1.3;word-break:break-word}
+.sidebar-brand .model-dt{font-size:.65rem;color:rgba(255,255,255,.3);margin-top:.2rem}
+.brand-line{font-size:.6rem;color:rgba(255,255,255,.22);margin-top:.35rem}
+.brand-arnold{font-weight:400;color:rgba(255,255,255,.4)}
 .brand-ruijter{font-weight:700;color:#C9A355}
-nav{flex:1;padding:.4rem 0 2rem;overflow-y:auto}
-.nav-section{padding:.55rem 1.1rem .15rem;font-size:.6rem;font-weight:800;letter-spacing:.1em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-top:.3rem}
-.nav-link{display:flex;align-items:center;gap:.45rem;padding:.4rem 1.1rem;text-decoration:none;color:rgba(255,255,255,.6);font-size:.81rem;font-weight:500;cursor:pointer;border:none;background:none;width:100%;text-align:left;border-left:3px solid transparent;transition:background .1s,color .1s}
+nav{flex:1;padding:.3rem 0 2rem;overflow-y:auto}
+.nav-section{padding:.5rem 1rem .1rem;font-size:.58rem;font-weight:800;letter-spacing:.11em;color:rgba(255,255,255,.22);text-transform:uppercase;margin-top:.4rem}
+.nav-link{display:flex;align-items:center;gap:.4rem;padding:.38rem 1rem;text-decoration:none;color:rgba(255,255,255,.55);font-size:.79rem;font-weight:500;cursor:pointer;border:none;background:none;width:100%;text-align:left;border-left:3px solid transparent;transition:background .12s,color .12s;line-height:1.3}
 .nav-link:hover{background:rgba(255,255,255,.06);color:#fff}
-.nav-link.active{background:rgba(201,163,85,.12);color:#C9A355;border-left-color:#C9A355;font-weight:700}
-.nav-link.proc-link.active{background:rgba(167,138,245,.12);color:#b09af5;border-left-color:#b09af5}
-.nav-link.view-link.active{background:rgba(74,180,212,.1);color:#7adaf5;border-left-color:#7adaf5}
-.nav-link.layer-link.active{background:rgba(122,218,245,.08);color:#7adaf5;border-left-color:#7adaf5}
-/* Main */
-.main{flex:1;margin-left:240px;min-width:0;min-height:100vh;display:flex;flex-direction:column}
-.topbar{background:#fff;border-bottom:1px solid #e2e4ea;padding:.6rem 2rem;display:flex;align-items:center;gap:.8rem;position:sticky;top:0;z-index:50}
-.topbar-title{font-size:.92rem;font-weight:700;color:#1a1f2e;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.topbar-bc{font-size:.73rem;color:#aaa;white-space:nowrap}
-.lang-btn{font-size:.72rem;background:#f4f5f7;border:1px solid #e2e4ea;border-radius:5px;padding:.2rem .5rem;cursor:pointer;font-family:inherit;color:#555;font-weight:600}
+.nav-link.active{background:rgba(201,163,85,.13);color:#C9A355;border-left-color:#C9A355;font-weight:700}
+.nav-link.proc-link.active{background:rgba(167,138,245,.13);color:#b09af5;border-left-color:#b09af5}
+.nav-link.proc-link{justify-content:flex-start}
+.np-icon{flex-shrink:0;font-size:.8rem}
+.np-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.np-arrow{flex-shrink:0;font-size:.85rem;color:rgba(255,255,255,.25);transition:transform .18s;line-height:1}
+.nav-proc-group.open .np-arrow{transform:rotate(90deg);color:rgba(255,255,255,.5)}
+.nav-sub{display:none;padding:.1rem 0 .2rem 0}
+.nav-proc-group.open .nav-sub{display:block}
+.nav-sub-link{padding:.3rem 1rem .3rem 2.2rem;font-size:.75rem;color:rgba(255,255,255,.45);border-left:3px solid transparent}
+.nav-sub-link:hover{background:rgba(255,255,255,.05);color:#fff}
+.nav-sub-link.active{color:#C9A355;border-left-color:#C9A355;background:rgba(201,163,85,.1)}
+.view-link.active{background:rgba(74,180,212,.1);color:#7adaf5;border-left-color:#7adaf5}
+.layer-link.active{background:rgba(122,218,245,.07);color:#7adaf5;border-left-color:#7adaf5}
+
+/* ── Main ── */
+.main{flex:1;margin-left:252px;min-width:0;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:#fff;border-bottom:1px solid #e2e4ea;padding:.55rem 1.8rem;display:flex;align-items:center;gap:.7rem;position:sticky;top:0;z-index:50;flex-shrink:0}
+.topbar-title{font-size:.88rem;font-weight:700;color:#1a1f2e;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-bc{font-size:.72rem;color:#bbb;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+.lang-btn{font-size:.7rem;background:#f4f5f7;border:1px solid #e2e4ea;border-radius:5px;padding:.18rem .5rem;cursor:pointer;font-family:inherit;color:#555;font-weight:700;transition:background .1s}
 .lang-btn.active{background:#1a1f2e;color:#C9A355;border-color:#1a1f2e}
-.mob-menu-btn{display:none;background:none;border:1px solid #e2e4ea;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.9rem}
-.page-content{padding:2.2rem 2.8rem;max-width:1200px}
-/* Pages */
+.mob-menu-btn{display:none;background:none;border:1px solid #e2e4ea;border-radius:6px;padding:.2rem .55rem;cursor:pointer;font-size:.9rem}
+.page-content{padding:2rem 2.6rem 3rem;max-width:1180px;width:100%}
+
+/* ── Pages ── */
 .page{display:none}.page.active{display:block}
-/* Hero */
-.home-hero{background:linear-gradient(135deg,#1a1f2e 0%,#252d42 100%);color:#fff;border-radius:14px;padding:2.2rem 2.6rem;margin-bottom:2rem}
-.home-hero h1{font-size:1.85rem;font-weight:800;margin-bottom:.3rem}
-.hero-sub{font-size:.88rem;color:rgba(255,255,255,.55);margin-bottom:1.3rem}
-.hero-stats{display:flex;gap:.7rem;flex-wrap:wrap}
-.hero-stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:.32rem .8rem;font-size:.78rem;color:rgba(255,255,255,.65)}
+
+/* ── Hero ── */
+.home-hero{background:linear-gradient(135deg,#1a1f2e 0%,#252d42 100%);color:#fff;border-radius:14px;padding:2rem 2.4rem;margin-bottom:1.8rem}
+.home-hero h1{font-size:1.75rem;font-weight:800;margin-bottom:.25rem}
+.hero-sub{font-size:.86rem;color:rgba(255,255,255,.5);margin-bottom:1.2rem}
+.hero-stats{display:flex;gap:.6rem;flex-wrap:wrap}
+.hero-stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:.28rem .75rem;font-size:.76rem;color:rgba(255,255,255,.6)}
 .hero-stat strong{color:#fff;font-weight:700}
-.intro-box{background:#fff;border:1px solid #e2e4ea;border-left:4px solid #C9A355;border-radius:8px;padding:1.1rem 1.4rem;margin-bottom:1.8rem}
-.intro-text{white-space:pre-wrap;font-size:.92rem;color:#444;line-height:1.7}
-/* Sections */
-.section-h{font-size:1.05rem;font-weight:700;color:#1a1f2e;margin-bottom:1rem;padding-bottom:.35rem;border-bottom:1px solid #eef0f4;display:flex;align-items:center;gap:.5rem}
-.section-count{font-size:.7rem;color:#bbb;font-weight:600;margin-left:auto}
-section{margin-bottom:2.2rem}
-/* Layer cards */
-.layer-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.9rem;margin-bottom:1.8rem}
-.layer-card{background:#fff;border:1px solid #e2e4ea;border-radius:10px;padding:1rem 1.1rem;cursor:pointer;transition:box-shadow .15s,border-color .15s;border:1px solid #e2e4ea}
-.layer-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.08);border-color:#c9a355}
-.layer-badge{font-size:.58rem;font-weight:800;padding:.14rem .45rem;border-radius:4px;letter-spacing:.05em;display:inline-block;margin-bottom:.45rem}
-.layer-card-name{font-size:.9rem;font-weight:700;color:#1a1f2e;margin-bottom:.18rem}
-.layer-card-count{font-size:.75rem;color:#aaa}
-/* Canvas */
-.canvas-wrap{background:#fff;border:1px solid #e2e4ea;border-radius:10px;overflow:hidden;margin-bottom:1.8rem}
-.canvas-toolbar{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;background:#f8f9fc;border-bottom:1px solid #e2e4ea;flex-wrap:wrap}
-.canvas-toolbar span{font-size:.75rem;color:#888;flex:1}
-.cv-btn{background:#fff;border:1px solid #e2e4ea;border-radius:5px;padding:.2rem .6rem;cursor:pointer;font-size:.9rem;font-family:inherit;color:#444;font-weight:600;transition:background .1s}
+.intro-box{background:#fff;border:1px solid #e2e4ea;border-left:4px solid #C9A355;border-radius:8px;padding:1rem 1.3rem;margin-bottom:1.6rem}
+.intro-text{white-space:pre-wrap;font-size:.9rem;color:#444;line-height:1.7}
+
+/* ── Section headers ── */
+.section-h{font-size:1rem;font-weight:700;color:#1a1f2e;margin-bottom:.85rem;padding-bottom:.3rem;border-bottom:1px solid #eef0f4;display:flex;align-items:center;gap:.45rem}
+.section-count{font-size:.68rem;color:#bbb;font-weight:600;margin-left:auto}
+section{margin-bottom:2rem}
+
+/* ── Process cards (home page) ── */
+.proc-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem;margin-bottom:.5rem}
+.proc-card{background:#fff;border:1px solid #e2e4ea;border-radius:11px;padding:1.1rem 1.2rem;cursor:pointer;transition:box-shadow .15s,border-color .15s;display:flex;flex-direction:column;gap:.5rem}
+.proc-card:hover{box-shadow:0 3px 14px rgba(0,0,0,.09);border-color:#b09af5}
+.proc-card-name{font-size:.95rem;font-weight:700;color:#1a1f2e}
+.proc-card-doc{font-size:.78rem;color:#777;line-height:1.5;flex:1}
+.proc-card-actions{display:flex;gap:.5rem;margin-top:.3rem}
+.pca-btn{flex:1;font-family:inherit;font-size:.75rem;font-weight:700;padding:.32rem .6rem;border-radius:6px;border:1px solid #e2e4ea;background:#f8f9fc;color:#444;cursor:pointer;transition:background .12s,color .12s,border-color .12s;text-align:center}
+.pca-btn:hover{background:#1a1f2e;color:#fff;border-color:#1a1f2e}
+.pca-swim:hover{background:#6d5bd0;color:#fff;border-color:#6d5bd0}
+
+/* ── Layer cards (home page) ── */
+.layer-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.85rem}
+.layer-card{background:#fff;border:1px solid #e2e4ea;border-radius:10px;padding:.9rem 1rem;cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.layer-card:hover{box-shadow:0 2px 10px rgba(0,0,0,.08);border-color:#c9a355}
+.layer-badge{font-size:.56rem;font-weight:800;padding:.12rem .4rem;border-radius:4px;letter-spacing:.05em;display:inline-block;margin-bottom:.4rem}
+.layer-card-name{font-size:.88rem;font-weight:700;color:#1a1f2e;margin-bottom:.15rem}
+.layer-card-count{font-size:.73rem;color:#aaa}
+
+/* ── Canvas ── */
+.canvas-wrap{background:#fff;border:1px solid #e2e4ea;border-radius:10px;overflow:hidden;margin-bottom:1.6rem}
+.canvas-toolbar{display:flex;align-items:center;gap:.5rem;padding:.45rem .75rem;background:#f8f9fc;border-bottom:1px solid #e2e4ea;flex-wrap:wrap}
+.canvas-toolbar span{font-size:.73rem;color:#888;flex:1}
+.cv-btn{background:#fff;border:1px solid #e2e4ea;border-radius:5px;padding:.18rem .55rem;cursor:pointer;font-size:.88rem;font-family:inherit;color:#444;font-weight:700;transition:background .1s}
 .cv-btn:hover{background:#f0f2f7}
-.canvas-inner{overflow:auto;padding:.8rem}
+.canvas-inner{overflow:auto;padding:.75rem}
 .canvas-inner svg{max-width:none;display:block;transition:transform .15s;transform-origin:top left}
-/* Element cards */
-.elem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.8rem;margin-bottom:1rem}
-.elem-card{background:#fff;border:1px solid #e8eaf0;border-radius:10px;padding:.85rem .95rem}
-.elem-card-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:.35rem;margin-bottom:.28rem}
-.elem-name{font-size:.9rem;font-weight:700;color:#1a1f2e;line-height:1.3}
-.elem-type-badge{font-size:.62rem;font-weight:700;white-space:nowrap;margin-top:.1rem;text-align:right}
-.elem-doc{font-size:.8rem;color:#555;line-height:1.5;margin-top:.28rem}
+
+/* ── Element grid ── */
+.elem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.75rem;margin-bottom:1rem}
+.elem-card{background:#fff;border:1px solid #e8eaf0;border-radius:10px;padding:.8rem .9rem}
+.elem-card-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:.3rem;margin-bottom:.22rem}
+.elem-name{font-size:.88rem;font-weight:700;color:#1a1f2e;line-height:1.3}
+.elem-type-badge{font-size:.6rem;font-weight:700;white-space:nowrap;margin-top:.08rem;text-align:right}
+.elem-doc{font-size:.78rem;color:#555;line-height:1.5;margin-top:.22rem}
 .elem-doc.empty{color:#ccc;font-style:italic}
-/* Tabs */
-.tabs{display:flex;gap:0;border-bottom:2px solid #e2e4ea;margin-bottom:1.4rem}
-.tab-btn{background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;padding:.55rem 1.2rem;font-size:.88rem;font-weight:600;color:#888;cursor:pointer;font-family:inherit;transition:color .1s,border-color .1s}
-.tab-btn:hover{color:#1a1f2e}
-.tab-btn.active{color:#1a1f2e;border-bottom-color:#C9A355}
-.tab-panel{display:none}.tab-panel.active{display:block}
-/* Proc hero */
-.proc-hero{background:#fff;border:1px solid #e2e4ea;border-radius:12px;padding:1.3rem 1.5rem;margin-bottom:1.4rem}
-.proc-hero-name{font-size:1.3rem;font-weight:800;color:#1a1f2e;margin-bottom:.28rem}
-.proc-hero-doc{font-size:.86rem;color:#666;line-height:1.6}
-.proc-svg-wrap{overflow-x:auto;background:#fff;border:1px solid #e2e4ea;border-radius:10px;padding:.7rem;margin-bottom:1.4rem}
-.proc-svg-wrap svg{max-width:100%;height:auto;display:block}
-/* Steps table */
-.data-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e2e4ea;font-size:.82rem;margin-bottom:1.4rem}
+
+/* ── Data table ── */
+.data-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e2e4ea;font-size:.8rem;margin-bottom:1.3rem}
 .data-table thead tr{background:#f4f5f7}
-.data-table th{text-align:left;padding:.48rem .8rem;font-size:.7rem;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e2e4ea}
-.data-table td{padding:.45rem .8rem;border-bottom:1px solid #f0f2f7;vertical-align:top}
+.data-table th{text-align:left;padding:.45rem .75rem;font-size:.67rem;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e2e4ea}
+.data-table td{padding:.42rem .75rem;border-bottom:1px solid #f0f2f7;vertical-align:top}
 .data-table tr:last-child td{border-bottom:none}
 .data-table tbody tr:hover td{background:#fafbff}
-/* Step type pills */
-.step-pill{display:inline-block;font-size:.66rem;font-weight:700;padding:.08rem .38rem;border-radius:4px;border:1px solid}
+
+/* ── Step pills ── */
+.step-pill{display:inline-block;font-size:.64rem;font-weight:700;padding:.06rem .35rem;border-radius:4px;border:1px solid}
 .sp-start{background:#d4edda;color:#155724;border-color:#28a745}
 .sp-end{background:#f8d7da;color:#721c24;border-color:#dc3545}
 .sp-task{background:#d1ecf1;color:#0c5460;border-color:#0c7a9d}
 .sp-decision{background:#fff3cd;color:#664d03;border-color:#d4a000}
 .sp-document{background:#e8eaf6;color:#283593;border-color:#5c6bc0}
 .sp-label{background:#fff9e6;color:#7a5c00;border-color:#c9a355}
-/* Rel */
+
+/* ── Relationship ── */
 .rel-elem-name{font-weight:600;color:#1a1f2e}
-.rel-elem-type{font-size:.7rem;color:#aaa}
-.rel-type-badge{display:inline-block;font-size:.68rem;background:#eef0f7;border:1px solid #dde0ec;border-radius:4px;padding:.08rem .38rem;color:#555;font-weight:600}
-.rel-desc{color:#777;font-size:.76rem}
-/* Misc */
-.back-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;color:#666;cursor:pointer;background:none;border:none;padding:.25rem 0;margin-bottom:1.1rem;font-family:inherit}
+.rel-elem-type{font-size:.68rem;color:#aaa}
+.rel-type-badge{display:inline-block;font-size:.66rem;background:#eef0f7;border:1px solid #dde0ec;border-radius:4px;padding:.06rem .35rem;color:#555;font-weight:600}
+.rel-desc{color:#777;font-size:.74rem}
+
+/* ── Process/View hero ── */
+.proc-hero{background:#fff;border:1px solid #e2e4ea;border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:1.3rem;display:flex;flex-direction:column;gap:.3rem}
+.proc-hero-name{font-size:1.25rem;font-weight:800;color:#1a1f2e}
+.proc-hero-doc{font-size:.85rem;color:#666;line-height:1.6}
+.proc-hero-links{display:flex;gap:.6rem;margin-top:.3rem}
+.proc-switch-btn{font-family:inherit;font-size:.75rem;font-weight:700;padding:.28rem .75rem;border-radius:6px;border:1px solid #e2e4ea;background:#f8f9fc;color:#555;cursor:pointer;transition:background .12s,color .12s}
+.proc-switch-btn:hover{background:#1a1f2e;color:#fff;border-color:#1a1f2e}
+
+/* ── Swimlane wrap ── */
+.swim-wrap{background:#fff;border:1px solid #e2e4ea;border-radius:10px;overflow:auto;padding:1rem}
+.swim-wrap svg{max-width:none;display:block;height:auto;transition:transform .15s;transform-origin:top left}
+
+/* ── View hero ── */
+.view-hero{background:#fff;border:1px solid #e2e4ea;border-radius:12px;padding:1rem 1.3rem;margin-bottom:1.2rem}
+.view-hero-name{font-size:1.15rem;font-weight:800;color:#1a1f2e}
+
+/* ── Back button ── */
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;color:#666;cursor:pointer;background:none;border:none;padding:.2rem 0;margin-bottom:1rem;font-family:inherit}
 .back-btn:hover{color:#1a1f2e}
-.empty-note{color:#bbb;font-style:italic;font-size:.85rem;padding:.4rem 0}
-.view-hero{background:#fff;border:1px solid #e2e4ea;border-radius:12px;padding:1.1rem 1.4rem;margin-bottom:1.3rem}
-.view-hero-name{font-size:1.2rem;font-weight:800;color:#1a1f2e}
+
+/* ── Empty note ── */
+.empty-note{color:#bbb;font-style:italic;font-size:.83rem;padding:.4rem 0}
+
+/* ── Mobile ── */
 @media(max-width:900px){
   .sidebar{transform:translateX(-100%);transition:transform .22s}
   .sidebar.mob-open{transform:none}
   .main{margin-left:0}
-  .page-content{padding:1.3rem 1rem}
-  .home-hero{padding:1.4rem 1.1rem}
-  .topbar{padding:.55rem 1rem}
+  .page-content{padding:1.2rem 1rem 2rem}
+  .home-hero{padding:1.3rem 1rem}
+  .topbar{padding:.5rem 1rem}
   .mob-menu-btn{display:block}
 }
 @media print{.sidebar{display:none}.main{margin-left:0}.page-content{padding:1rem}.topbar{display:none}}
@@ -7025,10 +7102,9 @@ section{margin-bottom:2.2rem}
   </div>
   <nav id="main-nav">
     <button class="nav-link active" id="nav-home" onclick="showPage('home')">🏠 <span data-en="Overview" data-nl="Overzicht"></span></button>
-    ${procs.length ? `<div class="nav-section" data-en="Processes" data-nl="Processen"></div>
-    ${procs.map(p=>`<button class="nav-link proc-link" id="nav-proc-${e(p.id)}" onclick="showPage('proc-${e(p.id)}')">⬡ ${e(p.name||'…')}</button>`).join('\n    ')}` : ''}
-    ${views.length ? `<div class="nav-section" data-en="Views" data-nl="Views"></div>
-    ${views.map(v=>`<button class="nav-link view-link" id="nav-view-${e(v.id)}" onclick="showPage('view-${e(v.id)}')">◈ ${e(v.name||'…')}</button>`).join('\n    ')}` : ''}
+    ${procs.length ? `<div class="nav-section" data-en="Processes" data-nl="Processen"></div>${procNavHTML}` : ''}
+    ${views.length ? `<div class="nav-section" data-en="Views" data-nl="Views"></div>${viewNavHTML}` : ''}
+    ${layerNavHTML ? `<div class="nav-section" data-en="Layers" data-nl="Lagen"></div>${layerNavHTML}` : ''}
   </nav>
 </aside>
 
@@ -7044,7 +7120,7 @@ section{margin-bottom:2.2rem}
     </div>
   </div>
 
-  <!-- HOME -->
+  <!-- HOME PAGE -->
   <div class="page active page-content" id="page-home">
     <div class="home-hero">
       <h1 id="hero-title"></h1>
@@ -7052,14 +7128,18 @@ section{margin-bottom:2.2rem}
       <div class="hero-stats" id="hero-stats"></div>
     </div>
     <div id="home-intro"></div>
+    ${procs.length ? `<section>
+      <div class="section-h" id="home-procs-hd"></div>
+      <div class="proc-cards-grid" id="home-proc-cards">${procCardsHTML}</div>
+    </section>` : ''}
     <section>
       <div class="section-h" id="home-canvas-hd"></div>
       <div class="canvas-wrap">
         <div class="canvas-toolbar">
-          <span id="canvas-hint-home"></span>
-          <button class="cv-btn" onclick="cvZoom('home-cv',-1)" title="Zoom out">−</button>
-          <button class="cv-btn" onclick="cvReset('home-cv')" title="Reset">⊡</button>
-          <button class="cv-btn" onclick="cvZoom('home-cv',1)" title="Zoom in">+</button>
+          <span data-en="Use +/− to zoom" data-nl="Gebruik +/− om te zoomen"></span>
+          <button class="cv-btn" onclick="cvZoom('home-cv',-1)">−</button>
+          <button class="cv-btn" onclick="cvReset('home-cv')">⊡</button>
+          <button class="cv-btn" onclick="cvZoom('home-cv',1)">+</button>
         </div>
         <div class="canvas-inner" id="home-cv">${canvasSVG || '<p class="empty-note" style="padding:1rem" data-en="No canvas available." data-nl="Geen canvas beschikbaar."></p>'}</div>
       </div>
@@ -7070,62 +7150,77 @@ section{margin-bottom:2.2rem}
     </section>
   </div>
 
-  <!-- PROCESS page (shared, re-rendered per process) -->
-  <div class="page page-content" id="page-proc">
-    <button class="back-btn" id="back-proc" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
+  <!-- PROCESS — ARCHITECTURE PAGE -->
+  <div class="page page-content" id="page-proc-archi">
+    <button class="back-btn" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
     <div class="proc-hero">
-      <div class="proc-hero-name" id="pp-name"></div>
-      <div class="proc-hero-doc" id="pp-doc"></div>
+      <div class="proc-hero-name" id="pa-name"></div>
+      <div class="proc-hero-doc" id="pa-doc"></div>
+      <div class="proc-hero-links">
+        <button class="proc-switch-btn" id="pa-switch-swim" onclick="switchToSwim()">🌊 <span data-en="Also view Swimlane" data-nl="Bekijk ook Swimlane"></span></button>
+      </div>
     </div>
-    <div class="tabs">
-      <button class="tab-btn active" id="tab-btn-archi" onclick="switchTab('proc','archi')"><span data-en="Architecture" data-nl="Architectuur"></span></button>
-      <button class="tab-btn" id="tab-btn-swim" onclick="switchTab('proc','swim')">Swimlane</button>
+    <section>
+      <div class="section-h"><span data-en="Linked Elements" data-nl="Gekoppelde elementen"></span><span class="section-count" id="pa-elem-count"></span></div>
+      <div class="elem-grid" id="pa-elems-grid"></div>
+    </section>
+    <section>
+      <div class="section-h"><span data-en="Relationships" data-nl="Relaties"></span><span class="section-count" id="pa-rel-count"></span></div>
+      <table class="data-table" id="pa-rels-table">
+        <thead><tr>
+          <th data-en="From" data-nl="Van"></th>
+          <th data-en="Relationship" data-nl="Relatie"></th>
+          <th data-en="To" data-nl="Naar"></th>
+          <th data-en="Meaning" data-nl="Betekenis"></th>
+        </tr></thead>
+        <tbody id="pa-rels-body"></tbody>
+      </table>
+    </section>
+    <section>
+      <div class="section-h"><span data-en="Steps" data-nl="Stappen"></span><span class="section-count" id="pa-step-count"></span></div>
+      <table class="data-table">
+        <thead><tr>
+          <th>#</th>
+          <th data-en="Type" data-nl="Type"></th>
+          <th data-en="Name" data-nl="Naam"></th>
+          <th data-en="Lane" data-nl="Lane"></th>
+          <th data-en="Documentation" data-nl="Documentatie"></th>
+        </tr></thead>
+        <tbody id="pa-steps-body"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- PROCESS — SWIMLANE PAGE -->
+  <div class="page page-content" id="page-proc-swim">
+    <button class="back-btn" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
+    <div class="proc-hero">
+      <div class="proc-hero-name" id="ps-name"></div>
+      <div class="proc-hero-doc" id="ps-doc"></div>
+      <div class="proc-hero-links">
+        <button class="proc-switch-btn" id="ps-switch-archi" onclick="switchToArchi()">🏛 <span data-en="Also view Architecture" data-nl="Bekijk ook Architectuur"></span></button>
+      </div>
     </div>
-    <div class="tab-panel active" id="tab-proc-archi">
-      <section>
-        <div class="section-h"><span data-en="Linked Elements" data-nl="Gekoppelde elementen"></span> <span class="section-count" id="pp-elem-count"></span></div>
-        <div class="elem-grid" id="pp-elems-grid"></div>
-      </section>
-      <section>
-        <div class="section-h"><span data-en="Relationships" data-nl="Relaties"></span> <span class="section-count" id="pp-rel-count"></span></div>
-        <table class="data-table" id="pp-rels-table">
-          <thead><tr>
-            <th data-en="From" data-nl="Van"></th>
-            <th data-en="Relationship" data-nl="Relatie"></th>
-            <th data-en="To" data-nl="Naar"></th>
-            <th data-en="Meaning" data-nl="Betekenis"></th>
-          </tr></thead>
-          <tbody id="pp-rels-body"></tbody>
-        </table>
-      </section>
-      <section>
-        <div class="section-h"><span data-en="Steps" data-nl="Stappen"></span> <span class="section-count" id="pp-step-count"></span></div>
-        <table class="data-table">
-          <thead><tr>
-            <th>#</th>
-            <th data-en="Type" data-nl="Type"></th>
-            <th data-en="Name" data-nl="Naam"></th>
-            <th data-en="Lane" data-nl="Lane"></th>
-            <th data-en="Documentation" data-nl="Documentatie"></th>
-          </tr></thead>
-          <tbody id="pp-steps-body"></tbody>
-        </table>
-      </section>
-    </div>
-    <div class="tab-panel" id="tab-proc-swim">
-      <div class="proc-svg-wrap" id="pp-svg"></div>
+    <div class="canvas-wrap">
+      <div class="canvas-toolbar">
+        <span data-en="Use +/− to zoom" data-nl="Gebruik +/− om te zoomen"></span>
+        <button class="cv-btn" onclick="cvZoom('swim-cv',-1)">−</button>
+        <button class="cv-btn" onclick="cvReset('swim-cv')">⊡</button>
+        <button class="cv-btn" onclick="cvZoom('swim-cv',1)">+</button>
+      </div>
+      <div class="canvas-inner" id="swim-cv"></div>
     </div>
   </div>
 
-  <!-- VIEW page -->
+  <!-- VIEW PAGE -->
   <div class="page page-content" id="page-view">
-    <button class="back-btn" id="back-view" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
+    <button class="back-btn" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
     <div class="view-hero"><div class="view-hero-name" id="vp-name"></div></div>
     <section>
-      <div class="section-h" id="vp-canvas-hd"><span data-en="Diagram" data-nl="Diagram"></span></div>
+      <div class="section-h"><span data-en="Diagram" data-nl="Diagram"></span></div>
       <div class="canvas-wrap">
         <div class="canvas-toolbar">
-          <span id="canvas-hint-view"></span>
+          <span data-en="Use +/− to zoom" data-nl="Gebruik +/− om te zoomen"></span>
           <button class="cv-btn" onclick="cvZoom('view-cv',-1)">−</button>
           <button class="cv-btn" onclick="cvReset('view-cv')">⊡</button>
           <button class="cv-btn" onclick="cvZoom('view-cv',1)">+</button>
@@ -7134,20 +7229,20 @@ section{margin-bottom:2.2rem}
       </div>
     </section>
     <section>
-      <div class="section-h"><span data-en="Elements in this view" data-nl="Elementen in deze view"></span> <span class="section-count" id="vp-elem-count"></span></div>
+      <div class="section-h"><span data-en="Elements in this view" data-nl="Elementen in deze view"></span><span class="section-count" id="vp-elem-count"></span></div>
       <div class="elem-grid" id="vp-elems-grid"></div>
     </section>
   </div>
 
-  <!-- LAYER page -->
+  <!-- LAYER PAGE -->
   <div class="page page-content" id="page-layer">
-    <button class="back-btn" id="back-layer" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
+    <button class="back-btn" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
     <div class="view-hero"><div class="view-hero-name" id="lp-name"></div></div>
     <section>
       <div class="section-h"><span data-en="Diagram" data-nl="Diagram"></span></div>
       <div class="canvas-wrap">
         <div class="canvas-toolbar">
-          <span></span>
+          <span data-en="Use +/− to zoom" data-nl="Gebruik +/− om te zoomen"></span>
           <button class="cv-btn" onclick="cvZoom('layer-cv',-1)">−</button>
           <button class="cv-btn" onclick="cvReset('layer-cv')">⊡</button>
           <button class="cv-btn" onclick="cvZoom('layer-cv',1)">+</button>
@@ -7156,16 +7251,16 @@ section{margin-bottom:2.2rem}
       </div>
     </section>
     <section>
-      <div class="section-h"><span data-en="Elements" data-nl="Elementen"></span> <span class="section-count" id="lp-elem-count"></span></div>
+      <div class="section-h"><span data-en="Elements" data-nl="Elementen"></span><span class="section-count" id="lp-elem-count"></span></div>
       <div class="elem-grid" id="lp-elems-grid"></div>
     </section>
   </div>
 
-</div>
-</div>
+</div><!-- /.main -->
+</div><!-- /.layout -->
 
 ${'<' + 'script>'}
-// ── Data ──────────────────────────────────────────────────────
+// ── Embedded data ────────────────────────────────────────────
 const MODEL      = ${J(safeModel)};
 const PROC_SVGS  = ${J(procSVGs)};
 const LAYER_SVGS = ${J(layerSVGs)};
@@ -7176,50 +7271,51 @@ const DATE_EN    = ${J(nowEN)};
 const DATE_NL    = ${J(nowNL)};
 const DEF_LANG   = ${J(defLang)};
 
-// ── Lookups ───────────────────────────────────────────────────
-const elemById  = {}; MODEL.elements.forEach(el=>elemById[el.id]=el);
-const procById  = {}; MODEL.processes.forEach(p=>procById[p.id]=p);
-const viewById  = {}; MODEL.views.forEach(v=>viewById[v.id]=v);
-const relTypeMap= {}; REL_TYPES.forEach(rt=>relTypeMap[rt.id]=rt);
+// ── Lookups ──────────────────────────────────────────────────
+const elemById   = {}; MODEL.elements.forEach(el  => elemById[el.id]    = el);
+const procById   = {}; MODEL.processes.forEach(p  => procById[p.id]     = p);
+const viewById   = {}; MODEL.views.forEach(v      => viewById[v.id]     = v);
+const relTypeMap = {}; REL_TYPES.forEach(rt       => relTypeMap[rt.id]  = rt);
+
+// Route map: pageId → {type, id}  (handles UUIDs with hyphens safely)
+const ROUTE_MAP = {};
+MODEL.processes.forEach(p => {
+  ROUTE_MAP['proc-' + p.id + '-archi'] = {type:'proc-archi', id:p.id};
+  ROUTE_MAP['proc-' + p.id + '-swim']  = {type:'proc-swim',  id:p.id};
+});
+MODEL.views.forEach(v => { ROUTE_MAP['view-' + v.id] = {type:'view', id:v.id}; });
+['business','application','technology','motivation','strategy'].forEach(lk => {
+  ROUTE_MAP['layer-' + lk] = {type:'layer', id:lk};
+});
 
 const LAYER_CFG = {
-  business:    {en:'Business Layer',     nl:'Business-laag',    accent:'#2563eb',badge:'BIZ', icon:'🏢'},
-  application: {en:'Application Layer',  nl:'Applicatielaag',   accent:'#16a34a',badge:'APP', icon:'⚙️'},
-  technology:  {en:'Technology Layer',   nl:'Technologielaag',  accent:'#9333ea',badge:'TECH',icon:'🖥️'},
-  motivation:  {en:'Motivation Layer',   nl:'Motivatielaag',    accent:'#d97706',badge:'MOT', icon:'🎯'},
-  strategy:    {en:'Strategy Layer',     nl:'Strategielaag',    accent:'#0e7490',badge:'STR', icon:'♟'},
+  business:    {en:'Business Layer',    nl:'Business-laag',   accent:'#2563eb', badge:'BIZ',  icon:'🏢'},
+  application: {en:'Application Layer', nl:'Applicatielaag',  accent:'#16a34a', badge:'APP',  icon:'⚙️'},
+  technology:  {en:'Technology Layer',  nl:'Technologielaag', accent:'#9333ea', badge:'TECH', icon:'🖥️'},
+  motivation:  {en:'Motivation Layer',  nl:'Motivatielaag',   accent:'#d97706', badge:'MOT',  icon:'🎯'},
+  strategy:    {en:'Strategy Layer',    nl:'Strategielaag',   accent:'#0e7490', badge:'STR',  icon:'♟'},
 };
 
-// ── Language ──────────────────────────────────────────────────
+// ── Language ─────────────────────────────────────────────────
 let _lang = DEF_LANG;
 
 function setLang(lang) {
   _lang = lang;
   document.documentElement.lang = lang;
-  document.getElementById('lang-en').classList.toggle('active', lang==='en');
-  document.getElementById('lang-nl').classList.toggle('active', lang==='nl');
-  // Update all data-en / data-nl spans and elements
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+  document.getElementById('lang-nl').classList.toggle('active', lang === 'nl');
   document.querySelectorAll('[data-en]').forEach(el => {
-    if (el.tagName === 'TH' || el.tagName === 'DIV' || el.tagName === 'BUTTON') {
-      const txt = lang==='nl' ? el.dataset.nl : el.dataset.en;
-      if (txt !== undefined) el.textContent = txt;
-    } else {
-      const txt = lang==='nl' ? el.dataset.nl : el.dataset.en;
-      if (txt !== undefined) el.textContent = txt;
-    }
+    const txt = lang === 'nl' ? el.dataset.nl : el.dataset.en;
+    if (txt !== undefined) el.textContent = txt;
   });
-  // Sidebar brand
   renderSidebarBrand();
-  // Topbar
-  updateTopbar();
-  // Home section headers
   renderHomeStatic();
 }
 
 function T(en, nl) { return _lang === 'nl' ? nl : en; }
 function he(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// ── Zoom controls ─────────────────────────────────────────────
+// ── Zoom ─────────────────────────────────────────────────────
 const _zoomState = {};
 function cvZoom(wrapperId, dir) {
   const wrap = document.getElementById(wrapperId);
@@ -7229,7 +7325,6 @@ function cvZoom(wrapperId, dir) {
   if (!_zoomState[wrapperId]) _zoomState[wrapperId] = 1;
   _zoomState[wrapperId] = Math.max(0.2, Math.min(4, _zoomState[wrapperId] * (dir > 0 ? 1.25 : 0.8)));
   svg.style.transform = 'scale(' + _zoomState[wrapperId] + ')';
-  wrap.style.height = Math.max(200, svg.getBoundingClientRect().height * _zoomState[wrapperId] + 20) + 'px';
 }
 function cvReset(wrapperId) {
   const wrap = document.getElementById(wrapperId);
@@ -7237,28 +7332,37 @@ function cvReset(wrapperId) {
   const svg = wrap.querySelector('svg');
   if (svg) svg.style.transform = 'scale(1)';
   _zoomState[wrapperId] = 1;
-  wrap.style.height = '';
 }
 
 // ── Sidebar brand ─────────────────────────────────────────────
 function renderSidebarBrand() {
-  const d = _lang==='nl' ? DATE_NL : DATE_EN;
-  const el = document.getElementById('sb-model-name'); if(el) el.textContent = MODEL.name || '';
-  const dt = document.getElementById('sb-date');       if(dt) dt.textContent = d;
+  const d  = _lang === 'nl' ? DATE_NL : DATE_EN;
+  const el = document.getElementById('sb-model-name'); if (el) el.textContent = MODEL.name || '';
+  const dt = document.getElementById('sb-date');       if (dt) dt.textContent = d;
   const br = document.getElementById('sb-brand');
-  if(br) br.innerHTML = T('Generated by','Gegenereerd door')+' <span class="brand-arnold">Arnold<\\/span> <span class="brand-ruijter">Ruijter IT<\\/span>';
+  if (br) br.innerHTML = T('Generated by','Gegenereerd door') + ' <span class="brand-arnold">Arnold</span> <span class="brand-ruijter">Ruijter IT</span>';
+}
+
+// ── Sidebar proc dropdown ─────────────────────────────────────
+function toggleProcNav(procId) {
+  const grp = document.getElementById('npg-' + procId);
+  if (!grp) return;
+  grp.classList.toggle('open');
+}
+function expandProcNav(procId) {
+  const grp = document.getElementById('npg-' + procId);
+  if (grp && !grp.classList.contains('open')) grp.classList.add('open');
 }
 
 // ── Navigation ────────────────────────────────────────────────
-const ALL_PAGES = ['page-home','page-proc','page-view','page-layer'];
+const ALL_PAGES  = ['page-home','page-proc-archi','page-proc-swim','page-view','page-layer'];
 let _currentPage = 'home';
-let _procTabState = {}; // { [procId]: 'archi'|'swim' }
+let _currentProcId = null;
 
 function showPage(pageId) {
-  ALL_PAGES.forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove('active'); });
+  ALL_PAGES.forEach(id => document.getElementById(id)?.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
   _currentPage = pageId;
-  history.replaceState(null,'','#'+pageId);
 
   if (pageId === 'home') {
     document.getElementById('page-home')?.classList.add('active');
@@ -7266,99 +7370,106 @@ function showPage(pageId) {
     updateTopbar(T('Overview','Overzicht'));
     return;
   }
-  if (pageId.startsWith('proc-')) {
-    const procId = pageId.slice(5);
-    const proc = procById[procId];
-    document.getElementById('page-proc')?.classList.add('active');
-    document.getElementById('nav-proc-'+procId)?.classList.add('active');
-    renderProcPage(proc);
-    return;
-  }
-  if (pageId.startsWith('view-')) {
-    const viewId = pageId.slice(5);
-    const view = viewById[viewId];
+
+  const route = ROUTE_MAP[pageId];
+  if (!route) { showPage('home'); return; }
+
+  if (route.type === 'proc-archi') {
+    _currentProcId = route.id;
+    document.getElementById('page-proc-archi')?.classList.add('active');
+    document.getElementById('nav-proc-' + route.id + '-archi')?.classList.add('active');
+    expandProcNav(route.id);
+    renderProcArchiPage(procById[route.id]);
+  } else if (route.type === 'proc-swim') {
+    _currentProcId = route.id;
+    document.getElementById('page-proc-swim')?.classList.add('active');
+    document.getElementById('nav-proc-' + route.id + '-swim')?.classList.add('active');
+    expandProcNav(route.id);
+    renderProcSwimPage(procById[route.id]);
+  } else if (route.type === 'view') {
     document.getElementById('page-view')?.classList.add('active');
-    document.getElementById('nav-view-'+viewId)?.classList.add('active');
-    renderViewPage(view);
-    return;
-  }
-  if (pageId.startsWith('layer-')) {
-    const layerId = pageId.slice(6);
+    document.getElementById('nav-view-' + route.id)?.classList.add('active');
+    renderViewPage(viewById[route.id]);
+  } else if (route.type === 'layer') {
     document.getElementById('page-layer')?.classList.add('active');
-    renderLayerPage(layerId);
-    return;
+    document.getElementById('nav-layer-' + route.id)?.classList.add('active');
+    renderLayerPage(route.id);
   }
 }
+
+function switchToSwim()  { if (_currentProcId) showPage('proc-' + _currentProcId + '-swim'); }
+function switchToArchi() { if (_currentProcId) showPage('proc-' + _currentProcId + '-archi'); }
 
 function updateTopbar(bc) {
-  const t = document.getElementById('topbar-title'); if(t) t.textContent = MODEL.name || '';
-  const b = document.getElementById('topbar-bc');    if(b && bc) b.textContent = bc;
+  const t = document.getElementById('topbar-title'); if (t) t.textContent = MODEL.name || '';
+  const b = document.getElementById('topbar-bc');    if (b && bc !== undefined) b.textContent = bc;
 }
 
-// ── Tab switching ─────────────────────────────────────────────
-function switchTab(page, tabId) {
-  const prefix = 'tab-' + (page==='proc' ? 'proc' : page);
-  document.querySelectorAll('[id^="' + prefix + '-"]').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('[id^="tab-btn-"]').forEach(b => b.classList.remove('active'));
-  const panel = document.getElementById(prefix + '-' + tabId);
-  if (panel) panel.classList.add('active');
-  const btn = document.getElementById('tab-btn-' + tabId);
-  if (btn) btn.classList.add('active');
-}
-
-// ── Process page ──────────────────────────────────────────────
-function renderProcPage(proc) {
+// ── Process — Architecture page ───────────────────────────────
+function renderProcArchiPage(proc) {
   if (!proc) return;
   const nm = proc.name || T('Unnamed Process','Naamloos proces');
-  document.getElementById('pp-name').textContent = nm;
-  document.getElementById('pp-doc').textContent  = proc.documentation || T('No documentation.','Geen documentatie.');
+  document.getElementById('pa-name').textContent = nm;
+  document.getElementById('pa-doc').textContent  = proc.documentation || T('No documentation.','Geen documentatie.');
   updateTopbar(nm);
 
-  // Swimlane SVG
-  const svgWrap = document.getElementById('pp-svg');
-  svgWrap.innerHTML = PROC_SVGS[proc.id] ||
-    '<p class="empty-note">'+T('No diagram available.','Geen diagram beschikbaar.')+'</p>';
+  // Linked elements via step.sourceId
+  const linkedIds   = new Set((proc.steps||[]).filter(s=>s.sourceId).map(s=>s.sourceId));
+  const linkedElems = [...linkedIds].map(id=>elemById[id]).filter(Boolean);
+  document.getElementById('pa-elem-count').textContent = linkedElems.length;
+  document.getElementById('pa-elems-grid').innerHTML   = linkedElems.length
+    ? linkedElems.map(el => buildElemCard(el)).join('')
+    : '<p class="empty-note">' + T('No linked elements.','Geen gekoppelde elementen.') + '</p>';
 
-  // Steps
+  // Relationships involving linked elements
+  const rels = MODEL.relationships.filter(r => linkedIds.has(r.sourceId) || linkedIds.has(r.targetId));
+  document.getElementById('pa-rel-count').textContent  = rels.length;
+  document.getElementById('pa-rels-body').innerHTML    = rels.length
+    ? rels.map(rel => {
+        const src = elemById[rel.sourceId], tgt = elemById[rel.targetId];
+        if (!src || !tgt) return '';
+        const rt  = relTypeMap[rel.type] || {label: rel.type, desc:{en:'',nl:''}};
+        const desc = _lang === 'nl' ? (rt.desc?.nl || rt.desc?.en || '') : (rt.desc?.en || '');
+        return '<tr>'
+          + '<td><span class="rel-elem-name">'  + he(src.name||'?') + '</span><br><span class="rel-elem-type">' + he(TYPE_LABELS[src.type]||src.type) + '</span></td>'
+          + '<td><span class="rel-type-badge">' + he(rt.label) + '</span></td>'
+          + '<td><span class="rel-elem-name">'  + he(tgt.name||'?') + '</span><br><span class="rel-elem-type">' + he(TYPE_LABELS[tgt.type]||tgt.type) + '</span></td>'
+          + '<td class="rel-desc">'             + he(desc) + '</td></tr>';
+      }).join('')
+    : '<tr><td colspan="4" class="empty-note" style="padding:.55rem">' + T('No relationships.','Geen relaties.') + '</td></tr>';
+
+  // Steps table
   const laneMap = {};
   (proc.lanes||[]).forEach(l => laneMap[l.id] = l.name);
   const steps = proc.steps || [];
-  document.getElementById('pp-step-count').textContent = steps.length;
-  document.getElementById('pp-steps-body').innerHTML = steps.map((s,i) =>
-    '<tr><td style="color:#aaa;font-size:.76rem">'+(i+1)+'</td>'
-    +'<td><span class="step-pill sp-'+(s.type||'task')+'">'+he(s.type||'task')+'</span></td>'
-    +'<td style="font-weight:600">'+he(s.label||s.type||'')+'</td>'
-    +'<td style="color:#888;font-size:.78rem">'+he(laneMap[s.laneId]||'—')+'</td>'
-    +'<td style="color:#666;font-size:.8rem">'+he(s.documentation||'')+'</td></tr>'
+  document.getElementById('pa-step-count').textContent = steps.length;
+  document.getElementById('pa-steps-body').innerHTML   = steps.map((s,i) =>
+    '<tr>'
+    + '<td style="color:#aaa;font-size:.74rem">' + (i+1) + '</td>'
+    + '<td><span class="step-pill sp-' + (s.type||'task') + '">' + he(s.type||'task') + '</span></td>'
+    + '<td style="font-weight:600">' + he(s.label||s.type||'') + '</td>'
+    + '<td style="color:#888;font-size:.76rem">' + he(laneMap[s.laneId]||'—') + '</td>'
+    + '<td style="color:#666;font-size:.78rem">' + he(s.documentation||'') + '</td></tr>'
   ).join('');
+}
 
-  // Linked elements via step.sourceId
-  const linkedIds = new Set((proc.steps||[]).filter(s=>s.sourceId).map(s=>s.sourceId));
-  const linkedElems = [...linkedIds].map(id=>elemById[id]).filter(Boolean);
-  document.getElementById('pp-elem-count').textContent = linkedElems.length;
-  document.getElementById('pp-elems-grid').innerHTML = linkedElems.length
-    ? linkedElems.map(el=>buildElemCard(el)).join('')
-    : '<p class="empty-note">'+T('No linked elements.','Geen gekoppelde elementen.')+'</p>';
+// ── Process — Swimlane page ───────────────────────────────────
+function renderProcSwimPage(proc) {
+  if (!proc) return;
+  const nm = proc.name || T('Unnamed Process','Naamloos proces');
+  document.getElementById('ps-name').textContent = nm;
+  document.getElementById('ps-doc').textContent  = proc.documentation || T('No documentation.','Geen documentatie.');
+  updateTopbar(nm);
 
-  // Relationships for linked elements
-  const rels = MODEL.relationships.filter(r => linkedIds.has(r.sourceId)||linkedIds.has(r.targetId));
-  document.getElementById('pp-rel-count').textContent = rels.length;
-  document.getElementById('pp-rels-body').innerHTML = rels.length
-    ? rels.map(rel => {
-        const src=elemById[rel.sourceId], tgt=elemById[rel.targetId];
-        if(!src||!tgt) return '';
-        const rt=relTypeMap[rel.type]||{label:rel.type,desc:{en:'',nl:''}};
-        return '<tr>'
-          +'<td><span class="rel-elem-name">'+he(src.name||'?')+'</span><br><span class="rel-elem-type">'+he(TYPE_LABELS[src.type]||src.type)+'</span></td>'
-          +'<td><span class="rel-type-badge">'+he(rt.label)+'</span></td>'
-          +'<td><span class="rel-elem-name">'+he(tgt.name||'?')+'</span><br><span class="rel-elem-type">'+he(TYPE_LABELS[tgt.type]||tgt.type)+'</span></td>'
-          +'<td class="rel-desc">'+he(_lang==='nl'?(rt.desc?.nl||rt.desc?.en||''):(rt.desc?.en||''))+'</td></tr>';
-      }).join('')
-    : '<tr><td colspan="4" class="empty-note" style="padding:.6rem">'+T('No relationships.','Geen relaties.')+'</td></tr>';
-
-  // Restore tab state for this process
-  const tab = _procTabState[proc.id] || 'archi';
-  switchTab('proc', tab);
+  const cvWrap = document.getElementById('swim-cv');
+  const svg    = PROC_SVGS[proc.id];
+  cvWrap.innerHTML = svg
+    ? svg
+    : '<p class="empty-note" style="padding:1rem">' + T('No swimlane diagram available for this process.','Geen swimlane-diagram beschikbaar voor dit proces.') + '</p>';
+  // Reset zoom
+  _zoomState['swim-cv'] = 1;
+  const svgEl = cvWrap.querySelector('svg');
+  if (svgEl) svgEl.style.transform = 'scale(1)';
 }
 
 // ── View page ─────────────────────────────────────────────────
@@ -7367,105 +7478,108 @@ function renderViewPage(view) {
   const nm = view.name || T('Unnamed view','Naamloze view');
   document.getElementById('vp-name').textContent = nm;
   updateTopbar(nm);
-  // Canvas for this view
   const cvWrap = document.getElementById('view-cv');
-  cvWrap.innerHTML = VIEW_SVGS[view.id] ||
-    '<p class="empty-note" style="padding:1rem">'+T('No diagram available for this view.','Geen diagram beschikbaar voor deze view.')+'</p>';
-  // Elements
-  const vIds  = new Set(view.elementIds||[]);
-  const vElems= MODEL.elements.filter(el=>vIds.has(el.id));
+  cvWrap.innerHTML = VIEW_SVGS[view.id]
+    || '<p class="empty-note" style="padding:1rem">' + T('No diagram available.','Geen diagram beschikbaar.') + '</p>';
+  _zoomState['view-cv'] = 1;
+  const svgEl = cvWrap.querySelector('svg'); if (svgEl) svgEl.style.transform = 'scale(1)';
+  const vIds   = new Set(view.elementIds||[]);
+  const vElems = MODEL.elements.filter(el => vIds.has(el.id));
   document.getElementById('vp-elem-count').textContent = vElems.length;
-  document.getElementById('vp-elems-grid').innerHTML = vElems.length
-    ? vElems.map(el=>buildElemCard(el)).join('')
-    : '<p class="empty-note">'+T('No elements in this view.','Geen elementen in deze view.')+'</p>';
+  document.getElementById('vp-elems-grid').innerHTML   = vElems.length
+    ? vElems.map(el => buildElemCard(el)).join('')
+    : '<p class="empty-note">' + T('No elements.','Geen elementen.') + '</p>';
 }
 
 // ── Layer page ────────────────────────────────────────────────
 function renderLayerPage(layerId) {
-  const cfg = LAYER_CFG[layerId]||{};
-  const nm = (cfg.icon||'') + ' ' + T(cfg.en||layerId, cfg.nl||layerId);
+  const cfg = LAYER_CFG[layerId] || {};
+  const nm  = (cfg.icon||'') + ' ' + T(cfg.en||layerId, cfg.nl||layerId);
   document.getElementById('lp-name').textContent = nm;
   updateTopbar(T(cfg.en||layerId, cfg.nl||layerId));
-  // Canvas
   const cvWrap = document.getElementById('layer-cv');
-  cvWrap.innerHTML = LAYER_SVGS[layerId] ||
-    '<p class="empty-note" style="padding:1rem">'+T('No diagram available for this layer.','Geen diagram beschikbaar voor deze laag.')+'</p>';
-  // Elements
-  const lElems = MODEL.elements.filter(el=>el.layer===layerId);
+  cvWrap.innerHTML = LAYER_SVGS[layerId]
+    || '<p class="empty-note" style="padding:1rem">' + T('No diagram available for this layer.','Geen diagram beschikbaar voor deze laag.') + '</p>';
+  _zoomState['layer-cv'] = 1;
+  const svgEl = cvWrap.querySelector('svg'); if (svgEl) svgEl.style.transform = 'scale(1)';
+  const lElems = MODEL.elements.filter(el => el.layer === layerId);
   document.getElementById('lp-elem-count').textContent = lElems.length;
-  document.getElementById('lp-elems-grid').innerHTML = lElems.length
-    ? lElems.map(el=>buildElemCard(el)).join('')
-    : '<p class="empty-note">'+T('No elements.','Geen elementen.')+'</p>';
+  document.getElementById('lp-elems-grid').innerHTML   = lElems.length
+    ? lElems.map(el => buildElemCard(el)).join('')
+    : '<p class="empty-note">' + T('No elements.','Geen elementen.') + '</p>';
 }
 
 // ── Element card ──────────────────────────────────────────────
 function buildElemCard(el) {
-  const cfg = LAYER_CFG[el.layer]||{};
-  const accent = cfg.accent||'#555';
-  const typeLabel = TYPE_LABELS[el.type]||el.type;
-  const doc = el.documentation||'';
+  const cfg       = LAYER_CFG[el.layer] || {};
+  const accent    = cfg.accent || '#555';
+  const typeLabel = TYPE_LABELS[el.type] || el.type;
+  const doc       = el.documentation || '';
   return '<div class="elem-card">'
-    +'<div class="elem-card-hd"><span class="elem-name">'+he(el.name||'(unnamed)')+'</span>'
-    +'<span class="elem-type-badge" style="color:'+accent+'">'+he(typeLabel)+'</span></div>'
-    +(doc?'<div class="elem-doc">'+he(doc)+'</div>'
-        :'<div class="elem-doc empty">'+T('No documentation.','Geen documentatie.')+'</div>')
-    +'</div>';
+    + '<div class="elem-card-hd"><span class="elem-name">' + he(el.name||'(unnamed)') + '</span>'
+    + '<span class="elem-type-badge" style="color:' + accent + '">' + he(typeLabel) + '</span></div>'
+    + (doc
+        ? '<div class="elem-doc">' + he(doc) + '</div>'
+        : '<div class="elem-doc empty">' + T('No documentation.','Geen documentatie.') + '</div>')
+    + '</div>';
 }
 
 // ── Home page static content ──────────────────────────────────
 function renderHomeStatic() {
-  const d = _lang==='nl' ? DATE_NL : DATE_EN;
-  const t = document.getElementById('hero-title');   if(t) t.textContent = MODEL.name||'';
-  const s = document.getElementById('hero-sub');     if(s) s.textContent = T('Architecture Platform','Architectuurplatform') + ' · ' + d;
+  const d = _lang === 'nl' ? DATE_NL : DATE_EN;
+  const t = document.getElementById('hero-title'); if (t) t.textContent = MODEL.name || '';
+  const s = document.getElementById('hero-sub');   if (s) s.textContent = T('Architecture Platform','Architectuurplatform') + ' · ' + d;
   const stats = document.getElementById('hero-stats');
   if (stats) stats.innerHTML =
-    '<div class="hero-stat">'+T('Elements','Elementen')+': <strong>'+MODEL.elements.length+'</strong></div>'
-    +'<div class="hero-stat">'+T('Relationships','Relaties')+': <strong>'+MODEL.relationships.length+'</strong></div>'
-    +(MODEL.processes.length?'<div class="hero-stat">'+T('Processes','Processen')+': <strong>'+MODEL.processes.length+'</strong></div>':'')
-    +'<div class="hero-stat">Business: <strong>'+MODEL.elements.filter(e=>e.layer==='business').length+'</strong></div>'
-    +'<div class="hero-stat">Application: <strong>'+MODEL.elements.filter(e=>e.layer==='application').length+'</strong></div>'
-    +'<div class="hero-stat">Technology: <strong>'+MODEL.elements.filter(e=>e.layer==='technology').length+'</strong></div>';
-  // Canvas hint
-  const ch = document.getElementById('canvas-hint-home');
-  if(ch) ch.textContent = T('Use +/− to zoom','Gebruik +/− om te zoomen');
-  const cv = document.getElementById('canvas-hint-view');
-  if(cv) cv.textContent = T('Use +/− to zoom','Gebruik +/− om te zoomen');
-  // Sections
-  const c = document.getElementById('home-canvas-hd'); if(c) c.textContent = '🗺 '+T('Architecture Overview','Architectuuroverzicht');
-  const l = document.getElementById('home-layers-hd'); if(l) l.textContent = '📦 '+T('Layers','Lagen');
+    '<div class="hero-stat">' + T('Elements','Elementen') + ': <strong>' + MODEL.elements.length + '</strong></div>'
+    + '<div class="hero-stat">' + T('Relationships','Relaties') + ': <strong>' + MODEL.relationships.length + '</strong></div>'
+    + (MODEL.processes.length ? '<div class="hero-stat">' + T('Processes','Processen') + ': <strong>' + MODEL.processes.length + '</strong></div>' : '')
+    + '<div class="hero-stat">Business: <strong>' + MODEL.elements.filter(el=>el.layer==='business').length + '</strong></div>'
+    + '<div class="hero-stat">Application: <strong>' + MODEL.elements.filter(el=>el.layer==='application').length + '</strong></div>'
+    + '<div class="hero-stat">Technology: <strong>' + MODEL.elements.filter(el=>el.layer==='technology').length + '</strong></div>';
+
+  // Section headers
+  const ph = document.getElementById('home-procs-hd');   if (ph) ph.textContent = '⬡ ' + T('Processes','Processen');
+  const ch = document.getElementById('home-canvas-hd');  if (ch) ch.textContent = '🗺 ' + T('Architecture Overview','Architectuuroverzicht');
+  const lh = document.getElementById('home-layers-hd');  if (lh) lh.textContent = '📦 ' + T('Layers','Lagen');
+
+  // Re-render proc card bilingual labels
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const txt = _lang === 'nl' ? el.dataset.nl : el.dataset.en;
+    if (txt !== undefined) el.textContent = txt;
+  });
+
   // Layer cards
   const cardWrap = document.getElementById('home-layer-cards');
   if (cardWrap) {
     cardWrap.innerHTML = '';
     Object.entries(LAYER_CFG).forEach(([layerId, cfg]) => {
-      const cnt = MODEL.elements.filter(el=>el.layer===layerId).length;
+      const cnt = MODEL.elements.filter(el => el.layer === layerId).length;
       if (!cnt) return;
       const card = document.createElement('div');
       card.className = 'layer-card';
-      card.onclick = () => showPage('layer-'+layerId);
-      card.style.cursor = 'pointer';
-      card.innerHTML = '<span class="layer-badge" style="background:'+cfg.accent+'20;color:'+cfg.accent+';border:1px solid '+cfg.accent+'40">'+cfg.badge+'</span>'
-        +'<div class="layer-card-name">'+cfg.icon+' '+(_lang==='nl'?cfg.nl:cfg.en)+'</div>'
-        +'<div class="layer-card-count">'+cnt+' '+T('elements','elementen')+'</div>';
+      card.onclick   = () => showPage('layer-' + layerId);
+      card.innerHTML =
+        '<span class="layer-badge" style="background:' + cfg.accent + '20;color:' + cfg.accent + ';border:1px solid ' + cfg.accent + '40">' + cfg.badge + '</span>'
+        + '<div class="layer-card-name">' + cfg.icon + ' ' + (_lang==='nl' ? cfg.nl : cfg.en) + '</div>'
+        + '<div class="layer-card-count">' + cnt + ' ' + T('elements','elementen') + '</div>';
       cardWrap.appendChild(card);
     });
   }
+
   // Intro
   const intro = document.getElementById('home-intro');
   if (intro && MODEL.platformIntro && MODEL.platformIntro.trim()) {
-    intro.innerHTML = '<div class="intro-box"><p class="intro-text">'+he(MODEL.platformIntro)+'</p></div>';
+    intro.innerHTML = '<div class="intro-box"><p class="intro-text">' + he(MODEL.platformIntro) + '</p></div>';
   }
 }
 
 // ── Init ──────────────────────────────────────────────────────
 (function init() {
   setLang(DEF_LANG);
-  renderHomeStatic();
   renderSidebarBrand();
   updateTopbar(T('Overview','Overzicht'));
-  // Restore page from URL hash
-  const hash = location.hash.slice(1);
-  if (hash && hash !== 'home') { showPage(hash); } else { showPage('home'); }
+  showPage('home');
 })();
 ${'<' + '/script>'}
 </body>
