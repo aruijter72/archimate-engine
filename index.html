@@ -2470,6 +2470,7 @@ setInterval(() => Storage.save(model), 60000);
   // Ensure businessSystems sub-fields exist (forward-compatibility)
   if (!model.businessSystems) model.businessSystems = {};
   const bs = model.businessSystems;
+  if (!bs.orgName)       bs.orgName       = '';
   if (!bs.apps)          bs.apps          = [];
   if (!bs.departments)   bs.departments   = [];
   if (!bs.roles)         bs.roles         = [];
