@@ -7312,6 +7312,11 @@ section{margin-bottom:2rem}
 .swim-wrap{background:#fff;border:1px solid #e2e4ea;border-radius:10px;overflow:auto;padding:1rem}
 .swim-wrap svg{max-width:none;display:block;height:auto;transition:transform .15s;transform-origin:top left}
 
+/* ── Application Landscape ── */
+.ls-app .ls-rect{transition:stroke .15s,stroke-width .15s}
+.ls-app:hover .ls-rect{stroke:#C9A355!important;stroke-width:2!important}
+.app-proc-note{font-size:.8rem;color:#888;padding:.3rem 0 .6rem;font-style:italic}
+
 /* ── View hero ── */
 .view-hero{background:#fff;border:1px solid #e2e4ea;border-radius:12px;padding:1rem 1.3rem;margin-bottom:1.2rem}
 .view-hero-name{font-size:1.15rem;font-weight:800;color:#1a1f2e}
@@ -7374,22 +7379,30 @@ section{margin-bottom:2rem}
       <div class="hero-stats" id="hero-stats"></div>
     </div>
     <div id="home-intro"></div>
+
+    <!-- Application Landscape (from Business Systems) -->
+    <section id="home-landscape-section">
+      <div class="section-h">🗂 <span data-en="Application Landscape" data-nl="Applicatielandschap"></span></div>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <span data-en="Click a system to see related processes" data-nl="Klik op een systeem om gerelateerde processen te zien"></span>
+          <button class="cv-btn" onclick="cvZoom('home-ls-cv',-1)">−</button>
+          <button class="cv-btn" onclick="cvReset('home-ls-cv')">⊡</button>
+          <button class="cv-btn" onclick="cvZoom('home-ls-cv',1)">+</button>
+        </div>
+        <div class="canvas-inner" id="home-ls-cv">${bsLandscapeSVG || '<p class="empty-note" style="padding:1.2rem" data-en="No systems defined yet. Add systems in Business Systems first." data-nl="Nog geen systemen gedefinieerd. Voeg systemen toe in Business Systems."></p>'}</div>
+      </div>
+      <!-- Panel: processes linked to a clicked app -->
+      <div id="app-proc-panel" style="display:none;margin-top:1.4rem">
+        <div class="section-h" id="app-proc-panel-hd"></div>
+        <div class="proc-cards-grid" id="app-proc-cards"></div>
+      </div>
+    </section>
+
     ${procs.length ? `<section>
       <div class="section-h" id="home-procs-hd"></div>
       <div class="proc-cards-grid" id="home-proc-cards">${procCardsHTML}</div>
     </section>` : ''}
-    <section>
-      <div class="section-h" id="home-canvas-hd"></div>
-      <div class="canvas-wrap">
-        <div class="canvas-toolbar">
-          <span data-en="Use +/− to zoom" data-nl="Gebruik +/− om te zoomen"></span>
-          <button class="cv-btn" onclick="cvZoom('home-cv',-1)">−</button>
-          <button class="cv-btn" onclick="cvReset('home-cv')">⊡</button>
-          <button class="cv-btn" onclick="cvZoom('home-cv',1)">+</button>
-        </div>
-        <div class="canvas-inner" id="home-cv">${canvasSVG || '<p class="empty-note" style="padding:1rem" data-en="No canvas available." data-nl="Geen canvas beschikbaar."></p>'}</div>
-      </div>
-    </section>
     <section>
       <div class="section-h" id="home-layers-hd"></div>
       <div class="layer-cards" id="home-layer-cards"></div>
@@ -7613,7 +7626,7 @@ function showPage(pageId) {
   if (pageId === 'home') {
     document.getElementById('page-home')?.classList.add('active');
     document.getElementById('nav-home')?.classList.add('active');
-    updateTopbar(T('Overview','Overzicht'));
+    updateTopbar(T('Home','Home'));
     return;
   }
 
@@ -7770,23 +7783,75 @@ function buildElemCard(el) {
     + '</div>';
 }
 
+// ── Application Landscape click ───────────────────────────────
+let _selectedAppId = null;
+function lsAppClick(el, appId) {
+  // Toggle: click same app again = deselect
+  if (_selectedAppId === appId) {
+    _selectedAppId = null;
+    document.querySelectorAll('.ls-app .ls-rect').forEach(r => {
+      r.setAttribute('stroke','#cbd0dc'); r.setAttribute('stroke-width','1.5');
+    });
+    document.getElementById('app-proc-panel').style.display = 'none';
+    return;
+  }
+  // Deselect all, then highlight clicked
+  document.querySelectorAll('.ls-app .ls-rect').forEach(r => {
+    r.setAttribute('stroke','#cbd0dc'); r.setAttribute('stroke-width','1.5');
+  });
+  _selectedAppId = appId;
+  const rect = el.querySelector('.ls-rect');
+  if (rect) { rect.setAttribute('stroke','#C9A355'); rect.setAttribute('stroke-width','2.5'); }
+
+  // Find processes referencing this app in any step
+  const relatedProcs = MODEL.processes.filter(p =>
+    (p.steps||[]).some(s => s.sourceId === appId)
+  );
+
+  const bs    = (MODEL.businessSystems && MODEL.businessSystems.apps) || [];
+  const app   = bs.find(a => a.id === appId);
+  const appNm = app ? app.name : appId;
+
+  const panel = document.getElementById('app-proc-panel');
+  const hd    = document.getElementById('app-proc-panel-hd');
+  const cards = document.getElementById('app-proc-cards');
+
+  hd.textContent = '⬡ ' + T('Processes that use','Processen die gebruikmaken van') + ' ' + appNm
+    + ' (' + relatedProcs.length + ')';
+
+  cards.innerHTML = relatedProcs.length
+    ? relatedProcs.map(p => {
+        const raw = p.documentation || '';
+        const doc = raw.length > 120 ? raw.slice(0,120)+'…' : raw;
+        return '<div class="proc-card" onclick="showPage(\'proc-' + p.id + '-archi\')">'
+          + '<div class="proc-card-name">⬡ ' + he(p.name||'…') + '</div>'
+          + (doc ? '<div class="proc-card-doc">' + he(doc) + '</div>' : '')
+          + '<div class="proc-card-actions">'
+          + '<button class="pca-btn" onclick="event.stopPropagation();showPage(\'proc-' + p.id + '-archi\')">🏛 <span data-en="Architecture" data-nl="Architectuur"></span></button>'
+          + '<button class="pca-btn pca-swim" onclick="event.stopPropagation();showPage(\'proc-' + p.id + '-swim\')">🌊 Swimlane</button>'
+          + '</div></div>';
+      }).join('')
+    : '<p class="empty-note">' + T('No processes are linked to this system yet.','Nog geen processen gekoppeld aan dit systeem.') + '</p>';
+
+  panel.style.display = 'block';
+  setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+}
+
 // ── Home page static content ──────────────────────────────────
 function renderHomeStatic() {
   const d = _lang === 'nl' ? DATE_NL : DATE_EN;
   const t = document.getElementById('hero-title'); if (t) t.textContent = MODEL.name || '';
   const s = document.getElementById('hero-sub');   if (s) s.textContent = T('Architecture Platform','Architectuurplatform') + ' · ' + d;
   const stats = document.getElementById('hero-stats');
+  const bsApps = (MODEL.businessSystems && MODEL.businessSystems.apps) || [];
   if (stats) stats.innerHTML =
-    '<div class="hero-stat">' + T('Elements','Elementen') + ': <strong>' + MODEL.elements.length + '</strong></div>'
-    + '<div class="hero-stat">' + T('Relationships','Relaties') + ': <strong>' + MODEL.relationships.length + '</strong></div>'
+    (bsApps.length ? '<div class="hero-stat">' + T('Systems','Systemen') + ': <strong>' + bsApps.length + '</strong></div>' : '')
     + (MODEL.processes.length ? '<div class="hero-stat">' + T('Processes','Processen') + ': <strong>' + MODEL.processes.length + '</strong></div>' : '')
-    + '<div class="hero-stat">Business: <strong>' + MODEL.elements.filter(el=>el.layer==='business').length + '</strong></div>'
-    + '<div class="hero-stat">Application: <strong>' + MODEL.elements.filter(el=>el.layer==='application').length + '</strong></div>'
-    + '<div class="hero-stat">Technology: <strong>' + MODEL.elements.filter(el=>el.layer==='technology').length + '</strong></div>';
+    + '<div class="hero-stat">' + T('Elements','Elementen') + ': <strong>' + MODEL.elements.length + '</strong></div>'
+    + '<div class="hero-stat">' + T('Relationships','Relaties') + ': <strong>' + MODEL.relationships.length + '</strong></div>';
 
   // Section headers
   const ph = document.getElementById('home-procs-hd');   if (ph) ph.textContent = '⬡ ' + T('Processes','Processen');
-  const ch = document.getElementById('home-canvas-hd');  if (ch) ch.textContent = '🗺 ' + T('Architecture Overview','Architectuuroverzicht');
   const lh = document.getElementById('home-layers-hd');  if (lh) lh.textContent = '📦 ' + T('Layers','Lagen');
 
   // Re-render proc card bilingual labels
