@@ -7128,7 +7128,8 @@ function generateHTMLPlatform() {
   const safeModel = {
     name: model.name, documentation: model.documentation||'',
     platformIntro: model.platformIntro||'',
-    elements: elems, relationships: rels, views, processes: procs
+    elements: elems, relationships: rels, views, processes: procs,
+    businessSystems: model.businessSystems || { apps:[], departments:[], roles:[], roleRelations:[], appRelations:[] }
   };
 
   // ── Sidebar: process groups with sub-items ───────────────────
@@ -7346,7 +7347,7 @@ section{margin-bottom:2rem}
     <div class="brand-line" id="sb-brand"></div>
   </div>
   <nav id="main-nav">
-    <button class="nav-link active" id="nav-home" onclick="showPage('home')">🏠 <span data-en="Overview" data-nl="Overzicht"></span></button>
+    <button class="nav-link active" id="nav-home" onclick="showPage('home')">🏠 <span data-en="Home" data-nl="Home"></span></button>
     ${procs.length ? `<div class="nav-section" data-en="Processes" data-nl="Processen"></div>${procNavHTML}` : ''}
     ${views.length ? `<div class="nav-section" data-en="Views" data-nl="Views"></div>${viewNavHTML}` : ''}
     ${layerNavHTML ? `<div class="nav-section" data-en="Layers" data-nl="Lagen"></div>${layerNavHTML}` : ''}
