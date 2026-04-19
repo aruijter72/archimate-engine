@@ -4633,18 +4633,36 @@ function renderLayer(layer) {
           <th style="width:56px"></th>
         </tr></thead>
         <tbody>`;
+      // Build BS datalists for types that have a BS catalogue counterpart
+      const BS_DATALIST_MAP = {
+        BusinessActor:        { listId:'dl-bs-depts', src: () => bsGet().departments },
+        BusinessRole:         { listId:'dl-bs-roles', src: () => bsGet().roles },
+        ApplicationComponent: { listId:'dl-bs-apps',  src: () => bsGet().apps }
+      };
+      // Inject datalist elements (once per layer render)
+      const neededLists = new Set(types.filter(tp => BS_DATALIST_MAP[tp]).map(tp => BS_DATALIST_MAP[tp].listId));
+      neededLists.forEach(lid => {
+        const cfg = Object.values(BS_DATALIST_MAP).find(c => c.listId === lid);
+        if (!cfg) return;
+        const items = cfg.src();
+        html += `<datalist id="${lid}">${items.map(it => `<option value="${esc(it.name||'')}">`).join('')}</datalist>`;
+      });
+
       for (const el of elems) {
         const isSel    = _selectedElemIds.has(el.id);
         const isOrphan = !connSet.has(el.id);
         const notInView= viewElemSet && !viewElemSet.has(el.id);
         const rowCls   = [isSel?'elem-row-sel':'', isOrphan?'elem-row-orphan':'', notInView?'elem-row-not-in-view':''].filter(Boolean).join(' ');
+        const dlCfg    = BS_DATALIST_MAP[el.type];
+        const listAttr = dlCfg ? ` list="${dlCfg.listId}"` : '';
+        const bsHint   = el._bs ? ' title="Linked to Business Systems — edit name there"' : (dlCfg ? ' title="Tip: names are suggested from your Business Systems catalogue"' : '');
         html += `
         <tr data-elem-id="${el.id}" class="${rowCls}" onclick="_elemRowClick('${el.id}',event)">
-          <td><span class="type-badge ${cc}">${TYPE_LABELS[el.type]}</span></td>
+          <td><span class="type-badge ${cc}">${TYPE_LABELS[el.type]}</span>${el._bs ? ' <span title="Sourced from Business Systems" style="font-size:.65rem;color:var(--gold);opacity:.7">●</span>' : ''}</td>
           <td>
             <input type="text" class="elem-input" data-eid="${el.id}"
                    value="${esc(el.name)}" placeholder="${t('ph-name')}"
-                   oninput="setElem('${el.id}','name',this.value)">
+                   oninput="setElem('${el.id}','name',this.value)"${listAttr}${bsHint}>
           </td>
           <td>
             <button class="notes-toggle-btn ${el.documentation?'has-notes':''}"
