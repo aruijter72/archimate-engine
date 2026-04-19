@@ -2356,6 +2356,20 @@
       <div id="bs-roles-list" class="bs-list"></div>
     </div>
   </div>
+  <!-- Processes tab -->
+  <div class="bs-tab-panel" id="bs-panel-procs">
+    <div class="bs-panel-inner">
+      <div class="bs-list-header">
+        <div>
+          <div class="bs-section-title">Business Processes</div>
+          <div class="bs-section-sub">Define your key processes here — they can be selected when building ArchiMate diagrams and Swimlane flows.</div>
+        </div>
+        <button class="bs-add-btn" onclick="bsShowProcForm()">+ Add</button>
+      </div>
+      <div id="bs-procs-form-area"></div>
+      <div id="bs-procs-list" class="bs-list"></div>
+    </div>
+  </div>
   <!-- Landscape canvas tab -->
   <div class="bs-tab-panel" id="bs-panel-canvas">
     <div class="bs-canvas-toolbar">
@@ -8028,11 +8042,12 @@ function renderBsPanel() {
 
 // ── Sub-tab switching ─────────────────────────────────────────
 function showBsTab(tab) {
-  ['apps','depts','roles','canvas'].forEach(t => {
+  ['apps','depts','roles','procs','canvas'].forEach(t => {
     document.getElementById('bs-panel-' + t)?.classList.toggle('active', t === tab);
     document.getElementById('bs-tab-btn-' + t)?.classList.toggle('active', t === tab);
   });
   if (tab === 'canvas') renderBsCanvas();
+  if (tab === 'procs')  renderBsProcs();
 }
 
 // ══════════════════════════════════════════════════════════════
