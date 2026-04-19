@@ -1916,7 +1916,8 @@
 
     <div style="margin-bottom:1rem">
       <label style="display:block;font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem" id="fgm-name-lbl">Process name</label>
-      <input id="fgm-proc-name" class="elem-input" style="width:100%;font-size:.88rem" placeholder="My generated flow…">
+      <datalist id="dl-fgm-bs-procs"></datalist>
+      <input id="fgm-proc-name" class="elem-input" style="width:100%;font-size:.88rem" placeholder="My generated flow…" list="dl-fgm-bs-procs">
     </div>
 
     <div style="margin-bottom:1.1rem">
@@ -5810,6 +5811,12 @@ function showFlowGenModal() {
   if (nameInput) {
     const base = model.name || (NL ? 'Architecture Flow' : 'Architecture Flow');
     nameInput.value = base + ' — ' + (NL ? 'Swimlane' : 'Swimlane');
+  }
+  // Populate BS process datalist for flow gen modal
+  const fgmDl = document.getElementById('dl-fgm-bs-procs');
+  if (fgmDl) {
+    const bsProcs = bsGet().bsProcesses || [];
+    fgmDl.innerHTML = bsProcs.map(p => `<option value="${esc(p.name||'')}">`).join('');
   }
 
   if (!hasArchi) {
