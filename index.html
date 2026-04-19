@@ -7363,8 +7363,8 @@ section{margin-bottom:2rem}
 <div class="main" id="main-area">
   <div class="topbar">
     <button class="mob-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('mob-open')">☰</button>
-    <div class="topbar-title" id="topbar-title"></div>
-    <div class="topbar-bc" id="topbar-bc"></div>
+    <div class="topbar-title" id="topbar-title">${e(mName || 'Visual Architise')}</div>
+    <div class="topbar-bc" id="topbar-bc">Home</div>
     <div style="display:flex;gap:.3rem;margin-left:.5rem">
       <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
       <button class="lang-btn" id="lang-nl" onclick="setLang('nl')">NL</button>
@@ -7374,11 +7374,15 @@ section{margin-bottom:2rem}
   <!-- HOME PAGE -->
   <div class="page active page-content" id="page-home">
     <div class="home-hero">
-      <h1 id="hero-title"></h1>
-      <div class="hero-sub" id="hero-sub"></div>
-      <div class="hero-stats" id="hero-stats"></div>
+      <h1 id="hero-title">${e(mName || 'Visual Architise')}</h1>
+      <div class="hero-sub" id="hero-sub">Architecture Platform · ${nowEN}</div>
+      <div class="hero-stats" id="hero-stats">
+        ${procs.length ? `<div class="hero-stat">Processes: <strong>${procs.length}</strong></div>` : ''}
+        <div class="hero-stat">Elements: <strong>${elems.length}</strong></div>
+        <div class="hero-stat">Relationships: <strong>${rels.length}</strong></div>
+      </div>
     </div>
-    <div id="home-intro"></div>
+    <div id="home-intro">${model.platformIntro ? `<div class="intro-box"><p class="intro-text">${e(model.platformIntro)}</p></div>` : ''}</div>
 
     <!-- Application Landscape (from Business Systems) -->
     <section id="home-landscape-section">
@@ -7889,7 +7893,6 @@ function renderHomeStatic() {
 (function init() {
   setLang(DEF_LANG);
   renderSidebarBrand();
-  updateTopbar(T('Overview','Overzicht'));
   showPage('home');
 })();
 ${'<' + '/script>'}
