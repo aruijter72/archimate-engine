@@ -8160,6 +8160,83 @@ function syncBsToArchiMate() {
   try { if (currentMode === 'archimate') renderCurrentTab(); } catch(e) {}
 }
 
+// ══════════════════════════════════════════════════════════════
+// BUSINESS PROCESSES (BS catalogue)
+// ══════════════════════════════════════════════════════════════
+function renderBsProcs() {
+  const bs   = bsGet();
+  const list = document.getElementById('bs-procs-list');
+  if (!list) return;
+  if (!bs.bsProcesses.length) {
+    list.innerHTML = '<div class="bs-empty">No processes added yet. Click + Add to get started.</div>';
+    return;
+  }
+  list.innerHTML = bs.bsProcesses.map(p => `
+    <div class="bs-item" id="bs-proc-item-${p.id}">
+      <div class="bs-item-icon">⬡</div>
+      <div class="bs-item-body">
+        <div class="bs-item-name">${escHtml(p.name || '(unnamed)')}</div>
+        ${p.description ? `<div class="bs-item-desc">${escHtml(p.description)}</div>` : ''}
+      </div>
+      <div class="bs-item-actions">
+        <button class="bs-icon-btn" onclick="bsShowProcForm('${p.id}')" title="Edit">✏</button>
+        <button class="bs-icon-btn danger" onclick="bsDeleteBsProc('${p.id}')" title="Delete">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function bsShowProcForm(editId) {
+  const bs   = bsGet();
+  const proc = editId ? bs.bsProcesses.find(p => p.id === editId) : null;
+  const area = document.getElementById('bs-procs-form-area');
+  if (!area) return;
+  area.innerHTML = `
+    <div class="bs-form" id="bs-proc-form">
+      <div class="bs-form-field">
+        <label class="bs-form-label">Process name *</label>
+        <input id="bspf-name" type="text" placeholder="e.g. Order to Cash, Hire to Retire, Procure to Pay…" value="${escHtml(proc?.name||'')}">
+      </div>
+      <div class="bs-form-field">
+        <label class="bs-form-label">Description (optional)</label>
+        <textarea id="bspf-desc" placeholder="Brief description of what this process covers…">${escHtml(proc?.description||'')}</textarea>
+      </div>
+      <div class="bs-form-actions">
+        <button class="bs-btn-cancel" onclick="bsClearProcForm()">Cancel</button>
+        <button class="bs-btn-save"   onclick="bsSaveBsProc(${editId ? `'${editId}'` : 'null'})">${editId ? 'Save changes' : 'Add process'}</button>
+      </div>
+    </div>`;
+  document.getElementById('bspf-name')?.focus();
+}
+
+function bsClearProcForm() {
+  const area = document.getElementById('bs-procs-form-area');
+  if (area) area.innerHTML = '';
+}
+
+function bsSaveBsProc(editId) {
+  const name = document.getElementById('bspf-name')?.value.trim();
+  if (!name) { alert('Please enter a process name.'); return; }
+  const desc = document.getElementById('bspf-desc')?.value.trim() || '';
+  const bs   = bsGet();
+  if (editId) {
+    const p = bs.bsProcesses.find(p => p.id === editId);
+    if (p) { p.name = name; p.description = desc; }
+  } else {
+    bs.bsProcesses.push({ id: bsId(), name, description: desc });
+  }
+  bsClearProcForm();
+  renderBsProcs();
+  autoSave();
+}
+
+function bsDeleteBsProc(id) {
+  if (!confirm('Delete this process from the catalogue?')) return;
+  const bs = bsGet();
+  bs.bsProcesses = bs.bsProcesses.filter(p => p.id !== id);
+  renderBsProcs();
+  autoSave();
+}
+
 // Static SVG of the BS landscape for Visual Architise home page
 function _bsLandscapeSVG() {
   const bs = model.businessSystems;
