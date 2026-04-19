@@ -7823,6 +7823,527 @@ function applyMode() {
 }
 
 // ══════════════════════════════════════════════════════════════
+// BUSINESS SYSTEMS MODULE
+// ══════════════════════════════════════════════════════════════
+
+// ── Helpers ───────────────────────────────────────────────────
+function bsId() {
+  return 'bs-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
+}
+function bsGet() {
+  if (!model.businessSystems) model.businessSystems = { apps:[], departments:[], roles:[], roleRelations:[], appRelations:[] };
+  return model.businessSystems;
+}
+
+// ── Panel entry point ─────────────────────────────────────────
+function renderBsPanel() {
+  renderBsApps();
+  renderBsDepts();
+  renderBsRoles();
+  renderBsCanvas();
+}
+
+// ── Sub-tab switching ─────────────────────────────────────────
+function showBsTab(tab) {
+  ['apps','depts','roles','canvas'].forEach(t => {
+    document.getElementById('bs-panel-' + t)?.classList.toggle('active', t === tab);
+    document.getElementById('bs-tab-btn-' + t)?.classList.toggle('active', t === tab);
+  });
+  if (tab === 'canvas') renderBsCanvas();
+}
+
+// ══════════════════════════════════════════════════════════════
+// APPS (Systems / Platforms)
+// ══════════════════════════════════════════════════════════════
+function renderBsApps() {
+  const bs   = bsGet();
+  const list = document.getElementById('bs-apps-list');
+  if (!list) return;
+  if (!bs.apps.length) {
+    list.innerHTML = '<div class="bs-empty">No systems added yet. Click + Add to get started.</div>';
+    return;
+  }
+  list.innerHTML = bs.apps.map(app => `
+    <div class="bs-item" id="bs-app-item-${app.id}">
+      <div class="bs-item-icon">🖥</div>
+      <div class="bs-item-body">
+        <div class="bs-item-name">${escHtml(app.name || '(unnamed)')}</div>
+        ${app.description ? `<div class="bs-item-desc">${escHtml(app.description)}</div>` : ''}
+      </div>
+      <div class="bs-item-actions">
+        <button class="bs-icon-btn" onclick="bsShowAppForm('${app.id}')" title="Edit">✏</button>
+        <button class="bs-icon-btn danger" onclick="bsDeleteApp('${app.id}')" title="Delete">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function bsShowAppForm(editId) {
+  const bs  = bsGet();
+  const app = editId ? bs.apps.find(a => a.id === editId) : null;
+  const area = document.getElementById('bs-apps-form-area');
+  if (!area) return;
+  area.innerHTML = `
+    <div class="bs-form" id="bs-app-form">
+      <div class="bs-form-row">
+        <div class="bs-form-field">
+          <label class="bs-form-label">Name *</label>
+          <input id="bsaf-name" type="text" placeholder="e.g. SAP, Salesforce, Azure DevOps…" value="${escHtml(app?.name||'')}">
+        </div>
+      </div>
+      <div class="bs-form-field">
+        <label class="bs-form-label">Description (optional)</label>
+        <textarea id="bsaf-desc" placeholder="Short description of this system…">${escHtml(app?.description||'')}</textarea>
+      </div>
+      <div class="bs-form-actions">
+        <button class="bs-btn-cancel" onclick="bsClearAppForm()">Cancel</button>
+        <button class="bs-btn-save"   onclick="bsSaveApp(${editId ? `'${editId}'` : 'null'})">${editId ? 'Save changes' : 'Add system'}</button>
+      </div>
+    </div>`;
+  document.getElementById('bsaf-name')?.focus();
+}
+
+function bsClearAppForm() {
+  const area = document.getElementById('bs-apps-form-area');
+  if (area) area.innerHTML = '';
+}
+
+function bsSaveApp(editId) {
+  const name = document.getElementById('bsaf-name')?.value.trim();
+  if (!name) { alert('Please enter a name.'); return; }
+  const desc = document.getElementById('bsaf-desc')?.value.trim() || '';
+  const bs   = bsGet();
+  if (editId) {
+    const app = bs.apps.find(a => a.id === editId);
+    if (app) { app.name = name; app.description = desc; }
+  } else {
+    bs.apps.push({ id: bsId(), name, description: desc, x: 20 + bs.apps.length * 160, y: 40 });
+  }
+  bsClearAppForm();
+  renderBsApps();
+  autoSave();
+}
+
+function bsDeleteApp(id) {
+  if (!confirm('Delete this system? This will also remove its connections in the landscape.')) return;
+  const bs = bsGet();
+  bs.apps         = bs.apps.filter(a => a.id !== id);
+  bs.appRelations = bs.appRelations.filter(r => r.fromId !== id && r.toId !== id);
+  renderBsApps();
+  renderBsCanvas();
+  autoSave();
+}
+
+// Escape helper (reuse existing or define)
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════════════════════════
+// DEPARTMENTS
+// ══════════════════════════════════════════════════════════════
+function renderBsDepts() {
+  const bs   = bsGet();
+  const list = document.getElementById('bs-depts-list');
+  if (!list) return;
+  if (!bs.departments.length) {
+    list.innerHTML = '<div class="bs-empty">No departments added yet.</div>';
+    return;
+  }
+  list.innerHTML = bs.departments.map(d => `
+    <div class="bs-item" id="bs-dept-item-${d.id}">
+      <div class="bs-item-icon">🏢</div>
+      <div class="bs-item-body">
+        <div class="bs-item-name">${escHtml(d.name||'(unnamed)')}</div>
+        ${d.description ? `<div class="bs-item-desc">${escHtml(d.description)}</div>` : ''}
+        <div class="bs-item-meta">${bs.roles.filter(r=>r.departmentId===d.id).length} role(s)</div>
+      </div>
+      <div class="bs-item-actions">
+        <button class="bs-icon-btn" onclick="bsShowDeptForm('${d.id}')" title="Edit">✏</button>
+        <button class="bs-icon-btn danger" onclick="bsDeleteDept('${d.id}')" title="Delete">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function bsShowDeptForm(editId) {
+  const bs   = bsGet();
+  const dept = editId ? bs.departments.find(d => d.id === editId) : null;
+  const area = document.getElementById('bs-depts-form-area');
+  if (!area) return;
+  area.innerHTML = `
+    <div class="bs-form">
+      <div class="bs-form-field">
+        <label class="bs-form-label">Name *</label>
+        <input id="bsdf-name" type="text" placeholder="e.g. Finance, HR, IT Operations…" value="${escHtml(dept?.name||'')}">
+      </div>
+      <div class="bs-form-field">
+        <label class="bs-form-label">Description (optional)</label>
+        <textarea id="bsdf-desc" placeholder="Short description…">${escHtml(dept?.description||'')}</textarea>
+      </div>
+      <div class="bs-form-actions">
+        <button class="bs-btn-cancel" onclick="bsClearDeptForm()">Cancel</button>
+        <button class="bs-btn-save"   onclick="bsSaveDept(${editId ? `'${editId}'` : 'null'})">${editId ? 'Save changes' : 'Add department'}</button>
+      </div>
+    </div>`;
+  document.getElementById('bsdf-name')?.focus();
+}
+
+function bsClearDeptForm() {
+  const area = document.getElementById('bs-depts-form-area');
+  if (area) area.innerHTML = '';
+}
+
+function bsSaveDept(editId) {
+  const name = document.getElementById('bsdf-name')?.value.trim();
+  if (!name) { alert('Please enter a name.'); return; }
+  const desc = document.getElementById('bsdf-desc')?.value.trim() || '';
+  const bs   = bsGet();
+  if (editId) {
+    const d = bs.departments.find(d => d.id === editId);
+    if (d) { d.name = name; d.description = desc; }
+  } else {
+    bs.departments.push({ id: bsId(), name, description: desc });
+  }
+  bsClearDeptForm();
+  renderBsDepts();
+  renderBsRoles(); // refresh roles (dept name may appear there)
+  autoSave();
+}
+
+function bsDeleteDept(id) {
+  if (!confirm('Delete this department? Roles linked to it will be unlinked.')) return;
+  const bs = bsGet();
+  bs.departments = bs.departments.filter(d => d.id !== id);
+  bs.roles.forEach(r => { if (r.departmentId === id) r.departmentId = ''; });
+  bs.roleRelations = bs.roleRelations.filter(r => r.fromId !== id && r.toId !== id);
+  renderBsDepts();
+  renderBsRoles();
+  autoSave();
+}
+
+// ══════════════════════════════════════════════════════════════
+// ROLES
+// ══════════════════════════════════════════════════════════════
+function renderBsRoles() {
+  const bs   = bsGet();
+  const list = document.getElementById('bs-roles-list');
+  if (!list) return;
+  if (!bs.roles.length) {
+    list.innerHTML = '<div class="bs-empty">No roles added yet.</div>';
+    return;
+  }
+  const deptMap = {};
+  bs.departments.forEach(d => deptMap[d.id] = d.name);
+  list.innerHTML = bs.roles.map(r => {
+    const deptName = r.departmentId ? (deptMap[r.departmentId] || '—') : '—';
+    return `
+    <div class="bs-item" id="bs-role-item-${r.id}">
+      <div class="bs-item-icon">👤</div>
+      <div class="bs-item-body">
+        <div class="bs-item-name">${escHtml(r.name||'(unnamed)')}</div>
+        ${r.description ? `<div class="bs-item-desc">${escHtml(r.description)}</div>` : ''}
+        <div class="bs-item-meta">Department: ${escHtml(deptName)}</div>
+      </div>
+      <div class="bs-item-actions">
+        <button class="bs-icon-btn" onclick="bsShowRoleForm('${r.id}')" title="Edit">✏</button>
+        <button class="bs-icon-btn danger" onclick="bsDeleteRole('${r.id}')" title="Delete">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function bsShowRoleForm(editId) {
+  const bs   = bsGet();
+  const role = editId ? bs.roles.find(r => r.id === editId) : null;
+  const area = document.getElementById('bs-roles-form-area');
+  if (!area) return;
+  const deptOptions = bs.departments.map(d =>
+    `<option value="${d.id}" ${role?.departmentId === d.id ? 'selected' : ''}>${escHtml(d.name)}</option>`
+  ).join('');
+  area.innerHTML = `
+    <div class="bs-form">
+      <div class="bs-form-row">
+        <div class="bs-form-field" style="flex:2">
+          <label class="bs-form-label">Name *</label>
+          <input id="bsrf-name" type="text" placeholder="e.g. Process Manager, Developer, CFO…" value="${escHtml(role?.name||'')}">
+        </div>
+        <div class="bs-form-field" style="flex:1">
+          <label class="bs-form-label">Department</label>
+          <select id="bsrf-dept">
+            <option value="">— none —</option>
+            ${deptOptions}
+          </select>
+        </div>
+      </div>
+      <div class="bs-form-field">
+        <label class="bs-form-label">Description (optional)</label>
+        <textarea id="bsrf-desc" placeholder="Short description…">${escHtml(role?.description||'')}</textarea>
+      </div>
+      <div class="bs-form-actions">
+        <button class="bs-btn-cancel" onclick="bsClearRoleForm()">Cancel</button>
+        <button class="bs-btn-save"   onclick="bsSaveRole(${editId ? `'${editId}'` : 'null'})">${editId ? 'Save changes' : 'Add role'}</button>
+      </div>
+    </div>`;
+  document.getElementById('bsrf-name')?.focus();
+}
+
+function bsClearRoleForm() {
+  const area = document.getElementById('bs-roles-form-area');
+  if (area) area.innerHTML = '';
+}
+
+function bsSaveRole(editId) {
+  const name = document.getElementById('bsrf-name')?.value.trim();
+  if (!name) { alert('Please enter a name.'); return; }
+  const desc   = document.getElementById('bsrf-desc')?.value.trim() || '';
+  const deptId = document.getElementById('bsrf-dept')?.value || '';
+  const bs = bsGet();
+  if (editId) {
+    const r = bs.roles.find(r => r.id === editId);
+    if (r) { r.name = name; r.description = desc; r.departmentId = deptId; }
+  } else {
+    bs.roles.push({ id: bsId(), name, description: desc, departmentId: deptId });
+  }
+  bsClearRoleForm();
+  renderBsRoles();
+  autoSave();
+}
+
+function bsDeleteRole(id) {
+  if (!confirm('Delete this role?')) return;
+  const bs = bsGet();
+  bs.roles         = bs.roles.filter(r => r.id !== id);
+  bs.roleRelations = bs.roleRelations.filter(r => r.fromId !== id && r.toId !== id);
+  renderBsRoles();
+  autoSave();
+}
+
+// ══════════════════════════════════════════════════════════════
+// LANDSCAPE CANVAS
+// ══════════════════════════════════════════════════════════════
+const BS_BOX_W = 130, BS_BOX_H = 56, BS_BOX_R = 7;
+let _bsZoom       = 1;
+let _bsSelId      = null;   // selected app id
+let _bsSelRelId   = null;   // selected relation id
+let _bsConnMode   = false;  // connect mode active
+let _bsConnSrcId  = null;   // source app id for connect
+let _bsDragId     = null;   // app id being dragged
+let _bsDragOffX   = 0, _bsDragOffY = 0;
+let _bsDragging   = false;
+
+function renderBsCanvas() {
+  const svg = document.getElementById('bs-canvas');
+  if (!svg) return;
+  const bs = bsGet();
+
+  // Compute SVG size
+  const pad = 60;
+  const maxX = bs.apps.length ? Math.max(700, ...bs.apps.map(a => (a.x||20) + BS_BOX_W + pad)) : 700;
+  const maxY = bs.apps.length ? Math.max(420, ...bs.apps.map(a => (a.y||20) + BS_BOX_H + pad)) : 420;
+  svg.setAttribute('width',   maxX);
+  svg.setAttribute('height',  maxY);
+  svg.setAttribute('viewBox', `0 0 ${maxX} ${maxY}`);
+  svg.style.transform       = `scale(${_bsZoom})`;
+  svg.style.transformOrigin = 'top left';
+  svg.style.cursor          = _bsConnMode ? 'crosshair' : 'default';
+
+  // Defs: arrowhead
+  let out = `<defs>
+    <marker id="bsArr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#9ba3b8"/>
+    </marker>
+  </defs>
+  <rect width="${maxX}" height="${maxY}" fill="#f4f5f7"/>`;
+
+  // Relations (drawn beneath elements)
+  for (const rel of bs.appRelations) {
+    const src = bs.apps.find(a => a.id === rel.fromId);
+    const tgt = bs.apps.find(a => a.id === rel.toId);
+    if (!src || !tgt) continue;
+    const x1 = (src.x||20) + BS_BOX_W/2, y1 = (src.y||20) + BS_BOX_H/2;
+    const x2 = (tgt.x||20) + BS_BOX_W/2, y2 = (tgt.y||20) + BS_BOX_H/2;
+    const isSelRel = _bsSelRelId === rel.id;
+    out += `<line data-rel="${rel.id}"
+      x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+      stroke="${isSelRel ? '#C9A355' : '#adb5c7'}" stroke-width="${isSelRel ? 2.5 : 1.8}"
+      marker-end="url(#bsArr)" style="cursor:pointer"
+      onclick="bsRelClick(event,'${rel.id}')"/>`;
+  }
+
+  // App elements
+  for (const app of bs.apps) {
+    const x = app.x || 20, y = app.y || 20;
+    const isSel      = _bsSelId     === app.id;
+    const isConnSrc  = _bsConnSrcId === app.id;
+    const stroke = isConnSrc ? '#C9A355' : isSel ? '#4a72f5' : '#cbd0dc';
+    const sw     = (isSel || isConnSrc) ? 2.5 : 1.5;
+    const fill   = isConnSrc ? '#fdf3dc' : '#ffffff';
+    const nameText = (app.name||'').length > 18 ? (app.name||'').slice(0,17)+'…' : (app.name||'');
+    const descText = app.description ? ((app.description).length > 24 ? app.description.slice(0,23)+'…' : app.description) : '';
+    out += `<g data-app="${app.id}" style="cursor:${_bsConnMode?'pointer':'move'}"
+      onmousedown="bsElemMouseDown(event,'${app.id}')"
+      onclick="bsElemClick(event,'${app.id}')">
+      <rect x="${x}" y="${y}" width="${BS_BOX_W}" height="${BS_BOX_H}" rx="${BS_BOX_R}"
+        fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>
+      <text x="${x+BS_BOX_W/2}" y="${y + (descText ? BS_BOX_H/2-7 : BS_BOX_H/2+1)}"
+        text-anchor="middle" dominant-baseline="middle"
+        font-family="Catamaran,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#1a1f2e"
+        style="pointer-events:none">${escHtml(nameText)}</text>
+      ${descText ? `<text x="${x+BS_BOX_W/2}" y="${y+BS_BOX_H/2+9}"
+        text-anchor="middle" dominant-baseline="middle"
+        font-family="Catamaran,system-ui,sans-serif" font-size="9.5" fill="#9ba3b8"
+        style="pointer-events:none">${escHtml(descText)}</text>` : ''}
+    </g>`;
+  }
+
+  svg.innerHTML = out;
+
+  // Update connect button state
+  const connBtn = document.getElementById('bs-connect-btn');
+  if (connBtn) connBtn.classList.toggle('active', _bsConnMode);
+  // Update delete-connection button
+  const delBtn = document.getElementById('bs-delete-conn-btn');
+  if (delBtn) delBtn.style.display = _bsSelRelId ? '' : 'none';
+  // Hint text
+  const hint = document.getElementById('bs-canvas-hint');
+  if (hint) {
+    if (_bsConnMode && !_bsConnSrcId) hint.textContent = 'Click the SOURCE system…';
+    else if (_bsConnMode && _bsConnSrcId) hint.textContent = 'Now click the TARGET system to draw the connection.';
+    else hint.textContent = 'Drag systems to arrange · Click to select · Use 🔗 to draw a connection';
+  }
+}
+
+// Element mouse-down: start drag (if not in connect mode)
+function bsElemMouseDown(e, id) {
+  if (_bsConnMode) return;
+  e.stopPropagation();
+  _bsDragId  = id;
+  _bsDragging = false;
+  const svg    = document.getElementById('bs-canvas');
+  const rect   = svg.getBoundingClientRect();
+  const bs     = bsGet();
+  const app    = bs.apps.find(a => a.id === id);
+  _bsDragOffX = (e.clientX - rect.left) / _bsZoom - (app.x||20);
+  _bsDragOffY = (e.clientY - rect.top)  / _bsZoom - (app.y||20);
+}
+
+// Element click: select OR connect-mode target
+function bsElemClick(e, id) {
+  e.stopPropagation();
+  if (_bsConnMode) {
+    if (!_bsConnSrcId) {
+      _bsConnSrcId = id;
+      renderBsCanvas();
+    } else if (_bsConnSrcId !== id) {
+      // Create the relation
+      const bs = bsGet();
+      const exists = bs.appRelations.some(r =>
+        (r.fromId === _bsConnSrcId && r.toId === id) ||
+        (r.fromId === id && r.toId === _bsConnSrcId)
+      );
+      if (!exists) {
+        bs.appRelations.push({ id: bsId(), fromId: _bsConnSrcId, toId: id, type: 'link' });
+        autoSave();
+      }
+      _bsConnSrcId = null;
+      _bsConnMode  = false;
+      renderBsCanvas();
+    }
+    return;
+  }
+  if (!_bsDragging) {
+    _bsSelId    = (_bsSelId === id) ? null : id;
+    _bsSelRelId = null;
+    renderBsCanvas();
+  }
+}
+
+// Relation click
+function bsRelClick(e, relId) {
+  e.stopPropagation();
+  _bsSelRelId = (_bsSelRelId === relId) ? null : relId;
+  _bsSelId    = null;
+  renderBsCanvas();
+}
+
+// Canvas click (background): deselect
+function bsCanvasClick(e) {
+  if (e.target.id === 'bs-canvas' || e.target.tagName === 'rect' && e.target.getAttribute('fill') === '#f4f5f7') {
+    if (_bsConnMode && _bsConnSrcId) {
+      // Cancel source selection
+      _bsConnSrcId = null;
+      renderBsCanvas();
+      return;
+    }
+    _bsSelId    = null;
+    _bsSelRelId = null;
+    renderBsCanvas();
+  }
+}
+
+// Mouse move on SVG: handle drag
+function bsCanvasMouseMove(e) {
+  if (!_bsDragId) return;
+  _bsDragging = true;
+  const svg  = document.getElementById('bs-canvas');
+  const rect = svg.getBoundingClientRect();
+  const bs   = bsGet();
+  const app  = bs.apps.find(a => a.id === _bsDragId);
+  if (!app) { _bsDragId = null; return; }
+  app.x = Math.max(0, Math.round((e.clientX - rect.left) / _bsZoom - _bsDragOffX));
+  app.y = Math.max(0, Math.round((e.clientY - rect.top)  / _bsZoom - _bsDragOffY));
+  renderBsCanvas();
+}
+
+// Mouse up: end drag
+function bsCanvasMouseUp(e) {
+  if (_bsDragId && _bsDragging) autoSave();
+  _bsDragId   = null;
+  _bsDragging = false;
+}
+
+// Toggle connect mode
+function bsToggleConnect() {
+  _bsConnMode  = !_bsConnMode;
+  _bsConnSrcId = null;
+  renderBsCanvas();
+}
+
+// Delete selected relation
+function bsDeleteSelectedRel() {
+  if (!_bsSelRelId) return;
+  if (!confirm('Delete this connection?')) return;
+  const bs = bsGet();
+  bs.appRelations = bs.appRelations.filter(r => r.id !== _bsSelRelId);
+  _bsSelRelId = null;
+  renderBsCanvas();
+  autoSave();
+}
+
+// Canvas zoom
+function bsCanvasZoom(dir) {
+  if (dir === 0) { _bsZoom = 1; }
+  else _bsZoom = Math.max(0.25, Math.min(3, _bsZoom * (dir > 0 ? 1.25 : 0.8)));
+  const svg = document.getElementById('bs-canvas');
+  if (svg) {
+    svg.style.transform = `scale(${_bsZoom})`;
+    svg.style.transformOrigin = 'top left';
+  }
+}
+
+// Hook model-name change into autoSave
+(function patchModelNameAutoSave() {
+  const inp = document.getElementById('modelName');
+  if (!inp) return;
+  const orig = inp.oninput;
+  inp.oninput = function(e) {
+    if (orig) orig.call(this, e);
+    autoSave();
+  };
+})();
+
+
+
+// ══════════════════════════════════════════════════════════════
 // SAVE / LOAD (JSON)
 // ══════════════════════════════════════════════════════════════
 function saveModel() {
