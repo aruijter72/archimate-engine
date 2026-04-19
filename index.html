@@ -6847,538 +6847,636 @@ function _buildCanvasSVG(elems, pos, viewFilter) {
 
 // ── Hoofdfunctie: genereer het HTML platform ─────────────────
 function generateHTMLPlatform() {
-  const NL  = currentLang === 'nl';
+  if (!model.platformConfig) model.platformConfig = { defaultLang:'en', processes:{}, views:{} };
+  const cfg     = model.platformConfig;
+  const defLang = cfg.defaultLang || 'en';
   const e   = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const mName  = model.name || (NL ? 'Architectuurmodel' : 'Architecture Model');
-  const now    = new Date().toLocaleDateString(NL ? 'nl-NL' : 'en-GB', {year:'numeric',month:'long',day:'numeric'});
+  const mName  = model.name || 'Architecture Model';
+  const nowEN  = new Date().toLocaleDateString('en-GB', {year:'numeric',month:'long',day:'numeric'});
+  const nowNL  = new Date().toLocaleDateString('nl-NL', {year:'numeric',month:'long',day:'numeric'});
   const elems  = model.elements     || [];
   const rels   = model.relationships || [];
-  const procs  = (model.processes   || []).slice().sort((a,b) => (a.name||'').localeCompare(b.name||''));
-  const views  = (model.views       || []).slice().sort((a,b) => (a.name||'').localeCompare(b.name||''));
+  // Filter by platformConfig include flags (default = include)
+  const allProcs = (model.processes || []).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  const allViews = (model.views     || []).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  const procs  = allProcs.filter(p => (cfg.processes[p.id]?.include) !== false);
+  const views  = allViews.filter(v => (cfg.views[v.id]?.include)     !== false);
 
-  // ── Pre-render al SVGs ──
+  // Pre-render SVGs
   const canvasSVG = _platformCanvasSVG(null);
   const procSVGs  = {};
   for (const p of procs) procSVGs[p.id] = _reportProcSVG(p) || '';
+  // Per-layer canvas SVGs
+  const layerSVGs = {};
+  for (const lk of ['business','application','technology','motivation','strategy']) {
+    const le = elems.filter(el => el.layer === lk);
+    if (le.length && model.elementPositions && Object.keys(model.elementPositions).length)
+      layerSVGs[lk] = _buildCanvasSVG(le, model.elementPositions, null) || '';
+  }
+  // Per-view canvas SVGs
+  const viewSVGs = {};
+  for (const v of views) {
+    if (model.elementPositions && Object.keys(model.elementPositions).length)
+      viewSVGs[v.id] = _platformCanvasSVG(v.id) || '';
+  }
 
-  // ── Bouw lookup maps ──
-  const elemById = {}; elems.forEach(el => elemById[el.id] = el);
-  const relTypeMap = {}; REL_TYPES.forEach(rt => relTypeMap[rt.id] = rt);
+  // Safe JSON embedding
+  const J = obj => JSON.stringify(obj)
+    .replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
 
-  // ── Serialize data for embedding in the platform ──
-  // We embed: model (minus elementPositions for size), pre-rendered SVGs
   const safeModel = {
-    name: model.name,
-    documentation: model.documentation || '',
-    platformIntro: model.platformIntro || '',
-    elements: elems,
-    relationships: rels,
-    views: views,
-    processes: procs
+    name: model.name, documentation: model.documentation||'',
+    platformIntro: model.platformIntro||'',
+    elements: elems, relationships: rels, views, processes: procs
   };
-  const modelJSON = JSON.stringify(safeModel)
-    .replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
-  const procSVGsJSON = JSON.stringify(procSVGs)
-    .replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
-
-  // ── TYPE_LABELS / REL_TYPES voor in-platform rendering ──
-  const typeLabelsJSON = JSON.stringify(TYPE_LABELS)
-    .replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
-  const relTypesJSON = JSON.stringify(REL_TYPES.map(rt => ({
-    id: rt.id, label: rt.label,
-    desc: { en: rt.desc?.en||'', nl: rt.desc?.nl||'' }
-  }))).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
-
-  const brandLine = `<span class="brand-arnold">Arnold</span> <span class="brand-ruijter">Ruijter IT</span>`;
-
-  // ── Canvas SVG voor inlining ──
-  const canvasSVGEncoded = canvasSVG
-    .replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
 
   const doc = `<!DOCTYPE html>
-<html lang="${NL?'nl':'en'}">
+<html lang="${defLang}">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${e(mName)} — Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@300;400;600;700;800&amp;display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Catamaran',system-ui,sans-serif;background:#f4f5f7;color:#1a1f2e;font-size:15px;line-height:1.6;overflow-x:hidden}
-
-/* ── Layout ── */
 .layout{display:flex;min-height:100vh}
-.sidebar{width:240px;min-width:240px;background:#1a1f2e;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100;transition:transform .22s}
+/* Sidebar */
+.sidebar{width:240px;min-width:240px;background:#1a1f2e;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100}
 .sidebar-brand{padding:1.2rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,.08)}
-.sidebar-brand .model-nm{font-size:.92rem;font-weight:700;color:#fff;line-height:1.35;word-break:break-word}
-.sidebar-brand .model-dt{font-size:.68rem;color:rgba(255,255,255,.38);margin-top:.2rem}
-.brand-line{font-size:.65rem;color:rgba(255,255,255,.28);margin-top:.45rem}
-.brand-arnold{font-weight:400;color:rgba(255,255,255,.5)}
+.sidebar-brand .model-nm{font-size:.9rem;font-weight:700;color:#fff;line-height:1.35;word-break:break-word}
+.sidebar-brand .model-dt{font-size:.67rem;color:rgba(255,255,255,.35);margin-top:.2rem}
+.brand-line{font-size:.63rem;color:rgba(255,255,255,.25);margin-top:.4rem}
+.brand-arnold{font-weight:400;color:rgba(255,255,255,.45)}
 .brand-ruijter{font-weight:700;color:#C9A355}
-nav{flex:1;padding:.5rem 0 1.5rem;overflow-y:auto}
-.nav-section{padding:.6rem 1.1rem .2rem;font-size:.62rem;font-weight:800;letter-spacing:.1em;color:rgba(255,255,255,.28);text-transform:uppercase;margin-top:.3rem}
-.nav-link{display:flex;align-items:center;gap:.5rem;padding:.42rem 1.1rem;text-decoration:none;color:rgba(255,255,255,.65);font-size:.82rem;font-weight:500;cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:background .12s,color .12s;border-left:3px solid transparent}
+nav{flex:1;padding:.4rem 0 2rem;overflow-y:auto}
+.nav-section{padding:.55rem 1.1rem .15rem;font-size:.6rem;font-weight:800;letter-spacing:.1em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-top:.3rem}
+.nav-link{display:flex;align-items:center;gap:.45rem;padding:.4rem 1.1rem;text-decoration:none;color:rgba(255,255,255,.6);font-size:.81rem;font-weight:500;cursor:pointer;border:none;background:none;width:100%;text-align:left;border-left:3px solid transparent;transition:background .1s,color .1s}
 .nav-link:hover{background:rgba(255,255,255,.06);color:#fff}
-.nav-link.active{background:rgba(201,163,85,.1);color:#C9A355;border-left-color:#C9A355;font-weight:700}
-.nav-link.proc-link.active{background:rgba(167,138,245,.1);color:#b09af5;border-left-color:#b09af5}
-.nav-link.view-link.active{background:rgba(74,159,212,.1);color:#7adaf5;border-left-color:#7adaf5}
-.main{flex:1;margin-left:240px;min-width:0;min-height:100vh}
-.page{display:none;padding:2.5rem 3rem;max-width:1200px}
-.page.active{display:block}
-
-/* ── Top bar ── */
-.topbar{background:#fff;border-bottom:1px solid #e2e4ea;padding:.7rem 3rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:50;margin-left:0}
-.topbar-title{font-size:1rem;font-weight:700;color:#1a1f2e;flex:1}
-.topbar-breadcrumb{font-size:.75rem;color:#aaa}
-
-/* ── Hero / home ── */
-.home-hero{background:linear-gradient(135deg,#1a1f2e 0%,#252d42 100%);color:#fff;border-radius:14px;padding:2.5rem 3rem;margin-bottom:2.2rem}
-.home-hero h1{font-size:2rem;font-weight:800;margin-bottom:.4rem}
-.home-hero .hero-sub{font-size:.95rem;color:rgba(255,255,255,.65);margin-bottom:1.5rem}
-.hero-stats{display:flex;gap:.8rem;flex-wrap:wrap}
-.hero-stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.4rem .9rem;font-size:.8rem;color:rgba(255,255,255,.7)}
+.nav-link.active{background:rgba(201,163,85,.12);color:#C9A355;border-left-color:#C9A355;font-weight:700}
+.nav-link.proc-link.active{background:rgba(167,138,245,.12);color:#b09af5;border-left-color:#b09af5}
+.nav-link.view-link.active{background:rgba(74,180,212,.1);color:#7adaf5;border-left-color:#7adaf5}
+.nav-link.layer-link.active{background:rgba(122,218,245,.08);color:#7adaf5;border-left-color:#7adaf5}
+/* Main */
+.main{flex:1;margin-left:240px;min-width:0;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:#fff;border-bottom:1px solid #e2e4ea;padding:.6rem 2rem;display:flex;align-items:center;gap:.8rem;position:sticky;top:0;z-index:50}
+.topbar-title{font-size:.92rem;font-weight:700;color:#1a1f2e;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-bc{font-size:.73rem;color:#aaa;white-space:nowrap}
+.lang-btn{font-size:.72rem;background:#f4f5f7;border:1px solid #e2e4ea;border-radius:5px;padding:.2rem .5rem;cursor:pointer;font-family:inherit;color:#555;font-weight:600}
+.lang-btn.active{background:#1a1f2e;color:#C9A355;border-color:#1a1f2e}
+.mob-menu-btn{display:none;background:none;border:1px solid #e2e4ea;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.9rem}
+.page-content{padding:2.2rem 2.8rem;max-width:1200px}
+/* Pages */
+.page{display:none}.page.active{display:block}
+/* Hero */
+.home-hero{background:linear-gradient(135deg,#1a1f2e 0%,#252d42 100%);color:#fff;border-radius:14px;padding:2.2rem 2.6rem;margin-bottom:2rem}
+.home-hero h1{font-size:1.85rem;font-weight:800;margin-bottom:.3rem}
+.hero-sub{font-size:.88rem;color:rgba(255,255,255,.55);margin-bottom:1.3rem}
+.hero-stats{display:flex;gap:.7rem;flex-wrap:wrap}
+.hero-stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:.32rem .8rem;font-size:.78rem;color:rgba(255,255,255,.65)}
 .hero-stat strong{color:#fff;font-weight:700}
-.intro-text{white-space:pre-wrap;font-size:.95rem;color:#444;line-height:1.7}
-.intro-box{background:#fff;border:1px solid #e2e4ea;border-left:4px solid #C9A355;border-radius:8px;padding:1.2rem 1.5rem;margin-bottom:2rem}
-
-/* ── Section headings ── */
-.section-h{font-size:1.1rem;font-weight:700;color:#1a1f2e;margin-bottom:1.1rem;padding-bottom:.4rem;border-bottom:1px solid #eef0f4;display:flex;align-items:center;gap:.5rem}
-.section-count{font-size:.72rem;color:#bbb;font-weight:600;margin-left:auto}
-section{margin-bottom:2.5rem}
-
-/* ── Layer cards on home ── */
-.layer-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:2rem}
-.layer-card{background:#fff;border:1px solid #e2e4ea;border-radius:10px;padding:1.1rem 1.2rem;cursor:pointer;transition:box-shadow .15s,border-color .15s;text-decoration:none;display:block}
+.intro-box{background:#fff;border:1px solid #e2e4ea;border-left:4px solid #C9A355;border-radius:8px;padding:1.1rem 1.4rem;margin-bottom:1.8rem}
+.intro-text{white-space:pre-wrap;font-size:.92rem;color:#444;line-height:1.7}
+/* Sections */
+.section-h{font-size:1.05rem;font-weight:700;color:#1a1f2e;margin-bottom:1rem;padding-bottom:.35rem;border-bottom:1px solid #eef0f4;display:flex;align-items:center;gap:.5rem}
+.section-count{font-size:.7rem;color:#bbb;font-weight:600;margin-left:auto}
+section{margin-bottom:2.2rem}
+/* Layer cards */
+.layer-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.9rem;margin-bottom:1.8rem}
+.layer-card{background:#fff;border:1px solid #e2e4ea;border-radius:10px;padding:1rem 1.1rem;cursor:pointer;transition:box-shadow .15s,border-color .15s;border:1px solid #e2e4ea}
 .layer-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.08);border-color:#c9a355}
-.layer-card-badge{font-size:.6rem;font-weight:800;padding:.15rem .5rem;border-radius:4px;letter-spacing:.05em;display:inline-block;margin-bottom:.5rem}
-.layer-card-name{font-size:.95rem;font-weight:700;color:#1a1f2e;margin-bottom:.2rem}
-.layer-card-count{font-size:.78rem;color:#aaa}
-
-/* ── Element cards ── */
-.elem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.85rem;margin-bottom:1rem}
-.elem-card{background:#fff;border:1px solid #e8eaf0;border-radius:10px;padding:.9rem 1rem}
-.elem-card-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:.4rem;margin-bottom:.3rem}
-.elem-name{font-size:.92rem;font-weight:700;color:#1a1f2e;line-height:1.3}
-.elem-type-badge{font-size:.62rem;font-weight:700;white-space:nowrap;margin-top:.12rem;text-align:right}
-.elem-doc{font-size:.82rem;color:#555;line-height:1.5;margin-top:.3rem}
+.layer-badge{font-size:.58rem;font-weight:800;padding:.14rem .45rem;border-radius:4px;letter-spacing:.05em;display:inline-block;margin-bottom:.45rem}
+.layer-card-name{font-size:.9rem;font-weight:700;color:#1a1f2e;margin-bottom:.18rem}
+.layer-card-count{font-size:.75rem;color:#aaa}
+/* Canvas */
+.canvas-wrap{background:#fff;border:1px solid #e2e4ea;border-radius:10px;overflow:hidden;margin-bottom:1.8rem}
+.canvas-toolbar{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;background:#f8f9fc;border-bottom:1px solid #e2e4ea;flex-wrap:wrap}
+.canvas-toolbar span{font-size:.75rem;color:#888;flex:1}
+.cv-btn{background:#fff;border:1px solid #e2e4ea;border-radius:5px;padding:.2rem .6rem;cursor:pointer;font-size:.9rem;font-family:inherit;color:#444;font-weight:600;transition:background .1s}
+.cv-btn:hover{background:#f0f2f7}
+.canvas-inner{overflow:auto;padding:.8rem}
+.canvas-inner svg{max-width:none;display:block;transition:transform .15s;transform-origin:top left}
+/* Element cards */
+.elem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.8rem;margin-bottom:1rem}
+.elem-card{background:#fff;border:1px solid #e8eaf0;border-radius:10px;padding:.85rem .95rem}
+.elem-card-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:.35rem;margin-bottom:.28rem}
+.elem-name{font-size:.9rem;font-weight:700;color:#1a1f2e;line-height:1.3}
+.elem-type-badge{font-size:.62rem;font-weight:700;white-space:nowrap;margin-top:.1rem;text-align:right}
+.elem-doc{font-size:.8rem;color:#555;line-height:1.5;margin-top:.28rem}
 .elem-doc.empty{color:#ccc;font-style:italic}
-
-/* ── Process page ── */
-.proc-hero{background:#fff;border:1px solid #e2e4ea;border-radius:12px;padding:1.4rem 1.6rem;margin-bottom:1.5rem}
-.proc-hero-name{font-size:1.4rem;font-weight:800;color:#1a1f2e;margin-bottom:.3rem}
-.proc-hero-doc{font-size:.88rem;color:#666;line-height:1.6}
-.proc-svg-wrap{overflow-x:auto;background:#fff;border:1px solid #e2e4ea;border-radius:10px;padding:.8rem;margin-bottom:1.5rem}
+/* Tabs */
+.tabs{display:flex;gap:0;border-bottom:2px solid #e2e4ea;margin-bottom:1.4rem}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;padding:.55rem 1.2rem;font-size:.88rem;font-weight:600;color:#888;cursor:pointer;font-family:inherit;transition:color .1s,border-color .1s}
+.tab-btn:hover{color:#1a1f2e}
+.tab-btn.active{color:#1a1f2e;border-bottom-color:#C9A355}
+.tab-panel{display:none}.tab-panel.active{display:block}
+/* Proc hero */
+.proc-hero{background:#fff;border:1px solid #e2e4ea;border-radius:12px;padding:1.3rem 1.5rem;margin-bottom:1.4rem}
+.proc-hero-name{font-size:1.3rem;font-weight:800;color:#1a1f2e;margin-bottom:.28rem}
+.proc-hero-doc{font-size:.86rem;color:#666;line-height:1.6}
+.proc-svg-wrap{overflow-x:auto;background:#fff;border:1px solid #e2e4ea;border-radius:10px;padding:.7rem;margin-bottom:1.4rem}
 .proc-svg-wrap svg{max-width:100%;height:auto;display:block}
-.steps-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e2e4ea;font-size:.83rem;margin-bottom:1.5rem}
-.steps-table thead tr{background:#f4f5f7}
-.steps-table th{text-align:left;padding:.5rem .85rem;font-size:.72rem;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e2e4ea}
-.steps-table td{padding:.48rem .85rem;border-bottom:1px solid #f0f2f7;vertical-align:top}
-.steps-table tr:last-child td{border-bottom:none}
-.step-type-pill{display:inline-block;font-size:.68rem;font-weight:700;padding:.1rem .42rem;border-radius:4px;border:1px solid}
-.step-type-start{background:#d4edda;color:#155724;border-color:#28a745}
-.step-type-end{background:#f8d7da;color:#721c24;border-color:#dc3545}
-.step-type-task{background:#d1ecf1;color:#0c5460;border-color:#0c7a9d}
-.step-type-decision{background:#fff3cd;color:#664d03;border-color:#d4a000}
-.step-type-document{background:#e8eaf6;color:#283593;border-color:#5c6bc0}
-.step-type-label{background:#fff9e6;color:#7a5c00;border-color:#c9a355}
-
-/* ── Rel table ── */
-.rel-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e2e4ea;font-size:.83rem}
-.rel-table thead tr{background:#f4f5f7}
-.rel-table th{text-align:left;padding:.5rem .85rem;font-size:.72rem;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e2e4ea}
-.rel-table td{padding:.48rem .85rem;border-bottom:1px solid #f0f2f7;vertical-align:top}
-.rel-table tr:last-child td{border-bottom:none}
-.rel-table tbody tr:hover td{background:#fafbff}
+/* Steps table */
+.data-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e2e4ea;font-size:.82rem;margin-bottom:1.4rem}
+.data-table thead tr{background:#f4f5f7}
+.data-table th{text-align:left;padding:.48rem .8rem;font-size:.7rem;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e2e4ea}
+.data-table td{padding:.45rem .8rem;border-bottom:1px solid #f0f2f7;vertical-align:top}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tbody tr:hover td{background:#fafbff}
+/* Step type pills */
+.step-pill{display:inline-block;font-size:.66rem;font-weight:700;padding:.08rem .38rem;border-radius:4px;border:1px solid}
+.sp-start{background:#d4edda;color:#155724;border-color:#28a745}
+.sp-end{background:#f8d7da;color:#721c24;border-color:#dc3545}
+.sp-task{background:#d1ecf1;color:#0c5460;border-color:#0c7a9d}
+.sp-decision{background:#fff3cd;color:#664d03;border-color:#d4a000}
+.sp-document{background:#e8eaf6;color:#283593;border-color:#5c6bc0}
+.sp-label{background:#fff9e6;color:#7a5c00;border-color:#c9a355}
+/* Rel */
 .rel-elem-name{font-weight:600;color:#1a1f2e}
 .rel-elem-type{font-size:.7rem;color:#aaa}
-.rel-type-badge{display:inline-block;font-size:.7rem;background:#eef0f7;border:1px solid #dde0ec;border-radius:4px;padding:.1rem .42rem;color:#555;font-weight:600}
-.rel-desc{color:#777;font-size:.78rem}
-
-/* ── View page ── */
-.view-hero{background:#fff;border:1px solid #e2e4ea;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem}
-.view-hero-name{font-size:1.3rem;font-weight:800;color:#1a1f2e}
-
-/* ── Misc ── */
-.empty-note{color:#bbb;font-style:italic;font-size:.87rem}
-.canvas-wrap{background:#fff;border:1px solid #e2e4ea;border-radius:10px;padding:1rem;overflow:auto;margin-bottom:2rem}
-.canvas-wrap svg{max-width:100%;height:auto;display:block}
-.back-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;color:#666;cursor:pointer;background:none;border:none;padding:.3rem 0;margin-bottom:1.2rem;font-family:inherit}
+.rel-type-badge{display:inline-block;font-size:.68rem;background:#eef0f7;border:1px solid #dde0ec;border-radius:4px;padding:.08rem .38rem;color:#555;font-weight:600}
+.rel-desc{color:#777;font-size:.76rem}
+/* Misc */
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;color:#666;cursor:pointer;background:none;border:none;padding:.25rem 0;margin-bottom:1.1rem;font-family:inherit}
 .back-btn:hover{color:#1a1f2e}
-
-/* ── Responsive ── */
+.empty-note{color:#bbb;font-style:italic;font-size:.85rem;padding:.4rem 0}
+.view-hero{background:#fff;border:1px solid #e2e4ea;border-radius:12px;padding:1.1rem 1.4rem;margin-bottom:1.3rem}
+.view-hero-name{font-size:1.2rem;font-weight:800;color:#1a1f2e}
 @media(max-width:900px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.mob-open{transform:translateX(0)}
+  .sidebar{transform:translateX(-100%);transition:transform .22s}
+  .sidebar.mob-open{transform:none}
   .main{margin-left:0}
-  .page{padding:1.5rem 1rem}
-  .home-hero{padding:1.5rem 1.2rem}
-  .topbar{padding:.7rem 1rem}
+  .page-content{padding:1.3rem 1rem}
+  .home-hero{padding:1.4rem 1.1rem}
+  .topbar{padding:.55rem 1rem}
+  .mob-menu-btn{display:block}
 }
-@media print{.sidebar{display:none}.main{margin-left:0}.page{padding:1rem}}
+@media print{.sidebar{display:none}.main{margin-left:0}.page-content{padding:1rem}.topbar{display:none}}
 </style>
 </head>
 <body>
-
 <div class="layout">
 
-<!-- ── Sidebar ── -->
+<!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-brand">
-    <div class="model-nm">${e(mName)}</div>
-    <div class="model-dt">${e(now)}</div>
-    <div class="brand-line">${NL?'Gegenereerd door':'Generated by'} ${brandLine}</div>
+    <div class="model-nm" id="sb-model-name"></div>
+    <div class="model-dt" id="sb-date"></div>
+    <div class="brand-line" id="sb-brand"></div>
   </div>
   <nav id="main-nav">
-    <a class="nav-link active" id="nav-home" onclick="showPage('home')" role="button">🏠 ${NL?'Overzicht':'Overview'}</a>
-    ${procs.length ? `<div class="nav-section">${NL?'Processen':'Processes'}</div>
-    ${procs.map(p=>`<a class="nav-link proc-link" id="nav-proc-${e(p.id)}" onclick="showPage('proc-${e(p.id)}')" role="button">⬡ ${e(p.name||(NL?'Naamloos':'Unnamed'))}</a>`).join('\n    ')}` : ''}
-    ${views.length ? `<div class="nav-section">${NL?'Views':'Views'}</div>
-    ${views.map(v=>`<a class="nav-link view-link" id="nav-view-${e(v.id)}" onclick="showPage('view-${e(v.id)}')" role="button">◈ ${e(v.name||(NL?'Naamloos':'Unnamed'))}</a>`).join('\n    ')}` : ''}
+    <button class="nav-link active" id="nav-home" onclick="showPage('home')">🏠 <span data-en="Overview" data-nl="Overzicht"></span></button>
+    ${procs.length ? `<div class="nav-section" data-en="Processes" data-nl="Processen"></div>
+    ${procs.map(p=>`<button class="nav-link proc-link" id="nav-proc-${e(p.id)}" onclick="showPage('proc-${e(p.id)}')">⬡ ${e(p.name||'…')}</button>`).join('\n    ')}` : ''}
+    ${views.length ? `<div class="nav-section" data-en="Views" data-nl="Views"></div>
+    ${views.map(v=>`<button class="nav-link view-link" id="nav-view-${e(v.id)}" onclick="showPage('view-${e(v.id)}')">◈ ${e(v.name||'…')}</button>`).join('\n    ')}` : ''}
   </nav>
 </aside>
 
-<!-- ── Main content ── -->
-<div class="main" id="main">
-
-  <!-- Topbar with breadcrumb -->
-  <div class="topbar" id="topbar">
-    <button class="back-btn" id="mob-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('mob-open')" style="margin:0;padding:.2rem .5rem;border:1px solid #e2e4ea;border-radius:6px;font-size:.85rem">☰</button>
-    <div class="topbar-title" id="topbar-title">${e(mName)}</div>
-    <div class="topbar-breadcrumb" id="topbar-bc">${NL?'Overzicht':'Overview'}</div>
+<!-- Main -->
+<div class="main" id="main-area">
+  <div class="topbar">
+    <button class="mob-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('mob-open')">☰</button>
+    <div class="topbar-title" id="topbar-title"></div>
+    <div class="topbar-bc" id="topbar-bc"></div>
+    <div style="display:flex;gap:.3rem;margin-left:.5rem">
+      <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="lang-nl" onclick="setLang('nl')">NL</button>
+    </div>
   </div>
 
-  <!-- ── HOME PAGE ── -->
-  <div class="page active" id="page-home">
+  <!-- HOME -->
+  <div class="page active page-content" id="page-home">
     <div class="home-hero">
-      <h1>${e(mName)}</h1>
-      <div class="hero-sub">${NL?'Architectuurplatform':'Architecture Platform'} &middot; ${e(now)}</div>
-      <div class="hero-stats">
-        <div class="hero-stat">${NL?'Elementen':'Elements'}: <strong id="hs-elems">0</strong></div>
-        <div class="hero-stat">${NL?'Relaties':'Relationships'}: <strong id="hs-rels">0</strong></div>
-        <div class="hero-stat">${NL?'Processen':'Processes'}: <strong id="hs-procs">0</strong></div>
-        <div class="hero-stat">Business: <strong id="hs-biz">0</strong></div>
-        <div class="hero-stat">Application: <strong id="hs-app">0</strong></div>
-        <div class="hero-stat">Technology: <strong id="hs-tech">0</strong></div>
-      </div>
+      <h1 id="hero-title"></h1>
+      <div class="hero-sub" id="hero-sub"></div>
+      <div class="hero-stats" id="hero-stats"></div>
     </div>
-    <div id="home-intro-box"></div>
+    <div id="home-intro"></div>
     <section>
-      <div class="section-h">🗺 ${NL?'Architectuuroverzicht':'Architecture Overview'}</div>
-      <div class="canvas-wrap" id="home-canvas"></div>
+      <div class="section-h" id="home-canvas-hd"></div>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <span id="canvas-hint-home"></span>
+          <button class="cv-btn" onclick="cvZoom('home-cv',-1)" title="Zoom out">−</button>
+          <button class="cv-btn" onclick="cvReset('home-cv')" title="Reset">⊡</button>
+          <button class="cv-btn" onclick="cvZoom('home-cv',1)" title="Zoom in">+</button>
+        </div>
+        <div class="canvas-inner" id="home-cv">${canvasSVG || '<p class="empty-note" style="padding:1rem" data-en="No canvas available." data-nl="Geen canvas beschikbaar."></p>'}</div>
+      </div>
     </section>
     <section>
-      <div class="section-h">📦 ${NL?'Lagen':'Layers'}</div>
+      <div class="section-h" id="home-layers-hd"></div>
       <div class="layer-cards" id="home-layer-cards"></div>
     </section>
   </div>
 
-  <!-- ── PROCESS PAGES (rendered per-process by JS) ── -->
-  <div class="page" id="page-proc">
-    <button class="back-btn" onclick="showPage('home')">← ${NL?'Terug naar overzicht':'Back to overview'}</button>
+  <!-- PROCESS page (shared, re-rendered per process) -->
+  <div class="page page-content" id="page-proc">
+    <button class="back-btn" id="back-proc" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
     <div class="proc-hero">
       <div class="proc-hero-name" id="pp-name"></div>
       <div class="proc-hero-doc" id="pp-doc"></div>
     </div>
-    <div class="proc-svg-wrap" id="pp-svg"></div>
-    <section>
-      <div class="section-h">📋 ${NL?'Stappen':'Steps'} <span class="section-count" id="pp-step-count"></span></div>
-      <table class="steps-table" id="pp-steps-table">
-        <thead><tr>
-          <th>#</th>
-          <th>${NL?'Type':'Type'}</th>
-          <th>${NL?'Naam':'Name'}</th>
-          <th>${NL?'Lane':'Lane'}</th>
-          <th>${NL?'Documentatie':'Documentation'}</th>
-        </tr></thead>
-        <tbody id="pp-steps-body"></tbody>
-      </table>
-    </section>
-    <section id="pp-elems-section">
-      <div class="section-h">🔗 ${NL?'Betrokken ArchiMate-elementen':'Linked ArchiMate elements'} <span class="section-count" id="pp-elem-count"></span></div>
-      <div class="elem-grid" id="pp-elems-grid"></div>
-    </section>
-    <section id="pp-rels-section">
-      <div class="section-h">↔ ${NL?'Relaties':'Relationships'} <span class="section-count" id="pp-rel-count"></span></div>
-      <table class="rel-table" id="pp-rels-table">
-        <thead><tr>
-          <th>${NL?'Van':'From'}</th><th>${NL?'Relatie':'Rel.'}</th><th>${NL?'Naar':'To'}</th><th>${NL?'Betekenis':'Meaning'}</th>
-        </tr></thead>
-        <tbody id="pp-rels-body"></tbody>
-      </table>
-    </section>
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-btn-archi" onclick="switchTab('proc','archi')"><span data-en="Architecture" data-nl="Architectuur"></span></button>
+      <button class="tab-btn" id="tab-btn-swim" onclick="switchTab('proc','swim')">Swimlane</button>
+    </div>
+    <div class="tab-panel active" id="tab-proc-archi">
+      <section>
+        <div class="section-h"><span data-en="Linked Elements" data-nl="Gekoppelde elementen"></span> <span class="section-count" id="pp-elem-count"></span></div>
+        <div class="elem-grid" id="pp-elems-grid"></div>
+      </section>
+      <section>
+        <div class="section-h"><span data-en="Relationships" data-nl="Relaties"></span> <span class="section-count" id="pp-rel-count"></span></div>
+        <table class="data-table" id="pp-rels-table">
+          <thead><tr>
+            <th data-en="From" data-nl="Van"></th>
+            <th data-en="Relationship" data-nl="Relatie"></th>
+            <th data-en="To" data-nl="Naar"></th>
+            <th data-en="Meaning" data-nl="Betekenis"></th>
+          </tr></thead>
+          <tbody id="pp-rels-body"></tbody>
+        </table>
+      </section>
+      <section>
+        <div class="section-h"><span data-en="Steps" data-nl="Stappen"></span> <span class="section-count" id="pp-step-count"></span></div>
+        <table class="data-table">
+          <thead><tr>
+            <th>#</th>
+            <th data-en="Type" data-nl="Type"></th>
+            <th data-en="Name" data-nl="Naam"></th>
+            <th data-en="Lane" data-nl="Lane"></th>
+            <th data-en="Documentation" data-nl="Documentatie"></th>
+          </tr></thead>
+          <tbody id="pp-steps-body"></tbody>
+        </table>
+      </section>
+    </div>
+    <div class="tab-panel" id="tab-proc-swim">
+      <div class="proc-svg-wrap" id="pp-svg"></div>
+    </div>
   </div>
 
-  <!-- ── VIEW PAGES ── -->
-  <div class="page" id="page-view">
-    <button class="back-btn" onclick="showPage('home')">← ${NL?'Terug naar overzicht':'Back to overview'}</button>
-    <div class="view-hero">
-      <div class="view-hero-name" id="vp-name"></div>
-    </div>
-    <div class="canvas-wrap" id="vp-canvas"></div>
+  <!-- VIEW page -->
+  <div class="page page-content" id="page-view">
+    <button class="back-btn" id="back-view" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
+    <div class="view-hero"><div class="view-hero-name" id="vp-name"></div></div>
     <section>
-      <div class="section-h">📦 ${NL?'Elementen in deze view':'Elements in this view'} <span class="section-count" id="vp-elem-count"></span></div>
+      <div class="section-h" id="vp-canvas-hd"><span data-en="Diagram" data-nl="Diagram"></span></div>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <span id="canvas-hint-view"></span>
+          <button class="cv-btn" onclick="cvZoom('view-cv',-1)">−</button>
+          <button class="cv-btn" onclick="cvReset('view-cv')">⊡</button>
+          <button class="cv-btn" onclick="cvZoom('view-cv',1)">+</button>
+        </div>
+        <div class="canvas-inner" id="view-cv"></div>
+      </div>
+    </section>
+    <section>
+      <div class="section-h"><span data-en="Elements in this view" data-nl="Elementen in deze view"></span> <span class="section-count" id="vp-elem-count"></span></div>
       <div class="elem-grid" id="vp-elems-grid"></div>
     </section>
   </div>
 
-</div><!-- /main -->
-</div><!-- /layout -->
+  <!-- LAYER page -->
+  <div class="page page-content" id="page-layer">
+    <button class="back-btn" id="back-layer" onclick="showPage('home')">← <span data-en="Back to overview" data-nl="Terug naar overzicht"></span></button>
+    <div class="view-hero"><div class="view-hero-name" id="lp-name"></div></div>
+    <section>
+      <div class="section-h"><span data-en="Diagram" data-nl="Diagram"></span></div>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <span></span>
+          <button class="cv-btn" onclick="cvZoom('layer-cv',-1)">−</button>
+          <button class="cv-btn" onclick="cvReset('layer-cv')">⊡</button>
+          <button class="cv-btn" onclick="cvZoom('layer-cv',1)">+</button>
+        </div>
+        <div class="canvas-inner" id="layer-cv"></div>
+      </div>
+    </section>
+    <section>
+      <div class="section-h"><span data-en="Elements" data-nl="Elementen"></span> <span class="section-count" id="lp-elem-count"></span></div>
+      <div class="elem-grid" id="lp-elems-grid"></div>
+    </section>
+  </div>
 
-<script>
-// ── Embedded data ──
-const NL    = ${NL};
-const MODEL = ${modelJSON};
-const PROC_SVGS  = ${procSVGsJSON};
-const CANVAS_SVG = ${JSON.stringify(canvasSVG).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026')};
-const TYPE_LABELS = ${typeLabelsJSON};
-const REL_TYPES   = ${relTypesJSON};
+</div>
+</div>
 
-// ── Build fast lookups ──
-const elemById   = {};  MODEL.elements.forEach(e => elemById[e.id] = e);
-const procById   = {};  MODEL.processes.forEach(p => procById[p.id] = p);
-const viewById   = {};  MODEL.views.forEach(v => viewById[v.id] = v);
-const relTypeMap = {};  REL_TYPES.forEach(rt => relTypeMap[rt.id] = rt);
-const laneById   = {};  MODEL.processes.forEach(p => (p.lanes||[]).forEach(l => laneById[l.id] = l));
+${'<' + 'script>'}
+// ── Data ──────────────────────────────────────────────────────
+const MODEL      = ${J(safeModel)};
+const PROC_SVGS  = ${J(procSVGs)};
+const LAYER_SVGS = ${J(layerSVGs)};
+const VIEW_SVGS  = ${J(viewSVGs)};
+const TYPE_LABELS= ${J(TYPE_LABELS)};
+const REL_TYPES  = ${J(REL_TYPES.map(rt=>({id:rt.id,label:rt.label,desc:{en:rt.desc?.en||'',nl:rt.desc?.nl||''}}}))};
+const DATE_EN    = ${J(nowEN)};
+const DATE_NL    = ${J(nowNL)};
+const DEF_LANG   = ${J(defLang)};
 
-// ── HTML escape ──
-const he = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ── Lookups ───────────────────────────────────────────────────
+const elemById  = {}; MODEL.elements.forEach(el=>elemById[el.id]=el);
+const procById  = {}; MODEL.processes.forEach(p=>procById[p.id]=p);
+const viewById  = {}; MODEL.views.forEach(v=>viewById[v.id]=v);
+const relTypeMap= {}; REL_TYPES.forEach(rt=>relTypeMap[rt.id]=rt);
 
-// ── Layer config ──
 const LAYER_CFG = {
-  business:    { label: NL?'Business-laag':'Business Layer',     accent:'#2563eb', badge:'BIZ',  icon:'🏢' },
-  application: { label: NL?'Applicatielaag':'Application Layer', accent:'#16a34a', badge:'APP',  icon:'⚙️' },
-  technology:  { label: NL?'Technologielaag':'Technology Layer', accent:'#9333ea', badge:'TECH', icon:'🖥️' },
-  motivation:  { label: NL?'Motivatielaag':'Motivation Layer',   accent:'#d97706', badge:'MOT',  icon:'🎯' },
+  business:    {en:'Business Layer',     nl:'Business-laag',    accent:'#2563eb',badge:'BIZ', icon:'🏢'},
+  application: {en:'Application Layer',  nl:'Applicatielaag',   accent:'#16a34a',badge:'APP', icon:'⚙️'},
+  technology:  {en:'Technology Layer',   nl:'Technologielaag',  accent:'#9333ea',badge:'TECH',icon:'🖥️'},
+  motivation:  {en:'Motivation Layer',   nl:'Motivatielaag',    accent:'#d97706',badge:'MOT', icon:'🎯'},
+  strategy:    {en:'Strategy Layer',     nl:'Strategielaag',    accent:'#0e7490',badge:'STR', icon:'♟'},
 };
 
-// ── Init home stats ──
-(function initHome() {
-  document.getElementById('hs-elems').textContent = MODEL.elements.length;
-  document.getElementById('hs-rels').textContent  = MODEL.relationships.length;
-  document.getElementById('hs-procs').textContent = MODEL.processes.length;
-  document.getElementById('hs-biz').textContent   = MODEL.elements.filter(e=>e.layer==='business').length;
-  document.getElementById('hs-app').textContent   = MODEL.elements.filter(e=>e.layer==='application').length;
-  document.getElementById('hs-tech').textContent  = MODEL.elements.filter(e=>e.layer==='technology').length;
+// ── Language ──────────────────────────────────────────────────
+let _lang = DEF_LANG;
 
-  // Canvas
-  const canvasEl = document.getElementById('home-canvas');
-  if (CANVAS_SVG) canvasEl.innerHTML = CANVAS_SVG;
-  else canvasEl.innerHTML = '<p class="empty-note" style="padding:1rem">'+(NL?'Geen canvas beschikbaar.':'No canvas available.')+'</p>';
-
-  // Intro box
-  if (MODEL.platformIntro && MODEL.platformIntro.trim()) {
-    document.getElementById('home-intro-box').innerHTML =
-      '<div class="intro-box"><p class="intro-text">'+he(MODEL.platformIntro)+'</p></div>';
-  }
-
-  // Layer cards
-  const cardWrap = document.getElementById('home-layer-cards');
-  Object.entries(LAYER_CFG).forEach(([layerId, cfg]) => {
-    const cnt = MODEL.elements.filter(e=>e.layer===layerId).length;
-    if (!cnt) return;
-    const card = document.createElement('a');
-    card.className = 'layer-card';
-    card.href = '#';
-    card.onclick = e => { e.preventDefault(); showLayerSection(layerId); };
-    card.innerHTML = '<span class="layer-card-badge" style="background:'+cfg.accent+'20;color:'+cfg.accent+';border:1px solid '+cfg.accent+'40">'+cfg.badge+'</span>'
-      + '<div class="layer-card-name">'+cfg.icon+' '+he(cfg.label)+'</div>'
-      + '<div class="layer-card-count">'+cnt+' '+(NL?'elementen':'elements')+'</div>';
-    cardWrap.appendChild(card);
+function setLang(lang) {
+  _lang = lang;
+  document.documentElement.lang = lang;
+  document.getElementById('lang-en').classList.toggle('active', lang==='en');
+  document.getElementById('lang-nl').classList.toggle('active', lang==='nl');
+  // Update all data-en / data-nl spans and elements
+  document.querySelectorAll('[data-en]').forEach(el => {
+    if (el.tagName === 'TH' || el.tagName === 'DIV' || el.tagName === 'BUTTON') {
+      const txt = lang==='nl' ? el.dataset.nl : el.dataset.en;
+      if (txt !== undefined) el.textContent = txt;
+    } else {
+      const txt = lang==='nl' ? el.dataset.nl : el.dataset.en;
+      if (txt !== undefined) el.textContent = txt;
+    }
   });
-})();
+  // Sidebar brand
+  renderSidebarBrand();
+  // Topbar
+  updateTopbar();
+  // Home section headers
+  renderHomeStatic();
+}
 
-// ── Navigation ──
+function T(en, nl) { return _lang === 'nl' ? nl : en; }
+function he(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── Zoom controls ─────────────────────────────────────────────
+const _zoomState = {};
+function cvZoom(wrapperId, dir) {
+  const wrap = document.getElementById(wrapperId);
+  if (!wrap) return;
+  const svg = wrap.querySelector('svg');
+  if (!svg) return;
+  if (!_zoomState[wrapperId]) _zoomState[wrapperId] = 1;
+  _zoomState[wrapperId] = Math.max(0.2, Math.min(4, _zoomState[wrapperId] * (dir > 0 ? 1.25 : 0.8)));
+  svg.style.transform = 'scale(' + _zoomState[wrapperId] + ')';
+  wrap.style.height = Math.max(200, svg.getBoundingClientRect().height * _zoomState[wrapperId] + 20) + 'px';
+}
+function cvReset(wrapperId) {
+  const wrap = document.getElementById(wrapperId);
+  if (!wrap) return;
+  const svg = wrap.querySelector('svg');
+  if (svg) svg.style.transform = 'scale(1)';
+  _zoomState[wrapperId] = 1;
+  wrap.style.height = '';
+}
+
+// ── Sidebar brand ─────────────────────────────────────────────
+function renderSidebarBrand() {
+  const d = _lang==='nl' ? DATE_NL : DATE_EN;
+  const el = document.getElementById('sb-model-name'); if(el) el.textContent = MODEL.name || '';
+  const dt = document.getElementById('sb-date');       if(dt) dt.textContent = d;
+  const br = document.getElementById('sb-brand');
+  if(br) br.innerHTML = T('Generated by','Gegenereerd door')+' <span class="brand-arnold">Arnold<\\/span> <span class="brand-ruijter">Ruijter IT<\\/span>';
+}
+
+// ── Navigation ────────────────────────────────────────────────
+const ALL_PAGES = ['page-home','page-proc','page-view','page-layer'];
 let _currentPage = 'home';
-let _lastSection = null;
+let _procTabState = {}; // { [procId]: 'archi'|'swim' }
 
 function showPage(pageId) {
-  // Hide all pages
-  ['page-home','page-proc','page-view'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove('active');
-  });
-  // Deactivate all nav links
+  ALL_PAGES.forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove('active'); });
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-
   _currentPage = pageId;
+  history.replaceState(null,'','#'+pageId);
 
   if (pageId === 'home') {
-    document.getElementById('page-home').classList.add('active');
-    const navEl = document.getElementById('nav-home');
-    if (navEl) navEl.classList.add('active');
-    document.getElementById('topbar-bc').textContent = NL?'Overzicht':'Overview';
-    document.getElementById('topbar-title').textContent = MODEL.name || '';
-    document.getElementById('main').scrollTo(0,0);
+    document.getElementById('page-home')?.classList.add('active');
+    document.getElementById('nav-home')?.classList.add('active');
+    updateTopbar(T('Overview','Overzicht'));
     return;
   }
-
   if (pageId.startsWith('proc-')) {
     const procId = pageId.slice(5);
     const proc = procById[procId];
-    document.getElementById('page-proc').classList.add('active');
-    const navEl = document.getElementById('nav-proc-'+procId);
-    if (navEl) navEl.classList.add('active');
+    document.getElementById('page-proc')?.classList.add('active');
+    document.getElementById('nav-proc-'+procId)?.classList.add('active');
     renderProcPage(proc);
-    document.getElementById('main').scrollTo(0,0);
     return;
   }
-
   if (pageId.startsWith('view-')) {
     const viewId = pageId.slice(5);
     const view = viewById[viewId];
-    document.getElementById('page-view').classList.add('active');
-    const navEl = document.getElementById('nav-view-'+viewId);
-    if (navEl) navEl.classList.add('active');
+    document.getElementById('page-view')?.classList.add('active');
+    document.getElementById('nav-view-'+viewId)?.classList.add('active');
     renderViewPage(view);
-    document.getElementById('main').scrollTo(0,0);
+    return;
+  }
+  if (pageId.startsWith('layer-')) {
+    const layerId = pageId.slice(6);
+    document.getElementById('page-layer')?.classList.add('active');
+    renderLayerPage(layerId);
     return;
   }
 }
 
-// ── Layer section (opens home, scrolls to layer ── use layer sub-page approach)
-function showLayerSection(layerId) {
-  // Build a mini view for this layer by faking a view object
-  const layerElems = MODEL.elements.filter(e => e.layer === layerId);
-  const cfg = LAYER_CFG[layerId] || {};
-  const vp = document.getElementById('vp-name');
-  if (vp) vp.textContent = (cfg.icon||'') + ' ' + (cfg.label || layerId);
-  const vCanvas = document.getElementById('vp-canvas');
-  vCanvas.innerHTML = '<p class="empty-note" style="padding:.5rem">'+(NL?'Laagdiagram niet beschikbaar in deze view.':'Layer diagram not available in this view.')+'</p>';
-  // Elements
-  const grid = document.getElementById('vp-elems-grid');
-  grid.innerHTML = layerElems.map(el => buildElemCard(el, cfg.accent||'#555')).join('');
-  document.getElementById('vp-elem-count').textContent = layerElems.length;
-  // Nav
-  ['page-home','page-proc','page-view'].forEach(id => document.getElementById(id)?.classList.remove('active'));
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  document.getElementById('page-view').classList.add('active');
-  document.getElementById('topbar-bc').textContent = cfg.label || layerId;
-  document.getElementById('main').scrollTo(0,0);
+function updateTopbar(bc) {
+  const t = document.getElementById('topbar-title'); if(t) t.textContent = MODEL.name || '';
+  const b = document.getElementById('topbar-bc');    if(b && bc) b.textContent = bc;
 }
 
-// ── Process page renderer ──
+// ── Tab switching ─────────────────────────────────────────────
+function switchTab(page, tabId) {
+  const prefix = 'tab-' + (page==='proc' ? 'proc' : page);
+  document.querySelectorAll('[id^="' + prefix + '-"]').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('[id^="tab-btn-"]').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById(prefix + '-' + tabId);
+  if (panel) panel.classList.add('active');
+  const btn = document.getElementById('tab-btn-' + tabId);
+  if (btn) btn.classList.add('active');
+}
+
+// ── Process page ──────────────────────────────────────────────
 function renderProcPage(proc) {
   if (!proc) return;
-  const name = proc.name || (NL?'Naamloos proces':'Unnamed Process');
-  document.getElementById('pp-name').textContent = name;
-  document.getElementById('pp-doc').textContent  = proc.documentation || (NL?'Geen documentatie.':'No documentation.');
-  document.getElementById('topbar-bc').textContent = name;
-  document.getElementById('topbar-title').textContent = MODEL.name || '';
+  const nm = proc.name || T('Unnamed Process','Naamloos proces');
+  document.getElementById('pp-name').textContent = nm;
+  document.getElementById('pp-doc').textContent  = proc.documentation || T('No documentation.','Geen documentatie.');
+  updateTopbar(nm);
 
-  // SVG
+  // Swimlane SVG
   const svgWrap = document.getElementById('pp-svg');
-  svgWrap.innerHTML = PROC_SVGS[proc.id] || '<p class="empty-note" style="padding:.5rem">'+(NL?'Geen diagram beschikbaar.':'No diagram available.')+'</p>';
+  svgWrap.innerHTML = PROC_SVGS[proc.id] ||
+    '<p class="empty-note">'+T('No diagram available.','Geen diagram beschikbaar.')+'</p>';
 
-  // Steps table
-  const tbody = document.getElementById('pp-steps-body');
+  // Steps
   const laneMap = {};
   (proc.lanes||[]).forEach(l => laneMap[l.id] = l.name);
   const steps = proc.steps || [];
   document.getElementById('pp-step-count').textContent = steps.length;
-  tbody.innerHTML = steps.map((s,i) => {
-    const typeClass = 'step-type-'+(s.type||'task');
-    return '<tr>'
-      + '<td style="color:#aaa;font-size:.78rem">'+(i+1)+'</td>'
-      + '<td><span class="step-type-pill '+typeClass+'">'+(s.type||'task')+'</span></td>'
-      + '<td style="font-weight:600">'+he(s.label||s.type||'')+'</td>'
-      + '<td style="color:#888;font-size:.8rem">'+he(laneMap[s.laneId]||'—')+'</td>'
-      + '<td style="color:#666;font-size:.82rem">'+he(s.documentation||'')+'</td>'
-      + '</tr>';
-  }).join('');
+  document.getElementById('pp-steps-body').innerHTML = steps.map((s,i) =>
+    '<tr><td style="color:#aaa;font-size:.76rem">'+(i+1)+'</td>'
+    +'<td><span class="step-pill sp-'+(s.type||'task')+'">'+he(s.type||'task')+'</span></td>'
+    +'<td style="font-weight:600">'+he(s.label||s.type||'')+'</td>'
+    +'<td style="color:#888;font-size:.78rem">'+he(laneMap[s.laneId]||'—')+'</td>'
+    +'<td style="color:#666;font-size:.8rem">'+he(s.documentation||'')+'</td></tr>'
+  ).join('');
 
-  // Linked ArchiMate elements (via sourceId on steps)
-  const linkedElemIds = new Set();
-  steps.forEach(s => { if (s.sourceId) linkedElemIds.add(s.sourceId); });
-  const linkedElems = [...linkedElemIds].map(id => elemById[id]).filter(Boolean);
+  // Linked elements via step.sourceId
+  const linkedIds = new Set((proc.steps||[]).filter(s=>s.sourceId).map(s=>s.sourceId));
+  const linkedElems = [...linkedIds].map(id=>elemById[id]).filter(Boolean);
   document.getElementById('pp-elem-count').textContent = linkedElems.length;
-  const elemsGrid = document.getElementById('pp-elems-grid');
-  elemsGrid.innerHTML = linkedElems.length
-    ? linkedElems.map(el => buildElemCard(el, (LAYER_CFG[el.layer]||{}).accent||'#555')).join('')
-    : '<p class="empty-note">'+(NL?'Geen gekoppelde elementen.':'No linked elements.')+'</p>';
+  document.getElementById('pp-elems-grid').innerHTML = linkedElems.length
+    ? linkedElems.map(el=>buildElemCard(el)).join('')
+    : '<p class="empty-note">'+T('No linked elements.','Geen gekoppelde elementen.')+'</p>';
 
-  // Relationships involving linked elements
-  const linkedSet = new Set(linkedElemIds);
-  const procRels = MODEL.relationships.filter(r => linkedSet.has(r.sourceId) || linkedSet.has(r.targetId));
-  document.getElementById('pp-rel-count').textContent = procRels.length;
-  const rBody = document.getElementById('pp-rels-body');
-  rBody.innerHTML = procRels.length
-    ? procRels.map(rel => {
-        const src = elemById[rel.sourceId], tgt = elemById[rel.targetId];
-        if (!src || !tgt) return '';
-        const rt = relTypeMap[rel.type] || { label: rel.type, desc:{en:'',nl:''} };
-        const desc = NL ? (rt.desc?.nl||rt.desc?.en||'') : (rt.desc?.en||'');
+  // Relationships for linked elements
+  const rels = MODEL.relationships.filter(r => linkedIds.has(r.sourceId)||linkedIds.has(r.targetId));
+  document.getElementById('pp-rel-count').textContent = rels.length;
+  document.getElementById('pp-rels-body').innerHTML = rels.length
+    ? rels.map(rel => {
+        const src=elemById[rel.sourceId], tgt=elemById[rel.targetId];
+        if(!src||!tgt) return '';
+        const rt=relTypeMap[rel.type]||{label:rel.type,desc:{en:'',nl:''}};
         return '<tr>'
-          + '<td><span class="rel-elem-name">'+he(src.name||'?')+'</span><br><span class="rel-elem-type">'+he(TYPE_LABELS[src.type]||src.type)+'</span></td>'
-          + '<td><span class="rel-type-badge">'+he(rt.label)+'</span></td>'
-          + '<td><span class="rel-elem-name">'+he(tgt.name||'?')+'</span><br><span class="rel-elem-type">'+he(TYPE_LABELS[tgt.type]||tgt.type)+'</span></td>'
-          + '<td class="rel-desc">'+he(desc)+'</td>'
-          + '</tr>';
+          +'<td><span class="rel-elem-name">'+he(src.name||'?')+'</span><br><span class="rel-elem-type">'+he(TYPE_LABELS[src.type]||src.type)+'</span></td>'
+          +'<td><span class="rel-type-badge">'+he(rt.label)+'</span></td>'
+          +'<td><span class="rel-elem-name">'+he(tgt.name||'?')+'</span><br><span class="rel-elem-type">'+he(TYPE_LABELS[tgt.type]||tgt.type)+'</span></td>'
+          +'<td class="rel-desc">'+he(_lang==='nl'?(rt.desc?.nl||rt.desc?.en||''):(rt.desc?.en||''))+'</td></tr>';
       }).join('')
-    : '<tr><td colspan="4" class="empty-note" style="padding:.7rem">'+(NL?'Geen relaties gevonden.':'No relationships found.')+'</td></tr>';
+    : '<tr><td colspan="4" class="empty-note" style="padding:.6rem">'+T('No relationships.','Geen relaties.')+'</td></tr>';
+
+  // Restore tab state for this process
+  const tab = _procTabState[proc.id] || 'archi';
+  switchTab('proc', tab);
 }
 
-// ── View page renderer ──
+// ── View page ─────────────────────────────────────────────────
 function renderViewPage(view) {
   if (!view) return;
-  const name = view.name || (NL?'Naamloze view':'Unnamed view');
-  document.getElementById('vp-name').textContent = name;
-  document.getElementById('topbar-bc').textContent = name;
-  document.getElementById('topbar-title').textContent = MODEL.name || '';
-
-  // Canvas filtered to this view
-  // (SVG was pre-rendered without view filters; we show a note here)
-  document.getElementById('vp-canvas').innerHTML =
-    '<p class="empty-note" style="padding:.5rem">'+(NL?'View-gefilterd diagram: exporteer opnieuw na het instellen van de view in Architise.':'View-filtered diagram: re-export after configuring the view in Architise.')+'</p>';
-
-  const viewElemIds = new Set(view.elementIds || []);
-  const viewElems   = MODEL.elements.filter(e => viewElemIds.has(e.id));
-  document.getElementById('vp-elem-count').textContent = viewElems.length;
-  const grid = document.getElementById('vp-elems-grid');
-  grid.innerHTML = viewElems.length
-    ? viewElems.map(el => buildElemCard(el, (LAYER_CFG[el.layer]||{}).accent||'#555')).join('')
-    : '<p class="empty-note">'+(NL?'Geen elementen in deze view.':'No elements in this view.')+'</p>';
+  const nm = view.name || T('Unnamed view','Naamloze view');
+  document.getElementById('vp-name').textContent = nm;
+  updateTopbar(nm);
+  // Canvas for this view
+  const cvWrap = document.getElementById('view-cv');
+  cvWrap.innerHTML = VIEW_SVGS[view.id] ||
+    '<p class="empty-note" style="padding:1rem">'+T('No diagram available for this view.','Geen diagram beschikbaar voor deze view.')+'</p>';
+  // Elements
+  const vIds  = new Set(view.elementIds||[]);
+  const vElems= MODEL.elements.filter(el=>vIds.has(el.id));
+  document.getElementById('vp-elem-count').textContent = vElems.length;
+  document.getElementById('vp-elems-grid').innerHTML = vElems.length
+    ? vElems.map(el=>buildElemCard(el)).join('')
+    : '<p class="empty-note">'+T('No elements in this view.','Geen elementen in deze view.')+'</p>';
 }
 
-// ── Element card builder ──
-function buildElemCard(el, accent) {
-  const typeLabel = TYPE_LABELS[el.type] || el.type;
-  const doc = el.documentation || '';
+// ── Layer page ────────────────────────────────────────────────
+function renderLayerPage(layerId) {
+  const cfg = LAYER_CFG[layerId]||{};
+  const nm = (cfg.icon||'') + ' ' + T(cfg.en||layerId, cfg.nl||layerId);
+  document.getElementById('lp-name').textContent = nm;
+  updateTopbar(T(cfg.en||layerId, cfg.nl||layerId));
+  // Canvas
+  const cvWrap = document.getElementById('layer-cv');
+  cvWrap.innerHTML = LAYER_SVGS[layerId] ||
+    '<p class="empty-note" style="padding:1rem">'+T('No diagram available for this layer.','Geen diagram beschikbaar voor deze laag.')+'</p>';
+  // Elements
+  const lElems = MODEL.elements.filter(el=>el.layer===layerId);
+  document.getElementById('lp-elem-count').textContent = lElems.length;
+  document.getElementById('lp-elems-grid').innerHTML = lElems.length
+    ? lElems.map(el=>buildElemCard(el)).join('')
+    : '<p class="empty-note">'+T('No elements.','Geen elementen.')+'</p>';
+}
+
+// ── Element card ──────────────────────────────────────────────
+function buildElemCard(el) {
+  const cfg = LAYER_CFG[el.layer]||{};
+  const accent = cfg.accent||'#555';
+  const typeLabel = TYPE_LABELS[el.type]||el.type;
+  const doc = el.documentation||'';
   return '<div class="elem-card">'
-    + '<div class="elem-card-hd"><span class="elem-name">'+he(el.name||'(unnamed)')+'</span>'
-    + '<span class="elem-type-badge" style="color:'+accent+'">'+he(typeLabel)+'</span></div>'
-    + (doc
-        ? '<div class="elem-doc">'+he(doc)+'</div>'
-        : '<div class="elem-doc empty">'+(NL?'Geen documentatie.':'No documentation.')+'</div>')
-    + '</div>';
+    +'<div class="elem-card-hd"><span class="elem-name">'+he(el.name||'(unnamed)')+'</span>'
+    +'<span class="elem-type-badge" style="color:'+accent+'">'+he(typeLabel)+'</span></div>'
+    +(doc?'<div class="elem-doc">'+he(doc)+'</div>'
+        :'<div class="elem-doc empty">'+T('No documentation.','Geen documentatie.')+'</div>')
+    +'</div>';
 }
 
-// ── Handle URL hash for direct linking ──
-(function initRoute() {
-  const hash = location.hash.replace('#','');
-  if (hash && (hash.startsWith('proc-') || hash.startsWith('view-') || hash === 'home')) {
-    showPage(hash);
+// ── Home page static content ──────────────────────────────────
+function renderHomeStatic() {
+  const d = _lang==='nl' ? DATE_NL : DATE_EN;
+  const t = document.getElementById('hero-title');   if(t) t.textContent = MODEL.name||'';
+  const s = document.getElementById('hero-sub');     if(s) s.textContent = T('Architecture Platform','Architectuurplatform') + ' · ' + d;
+  const stats = document.getElementById('hero-stats');
+  if (stats) stats.innerHTML =
+    '<div class="hero-stat">'+T('Elements','Elementen')+': <strong>'+MODEL.elements.length+'</strong></div>'
+    +'<div class="hero-stat">'+T('Relationships','Relaties')+': <strong>'+MODEL.relationships.length+'</strong></div>'
+    +(MODEL.processes.length?'<div class="hero-stat">'+T('Processes','Processen')+': <strong>'+MODEL.processes.length+'</strong></div>':'')
+    +'<div class="hero-stat">Business: <strong>'+MODEL.elements.filter(e=>e.layer==='business').length+'</strong></div>'
+    +'<div class="hero-stat">Application: <strong>'+MODEL.elements.filter(e=>e.layer==='application').length+'</strong></div>'
+    +'<div class="hero-stat">Technology: <strong>'+MODEL.elements.filter(e=>e.layer==='technology').length+'</strong></div>';
+  // Canvas hint
+  const ch = document.getElementById('canvas-hint-home');
+  if(ch) ch.textContent = T('Use +/− to zoom','Gebruik +/− om te zoomen');
+  const cv = document.getElementById('canvas-hint-view');
+  if(cv) cv.textContent = T('Use +/− to zoom','Gebruik +/− om te zoomen');
+  // Sections
+  const c = document.getElementById('home-canvas-hd'); if(c) c.textContent = '🗺 '+T('Architecture Overview','Architectuuroverzicht');
+  const l = document.getElementById('home-layers-hd'); if(l) l.textContent = '📦 '+T('Layers','Lagen');
+  // Layer cards
+  const cardWrap = document.getElementById('home-layer-cards');
+  if (cardWrap) {
+    cardWrap.innerHTML = '';
+    Object.entries(LAYER_CFG).forEach(([layerId, cfg]) => {
+      const cnt = MODEL.elements.filter(el=>el.layer===layerId).length;
+      if (!cnt) return;
+      const card = document.createElement('div');
+      card.className = 'layer-card';
+      card.onclick = () => showPage('layer-'+layerId);
+      card.style.cursor = 'pointer';
+      card.innerHTML = '<span class="layer-badge" style="background:'+cfg.accent+'20;color:'+cfg.accent+';border:1px solid '+cfg.accent+'40">'+cfg.badge+'</span>'
+        +'<div class="layer-card-name">'+cfg.icon+' '+(_lang==='nl'?cfg.nl:cfg.en)+'</div>'
+        +'<div class="layer-card-count">'+cnt+' '+T('elements','elementen')+'</div>';
+      cardWrap.appendChild(card);
+    });
   }
-})();
-
-// Update URL hash on navigate (optional, for bookmarking)
-const _origShowPage = showPage;
-function showPage(id) {
-  _origShowPage(id);
-  history.replaceState(null, '', '#'+id);
+  // Intro
+  const intro = document.getElementById('home-intro');
+  if (intro && MODEL.platformIntro && MODEL.platformIntro.trim()) {
+    intro.innerHTML = '<div class="intro-box"><p class="intro-text">'+he(MODEL.platformIntro)+'</p></div>';
+  }
 }
+
+// ── Init ──────────────────────────────────────────────────────
+(function init() {
+  setLang(DEF_LANG);
+  renderHomeStatic();
+  renderSidebarBrand();
+  updateTopbar(T('Overview','Overzicht'));
+  // Restore page from URL hash
+  const hash = location.hash.slice(1);
+  if (hash && hash !== 'home') { showPage(hash); } else { showPage('home'); }
+})();
 ${'<' + '/script>'}
 </body>
 </html>`;
 
-  // ── Trigger download ──
   const blob = new Blob([doc], {type:'text/html;charset=utf-8'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href     = url;
-  a.download = (model.name||'platform').replace(/[^\w\s\-]/g,'').trim().replace(/\s+/g,'-').toLowerCase() + '-platform.html';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  a.href = url;
+  a.download = (model.name||'platform').replace(/[^\w\s\-]/g,'').trim().replace(/\s+/g,'-').toLowerCase()+'-platform.html';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
