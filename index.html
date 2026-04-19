@@ -7160,6 +7160,8 @@ function generateHTMLPlatform() {
   const J = obj => JSON.stringify(obj)
     .replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
 
+  const orgName = model.businessSystems?.orgName?.trim() || mName || 'Visual Architise';
+
   const safeModel = {
     name: model.name, documentation: model.documentation||'',
     platformIntro: model.platformIntro||'',
