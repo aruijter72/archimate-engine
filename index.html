@@ -2133,7 +2133,7 @@
         <button class="mi-btn" id="btn-export-ameff-menu-el" onclick="exportAMEFF();closeMenus()" title="Open Group AMEFF XML">⬇ Export AMEFF XML</button>
         <button class="mi-btn no-print" id="btn-print-el" onclick="printModel();closeMenus()">🖨 <span id="btn-print-lbl">Print / Save as PDF</span></button>
         <button class="mi-btn" id="btn-html-report-el" onclick="generateHTMLReport();closeMenus()">📄 <span id="btn-html-report-lbl">Export HTML Report…</span></button>
-        <button class="mi-btn" id="btn-platform-exp-el" onclick="generateHTMLPlatform();closeMenus()">🌐 <span id="btn-platform-exp-lbl">Export Platform HTML…</span></button>
+        <button class="mi-btn" id="btn-platform-exp-el" onclick="generateHTMLPlatform();closeMenus()">🌐 <span id="btn-platform-exp-lbl">Export Visual Architise…</span></button>
         <div class="mi-sep"></div>
         <button class="mi-btn" id="btn-save-template-el" onclick="saveAsTemplate();closeMenus()">⭐ <span id="btn-save-template-lbl">Save as template…</span></button>
         <button class="mi-btn" id="btn-snapshot-el" onclick="saveSnapshot();closeMenus()">📸 Save Snapshot…</button>
@@ -2191,7 +2191,7 @@
         <button class="mi-btn" id="proc-mi-svg" onclick="exportSwimlaneImage('svg');closeMenus()">🖼 <span id="proc-mi-svg-lbl">Export SVG…</span></button>
         <button class="mi-btn" id="proc-mi-png" onclick="exportSwimlaneImage('png');closeMenus()">🖼 <span id="proc-mi-png-lbl">Export PNG…</span></button>
         <button class="mi-btn" id="proc-mi-html-report" onclick="generateHTMLReport();closeMenus()">📄 <span id="proc-mi-html-report-lbl">Export HTML Report…</span></button>
-        <button class="mi-btn" id="proc-mi-platform-exp" onclick="generateHTMLPlatform();closeMenus()">🌐 <span id="proc-mi-platform-exp-lbl">Export Platform HTML…</span></button>
+        <button class="mi-btn" id="proc-mi-platform-exp" onclick="generateHTMLPlatform();closeMenus()">🌐 <span id="proc-mi-platform-exp-lbl">Export Visual Architise…</span></button>
         <div class="mi-sep"></div>
         <button class="mi-btn" id="proc-mi-save-tmpl" onclick="saveAsTemplate();closeMenus()">⭐ <span id="proc-mi-save-tmpl-lbl">Save as template…</span></button>
       </div>
@@ -2977,7 +2977,7 @@ function applyTranslations() {
     'btn-saveas-el':            L === 'nl' ? '💾 Opslaan als…'             : '💾 Save As…',
     'btn-print-lbl':            L === 'nl' ? 'Afdrukken / Opslaan als PDF' : 'Print / Save as PDF',
     'btn-html-report-lbl':      L === 'nl' ? 'HTML-rapport exporteren…'   : 'Export HTML Report…',
-    'btn-platform-exp-lbl':     L === 'nl' ? 'Platform HTML exporteren…'  : 'Export Platform HTML…',
+    'btn-platform-exp-lbl':     L === 'nl' ? 'Exporteer Visual Architise…' : 'Export Visual Architise…',
     'btn-export-arc-menu-el':   L === 'nl' ? '⬇ Exporteer .archimate'      : '⬇ Export .archimate',
     'btn-export-ameff-menu-el': L === 'nl' ? '⬇ Exporteer AMEFF XML'       : '⬇ Export AMEFF XML',
     'btn-snapshot-el':          L === 'nl' ? '📸 Snapshot opslaan…'        : '📸 Save Snapshot…',
@@ -3028,7 +3028,7 @@ function applyTranslations() {
     'proc-mi-svg-lbl':          L === 'nl' ? 'Exporteer SVG…'             : 'Export SVG…',
     'proc-mi-png-lbl':          L === 'nl' ? 'Exporteer PNG…'             : 'Export PNG…',
     'proc-mi-html-report-lbl':  L === 'nl' ? 'HTML-rapport exporteren…'   : 'Export HTML Report…',
-    'proc-mi-platform-exp-lbl': L === 'nl' ? 'Platform HTML exporteren…'  : 'Export Platform HTML…',
+    'proc-mi-platform-exp-lbl': L === 'nl' ? 'Exporteer Visual Architise…' : 'Export Visual Architise…',
     'proc-mi-save-tmpl-lbl':    L === 'nl' ? 'Opslaan als sjabloon…'      : 'Save as template…',
     'btn-export-drawio-el':     L === 'nl' ? '⬇ Exporteer draw.io XML'    : '⬇ Export draw.io XML',
     'proc-tools-gen-flow-lbl':  L === 'nl' ? 'Genereren vanuit ArchiMate…'         : 'Generate from ArchiMate…',
@@ -5578,7 +5578,7 @@ function showPlatformSettings() {
   _t('plat-view-all',   NL ? 'Alle aan' : 'All on');
   _t('plat-view-none',  NL ? 'Alle uit' : 'All off');
   _t('plat-close-btn',  NL ? 'Sluiten' : 'Close');
-  _t('plat-export-btn', NL ? '🌐 Platform exporteren' : '🌐 Export Platform');
+  _t('plat-export-btn', NL ? '🌐 Platform exporteren' : '🌐 Export Visual Architise');
   _t('plat-proc-empty', NL ? 'Geen processen in dit model.' : 'No processes in this model.');
   _t('plat-view-empty', NL ? 'Geen views in dit model.' : 'No views in this model.');
 
