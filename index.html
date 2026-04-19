@@ -1865,22 +1865,60 @@
 </div>
 
 <!-- ── Platform Settings Modal ──────────────────────────────── -->
+<!-- ── Platform Manager Modal ────────────────────────────────── -->
 <div id="platformModal" class="modal-overlay" onclick="if(event.target===this)hidePlatformSettings()" style="z-index:2350">
-  <div class="modal-box" style="max-width:680px;max-height:88vh;overflow-y:auto">
+  <div class="modal-box" style="max-width:760px;max-height:90vh;overflow-y:auto">
     <div class="modal-header">
-      <div class="modal-title" id="plat-title">🌐 Platform inrichten</div>
+      <div class="modal-title" id="plat-title">🌐 Platform beheren</div>
       <button class="modal-close" onclick="hidePlatformSettings()">×</button>
     </div>
-    <p class="modal-sub" id="plat-sub">Stel de introductietekst in voor het HTML-platform. Deze tekst verschijnt op de startpagina als uitleg voor de lezer.</p>
-    <div style="padding:0 0 .5rem">
-      <label style="font-size:.8rem;font-weight:700;color:var(--text2);display:block;margin-bottom:.4rem" id="plat-intro-lbl">Introductietekst voor de startpagina</label>
-      <textarea id="platformIntroTA"
-        style="width:100%;min-height:160px;background:var(--surface2);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:.7rem .9rem;font-family:'Catamaran',system-ui,sans-serif;font-size:.88rem;line-height:1.6;resize:vertical"
-        placeholder="Beschrijf hier het doel en de scope van dit architectuurmodel. Deze tekst zal bovenaan het platform verschijnen."
-        oninput="model.platformIntro = this.value"></textarea>
-      <p style="font-size:.73rem;color:var(--muted);margin-top:.4rem" id="plat-hint">Platte tekst. Alinea's worden gesplitst op lege regels.</p>
+    <p class="modal-sub" id="plat-sub">Beheer welke processen en views zichtbaar zijn in het HTML-platform, stel de introductietekst in en exporteer.</p>
+
+    <!-- Settings section -->
+    <div style="margin-bottom:1.2rem">
+      <div style="font-size:.78rem;font-weight:800;letter-spacing:.06em;color:var(--text2);text-transform:uppercase;margin-bottom:.6rem" id="plat-settings-hd">Instellingen</div>
+      <div style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+          <label style="font-size:.78rem;font-weight:700;color:var(--text2);display:block;margin-bottom:.35rem" id="plat-lang-lbl">Standaardtaal</label>
+          <select id="plat-lang-sel" style="background:var(--surface2);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:.35rem .6rem;font-size:.85rem;font-family:inherit"
+            onchange="if(!model.platformConfig)model.platformConfig={processes:{},views:{}};model.platformConfig.defaultLang=this.value">
+            <option value="en">🇬🇧 English</option>
+            <option value="nl">🇳🇱 Nederlands</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:.8rem">
+        <label style="font-size:.78rem;font-weight:700;color:var(--text2);display:block;margin-bottom:.35rem" id="plat-intro-lbl">Introductietekst startpagina</label>
+        <textarea id="platformIntroTA"
+          style="width:100%;min-height:100px;background:var(--surface2);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:.6rem .85rem;font-family:'Catamaran',system-ui,sans-serif;font-size:.85rem;line-height:1.55;resize:vertical"
+          id="plat-intro-lbl"
+          oninput="model.platformIntro=this.value"></textarea>
+      </div>
     </div>
-    <div style="display:flex;justify-content:flex-end;margin-top:1rem;gap:.5rem">
+
+    <!-- Processes section -->
+    <div style="margin-bottom:1.2rem">
+      <div style="font-size:.78rem;font-weight:800;letter-spacing:.06em;color:var(--text2);text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:.6rem">
+        <span id="plat-proc-hd">Processen</span>
+        <button class="btn-del-sm" style="font-size:.68rem;padding:.12rem .45rem;opacity:.7" onclick="platToggleAll('proc',true)" id="plat-proc-all">Alle aan</button>
+        <button class="btn-del-sm" style="font-size:.68rem;padding:.12rem .45rem;opacity:.7" onclick="platToggleAll('proc',false)" id="plat-proc-none">Alle uit</button>
+      </div>
+      <div id="plat-proc-list" style="display:flex;flex-direction:column;gap:.3rem"></div>
+      <div id="plat-proc-empty" style="font-size:.82rem;color:var(--muted);font-style:italic;display:none" id="plat-proc-empty-txt">Geen processen in dit model.</div>
+    </div>
+
+    <!-- Views section -->
+    <div style="margin-bottom:1.4rem">
+      <div style="font-size:.78rem;font-weight:800;letter-spacing:.06em;color:var(--text2);text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:.6rem">
+        <span id="plat-views-hd">Views</span>
+        <button class="btn-del-sm" style="font-size:.68rem;padding:.12rem .45rem;opacity:.7" onclick="platToggleAll('view',true)" id="plat-view-all">Alle aan</button>
+        <button class="btn-del-sm" style="font-size:.68rem;padding:.12rem .45rem;opacity:.7" onclick="platToggleAll('view',false)" id="plat-view-none">Alle uit</button>
+      </div>
+      <div id="plat-view-list" style="display:flex;flex-direction:column;gap:.3rem"></div>
+      <div id="plat-view-empty" style="font-size:.82rem;color:var(--muted);font-style:italic;display:none" id="plat-view-empty-txt">Geen views in dit model.</div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:.5rem;border-top:1px solid var(--border);padding-top:1rem">
       <button class="btn btn-secondary" onclick="hidePlatformSettings()" id="plat-close-btn">Sluiten</button>
       <button class="btn btn-primary" onclick="generateHTMLPlatform();hidePlatformSettings()" id="plat-export-btn">🌐 Platform exporteren</button>
     </div>
