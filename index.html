@@ -5307,18 +5307,89 @@ function hideAbout() {
 }
 
 // ── Platform Settings ─────────────────────────────────────────
+function platToggleAll(type, val) {
+  if (!model.platformConfig) model.platformConfig = { defaultLang:'en', processes:{}, views:{} };
+  const items = type === 'proc' ? (model.processes||[]) : (model.views||[]);
+  const cfg   = type === 'proc' ? model.platformConfig.processes : model.platformConfig.views;
+  items.forEach(x => { if (!cfg[x.id]) cfg[x.id] = {}; cfg[x.id].include = val; });
+  // Update checkboxes
+  document.querySelectorAll(`[data-plat-toggle="${type}"]`).forEach(cb => { cb.checked = val; });
+}
+
 function showPlatformSettings() {
   const NL = currentLang === 'nl';
+  if (!model.platformConfig) model.platformConfig = { defaultLang:'en', processes:{}, views:{} };
+  const cfg = model.platformConfig;
+
+  // i18n
   const _t = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
-  _t('plat-title',       NL ? '🌐 Platform inrichten' : '🌐 Configure Platform');
-  _t('plat-sub',         NL ? 'Stel de introductietekst in voor het HTML-platform. Deze tekst verschijnt op de startpagina als uitleg voor de lezer.'
-                             : 'Set the introductory text for the HTML platform. This text appears on the home page for readers.');
-  _t('plat-intro-lbl',   NL ? 'Introductietekst voor de startpagina' : 'Home page introduction text');
-  _t('plat-hint',        NL ? 'Platte tekst. Alinea\'s worden gesplitst op lege regels.' : 'Plain text. Paragraphs are separated by blank lines.');
-  _t('plat-close-btn',   NL ? 'Sluiten' : 'Close');
-  _t('plat-export-btn',  NL ? '🌐 Platform exporteren' : '🌐 Export Platform');
+  _t('plat-title',      NL ? '🌐 Platform beheren' : '🌐 Manage Platform');
+  _t('plat-sub',        NL ? 'Beheer welke processen en views zichtbaar zijn in het HTML-platform, stel de introductietekst in en exporteer.'
+                           : 'Manage which processes and views are visible in the HTML platform, set the intro text, and export.');
+  _t('plat-settings-hd', NL ? 'Instellingen' : 'Settings');
+  _t('plat-lang-lbl',   NL ? 'Standaardtaal' : 'Default language');
+  _t('plat-intro-lbl',  NL ? 'Introductietekst startpagina' : 'Home page introduction text');
+  _t('plat-proc-hd',    NL ? 'Processen' : 'Processes');
+  _t('plat-proc-all',   NL ? 'Alle aan' : 'All on');
+  _t('plat-proc-none',  NL ? 'Alle uit' : 'All off');
+  _t('plat-views-hd',   NL ? 'Views' : 'Views');
+  _t('plat-view-all',   NL ? 'Alle aan' : 'All on');
+  _t('plat-view-none',  NL ? 'Alle uit' : 'All off');
+  _t('plat-close-btn',  NL ? 'Sluiten' : 'Close');
+  _t('plat-export-btn', NL ? '🌐 Platform exporteren' : '🌐 Export Platform');
+  _t('plat-proc-empty', NL ? 'Geen processen in dit model.' : 'No processes in this model.');
+  _t('plat-view-empty', NL ? 'Geen views in dit model.' : 'No views in this model.');
+
+  // Language select
+  const langSel = document.getElementById('plat-lang-sel');
+  if (langSel) langSel.value = cfg.defaultLang || 'en';
+
+  // Intro text
   const ta = document.getElementById('platformIntroTA');
-  if (ta) ta.value = model.platformIntro || '';
+  if (ta) { ta.value = model.platformIntro || ''; ta.placeholder = NL
+    ? 'Beschrijf hier het doel en de scope van dit model...'
+    : 'Describe the purpose and scope of this model here...'; }
+
+  // Processes list
+  const procs = (model.processes||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  const procList  = document.getElementById('plat-proc-list');
+  const procEmpty = document.getElementById('plat-proc-empty');
+  if (procList) {
+    if (!procs.length) { procList.innerHTML=''; if(procEmpty) procEmpty.style.display=''; }
+    else {
+      if(procEmpty) procEmpty.style.display='none';
+      procList.innerHTML = procs.map(p => {
+        const inc = (cfg.processes[p.id]?.include) !== false;
+        return `<label style="display:flex;align-items:center;gap:.6rem;padding:.38rem .55rem;background:var(--surface2);border-radius:6px;cursor:pointer;font-size:.84rem">
+          <input type="checkbox" data-plat-toggle="proc" data-id="${p.id}" ${inc?'checked':''} style="accent-color:var(--gold);width:14px;height:14px"
+            onchange="if(!model.platformConfig.processes['${p.id}'])model.platformConfig.processes['${p.id}']={};model.platformConfig.processes['${p.id}'].include=this.checked">
+          <span style="color:var(--white);font-weight:600">⬡ ${p.name||'(unnamed)'}</span>
+          <span style="margin-left:auto;font-size:.72rem;color:var(--muted)">${(p.lanes||[]).length} lanes · ${(p.steps||[]).length} steps</span>
+        </label>`;
+      }).join('');
+    }
+  }
+
+  // Views list
+  const views = (model.views||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  const viewList  = document.getElementById('plat-view-list');
+  const viewEmpty = document.getElementById('plat-view-empty');
+  if (viewList) {
+    if (!views.length) { viewList.innerHTML=''; if(viewEmpty) viewEmpty.style.display=''; }
+    else {
+      if(viewEmpty) viewEmpty.style.display='none';
+      viewList.innerHTML = views.map(v => {
+        const inc = (cfg.views[v.id]?.include) !== false;
+        return `<label style="display:flex;align-items:center;gap:.6rem;padding:.38rem .55rem;background:var(--surface2);border-radius:6px;cursor:pointer;font-size:.84rem">
+          <input type="checkbox" data-plat-toggle="view" data-id="${v.id}" ${inc?'checked':''} style="accent-color:var(--gold);width:14px;height:14px"
+            onchange="if(!model.platformConfig.views['${v.id}'])model.platformConfig.views['${v.id}']={};model.platformConfig.views['${v.id}'].include=this.checked">
+          <span style="color:var(--white);font-weight:600">◈ ${v.name||'(unnamed)'}</span>
+          <span style="margin-left:auto;font-size:.72rem;color:var(--muted)">${(v.elementIds||[]).length} elements</span>
+        </label>`;
+      }).join('');
+    }
+  }
+
   document.getElementById('platformModal').classList.add('open');
 }
 function hidePlatformSettings() {
