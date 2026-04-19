@@ -2461,6 +2461,8 @@ setInterval(() => Storage.save(model), 60000);
   if (!bs.roleRelations) bs.roleRelations = [];
   if (!bs.appRelations)  bs.appRelations  = [];
   if (!model.platformConfig) model.platformConfig = { defaultLang:'en', processes:{}, views:{} };
+  // Sync BS catalogue to ArchiMate elements on load
+  setTimeout(syncBsToArchiMate, 0);
 })();
 
 // ══════════════════════════════════════════════════════════════
@@ -7961,6 +7963,7 @@ function bsSaveApp(editId) {
   }
   bsClearAppForm();
   renderBsApps();
+  syncBsToArchiMate();
   autoSave();
 }
 
@@ -7972,6 +7975,71 @@ function bsDeleteApp(id) {
   renderBsApps();
   renderBsCanvas();
   autoSave();
+}
+
+
+// ── Business Systems → ArchiMate sync ────────────────────────
+// Maps: apps → application-component, departments → business-actor, roles → business-role
+// Elements share the same ID as their BS counterpart for consistent cross-referencing.
+function syncBsToArchiMate() {
+  const bs = bsGet();
+  // Build lookup of all current BS-sourced IDs
+  const bsIds = new Set([
+    ...bs.apps.map(a => a.id),
+    ...bs.departments.map(d => d.id),
+    ...bs.roles.map(r => r.id)
+  ]);
+  // Remove elements that were sourced from BS but no longer exist there
+  model.elements = model.elements.filter(el => !el._bs || bsIds.has(el.id));
+  // Upsert helper
+  function upsertEl(id, name, desc, type, layer) {
+    let el = model.elements.find(e => e.id === id);
+    if (el) {
+      el.name = name; el.documentation = desc || '';
+    } else {
+      model.elements.push({ id, layer, type, name, documentation: desc||'', properties:[], _bs: true });
+    }
+  }
+  bs.apps.forEach(a =>
+    upsertEl(a.id, a.name, a.description||'', 'application-component', 'application'));
+  bs.departments.forEach(d =>
+    upsertEl(d.id, d.name, d.description||'', 'business-actor', 'business'));
+  bs.roles.forEach(r =>
+    upsertEl(r.id, r.name, r.description||'', 'business-role', 'business'));
+  // Refresh ArchiMate stats/canvas if currently visible
+  try { updateStats(); } catch(e) {}
+  try { if (currentMode === 'archimate') renderCurrentTab(); } catch(e) {}
+}
+
+// Static SVG of the BS landscape for Visual Architise home page
+function _bsLandscapeSVG() {
+  const bs = model.businessSystems;
+  if (!bs || !bs.apps || !bs.apps.length) return '';
+  const W = 130, H = 56, R = 7, pad = 50;
+  const maxX = Math.max(720, ...bs.apps.map(a => (a.x||20) + W + pad));
+  const maxY = Math.max(400, ...bs.apps.map(a => (a.y||20) + H + pad));
+  let out = `<svg xmlns="http://www.w3.org/2000/svg" width="${maxX}" height="${maxY}" viewBox="0 0 ${maxX} ${maxY}">`;
+  out += `<defs><marker id="lsArr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">`;
+  out += `<path d="M0,0 L0,6 L8,3 z" fill="#9ba3b8"/></marker></defs>`;
+  out += `<rect width="${maxX}" height="${maxY}" fill="#f8f9fc"/>`;
+  for (const rel of (bs.appRelations||[])) {
+    const s = bs.apps.find(a => a.id === rel.fromId);
+    const t = bs.apps.find(a => a.id === rel.toId);
+    if (!s || !t) continue;
+    out += `<line x1="${(s.x||20)+W/2}" y1="${(s.y||20)+H/2}" x2="${(t.x||20)+W/2}" y2="${(t.y||20)+H/2}" stroke="#adb5c7" stroke-width="1.8" marker-end="url(#lsArr)"/>`;
+  }
+  for (const app of bs.apps) {
+    const x = app.x||20, y = app.y||20;
+    const nm = (app.name||'').length > 18 ? (app.name||'').slice(0,17)+'…' : (app.name||'');
+    const ds = app.description ? ((app.description).length > 22 ? app.description.slice(0,21)+'…' : app.description) : '';
+    out += `<g class="ls-app" data-id="${app.id}" onclick="lsAppClick(this,'${app.id}')" style="cursor:pointer">`;
+    out += `<rect x="${x}" y="${y}" width="${W}" height="${H}" rx="${R}" fill="#fff" stroke="#cbd0dc" stroke-width="1.5" class="ls-rect"/>`;
+    out += `<text x="${x+W/2}" y="${y+(ds?H/2-7:H/2+1)}" text-anchor="middle" dominant-baseline="middle" font-family="Catamaran,system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#1a1f2e" style="pointer-events:none">${nm}</text>`;
+    if (ds) out += `<text x="${x+W/2}" y="${y+H/2+9}" text-anchor="middle" dominant-baseline="middle" font-family="Catamaran,system-ui,sans-serif" font-size="9.5" fill="#9ba3b8" style="pointer-events:none">${ds}</text>`;
+    out += `</g>`;
+  }
+  out += `</svg>`;
+  return out;
 }
 
 // Escape helper (reuse existing or define)
@@ -8058,6 +8126,7 @@ function bsDeleteDept(id) {
   bs.roleRelations = bs.roleRelations.filter(r => r.fromId !== id && r.toId !== id);
   renderBsDepts();
   renderBsRoles();
+  syncBsToArchiMate();
   autoSave();
 }
 
@@ -8146,6 +8215,7 @@ function bsSaveRole(editId) {
   }
   bsClearRoleForm();
   renderBsRoles();
+  syncBsToArchiMate();
   autoSave();
 }
 
