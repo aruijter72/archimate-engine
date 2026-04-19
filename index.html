@@ -1456,7 +1456,73 @@
       @page { margin: 15mm 15mm 15mm 15mm; size: A4 portrait; }
     }
     .print-only { display: none; }
-  </style>
+  
+/* ══════════════════════════════════════════════════════
+   BUSINESS SYSTEMS MODULE
+══════════════════════════════════════════════════════ */
+#bs-main { display:none; height:calc(100vh - 96px); overflow:hidden; }
+.bs-tab-nav { display:flex; gap:0; border-bottom:2px solid #e8eaf2; background:#fff; padding:0 1.2rem; flex-shrink:0; }
+.bs-tab-btn { background:none; border:none; border-bottom:2px solid transparent; margin-bottom:-2px;
+  padding:.55rem 1.1rem; font-size:.82rem; font-weight:600; color:#888; cursor:pointer;
+  font-family:inherit; transition:color .12s, border-color .12s; }
+.bs-tab-btn:hover { color:#1a1f2e; }
+.bs-tab-btn.active { color:#1a1f2e; border-bottom-color:#C9A355; }
+.bs-tab-panel { display:none; height:calc(100vh - 138px); overflow-y:auto; }
+.bs-tab-panel.active { display:block; }
+.bs-panel-inner { max-width:860px; margin:0 auto; padding:1.6rem 2rem; }
+.bs-list-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+.bs-section-title { font-size:1rem; font-weight:700; color:#1a1f2e; }
+.bs-section-sub { font-size:.78rem; color:#888; margin-top:.15rem; }
+.bs-add-btn { font-family:inherit; font-size:.8rem; font-weight:700; padding:.32rem .85rem;
+  border-radius:7px; border:1.5px solid #C9A355; background:#fff; color:#9a7530; cursor:pointer; transition:background .12s; }
+.bs-add-btn:hover { background:#fdf3dc; }
+.bs-list { display:flex; flex-direction:column; gap:.55rem; }
+.bs-item { background:#fff; border:1px solid #e2e4ea; border-radius:10px; padding:.8rem 1rem;
+  display:flex; align-items:flex-start; gap:.75rem; transition:box-shadow .12s; }
+.bs-item:hover { box-shadow:0 2px 8px rgba(0,0,0,.07); }
+.bs-item-icon { font-size:1.1rem; margin-top:.05rem; flex-shrink:0; }
+.bs-item-body { flex:1; min-width:0; }
+.bs-item-name { font-size:.9rem; font-weight:700; color:#1a1f2e; line-height:1.25; }
+.bs-item-desc { font-size:.78rem; color:#888; margin-top:.1rem; line-height:1.4; }
+.bs-item-meta { font-size:.72rem; color:#bbb; margin-top:.18rem; }
+.bs-item-actions { display:flex; gap:.35rem; flex-shrink:0; margin-top:.08rem; }
+.bs-icon-btn { background:none; border:1px solid #e2e4ea; border-radius:5px; padding:.18rem .42rem;
+  font-size:.82rem; cursor:pointer; color:#666; transition:background .1s; }
+.bs-icon-btn:hover { background:#f4f5f7; color:#1a1f2e; }
+.bs-icon-btn.danger:hover { background:#fdecea; color:#c0392b; border-color:#f5c6c2; }
+/* Inline add/edit form */
+.bs-form { background:#f8f9fc; border:1.5px solid #C9A355; border-radius:10px;
+  padding:.9rem 1rem; display:flex; flex-direction:column; gap:.55rem; margin-bottom:.55rem; }
+.bs-form-row { display:flex; gap:.5rem; align-items:flex-start; }
+.bs-form input, .bs-form select, .bs-form textarea {
+  font-family:inherit; font-size:.83rem; padding:.32rem .65rem; border:1px solid #d5d8e2;
+  border-radius:6px; background:#fff; color:#1a1f2e; width:100%; outline:none; }
+.bs-form input:focus, .bs-form select:focus, .bs-form textarea:focus { border-color:#C9A355; }
+.bs-form textarea { resize:vertical; min-height:52px; }
+.bs-form-label { font-size:.73rem; font-weight:700; color:#555; margin-bottom:.18rem; display:block; }
+.bs-form-field { flex:1; }
+.bs-form-actions { display:flex; gap:.4rem; justify-content:flex-end; }
+.bs-btn-save { font-family:inherit; font-size:.79rem; font-weight:700; padding:.3rem .85rem;
+  border-radius:6px; border:none; background:#1a1f2e; color:#C9A355; cursor:pointer; }
+.bs-btn-save:hover { background:#252d42; }
+.bs-btn-cancel { font-family:inherit; font-size:.79rem; font-weight:600; padding:.3rem .7rem;
+  border-radius:6px; border:1px solid #ddd; background:#fff; color:#666; cursor:pointer; }
+.bs-btn-cancel:hover { background:#f4f5f7; }
+.bs-empty { color:#bbb; font-style:italic; font-size:.84rem; padding:1.2rem 0; text-align:center; }
+/* Landscape canvas */
+#bs-panel-canvas { height:calc(100vh - 138px); display:none; flex-direction:column; overflow:hidden; }
+#bs-panel-canvas.active { display:flex; }
+.bs-canvas-toolbar { display:flex; align-items:center; gap:.5rem; padding:.45rem 1rem;
+  background:#fff; border-bottom:1px solid #e2e4ea; flex-shrink:0; flex-wrap:wrap; }
+.bs-canvas-hint { font-size:.72rem; color:#aaa; flex:1; }
+.bs-cv-btn { font-family:inherit; font-size:.82rem; font-weight:700; padding:.22rem .65rem;
+  border-radius:5px; border:1px solid #e2e4ea; background:#fff; color:#444; cursor:pointer; transition:background .1s; }
+.bs-cv-btn:hover { background:#f0f2f7; }
+.bs-cv-btn.active { background:#1a1f2e; color:#C9A355; border-color:#1a1f2e; }
+.bs-canvas-wrap { flex:1; overflow:auto; background:#f4f5f7; position:relative; }
+.bs-canvas { display:block; }
+#bs-header-controls { display:none; align-items:center; gap:.5rem; }
+</style>
 </head>
 <body>
 
@@ -1960,6 +2026,13 @@
     <div class="app-logo" style="font-weight:400"><span class="logo-blue">by Arnold Ruijter IT</span></div>
     <!-- Mode switcher -->
     <div class="mode-switcher">
+      <button class="mode-btn" id="mode-btn-bs" onclick="switchMode('business-systems')" title="Business Systems catalogue">
+        <span style="font-size:1.05rem;line-height:1">🗂</span>
+        <span class="mode-btn-inner">
+          <span id="mode-lbl-bs">Business Systems</span>
+          <span class="mode-btn-sub" id="mode-sub-bs">Landscape &amp; catalogue</span>
+        </span>
+      </button>
       <button class="mode-btn swimlane" id="mode-btn-swimlane" onclick="switchMode('swimlane')" title="Swimlane / process diagrams">
         <span style="font-size:1.05rem;line-height:1">☰</span>
         <span class="mode-btn-inner">
@@ -2110,6 +2183,10 @@
     <!-- ── Primary action ──────────────────────────────────── -->
     <button class="btn btn-primary" id="btn-export-drawio-el" onclick="exportDrawio()">⬇ Export draw.io XML</button>
   </div>
+  <!-- ── Business Systems header controls ──────────────────── -->
+  <div id="bs-header-controls" style="display:none;align-items:center;gap:.5rem">
+    <span style="font-size:.8rem;color:rgba(255,255,255,.5);font-style:italic" id="bs-header-hint">Landscape catalogue — source of truth for ArchiMate &amp; Swimlane</span>
+  </div>
 </header>
 
 <!-- ── Model Description (ArchiMate mode only) ──────────────── -->
@@ -2172,6 +2249,74 @@
 <div id="swimlane-main" style="display:none">
   <div id="tab-process" class="tab-panel active"></div>
 </div>
+<!-- ── Business Systems Mode Panel ─────────────────────────── -->
+<div id="bs-main" style="display:none">
+  <div class="bs-tab-nav">
+    <button class="bs-tab-btn active" id="bs-tab-btn-apps"   onclick="showBsTab('apps')">🖥 Systems</button>
+    <button class="bs-tab-btn"        id="bs-tab-btn-depts"  onclick="showBsTab('depts')">🏢 Departments</button>
+    <button class="bs-tab-btn"        id="bs-tab-btn-roles"  onclick="showBsTab('roles')">👤 Roles</button>
+    <button class="bs-tab-btn"        id="bs-tab-btn-canvas" onclick="showBsTab('canvas')">🗺 Landscape</button>
+  </div>
+  <!-- Systems tab -->
+  <div class="bs-tab-panel active" id="bs-panel-apps">
+    <div class="bs-panel-inner">
+      <div class="bs-list-header">
+        <div>
+          <div class="bs-section-title">Applications, Systems &amp; Platforms</div>
+          <div class="bs-section-sub">These are the foundation for your ArchiMate canvas and Swimlane diagrams.</div>
+        </div>
+        <button class="bs-add-btn" onclick="bsShowAppForm()">+ Add</button>
+      </div>
+      <div id="bs-apps-form-area"></div>
+      <div id="bs-apps-list" class="bs-list"></div>
+    </div>
+  </div>
+  <!-- Departments tab -->
+  <div class="bs-tab-panel" id="bs-panel-depts">
+    <div class="bs-panel-inner">
+      <div class="bs-list-header">
+        <div>
+          <div class="bs-section-title">Departments</div>
+          <div class="bs-section-sub">Organisational units used in processes and landscape.</div>
+        </div>
+        <button class="bs-add-btn" onclick="bsShowDeptForm()">+ Add</button>
+      </div>
+      <div id="bs-depts-form-area"></div>
+      <div id="bs-depts-list" class="bs-list"></div>
+    </div>
+  </div>
+  <!-- Roles tab -->
+  <div class="bs-tab-panel" id="bs-panel-roles">
+    <div class="bs-panel-inner">
+      <div class="bs-list-header">
+        <div>
+          <div class="bs-section-title">Roles</div>
+          <div class="bs-section-sub">Roles can be linked to departments and used as Swimlane lanes.</div>
+        </div>
+        <button class="bs-add-btn" onclick="bsShowRoleForm()">+ Add</button>
+      </div>
+      <div id="bs-roles-form-area"></div>
+      <div id="bs-roles-list" class="bs-list"></div>
+    </div>
+  </div>
+  <!-- Landscape canvas tab -->
+  <div class="bs-tab-panel" id="bs-panel-canvas">
+    <div class="bs-canvas-toolbar">
+      <span class="bs-canvas-hint" id="bs-canvas-hint">Drag systems to arrange · Click to select · Use 🔗 to draw a connection</span>
+      <button class="bs-cv-btn" id="bs-connect-btn" onclick="bsToggleConnect()" title="Draw a connection between two systems">🔗 Connect</button>
+      <button class="bs-cv-btn" id="bs-delete-conn-btn" onclick="bsDeleteSelectedRel()" style="display:none">🗑 Delete connection</button>
+      <button class="bs-cv-btn" onclick="bsCanvasZoom(-1)">−</button>
+      <button class="bs-cv-btn" onclick="bsCanvasZoom(0)">⊡</button>
+      <button class="bs-cv-btn" onclick="bsCanvasZoom(1)">+</button>
+    </div>
+    <div class="bs-canvas-wrap" id="bs-canvas-wrap">
+      <svg id="bs-canvas" class="bs-canvas" xmlns="http://www.w3.org/2000/svg"
+           onmousemove="bsCanvasMouseMove(event)" onmouseup="bsCanvasMouseUp(event)"
+           onclick="bsCanvasClick(event)"></svg>
+    </div>
+  </div>
+</div>
+
 <input type="file" id="procLoadFile" accept=".json,.swimlane.json" style="display:none" onchange="handleLoadProcFile(event)">
 <input type="file" id="importDrawioFile" accept=".xml,.drawio" style="display:none" onchange="handleImportDrawio(event)">
 
@@ -2219,7 +2364,63 @@ let model = {
   views:            [],  // { id, name, elementIds: [] }  — named export views
   snapshots:        [],  // { id, name, timestamp, elements:[], relationships:[] }
   elementPositions: {}   // { [elementId]: {x,y} } — canvas positions (Archi pixel coords)
+  ,
+  // ── Business Systems catalogue ────────────────────────────
+  businessSystems: {
+    apps:          [],  // { id, name, description, x, y }  — apps/systems/platforms
+    departments:   [],  // { id, name, description }
+    roles:         [],  // { id, name, description, departmentId }
+    roleRelations: [],  // { id, fromId, toId }  — role ↔ department links
+    appRelations:  []   // { id, fromId, toId, type:'link' }  — system connections
+  }
 };
+
+// ══════════════════════════════════════════════════════════════
+// STORAGE — abstraction layer (swap body for server API in multi-user mode)
+// ══════════════════════════════════════════════════════════════
+const Storage = (() => {
+  const KEY = 'architise_model_v1';
+  // ── Local implementation (single-user) ──
+  // For multi-user server mode, replace save/load with fetch('/api/model', ...) calls.
+  return {
+    save(m) {
+      try { localStorage.setItem(KEY, JSON.stringify(m)); }
+      catch(e) { console.warn('[Storage] auto-save failed:', e); }
+    },
+    load() {
+      try { const r = localStorage.getItem(KEY); return r ? JSON.parse(r) : null; }
+      catch(e) { return null; }
+    },
+    clear() { try { localStorage.removeItem(KEY); } catch(e) {} }
+  };
+})();
+
+// Debounced auto-save — called after every model mutation
+let _autoSaveTimer = null;
+function autoSave() {
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(() => Storage.save(model), 800);
+}
+
+// Periodic safety save every 60 s
+setInterval(() => Storage.save(model), 60000);
+
+// ── Restore from storage on startup ──────────────────────────
+(function restoreModel() {
+  const saved = Storage.load();
+  if (!saved) return;
+  // Merge saved fields — preserves new default fields added in future versions
+  for (const key of Object.keys(saved)) model[key] = saved[key];
+  // Ensure businessSystems sub-fields exist (forward-compatibility)
+  if (!model.businessSystems) model.businessSystems = {};
+  const bs = model.businessSystems;
+  if (!bs.apps)          bs.apps          = [];
+  if (!bs.departments)   bs.departments   = [];
+  if (!bs.roles)         bs.roles         = [];
+  if (!bs.roleRelations) bs.roleRelations = [];
+  if (!bs.appRelations)  bs.appRelations  = [];
+  if (!model.platformConfig) model.platformConfig = { defaultLang:'en', processes:{}, views:{} };
+})();
 
 // ══════════════════════════════════════════════════════════════
 // INTERNATIONALISATION (i18n)
@@ -7596,24 +7797,29 @@ ${'<' + '/script>'}
 
 function applyMode() {
   const isArchi = currentMode === 'archimate';
+  const isSwim  = currentMode === 'swimlane';
+  const isBS    = currentMode === 'business-systems';
   // Mode buttons
   document.getElementById('mode-btn-archimate').classList.toggle('active', isArchi);
-  document.getElementById('mode-btn-swimlane').classList.toggle('active', !isArchi);
-  // Header controls
+  document.getElementById('mode-btn-swimlane').classList.toggle('active', isSwim);
+  document.getElementById('mode-btn-bs').classList.toggle('active', isBS);
+  // Header controls (each mode shows its own)
   document.getElementById('archimate-header-controls').style.display = isArchi ? 'flex' : 'none';
-  document.getElementById('swimlane-header-controls').style.display  = isArchi ? 'none' : 'flex';
-  // Model name input — always visible (shared across both modes)
-  // Doc bar & stats bar
-  document.getElementById('archimate-doc-bar').style.display  = isArchi ? '' : 'none';
-  document.getElementById('archimate-stats-bar').style.display = isArchi ? '' : 'none';
+  document.getElementById('swimlane-header-controls').style.display  = isSwim  ? 'flex' : 'none';
+  document.getElementById('bs-header-controls').style.display        = isBS    ? 'flex' : 'none';
+  // Doc bar & stats bar (ArchiMate only)
+  document.getElementById('archimate-doc-bar').style.display   = isArchi ? '' : 'none';
+  document.getElementById('archimate-stats-bar').style.display  = isArchi ? '' : 'none';
   // Tab nav & main panels
   document.getElementById('archimate-tab-nav').style.display = isArchi ? '' : 'none';
   document.getElementById('archimate-main').style.display    = isArchi ? '' : 'none';
-  document.getElementById('swimlane-main').style.display     = isArchi ? 'none' : '';
-  // Re-render swimlane panel when switching in
-  if (!isArchi) {
-    renderProcTab();
-  }
+  document.getElementById('swimlane-main').style.display     = isSwim  ? '' : 'none';
+  document.getElementById('bs-main').style.display           = isBS    ? '' : 'none';
+  // Mode-specific init
+  if (isSwim) renderProcTab();
+  if (isBS)   renderBsPanel();
+  // Auto-save on mode switch
+  autoSave();
 }
 
 // ══════════════════════════════════════════════════════════════
