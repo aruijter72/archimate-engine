@@ -2170,6 +2170,11 @@ let model = {
   name:          'My Architecture Model',
   documentation: '',
   platformIntro: '',    // intro text shown on the HTML platform homepage
+  platformConfig: {     // per-item include flags & default language
+    defaultLang: 'en',
+    processes: {},      // { [id]: { include: true } }
+    views: {}           // { [id]: { include: true } }
+  },
   elements:      [],    // { id, layer, type, name, documentation, properties[] }
   relationships: [],    // { id, type, sourceId, targetId, name, documentation, directed, accessType, strength }
   processes:     [],    // { id, name, lanes:[{id,name}], steps:[{id,laneId,type,label}], flows:[{id,from,to,label}] }
