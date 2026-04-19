@@ -7980,12 +7980,21 @@ function bsId() {
   return 'bs-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
 }
 function bsGet() {
-  if (!model.businessSystems) model.businessSystems = { apps:[], departments:[], roles:[], roleRelations:[], appRelations:[] };
-  return model.businessSystems;
+  if (!model.businessSystems) model.businessSystems = { orgName:'', apps:[], departments:[], roles:[], roleRelations:[], appRelations:[] };
+  const bs = model.businessSystems;
+  if (bs.orgName === undefined) bs.orgName = '';
+  return bs;
+}
+function bsSetOrgName(val) {
+  bsGet().orgName = val;
+  autoSave();
 }
 
 // ── Panel entry point ─────────────────────────────────────────
 function renderBsPanel() {
+  // Populate org name input
+  const orgInput = document.getElementById('bs-org-name');
+  if (orgInput) orgInput.value = bsGet().orgName || '';
   renderBsApps();
   renderBsDepts();
   renderBsRoles();
