@@ -4772,15 +4772,34 @@ function renderRelationships() {
                  oninput="setRel('${rel.id}','strength',this.value)"></div>`;
       }
 
+      const srcName  = srcEl ? esc(srcEl.name || '(unnamed)') : '';
+      const srcBadge = srcEl ? `${esc(TYPE_LABELS[srcEl.type]||srcEl.type)} · ${esc(LAYER_CONFIG[srcEl.layer]?.label||srcEl.layer)}` : '';
+      const tgtName  = tgtEl ? esc(tgtEl.name || '(unnamed)') : '';
+      const tgtBadge = tgtEl ? `${esc(TYPE_LABELS[tgtEl.type]||tgtEl.type)} · ${esc(LAYER_CONFIG[tgtEl.layer]?.label||tgtEl.layer)}` : '';
+
       html += `
         <tr data-rel-id="${rel.id}">
-          <td><select class="rel-select" onchange="setRel('${rel.id}','sourceId',this.value)">${sOpts}</select></td>
+          <td>
+            <div class="rel-elem-cell">
+              ${srcName
+                ? `<div class="rel-elem-name">${srcName}</div><div class="rel-elem-badge">${srcBadge}</div>`
+                : `<div class="rel-elem-empty">— select source —</div>`}
+              <select class="rel-select rel-select-sm" onchange="setRel('${rel.id}','sourceId',this.value)">${sOpts}</select>
+            </div>
+          </td>
           <td>
             <select class="rel-select" onchange="setRel('${rel.id}','type',this.value)">${rtOpts}</select>
             <div class="rel-desc">${typeof rt.desc==='object'?(rt.desc[currentLang]||rt.desc.en):rt.desc}</div>
             ${relWarn ? `<div class="rel-warning">⚠ ${relWarn}</div>` : ''}
           </td>
-          <td><select class="rel-select" onchange="setRel('${rel.id}','targetId',this.value)">${tOpts}</select></td>
+          <td>
+            <div class="rel-elem-cell">
+              ${tgtName
+                ? `<div class="rel-elem-name">${tgtName}</div><div class="rel-elem-badge">${tgtBadge}</div>`
+                : `<div class="rel-elem-empty">— select target —</div>`}
+              <select class="rel-select rel-select-sm" onchange="setRel('${rel.id}','targetId',this.value)">${tOpts}</select>
+            </div>
+          </td>
           <td>
             <input type="text" class="elem-input" placeholder="${t('ph-label')}"
                    value="${esc(rel.name)}" style="margin-bottom:.35rem"
