@@ -8086,23 +8086,17 @@ function syncBsToArchiMate() {
     ...bs.departments.map(d => d.id),
     ...bs.roles.map(r => r.id)
   ]);
-  // Remove elements that were sourced from BS but no longer exist there
+  // Remove ArchiMate elements whose BS source was deleted
   model.elements = model.elements.filter(el => !el._bs || bsIds.has(el.id));
-  // Upsert helper
-  function upsertEl(id, name, desc, type, layer) {
-    let el = model.elements.find(e => e.id === id);
-    if (el) {
-      el.name = name; el.documentation = desc || '';
-    } else {
-      model.elements.push({ id, layer, type, name, documentation: desc||'', properties:[], _bs: true });
-    }
+  // Update names/docs for elements already present in ArchiMate (no auto-creation)
+  // Elements are only added to ArchiMate when explicitly chosen via the BS picker
+  function syncExisting(id, name, desc) {
+    const el = model.elements.find(e => e.id === id && e._bs);
+    if (el) { el.name = name; el.documentation = desc || ''; }
   }
-  bs.apps.forEach(a =>
-    upsertEl(a.id, a.name, a.description||'', 'application-component', 'application'));
-  bs.departments.forEach(d =>
-    upsertEl(d.id, d.name, d.description||'', 'business-actor', 'business'));
-  bs.roles.forEach(r =>
-    upsertEl(r.id, r.name, r.description||'', 'business-role', 'business'));
+  bs.apps.forEach(a       => syncExisting(a.id, a.name, a.description||''));
+  bs.departments.forEach(d => syncExisting(d.id, d.name, d.description||''));
+  bs.roles.forEach(r       => syncExisting(r.id, r.name, r.description||''));
   // Refresh ArchiMate stats/canvas if currently visible
   try { updateStats(); } catch(e) {}
   try { if (currentMode === 'archimate') renderCurrentTab(); } catch(e) {}
