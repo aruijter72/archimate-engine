@@ -8753,7 +8753,7 @@ function bsShowCatEditForm(type, editId) {
       </div>
       <div class="bs-form-actions">
         <button class="bs-btn-cancel" onclick="bsClearCatForm()">${NL?'Annuleren':'Cancel'}</button>
-        <button class="bs-btn-save" onclick="bsSaveCatEntry('${type}',${editId?'''+editId+''':'null'})">${editId?(NL?'Wijzigingen opslaan':'Save changes'):(NL?'Toevoegen':'Add')}</button>
+        <button class="bs-btn-save" onclick="bsSaveCatEntry('${type}',${editId?"'"+editId+"'":'null'})">${editId?(NL?'Wijzigingen opslaan':'Save changes'):(NL?'Toevoegen':'Add')}</button>
       </div>
     </div>`;
   document.getElementById('bscf-name')?.focus();
