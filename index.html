@@ -2500,6 +2500,14 @@ setInterval(() => Storage.save(model), 60000);
   if (!bs.appRelations)  bs.appRelations  = [];
   if (!bs.bsProcesses)   bs.bsProcesses   = [];
   if (!model.platformConfig) model.platformConfig = { defaultLang:'en', processes:{}, views:{} };
+  // Populate header input with org name on load
+  setTimeout(() => {
+    const orgNm = (model.businessSystems && model.businessSystems.orgName) || model.name || '';
+    const hdr = document.getElementById('modelName');
+    if (hdr) hdr.value = orgNm;
+    // Keep model.name in sync with orgName
+    if (model.businessSystems && model.businessSystems.orgName) model.name = model.businessSystems.orgName;
+  }, 0);
   // Sync BS catalogue to ArchiMate elements on load
   setTimeout(syncBsToArchiMate, 0);
 })();
