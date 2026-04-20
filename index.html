@@ -11832,10 +11832,10 @@ const LICENSE = {
   //   banner('<strong style="color:#f5a050">Architise — unlicensed installation.</strong>');
   //   return;
   // }
-  if (host !== LICENSE.domain && !host.endsWith('.' + LICENSE.domain)) {
-    banner('<strong style="color:#f5a050">Architise — running on an unlicensed domain.</strong>');
-    return;
-  }
+  // if (host !== LICENSE.domain && !host.endsWith('.' + LICENSE.domain)) {
+  //   banner('<strong style="color:#f5a050">Architise — running on an unlicensed domain.</strong>');
+  //   return;
+  // }
   if (LICENSE.expires && new Date(LICENSE.expires) < new Date()) {
     banner('<strong style="color:#f5a050">Architise — license expired ' + LICENSE.expires + '.</strong>');
     return;
