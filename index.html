@@ -4471,9 +4471,10 @@ function populateBsProcBars() {
   const archiDesc = document.getElementById('archi-bs-proc-desc');
   if (archiSel) {
     const curArchi = model.linkedBsProcessId || '';
+    const sortedProcs = bsProcs.slice().sort((a,b) => (a.name||'').localeCompare(b.name||''));
     archiSel.innerHTML = [
       `<option value="">— ${currentLang==='nl'?'koppel aan een Business Process':'link to a Business Systems process'} —</option>`,
-      ...bsProcs.map(p => `<option value="${esc(p.id||'')}"${(p.id||'')=== curArchi?' selected':''}>${esc(p.name||'(unnamed)')}</option>`)
+      ...sortedProcs.map(p => `<option value="${esc(p.id||'')}"${(p.id||'')=== curArchi?' selected':''}>${esc(p.name||'(unnamed)')}</option>`)
     ].join('');
     if (archiDesc) {
       const found = bsProcs.find(p => p.id === curArchi);
