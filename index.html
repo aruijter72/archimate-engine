@@ -8068,18 +8068,29 @@ function renderHomeStatic() {
 
 // ── Init ──────────────────────────────────────────────────────
 (function init() {
+  // Confirm JS is running — update notice immediately
+  var notice = document.getElementById('js-blocked-notice');
+  if (notice) {
+    notice.style.background = '#166534';
+    notice.innerHTML = '✅ JavaScript is active. Loading…';
+  }
   try {
     setLang(DEF_LANG);
     renderSidebarBrand();
     showPage('home');
-    // JS ran — hide the browser notice after a short delay
-    setTimeout(() => { const n = document.getElementById('js-blocked-notice'); if(n) n.style.display='none'; }, 1200);
+    // Hide notice once everything loaded successfully
+    setTimeout(function() {
+      var n = document.getElementById('js-blocked-notice');
+      if (n) n.style.display = 'none';
+    }, 800);
   } catch(err) {
     console.error('Visual Architise init error:', err);
-    const notice = document.getElementById('js-blocked-notice');
-    if (notice) {
-      notice.style.display = 'block';
-      notice.textContent = '⚠ JavaScript error: ' + err.message + '. Try opening this file in Google Chrome or Firefox.';
+    var n2 = document.getElementById('js-blocked-notice');
+    if (n2) {
+      n2.style.display = 'flex';
+      n2.style.background = '#c0392b';
+      n2.innerHTML = '<strong>⚠ Initialisation Error:</strong>&nbsp;' + he(err.message)
+        + ' — Please re-export the platform from Architise and try again.';
     }
   }
 })();
