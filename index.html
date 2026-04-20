@@ -8002,12 +8002,12 @@ function lsAppClick(el, appId) {
     ? relatedProcs.map(p => {
         const raw = p.documentation || '';
         const doc = raw.length > 120 ? raw.slice(0,120)+'…' : raw;
-        return '<div class="proc-card" onclick="showPage(\'proc-' + p.id + '-archi\')">'
+        return '<div class="proc-card" onclick="showPage(\\'proc-' + p.id + '-archi\\')">'
           + '<div class="proc-card-name">⬡ ' + he(p.name||'…') + '</div>'
           + (doc ? '<div class="proc-card-doc">' + he(doc) + '</div>' : '')
           + '<div class="proc-card-actions">'
-          + '<button class="pca-btn" onclick="event.stopPropagation();showPage(\'proc-' + p.id + '-archi\')">🏛 <span data-en="Architecture" data-nl="Architectuur">Architecture</span></button>'
-          + '<button class="pca-btn pca-swim" onclick="event.stopPropagation();showPage(\'proc-' + p.id + '-swim\')">🌊 Swimlane</button>'
+          + '<button class="pca-btn" onclick="event.stopPropagation();showPage(\\'proc-' + p.id + '-archi\\')">🏛 <span data-en="Architecture" data-nl="Architectuur">Architecture</span></button>'
+          + '<button class="pca-btn pca-swim" onclick="event.stopPropagation();showPage(\\'proc-' + p.id + '-swim\\')">🌊 Swimlane</button>'
           + '</div></div>';
       }).join('')
     : '<p class="empty-note">' + T('No processes are linked to this system yet.','Nog geen processen gekoppeld aan dit systeem.') + '</p>';
