@@ -8040,6 +8040,10 @@ function bsGet() {
 }
 function bsSetOrgName(val) {
   bsGet().orgName = val;
+  model.name = val; // keep model.name in sync
+  // Update header input if not already the source
+  const hdr = document.getElementById('modelName');
+  if (hdr && hdr.value !== val) hdr.value = val;
   autoSave();
 }
 
