@@ -2180,40 +2180,47 @@
       <button class="menu-trigger" id="menu-gfile-btn" onclick="toggleMenu('gfile')">
         📁 <span id="gmenu-file-label">File</span> <span style="font-size:.62rem;opacity:.65">▾</span>
       </button>
-      <div class="menu-dropdown" id="menu-gfile-dd" style="min-width:240px">
-        <div class="mi-section-head" id="gfile-sec-archi">Archi</div>
-        <button class="mi-btn" onclick="showWizard();closeMenus()">🪄 <span id="g-wizard-lbl">Guided Start</span></button>
-        <button class="mi-btn" onclick="showTemplates();closeMenus()">📋 <span id="g-templates-lbl">Templates</span></button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn danger" onclick="newModel();closeMenus()">🆕 <span id="g-newmodel-lbl">New Model</span></button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn" onclick="triggerLoad();closeMenus()">📂 <span id="g-openjson-lbl">Open JSON…</span></button>
-        <button class="mi-btn" onclick="triggerImportArchimate();closeMenus()">📥 <span id="g-import-am-lbl">Import .archimate…</span></button>
-        <button class="mi-btn" onclick="quickSaveModel();closeMenus()">💾 <span id="g-savejson-lbl">Save JSON</span></button>
-        <button class="mi-btn" onclick="saveModelAs();closeMenus()">💾 <span id="g-saveas-archi-lbl">Save As…</span></button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn gold" onclick="exportArchimate();closeMenus()">⬇ <span id="g-export-arc-lbl">Export .archimate</span></button>
-        <button class="mi-btn" onclick="exportAMEFF();closeMenus()" title="Open Group AMEFF XML">⬇ <span id="g-export-ameff-lbl">Export AMEFF XML</span></button>
-        <button class="mi-btn no-print" onclick="printModel();closeMenus()">🖨 <span id="g-print-lbl">Print / Save as PDF</span></button>
-        <button class="mi-btn" onclick="saveAsTemplate();closeMenus()">⭐ <span id="g-save-tmpl-archi-lbl">Save as template…</span></button>
-        <button class="mi-btn" onclick="saveSnapshot();closeMenus()">📸 <span id="g-snapshot-lbl">Save Snapshot…</span></button>
-        <button class="mi-btn" onclick="showHistory();closeMenus()">📜 <span id="g-history-lbl">Version History…</span></button>
-        <div class="mi-sep"></div>
-        <div class="mi-section-head" id="gfile-sec-swim">Swimlane</div>
-        <button class="mi-btn" onclick="showProcTemplates();closeMenus()">📋 <span id="g-proc-templates-lbl">Templates</span></button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn" onclick="triggerLoadProc();closeMenus()">📂 <span id="g-proc-open-lbl">Open…</span></button>
-        <button class="mi-btn" onclick="triggerImportDrawio();closeMenus()">📥 <span id="g-proc-import-drawio-lbl">Import draw.io XML…</span></button>
-        <button class="mi-btn" id="g-proc-save-btn" onclick="quickSaveProcJSON();closeMenus()">💾 <span id="g-proc-save-lbl">Save</span></button>
-        <button class="mi-btn" id="g-proc-saveas-btn" onclick="saveProcJSONAs();closeMenus()">💾 <span id="g-proc-saveas-lbl">Save As…</span></button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn gold" id="g-proc-drawio-btn" onclick="exportDrawio();closeMenus()">⬇ <span id="g-proc-drawio-lbl">Export draw.io XML</span></button>
-        <button class="mi-btn" onclick="exportSwimlaneImage('svg');closeMenus()">🖼 <span id="g-proc-svg-lbl">Export SVG…</span></button>
-        <button class="mi-btn" onclick="exportSwimlaneImage('png');closeMenus()">🖼 <span id="g-proc-png-lbl">Export PNG…</span></button>
-        <button class="mi-btn" onclick="saveAsTemplate();closeMenus()">⭐ <span id="g-proc-save-tmpl-lbl">Save as template…</span></button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn gold" onclick="generateHTMLReport();closeMenus()">📄 <span id="g-html-report-lbl">Export HTML Report…</span></button>
-        <button class="mi-btn gold" onclick="generateHTMLPlatform();closeMenus()">🌐 <span id="g-platform-exp-lbl">Export Visual Architise…</span></button>
+      <div class="menu-dropdown" id="menu-gfile-dd" style="min-width:380px;padding:.25rem 0">
+        <div class="gfile-columns">
+          <div class="gfile-col">
+            <div class="mi-section-head" id="gfile-sec-archi">Archi</div>
+            <button class="mi-btn" onclick="showWizard();closeMenus()">🪄 <span id="g-wizard-lbl">Guided Start</span></button>
+            <button class="mi-btn" onclick="showTemplates();closeMenus()">📋 <span id="g-templates-lbl">Templates</span></button>
+            <div class="mi-sep"></div>
+            <button class="mi-btn danger" onclick="newModel();closeMenus()">🆕 <span id="g-newmodel-lbl">New Model</span></button>
+            <div class="mi-sep"></div>
+            <button class="mi-btn" onclick="triggerLoad();closeMenus()">📂 <span id="g-openjson-lbl">Open JSON…</span></button>
+            <button class="mi-btn" onclick="triggerImportArchimate();closeMenus()">📥 <span id="g-import-am-lbl">Import .archimate…</span></button>
+            <button class="mi-btn" onclick="quickSaveModel();closeMenus()">💾 <span id="g-savejson-lbl">Save JSON</span></button>
+            <button class="mi-btn" onclick="saveModelAs();closeMenus()">💾 <span id="g-saveas-archi-lbl">Save As…</span></button>
+            <div class="mi-sep"></div>
+            <button class="mi-btn gold" onclick="exportArchimate();closeMenus()">⬇ <span id="g-export-arc-lbl">Export .archimate</span></button>
+            <button class="mi-btn" onclick="exportAMEFF();closeMenus()" title="Open Group AMEFF XML">⬇ <span id="g-export-ameff-lbl">Export AMEFF XML</span></button>
+            <button class="mi-btn no-print" onclick="printModel();closeMenus()">🖨 <span id="g-print-lbl">Print / Save as PDF</span></button>
+            <button class="mi-btn" onclick="saveAsTemplate();closeMenus()">⭐ <span id="g-save-tmpl-archi-lbl">Save as template…</span></button>
+            <button class="mi-btn" onclick="saveSnapshot();closeMenus()">📸 <span id="g-snapshot-lbl">Save Snapshot…</span></button>
+            <button class="mi-btn" onclick="showHistory();closeMenus()">📜 <span id="g-history-lbl">Version History…</span></button>
+          </div>
+          <div class="gfile-divider"></div>
+          <div class="gfile-col">
+            <div class="mi-section-head" id="gfile-sec-swim">Swimlane</div>
+            <button class="mi-btn" onclick="showProcTemplates();closeMenus()">📋 <span id="g-proc-templates-lbl">Templates</span></button>
+            <div class="mi-sep"></div>
+            <button class="mi-btn" onclick="triggerLoadProc();closeMenus()">📂 <span id="g-proc-open-lbl">Open…</span></button>
+            <button class="mi-btn" onclick="triggerImportDrawio();closeMenus()">📥 <span id="g-proc-import-drawio-lbl">Import draw.io XML…</span></button>
+            <button class="mi-btn" id="g-proc-save-btn" onclick="quickSaveProcJSON();closeMenus()">💾 <span id="g-proc-save-lbl">Save</span></button>
+            <button class="mi-btn" id="g-proc-saveas-btn" onclick="saveProcJSONAs();closeMenus()">💾 <span id="g-proc-saveas-lbl">Save As…</span></button>
+            <div class="mi-sep"></div>
+            <button class="mi-btn gold" id="g-proc-drawio-btn" onclick="exportDrawio();closeMenus()">⬇ <span id="g-proc-drawio-lbl">Export draw.io XML</span></button>
+            <button class="mi-btn" onclick="exportSwimlaneImage('svg');closeMenus()">🖼 <span id="g-proc-svg-lbl">Export SVG…</span></button>
+            <button class="mi-btn" onclick="exportSwimlaneImage('png');closeMenus()">🖼 <span id="g-proc-png-lbl">Export PNG…</span></button>
+            <button class="mi-btn" onclick="saveAsTemplate();closeMenus()">⭐ <span id="g-proc-save-tmpl-lbl">Save as template…</span></button>
+          </div>
+        </div>
+        <div class="gfile-footer">
+          <button class="mi-btn gold" onclick="generateHTMLReport();closeMenus()">📄 <span id="g-html-report-lbl">Export HTML Report…</span></button>
+          <button class="mi-btn gold" onclick="generateHTMLPlatform();closeMenus()">🌐 <span id="g-platform-exp-lbl">Export Visual Architise…</span></button>
+        </div>
       </div>
     </div>
     <div class="menu-item" id="gmenu-tools-item">
