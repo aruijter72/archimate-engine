@@ -4448,8 +4448,8 @@ function setElem(id, field, val) {
   const el = model.elements.find(e => e.id === id);
   if (!el) return;
   el[field] = val;
-  // Auto-fill documentation from BS when a name is typed that matches a catalogue item
-  if (field === 'name' && val && !el.documentation) {
+  // Auto-fill documentation from BS/catalogue when name matches — always update on match
+  if (field === 'name' && val) {
     const bs = bsGet();
     const BS_FILL_MAP = {
       BusinessActor:        bs.departments,
@@ -4457,20 +4457,20 @@ function setElem(id, field, val) {
       ApplicationComponent: bs.apps,
       BusinessProcess:      bs.bsProcesses,
     };
-    const catalogue = BS_FILL_MAP[el.type];
-    if (catalogue) {
-      const matched = catalogue.find(item => (item.name||'').toLowerCase() === val.toLowerCase());
-      if (matched?.description) {
-        el.documentation = matched.description;
-        const ta = document.querySelector(`textarea[data-nid="${id}"]`);
-        if (ta) ta.value = matched.description;
-        const btn = document.querySelector(`button[data-nid="${id}"]`);
-        if (btn) {
-          btn.classList.add('has-notes');
-          const lbl = currentLang === 'nl' ? 'Notities' : 'Notes';
-          const preview = matched.description.slice(0,32) + (matched.description.length>32?'…':'');
-          btn.innerHTML = `📝 ${lbl} · ${preview}`;
-        }
+    // Check BS-managed arrays first, then generic catalogue
+    const bsCat = BS_FILL_MAP[el.type];
+    const genCat = (bs.catalogue || {})[el.type] || [];
+    const matched = (bsCat || genCat).find(item => (item.name||'').toLowerCase() === val.toLowerCase());
+    if (matched?.description) {
+      el.documentation = matched.description;
+      const ta = document.querySelector(`textarea[data-nid="${id}"]`);
+      if (ta) ta.value = matched.description;
+      const btn = document.querySelector(`button[data-nid="${id}"]`);
+      if (btn) {
+        btn.classList.add('has-notes');
+        const lbl = currentLang === 'nl' ? 'Notities' : 'Notes';
+        const preview = matched.description.slice(0,32) + (matched.description.length>32?'…':'');
+        btn.innerHTML = `📝 ${lbl} · ${preview}`;
       }
     }
   }
