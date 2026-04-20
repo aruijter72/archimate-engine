@@ -2918,6 +2918,8 @@ function setLanguage(lang) {
   applyTranslations();
   renderAll();
   renderHelp();
+  // Re-render BS panel if active so translated labels update
+  if (currentMode === 'business-systems') renderBsPanel();
 }
 
 function applyTranslations() {
