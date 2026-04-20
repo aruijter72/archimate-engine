@@ -2340,6 +2340,15 @@
 
 <!-- ── Swimlane Mode Panel ──────────────────────────────────── -->
 <div id="swimlane-main" style="display:none">
+  <!-- ── BS Process context bar (Swimlane mode) ──────────── -->
+  <div class="bs-proc-bar" id="swim-bs-proc-bar">
+    <span class="bs-proc-bar-label">Process</span>
+    <select class="bs-proc-select" id="swim-bs-proc-select"
+            onchange="setLinkedBsProc('swim',this.value)">
+      <option value="">— link to a Business Systems process —</option>
+    </select>
+    <span class="bs-proc-desc" id="swim-bs-proc-desc"></span>
+  </div>
   <div id="tab-process" class="tab-panel active"></div>
 </div>
 <!-- ── Business Systems Mode Panel ─────────────────────────── -->
