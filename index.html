@@ -3176,6 +3176,53 @@ function applyTranslations() {
   if (btnSearch) btnSearch.title = L === 'nl'
     ? 'Zoek elementen (⌘K / Ctrl+K)'
     : 'Search elements (⌘K / Ctrl+K)';
+  // ── Global menus (File + Tools) ───────────────────────────────
+  const _g = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  _g('gmenu-file-label',       L === 'nl' ? 'Bestand' : 'File');
+  _g('gmenu-tools-label',      'Tools');
+  _g('gfile-sec-archi',        'Archi');
+  _g('gfile-sec-swim',         'Swimlane');
+  const gFileMap = {
+    'g-wizard-lbl':            L === 'nl' ? 'Begeleid starten'          : 'Guided Start',
+    'g-templates-lbl':         L === 'nl' ? 'Sjablonen'                 : 'Templates',
+    'g-newmodel-lbl':          L === 'nl' ? 'Nieuw model'               : 'New Model',
+    'g-openjson-lbl':          L === 'nl' ? 'JSON openen…'              : 'Open JSON…',
+    'g-import-am-lbl':         L === 'nl' ? 'Importeer .archimate…'     : 'Import .archimate…',
+    'g-savejson-lbl':          L === 'nl' ? 'JSON opslaan'              : 'Save JSON',
+    'g-saveas-archi-lbl':      L === 'nl' ? 'Opslaan als…'              : 'Save As…',
+    'g-export-arc-lbl':        L === 'nl' ? 'Exporteer .archimate'      : 'Export .archimate',
+    'g-export-ameff-lbl':      L === 'nl' ? 'Exporteer AMEFF XML'       : 'Export AMEFF XML',
+    'g-print-lbl':             L === 'nl' ? 'Afdrukken / Opslaan als PDF' : 'Print / Save as PDF',
+    'g-save-tmpl-archi-lbl':   L === 'nl' ? 'Opslaan als sjabloon…'     : 'Save as template…',
+    'g-snapshot-lbl':          L === 'nl' ? 'Snapshot opslaan…'         : 'Save Snapshot…',
+    'g-history-lbl':           L === 'nl' ? 'Versiegeschiedenis…'        : 'Version History…',
+    'g-proc-templates-lbl':    L === 'nl' ? 'Sjablonen'                 : 'Templates',
+    'g-proc-open-lbl':         L === 'nl' ? 'Openen…'                   : 'Open…',
+    'g-proc-import-drawio-lbl':L === 'nl' ? 'Importeer draw.io XML…'    : 'Import draw.io XML…',
+    'g-proc-save-lbl':         L === 'nl' ? 'Opslaan'                   : 'Save',
+    'g-proc-saveas-lbl':       L === 'nl' ? 'Opslaan als…'              : 'Save As…',
+    'g-proc-drawio-lbl':       L === 'nl' ? 'Exporteer draw.io XML'     : 'Export draw.io XML',
+    'g-proc-svg-lbl':          L === 'nl' ? 'Exporteer SVG…'            : 'Export SVG…',
+    'g-proc-png-lbl':          L === 'nl' ? 'Exporteer PNG…'            : 'Export PNG…',
+    'g-proc-save-tmpl-lbl':    L === 'nl' ? 'Opslaan als sjabloon…'     : 'Save as template…',
+    'g-html-report-lbl':       L === 'nl' ? 'HTML-rapport exporteren…'  : 'Export HTML Report…',
+    'g-platform-exp-lbl':      L === 'nl' ? 'Exporteer Visual Architise…' : 'Export Visual Architise…',
+    'g-gen-swimlane-lbl':      L === 'nl' ? 'Swimlane genereren vanuit Archi…' : 'Generate Swimlane from Archi…',
+    'g-gen-arch-lbl':          L === 'nl' ? 'Archi genereren vanuit Swimlane…' : 'Generate Archi from Swimlane…',
+    'g-refresh-swim-lbl':      L === 'nl' ? 'Vernieuwen vanuit Archi'   : 'Refresh from Archi',
+    'g-translate-lbl':         L === 'nl' ? 'Archi-documentatie vertalen…' : 'Translate Archi Documentation…',
+    'g-settings-lbl':          L === 'nl' ? 'AI-provider & API-sleutel instellen' : 'Set AI Provider & API Key',
+  };
+  for (const [id, txt] of Object.entries(gFileMap)) _g(id, txt);
+  // ── BS panel section subtitles ────────────────────────────────
+  const bsSubMap = {
+    'bs-header-hint': L === 'nl' ? 'Landschapscatalogus — basis voor ArchiMate & Swimlane' : 'Landscape catalogue — source of truth for ArchiMate & Swimlane',
+    'bs-sub-apps':    L === 'nl' ? 'De basis voor uw ArchiMate-canvas en Swimlane-diagrammen.' : 'These are the foundation for your ArchiMate canvas and Swimlane diagrams.',
+    'bs-sub-depts':   L === 'nl' ? 'Organisatie-eenheden gebruikt in processen en het landschap.' : 'Organisational units used in processes and landscape.',
+    'bs-sub-roles':   L === 'nl' ? 'Rollen kunnen worden gekoppeld aan afdelingen en als Swimlane-banen worden gebruikt.' : 'Roles can be linked to departments and used as Swimlane lanes.',
+    'bs-sub-procs':   L === 'nl' ? 'Definieer hier uw kernprocessen — ze kunnen worden geselecteerd bij het bouwen van ArchiMate-diagrammen en Swimlane-stromen.' : 'Define your key processes here — they can be selected when building ArchiMate diagrams and Swimlane flows.',
+  };
+  for (const [id, txt] of Object.entries(bsSubMap)) _g(id, txt);
   updateHealth();
 }
 
