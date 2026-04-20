@@ -2252,40 +2252,6 @@
   </div>
   <!-- Swimlane-mode header controls -->
   <div id="swimlane-header-controls" style="display:none;align-items:center;gap:.5rem">
-    <!-- ── File menu ───────────────────────────────────────── -->
-    <div class="menu-item" id="menu-proc-file-item">
-      <button class="menu-trigger" id="menu-proc-file-btn" onclick="toggleMenu('proc-file')">
-        📁 <span id="proc-file-btn-label">File</span> <span style="font-size:.62rem;opacity:.65">▾</span>
-      </button>
-      <div class="menu-dropdown" id="menu-proc-file-dd">
-        <button class="mi-btn" id="proc-mi-templates" onclick="showProcTemplates();closeMenus()">📋 Templates</button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn" id="proc-mi-open" onclick="triggerLoadProc();closeMenus()">📂 Open…</button>
-        <button class="mi-btn" id="proc-mi-import-drawio" onclick="triggerImportDrawio();closeMenus()">📥 Import draw.io XML…</button>
-        <button class="mi-btn" id="proc-mi-save" onclick="quickSaveProcJSON();closeMenus()">💾 Save</button>
-        <button class="mi-btn" id="proc-mi-saveas" onclick="saveProcJSONAs();closeMenus()">💾 Save As…</button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn gold" id="proc-mi-drawio" onclick="exportDrawio();closeMenus()">⬇ Export draw.io XML</button>
-        <button class="mi-btn" id="proc-mi-svg" onclick="exportSwimlaneImage('svg');closeMenus()">🖼 <span id="proc-mi-svg-lbl">Export SVG…</span></button>
-        <button class="mi-btn" id="proc-mi-png" onclick="exportSwimlaneImage('png');closeMenus()">🖼 <span id="proc-mi-png-lbl">Export PNG…</span></button>
-        <button class="mi-btn" id="proc-mi-html-report" onclick="generateHTMLReport();closeMenus()">📄 <span id="proc-mi-html-report-lbl">Export HTML Report…</span></button>
-        <button class="mi-btn" id="proc-mi-platform-exp" onclick="generateHTMLPlatform();closeMenus()">🌐 <span id="proc-mi-platform-exp-lbl">Export Visual Architise…</span></button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn" id="proc-mi-save-tmpl" onclick="saveAsTemplate();closeMenus()">⭐ <span id="proc-mi-save-tmpl-lbl">Save as template…</span></button>
-      </div>
-    </div>
-    <!-- ── Tools menu ──────────────────────────────────────── -->
-    <div class="menu-item" id="menu-proc-tools-item">
-      <button class="menu-trigger" id="menu-proc-tools-btn" onclick="toggleMenu('proc-tools')">
-        🔧 <span id="menu-proc-tools-label">Tools</span> <span style="font-size:.62rem;opacity:.65">▾</span>
-      </button>
-      <div class="menu-dropdown" id="menu-proc-tools-dd">
-        <button class="mi-btn" id="proc-tools-gen-flow" onclick="showFlowGenModal();closeMenus()">⟳ <span id="proc-tools-gen-flow-lbl">Generate from ArchiMate…</span></button>
-        <button class="mi-btn" id="proc-tools-refresh" onclick="refreshSwimlaneFromArch();closeMenus()" disabled title="Only available when this swimlane was generated from ArchiMate">↺ <span id="proc-tools-refresh-lbl">Refresh from ArchiMate</span></button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn" id="proc-tools-gen-arch" onclick="generateArchFromSwimlane();closeMenus()">⬡ <span id="proc-tools-gen-arch-lbl">Generate ArchiMate…</span></button>
-      </div>
-    </div>
     <!-- ── View menu ───────────────────────────────────────── -->
     <div class="menu-item" id="menu-proc-view-item">
       <button class="menu-trigger" id="menu-proc-view-btn" onclick="toggleMenu('proc-view')">
@@ -2306,6 +2272,9 @@
   <div id="bs-header-controls" style="display:none;align-items:center;gap:.5rem">
     <span style="font-size:.8rem;color:rgba(255,255,255,.5);font-style:italic" id="bs-header-hint">Landscape catalogue — source of truth for ArchiMate &amp; Swimlane</span>
   </div>
+  <!-- hidden file inputs referenced by global menu -->
+  <input type="file" id="loadFile-global" accept=".json" style="display:none" onchange="handleLoadFile(event)">
+  <input type="file" id="importArchimateFile-global" accept=".archimate,.xml" style="display:none" onchange="handleImportArchimate(event)">
 </header>
 
 <!-- modelDoc: hidden input keeps model.documentation in sync (used by exports + load logic) -->
