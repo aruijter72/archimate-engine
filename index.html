@@ -2342,14 +2342,17 @@
 
 <!-- ── Swimlane Mode Panel ──────────────────────────────────── -->
 <div id="swimlane-main" style="display:none">
-  <!-- ── BS Process context bar (Swimlane mode) ──────────── -->
+  <!-- ── BS Process context bar (Swimlane mode — read-only, set via ArchiMate) ── -->
   <div class="bs-proc-bar" id="swim-bs-proc-bar">
     <span class="bs-proc-bar-label">Process</span>
-    <select class="bs-proc-select" id="swim-bs-proc-select"
-            onchange="setLinkedBsProc('swim',this.value)">
-      <option value="">— link to a Business Systems process —</option>
+    <select class="bs-proc-select" id="swim-bs-proc-select" disabled
+            style="opacity:.65;cursor:default">
+      <option value="">— select a process in ArchiMate —</option>
     </select>
-    <span class="bs-proc-desc" id="swim-bs-proc-desc"></span>
+    <span class="bs-proc-desc" id="swim-bs-proc-desc"
+          style="font-size:.72rem;color:rgba(201,163,85,.55);font-style:normal">
+      Set via ArchiMate
+    </span>
   </div>
   <div id="tab-process" class="tab-panel active"></div>
 </div>
