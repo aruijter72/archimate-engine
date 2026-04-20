@@ -4500,25 +4500,30 @@ function populateBsProcBars() {
 function setLinkedBsProc(ctx, bsProcId) {
   _snapshot();
   const bsProcs = bsGet().bsProcesses || [];
-  const found = bsProcs.find(p => p.id === bsProcId);
-  if (ctx === 'archi') {
-    model.linkedBsProcessId = bsProcId || null;
-    const desc = document.getElementById('archi-bs-proc-desc');
-    if (desc) desc.textContent = found?.description || '';
-  } else {
-    const proc = getActiveProc ? getActiveProc() : null;
-    if (proc) {
-      proc.bsProcessId = bsProcId || null;
-      // Suggest the BS process name as swimlane process name if it has none
-      if (bsProcId && found?.name && (!proc.name || proc.name === 'New Process' || proc.name === 'Nieuw Proces')) {
-        proc.name = found.name;
-        renderProcTab();
-        return;
-      }
+  const bsProc  = bsProcs.find(p => p.id === bsProcId);
+  // Always update the model-level linked process (ArchiMate is the master)
+  model.linkedBsProcessId = bsProcId || null;
+  // Sync: find or create a swimlane process for this BS process
+  if (bsProcId) {
+    if (!model.processes) model.processes = [];
+    let swimProc = model.processes.find(p => p.bsProcessId === bsProcId);
+    if (!swimProc) {
+      // Create a new swimlane process linked to this BS process
+      swimProc = { id: genId(), name: bsProc?.name || 'Process',
+                   bsProcessId: bsProcId, columns:[], lanes:[], steps:[], flows:[] };
+      model.processes.push(swimProc);
     }
-    const desc = document.getElementById('swim-bs-proc-desc');
-    if (desc) desc.textContent = found?.description || '';
+    _activeProcId = swimProc.id;
+  } else {
+    _activeProcId = null;
   }
+  // Update ArchiMate bar description
+  const archiDesc = document.getElementById('archi-bs-proc-desc');
+  if (archiDesc) archiDesc.textContent = bsProc?.description || '';
+  // Refresh swim bar
+  populateBsProcBars();
+  // If currently in swimlane mode, re-render the panel
+  if (currentMode === 'swimlane') renderProcTab();
   autoSave();
 }
 
