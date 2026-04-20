@@ -4420,7 +4420,94 @@ function scheduleHealthUpdate() {
 
 function setElem(id, field, val) {
   const el = model.elements.find(e => e.id === id);
-  if (el) { el[field] = val; scheduleHealthUpdate(); }
+  if (!el) return;
+  el[field] = val;
+  // Auto-fill documentation from BS when a name is typed that matches a catalogue item
+  if (field === 'name' && val && !el.documentation) {
+    const bs = bsGet();
+    const BS_FILL_MAP = {
+      BusinessActor:        bs.departments,
+      BusinessRole:         bs.roles,
+      ApplicationComponent: bs.apps,
+      BusinessProcess:      bs.bsProcesses,
+    };
+    const catalogue = BS_FILL_MAP[el.type];
+    if (catalogue) {
+      const matched = catalogue.find(item => (item.name||'').toLowerCase() === val.toLowerCase());
+      if (matched?.description) {
+        el.documentation = matched.description;
+        const ta = document.querySelector(`textarea[data-nid="${id}"]`);
+        if (ta) ta.value = matched.description;
+        const btn = document.querySelector(`button[data-nid="${id}"]`);
+        if (btn) {
+          btn.classList.add('has-notes');
+          const lbl = currentLang === 'nl' ? 'Notities' : 'Notes';
+          const preview = matched.description.slice(0,32) + (matched.description.length>32?'…':'');
+          btn.innerHTML = `📝 ${lbl} · ${preview}`;
+        }
+      }
+    }
+  }
+  scheduleHealthUpdate();
+}
+
+// ── BS Process context bars ────────────────────────────────────
+function populateBsProcBars() {
+  const bsProcs = bsGet().bsProcesses || [];
+  // ArchiMate bar
+  const archiSel  = document.getElementById('archi-bs-proc-select');
+  const archiDesc = document.getElementById('archi-bs-proc-desc');
+  if (archiSel) {
+    const curArchi = model.linkedBsProcessId || '';
+    archiSel.innerHTML = [
+      `<option value="">— ${currentLang==='nl'?'koppel aan een Business Process':'link to a Business Systems process'} —</option>`,
+      ...bsProcs.map(p => `<option value="${esc(p.id||'')}"${(p.id||'')=== curArchi?' selected':''}>${esc(p.name||'(unnamed)')}</option>`)
+    ].join('');
+    if (archiDesc) {
+      const found = bsProcs.find(p => p.id === curArchi);
+      archiDesc.textContent = found?.description || '';
+    }
+  }
+  // Swimlane bar
+  const swimSel  = document.getElementById('swim-bs-proc-select');
+  const swimDesc = document.getElementById('swim-bs-proc-desc');
+  if (swimSel) {
+    const activeProc = getActiveProc ? getActiveProc() : null;
+    const curSwim = activeProc?.bsProcessId || '';
+    swimSel.innerHTML = [
+      `<option value="">— ${currentLang==='nl'?'koppel aan een Business Process':'link to a Business Systems process'} —</option>`,
+      ...bsProcs.map(p => `<option value="${esc(p.id||'')}"${(p.id||'')=== curSwim?' selected':''}>${esc(p.name||'(unnamed)')}</option>`)
+    ].join('');
+    if (swimDesc) {
+      const found = bsProcs.find(p => p.id === curSwim);
+      swimDesc.textContent = found?.description || '';
+    }
+  }
+}
+
+function setLinkedBsProc(ctx, bsProcId) {
+  _snapshot();
+  const bsProcs = bsGet().bsProcesses || [];
+  const found = bsProcs.find(p => p.id === bsProcId);
+  if (ctx === 'archi') {
+    model.linkedBsProcessId = bsProcId || null;
+    const desc = document.getElementById('archi-bs-proc-desc');
+    if (desc) desc.textContent = found?.description || '';
+  } else {
+    const proc = getActiveProc ? getActiveProc() : null;
+    if (proc) {
+      proc.bsProcessId = bsProcId || null;
+      // Suggest the BS process name as swimlane process name if it has none
+      if (bsProcId && found?.name && (!proc.name || proc.name === 'New Process' || proc.name === 'Nieuw Proces')) {
+        proc.name = found.name;
+        renderProcTab();
+        return;
+      }
+    }
+    const desc = document.getElementById('swim-bs-proc-desc');
+    if (desc) desc.textContent = found?.description || '';
+  }
+  autoSave();
 }
 
 function addProp(elemId) {
@@ -8165,6 +8252,8 @@ function applyMode() {
   // Mode-specific init
   if (isSwim) renderProcTab();
   if (isBS)   renderBsPanel();
+  // Refresh process context bars for archi + swim modes
+  if (isArchi || isSwim) populateBsProcBars();
   // Auto-save on mode switch
   autoSave();
 }
@@ -11581,6 +11670,7 @@ function deleteProcess(id) {
 function selectProcess(id) {
   _activeProcId = id;
   renderProcTab();
+  populateBsProcBars();
 }
 
 function addLane() {
