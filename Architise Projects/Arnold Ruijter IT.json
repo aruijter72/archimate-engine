@@ -7,252 +7,69 @@
     "processes": {},
     "views": {}
   },
-  "elements": [
-    {
-      "id": "bs-mo68nefp-wr9fd",
-      "layer": "application",
-      "type": "application-component",
-      "name": "SAP",
-      "documentation": "",
-      "properties": [],
-      "_bs": true
-    },
-    {
-      "id": "bs-mo68nmoq-sjhn7",
-      "layer": "business",
-      "type": "business-actor",
-      "name": "Customer Service",
-      "documentation": "",
-      "properties": [],
-      "_bs": true
-    },
-    {
-      "id": "bs-mo68o0cu-xpmi6",
-      "layer": "business",
-      "type": "business-role",
-      "name": "Customer Service Representative",
-      "documentation": "",
-      "properties": [],
-      "_bs": true
-    },
-    {
-      "id": "bs-mo68oanl-ldx5p",
-      "layer": "application",
-      "type": "application-component",
-      "name": "ESB",
-      "documentation": "",
-      "properties": [],
-      "_bs": true
-    },
-    {
-      "id": "bs-mo68oe98-o1tpl",
-      "layer": "application",
-      "type": "application-component",
-      "name": "POS",
-      "documentation": "",
-      "properties": [],
-      "_bs": true
-    },
-    {
-      "id": "bs-mo68oozb-obxsg",
-      "layer": "business",
-      "type": "business-actor",
-      "name": "Finance",
-      "documentation": "",
-      "properties": [],
-      "_bs": true
-    },
-    {
-      "id": "bs-mo68oy8a-yjtxc",
-      "layer": "business",
-      "type": "business-role",
-      "name": "Accountant",
-      "documentation": "",
-      "properties": [],
-      "_bs": true
-    },
-    {
-      "id": "id-mo68q5dg1c0e7",
-      "layer": "application",
-      "type": "ApplicationComponent",
-      "name": "SAP",
-      "documentation": "ERP",
-      "properties": []
-    },
-    {
-      "id": "id-mo68tgue2yr37",
-      "layer": "application",
-      "type": "ApplicationComponent",
-      "name": "ESB",
-      "documentation": "Middleware",
-      "properties": []
-    },
-    {
-      "id": "id-mo68ttlj3mucu",
-      "layer": "application",
-      "type": "ApplicationComponent",
-      "name": "POS",
-      "documentation": "Till System",
-      "properties": []
-    }
-  ],
-  "relationships": [
-    {
-      "id": "id-mo68x6u14wxot",
-      "type": "AccessRelationship",
-      "sourceId": "bs-mo68nefp-wr9fd",
-      "targetId": "bs-mo68oanl-ldx5p",
-      "name": "",
-      "documentation": "",
-      "directed": false,
-      "accessType": "ReadWrite",
-      "strength": ""
-    },
-    {
-      "id": "id-mo68y7c759x6k",
-      "type": "FlowRelationship",
-      "sourceId": "bs-mo68oanl-ldx5p",
-      "targetId": "bs-mo68oe98-o1tpl",
-      "name": "",
-      "documentation": "",
-      "directed": false,
-      "accessType": "ReadWrite",
-      "strength": ""
-    },
-    {
-      "id": "id-mo68yx566y0l3",
-      "type": "ServingRelationship",
-      "sourceId": "bs-mo68oe98-o1tpl",
-      "targetId": "bs-mo68nefp-wr9fd",
-      "name": "",
-      "documentation": "",
-      "directed": false,
-      "accessType": "ReadWrite",
-      "strength": ""
-    }
-  ],
-  "processes": [
-    {
-      "id": "id-mo693rwpb21tu",
-      "name": "My Architecture Model — Swimlane",
-      "lanes": [
-        {
-          "id": "id-mo693rwp8ss1s",
-          "name": "SAP",
-          "sourceId": "id-mo68q5dg1c0e7"
-        },
-        {
-          "id": "id-mo693rwp9os2u",
-          "name": "ESB",
-          "sourceId": "id-mo68tgue2yr37"
-        },
-        {
-          "id": "id-mo693rwpa0shr",
-          "name": "POS",
-          "sourceId": "id-mo68ttlj3mucu"
-        }
-      ],
-      "steps": [],
-      "flows": [],
-      "columns": [],
-      "_generatedFromArch": true
-    }
-  ],
+  "elements": [],
+  "relationships": [],
+  "processes": [],
   "views": [],
   "snapshots": [],
-  "elementPositions": {
-    "bs-mo68nmoq-sjhn7": {
-      "x": 39,
-      "y": 32
-    },
-    "bs-mo68o0cu-xpmi6": {
-      "x": 221,
-      "y": 33
-    },
-    "bs-mo68oozb-obxsg": {
-      "x": 404,
-      "y": 33
-    },
-    "bs-mo68oy8a-yjtxc": {
-      "x": 586,
-      "y": 31
-    },
-    "bs-mo68nefp-wr9fd": {
-      "x": 193,
-      "y": 176
-    },
-    "bs-mo68oanl-ldx5p": {
-      "x": 944,
-      "y": 174
-    },
-    "bs-mo68oe98-o1tpl": {
-      "x": 944,
-      "y": 280
-    },
-    "id-mo68q5dg1c0e7": {
-      "x": 40,
-      "y": 279
-    },
-    "id-mo68tgue2yr37": {
-      "x": 222,
-      "y": 279
-    },
-    "id-mo68ttlj3mucu": {
-      "x": 404,
-      "y": 279
-    }
-  },
+  "elementPositions": {},
   "businessSystems": {
     "apps": [
       {
-        "id": "bs-mo68nefp-wr9fd",
-        "name": "SAP",
-        "description": "",
+        "id": "bs-mo72515d-gmfy4",
+        "name": "SAP S/4",
+        "description": "ERP for Finance, Order2Cash, and central repository",
         "x": 20,
         "y": 40
       },
       {
-        "id": "bs-mo68oanl-ldx5p",
-        "name": "ESB",
-        "description": "",
+        "id": "bs-mo725dyl-60c98",
+        "name": "Boomi",
+        "description": "Middleware for routing and mapping messages, including API Management",
         "x": 210,
         "y": 40
       },
       {
-        "id": "bs-mo68oe98-o1tpl",
-        "name": "POS",
-        "description": "",
+        "id": "bs-mo725zj5-xwmf9",
+        "name": "SalesForce",
+        "description": "eCom platform for B2C",
         "x": 400,
+        "y": 40
+      },
+      {
+        "id": "bs-mo727hdv-rc2in",
+        "name": "New Black",
+        "description": "POS (Point Of Sales) platform - central with connections to all till systems in stores",
+        "x": 590,
+        "y": 40
+      },
+      {
+        "id": "bs-mo7281l2-v0twv",
+        "name": "PIM",
+        "description": "Product Information Management - containing user-friendly product information and media",
+        "x": 780,
+        "y": 40
+      },
+      {
+        "id": "bs-mo72918a-q05hb",
+        "name": "PLM",
+        "description": "Product Lifecycle Management - for building products and having manufacturers upload their details + tech-packs",
+        "x": 970,
+        "y": 40
+      },
+      {
+        "id": "bs-mo729p7b-sk3gw",
+        "name": "SAP WHM",
+        "description": "Warehouse Management system",
+        "x": 1160,
         "y": 40
       }
     ],
-    "departments": [
-      {
-        "id": "bs-mo68nmoq-sjhn7",
-        "name": "Customer Service",
-        "description": ""
-      },
-      {
-        "id": "bs-mo68oozb-obxsg",
-        "name": "Finance",
-        "description": ""
-      }
-    ],
-    "roles": [
-      {
-        "id": "bs-mo68o0cu-xpmi6",
-        "name": "Customer Service Representative",
-        "description": "",
-        "departmentId": "bs-mo68nmoq-sjhn7"
-      },
-      {
-        "id": "bs-mo68oy8a-yjtxc",
-        "name": "Accountant",
-        "description": "",
-        "departmentId": "bs-mo68oozb-obxsg"
-      }
-    ],
+    "departments": [],
+    "roles": [],
     "roleRelations": [],
-    "appRelations": []
+    "appRelations": [],
+    "orgName": "Arnold Ruijter IT",
+    "bsProcesses": []
   }
 }
