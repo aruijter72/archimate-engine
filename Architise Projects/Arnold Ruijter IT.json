@@ -65,8 +65,104 @@
         "y": 40
       }
     ],
-    "departments": [],
-    "roles": [],
+    "departments": [
+      {
+        "id": "bs-mo72cjod-ob4no",
+        "name": "SAP Functional Finance",
+        "description": "Functional SAP specialists to support Finance business"
+      },
+      {
+        "id": "bs-mo72dhuy-4qbbp",
+        "name": "IT Digital",
+        "description": "Tech team with Digital experts, supporting eCommerce, functionally and technically (development("
+      },
+      {
+        "id": "bs-mo72h5px-lfiqs",
+        "name": "IT Integration & ERP Development",
+        "description": "Middleware developers, Solution Architects, ERP (SAP) Developers, several modules"
+      },
+      {
+        "id": "bs-mo72i3d3-ro6ew",
+        "name": "Customer Service",
+        "description": "Responsible for customers, processes (ordering/delivering/invoicing), stock, sales, etc."
+      },
+      {
+        "id": "bs-mo72io06-p4bf5",
+        "name": "Finance",
+        "description": "E2E Finance, supply chain, invoicing, etc."
+      },
+      {
+        "id": "bs-mo72lhxp-yjsqa",
+        "name": "SAP Functional Order2Cash",
+        "description": "Functional SAP specialists to support Order2Cash business, including Retail processes"
+      },
+      {
+        "id": "bs-mo72m31b-mj9qx",
+        "name": "SAP Functional Logistics",
+        "description": "Functional SAP specialists to support Logistics/Warehouse business"
+      },
+      {
+        "id": "bs-mo72mqpq-ri6nd",
+        "name": "SAP Functional MM",
+        "description": "Functional SAP specialists to support MM business (Material Master)"
+      }
+    ],
+    "roles": [
+      {
+        "id": "bs-mo72o4qr-pkdym",
+        "name": "Team Lead SAP Finance",
+        "description": "Lead of team responsible of functional management of finance in SAP",
+        "departmentId": "bs-mo72cjod-ob4no"
+      },
+      {
+        "id": "bs-mo72pkcj-vnlhk",
+        "name": "Business Systems Analyst Finance",
+        "description": "Responsible for SAP Finance specific configurations, designs, support, and related processes",
+        "departmentId": "bs-mo72cjod-ob4no"
+      },
+      {
+        "id": "bs-mo72q8sk-gnwry",
+        "name": "Team Lead SAP Logistics",
+        "description": "Lead of team responsible of functional management of logistics in SAP",
+        "departmentId": "bs-mo72m31b-mj9qx"
+      },
+      {
+        "id": "bs-mo72qzfa-omr25",
+        "name": "Business Systems Analyst Logistics",
+        "description": "Responsible for SAP Logistics specific configurations, designs, support, and related processes",
+        "departmentId": "bs-mo72m31b-mj9qx"
+      },
+      {
+        "id": "bs-mo72s9c0-4dj2d",
+        "name": "Team Lead SAP Order2Cash",
+        "description": "Lead of team responsible of functional management of Order2Cash in SAP",
+        "departmentId": "bs-mo72lhxp-yjsqa"
+      },
+      {
+        "id": "bs-mo72tsnz-q937l",
+        "name": "Business Systems Analyst Order2Cash",
+        "description": "Responsible for SAP Order2Cash specific configurations, designs, support, and related processes",
+        "departmentId": "bs-mo72lhxp-yjsqa"
+      },
+      {
+        "id": "bs-mo72uqvj-b7agy",
+        "name": "Team Lead SAP MM",
+        "description": "Lead of team responsible of functional management of Material Master in SAP and related processes",
+        "departmentId": "bs-mo72mqpq-ri6nd"
+      },
+      {
+        "id": "bs-mo72vbdd-avt90",
+        "name": "Business Systems Analyst MM",
+        "description": "Responsible for SAP Material Master specific configurations, designs, support, and related processes",
+        "departmentId": ""
+      },
+      {
+        "id": "bs-mo72wkan-j6n4m",
+        "name": "Manager IT Integration & ERP Development",
+        "description": "Lead of Solution Architects & Developers of middleware, ERP and other modules.",
+        "departmentId": "bs-mo72h5px-lfiqs"
+      }
+    ],
     "roleRelations": [],
     "appRelations": [],
     "orgName": "Arnold Ruijter IT",
