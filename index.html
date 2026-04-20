@@ -329,6 +329,19 @@
     }
     .btn-add.proc { border-color: var(--proc-border); color: var(--proc-text); }
     .btn-add.proc:hover { background: var(--proc-bg); border-color: var(--proc); }
+    /* ── Process picker panel ─────────────────────────────────── */
+    .proc-picker-panel { background:var(--surface); border:1px solid var(--border); border-radius:8px; margin:1.1rem 0 .8rem; padding:1rem 1.1rem; }
+    .proc-picker-hd { display:flex; align-items:center; justify-content:space-between; font-size:.8rem; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.8rem; }
+    .proc-picker-close { background:none; border:none; color:var(--muted); font-size:1.1rem; cursor:pointer; padding:0 .2rem; line-height:1; }
+    .proc-picker-close:hover { color:var(--white); }
+    .proc-picker-section { font-size:.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-bottom:.5rem; }
+    .pp-bs-list { display:flex; flex-direction:column; gap:.3rem; margin-bottom:.7rem; }
+    .pp-bs-btn { background:rgba(167,138,245,.09); border:1px solid rgba(167,138,245,.22); border-radius:6px; padding:.45rem .8rem; text-align:left; cursor:pointer; transition:background .12s, border-color .12s; display:flex; flex-direction:column; gap:.1rem; }
+    .pp-bs-btn:hover { background:rgba(167,138,245,.18); border-color:rgba(167,138,245,.5); }
+    .pp-bs-name { font-size:.85rem; font-weight:700; color:var(--white); }
+    .pp-bs-desc { font-size:.72rem; color:var(--muted); }
+    .proc-picker-sep { font-size:.7rem; color:var(--muted); text-align:center; margin:.5rem 0; }
+    .pp-custom-row { display:flex; gap:.5rem; align-items:center; }
     /* Preview pane */
     .proc-preview-pane { position: sticky; top: 1.5rem; }
     .proc-preview-header {
