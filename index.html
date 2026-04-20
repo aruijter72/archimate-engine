@@ -195,6 +195,15 @@
     }
     .model-doc-input:focus { border-bottom-color: var(--gold); }
 
+    /* ── Save-to-BS button ───────────────────────────────── */
+    .btn-save-to-bs {
+      display:inline-flex; align-items:center; gap:.25rem;
+      font-size:.68rem; font-weight:700; color:var(--gold);
+      background:rgba(201,163,85,.1); border:1px solid rgba(201,163,85,.38);
+      border-radius:4px; padding:.1rem .42rem; cursor:pointer; white-space:nowrap;
+      line-height:1.4; transition:background .14s;
+    }
+    .btn-save-to-bs:hover { background:rgba(201,163,85,.22); }
     /* ── BS Process context bar ─────────────────────────────── */
     .bs-proc-bar {
       display: flex; align-items: center; gap: .75rem;
@@ -2366,11 +2375,12 @@
            oninput="bsSetOrgName(this.value)">
   </div>
   <div class="bs-tab-nav">
-    <button class="bs-tab-btn active" id="bs-tab-btn-apps"   onclick="showBsTab('apps')">🖥 Systems</button>
-    <button class="bs-tab-btn"        id="bs-tab-btn-depts"  onclick="showBsTab('depts')">🏢 Departments</button>
-    <button class="bs-tab-btn"        id="bs-tab-btn-roles"  onclick="showBsTab('roles')">👤 Roles</button>
-    <button class="bs-tab-btn"        id="bs-tab-btn-procs"  onclick="showBsTab('procs')">⬡ Processes</button>
-    <button class="bs-tab-btn"        id="bs-tab-btn-canvas" onclick="showBsTab('canvas')">🗺 Landscape</button>
+    <button class="bs-tab-btn active" id="bs-tab-btn-apps"   onclick="showBsTab('apps')"><span id="bs-lbl-apps">🖥 Systems</span></button>
+    <button class="bs-tab-btn"        id="bs-tab-btn-depts"  onclick="showBsTab('depts')"><span id="bs-lbl-depts">🏢 Departments</span></button>
+    <button class="bs-tab-btn"        id="bs-tab-btn-roles"  onclick="showBsTab('roles')"><span id="bs-lbl-roles">👤 Roles</span></button>
+    <button class="bs-tab-btn"        id="bs-tab-btn-procs"  onclick="showBsTab('procs')"><span id="bs-lbl-procs">⬡ Processes</span></button>
+    <button class="bs-tab-btn"        id="bs-tab-btn-canvas" onclick="showBsTab('canvas')"><span id="bs-lbl-canvas">🗺 Landscape</span></button>
+    <button class="bs-tab-btn"        id="bs-tab-btn-cat"    onclick="showBsTab('cat')"><span id="bs-lbl-cat">📚 Catalogue</span></button>
   </div>
   <!-- Systems tab -->
   <div class="bs-tab-panel active" id="bs-panel-apps">
@@ -2427,6 +2437,10 @@
       <div id="bs-procs-form-area"></div>
       <div id="bs-procs-list" class="bs-list"></div>
     </div>
+  </div>
+  <!-- Catalogue tab -->
+  <div class="bs-tab-panel" id="bs-panel-cat">
+    <div id="bs-cat-inner"></div>
   </div>
   <!-- Landscape canvas tab -->
   <div class="bs-tab-panel" id="bs-panel-canvas">
@@ -4867,6 +4881,15 @@ function renderLayer(layer) {
           <th style="width:56px"></th>
         </tr></thead>
         <tbody>`;
+      // Types fully managed by dedicated BS arrays — no generic catalogue
+        const BS_MANAGED_TYPES = new Set(['BusinessActor','BusinessRole','ApplicationComponent','BusinessProcess']);
+        // Build catalogue datalists for non-managed types that have entries
+        const cat = bsGet().catalogue || {};
+        const catTypesInLayer = types.filter(t => !BS_MANAGED_TYPES.has(t) && cat[t]?.length);
+        catTypesInLayer.forEach(t => {
+          const items = (cat[t]||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+          html += `<datalist id="dl-cat-${t}">${items.map(it => `<option value="${esc(it.name||'')}">`).join('')}</datalist>`;
+        });
       // Build BS datalists for types that have a BS catalogue counterpart
       const BS_DATALIST_MAP = {
         BusinessActor:        { listId:'dl-bs-depts',  src: () => bsGet().departments },
@@ -4889,8 +4912,12 @@ function renderLayer(layer) {
         const notInView= viewElemSet && !viewElemSet.has(el.id);
         const rowCls   = [isSel?'elem-row-sel':'', isOrphan?'elem-row-orphan':'', notInView?'elem-row-not-in-view':''].filter(Boolean).join(' ');
         const dlCfg    = BS_DATALIST_MAP[el.type];
-        const listAttr = dlCfg ? ` list="${dlCfg.listId}"` : '';
-        const bsHint   = el._bs ? ' title="Linked to Business Systems — edit name there"' : (dlCfg ? ' title="Tip: names are suggested from your Business Systems catalogue"' : '');
+        const catItems = !BS_MANAGED_TYPES.has(el.type) && (cat[el.type]||[]).length ? (cat[el.type]||[]) : [];
+        const listAttr = dlCfg ? ` list="${dlCfg.listId}"` : (catItems.length ? ` list="dl-cat-${el.type}"` : '');
+        const bsHint   = el._bs ? ' title="Linked to Business Systems — edit name there"' : (dlCfg ? ' title="Tip: names are suggested from your Business Systems catalogue"' : (catItems.length ? ' title="Tip: kies uit eerder opgeslagen namen"' : ''));
+        // Show "Save to BS" button if name exists and is NOT yet in catalogue (and type is not BS-managed)
+        const _catHas  = !BS_MANAGED_TYPES.has(el.type) && !!el.name && (cat[el.type]||[]).some(it => (it.name||'').toLowerCase() === el.name.toLowerCase());
+        const _showSBS = !!el.name && !BS_MANAGED_TYPES.has(el.type) && !_catHas;
         html += `
         <tr data-elem-id="${el.id}" class="${rowCls}" onclick="_elemRowClick('${el.id}',event)">
           <td><span class="type-badge ${cc}">${TYPE_LABELS[el.type]}</span>${el._bs ? ' <span title="Sourced from Business Systems" style="font-size:.65rem;color:var(--gold);opacity:.7">●</span>' : ''}</td>
@@ -4901,6 +4928,12 @@ function renderLayer(layer) {
                    onfocus="this.dataset.pv=this.value;this.value=''"
                    onblur="if(!this.value&&this.dataset.pv)this.value=this.dataset.pv"
                    ${listAttr}${bsHint}>
+            <button id="btn-sbs-${el.id}" class="btn-save-to-bs"
+                    onclick="saveToCatalogue('${el.type}','${el.id}')"
+                    title="${currentLang==='nl'?'Opslaan in BS Catalogus':'Save to BS Catalogue'}"
+                    style="display:${_showSBS?'inline-flex':'none'};margin-top:2px">
+              ＋ ${currentLang==='nl'?'Opslaan in BS':'Save to BS'}
+            </button>
           </td>
           <td>
             <button class="notes-toggle-btn ${el.documentation?'has-notes':''}"
@@ -8303,10 +8336,11 @@ function bsId() {
   return 'bs-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
 }
 function bsGet() {
-  if (!model.businessSystems) model.businessSystems = { orgName:'', apps:[], departments:[], roles:[], roleRelations:[], appRelations:[], bsProcesses:[] };
+  if (!model.businessSystems) model.businessSystems = { orgName:'', apps:[], departments:[], roles:[], roleRelations:[], appRelations:[], bsProcesses:[], catalogue:{} };
   const bs = model.businessSystems;
   if (bs.orgName     === undefined) bs.orgName     = '';
   if (!bs.bsProcesses)              bs.bsProcesses = [];
+  if (!bs.catalogue)                bs.catalogue   = {};
   return bs;
 }
 function bsSetOrgName(val) {
@@ -8335,12 +8369,13 @@ function renderBsPanel() {
 
 // ── Sub-tab switching ─────────────────────────────────────────
 function showBsTab(tab) {
-  ['apps','depts','roles','procs','canvas'].forEach(t => {
+  ['apps','depts','roles','procs','canvas','cat'].forEach(t => {
     document.getElementById('bs-panel-' + t)?.classList.toggle('active', t === tab);
     document.getElementById('bs-tab-btn-' + t)?.classList.toggle('active', t === tab);
   });
   if (tab === 'canvas') renderBsCanvas();
   if (tab === 'procs')  renderBsProcs();
+  if (tab === 'cat')    renderBsCatalogue();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -8351,7 +8386,8 @@ function renderBsApps() {
   const list = document.getElementById('bs-apps-list');
   if (!list) return;
   if (!bs.apps.length) {
-    list.innerHTML = '<div class="bs-empty">No systems added yet. Click + Add to get started.</div>';
+    const NL_a = currentLang==='nl';
+    list.innerHTML = '<div class="bs-empty">' + (NL_a ? 'Nog geen systemen toegevoegd. Klik + Toevoegen om te beginnen.' : 'No systems added yet. Click + Add to get started.') + '</div>';
     return;
   }
   list.innerHTML = bs.apps.map(app => `
@@ -8373,21 +8409,22 @@ function bsShowAppForm(editId) {
   const app = editId ? bs.apps.find(a => a.id === editId) : null;
   const area = document.getElementById('bs-apps-form-area');
   if (!area) return;
+  const NL = currentLang === 'nl';
   area.innerHTML = `
     <div class="bs-form" id="bs-app-form">
       <div class="bs-form-row">
         <div class="bs-form-field">
-          <label class="bs-form-label">Name *</label>
-          <input id="bsaf-name" type="text" placeholder="e.g. SAP, Salesforce, Azure DevOps…" value="${escHtml(app?.name||'')}">
+          <label class="bs-form-label">${NL?'Naam *':'Name *'}</label>
+          <input id="bsaf-name" type="text" placeholder="${NL?'bijv. SAP, Salesforce, Azure DevOps…':'e.g. SAP, Salesforce, Azure DevOps…'}" value="${escHtml(app?.name||'')}">
         </div>
       </div>
       <div class="bs-form-field">
-        <label class="bs-form-label">Description (optional)</label>
-        <textarea id="bsaf-desc" placeholder="Short description of this system…">${escHtml(app?.description||'')}</textarea>
+        <label class="bs-form-label">${NL?'Omschrijving (optioneel)':'Description (optional)'}</label>
+        <textarea id="bsaf-desc" placeholder="${NL?'Korte omschrijving van dit systeem…':'Short description of this system…'}">${escHtml(app?.description||'')}</textarea>
       </div>
       <div class="bs-form-actions">
-        <button class="bs-btn-cancel" onclick="bsClearAppForm()">Cancel</button>
-        <button class="bs-btn-save"   onclick="bsSaveApp(${editId ? `'${editId}'` : 'null'})">${editId ? 'Save changes' : 'Add system'}</button>
+        <button class="bs-btn-cancel" onclick="bsClearAppForm()">${NL?'Annuleren':'Cancel'}</button>
+        <button class="bs-btn-save"   onclick="bsSaveApp(${editId ? `'${editId}'` : 'null'})">${editId ? (NL?'Wijzigingen opslaan':'Save changes') : (NL?'Systeem toevoegen':'Add system')}</button>
       </div>
     </div>`;
   document.getElementById('bsaf-name')?.focus();
@@ -8400,7 +8437,7 @@ function bsClearAppForm() {
 
 function bsSaveApp(editId) {
   const name = document.getElementById('bsaf-name')?.value.trim();
-  if (!name) { alert('Please enter a name.'); return; }
+  if (!name) { alert(currentLang==='nl'?'Voer een naam in.':'Please enter a name.'); return; }
   const desc = document.getElementById('bsaf-desc')?.value.trim() || '';
   const bs   = bsGet();
   if (editId) {
@@ -8416,7 +8453,7 @@ function bsSaveApp(editId) {
 }
 
 function bsDeleteApp(id) {
-  if (!confirm('Delete this system? This will also remove its connections in the landscape.')) return;
+  const _NL_da = currentLang==='nl'; if (!confirm(_NL_da ? 'Dit systeem verwijderen? Dit verwijdert ook de koppelingen in het landschap.' : 'Delete this system? This will also remove its connections in the landscape.')) return;
   const bs = bsGet();
   bs.apps         = bs.apps.filter(a => a.id !== id);
   bs.appRelations = bs.appRelations.filter(r => r.fromId !== id && r.toId !== id);
@@ -8461,7 +8498,8 @@ function renderBsProcs() {
   const list = document.getElementById('bs-procs-list');
   if (!list) return;
   if (!bs.bsProcesses.length) {
-    list.innerHTML = '<div class="bs-empty">No processes added yet. Click + Add to get started.</div>';
+    const NL_p = currentLang==='nl';
+    list.innerHTML = '<div class="bs-empty">' + (NL_p ? 'Nog geen processen toegevoegd. Klik + Toevoegen om te beginnen.' : 'No processes added yet. Click + Add to get started.') + '</div>';
     return;
   }
   list.innerHTML = bs.bsProcesses.map(p => `
@@ -8483,19 +8521,20 @@ function bsShowProcForm(editId) {
   const proc = editId ? bs.bsProcesses.find(p => p.id === editId) : null;
   const area = document.getElementById('bs-procs-form-area');
   if (!area) return;
+  const NL = currentLang === 'nl';
   area.innerHTML = `
     <div class="bs-form" id="bs-proc-form">
       <div class="bs-form-field">
-        <label class="bs-form-label">Process name *</label>
-        <input id="bspf-name" type="text" placeholder="e.g. Order to Cash, Hire to Retire, Procure to Pay…" value="${escHtml(proc?.name||'')}">
+        <label class="bs-form-label">${NL?'Procesnaam *':'Process name *'}</label>
+        <input id="bspf-name" type="text" placeholder="${NL?'bijv. Order to Cash, Hire to Retire, Inkoop tot Betaling…':'e.g. Order to Cash, Hire to Retire, Procure to Pay…'}" value="${escHtml(proc?.name||'')}">
       </div>
       <div class="bs-form-field">
-        <label class="bs-form-label">Description (optional)</label>
-        <textarea id="bspf-desc" placeholder="Brief description of what this process covers…">${escHtml(proc?.description||'')}</textarea>
+        <label class="bs-form-label">${NL?'Omschrijving (optioneel)':'Description (optional)'}</label>
+        <textarea id="bspf-desc" placeholder="${NL?'Korte omschrijving van dit proces…':'Brief description of what this process covers…'}">${escHtml(proc?.description||'')}</textarea>
       </div>
       <div class="bs-form-actions">
-        <button class="bs-btn-cancel" onclick="bsClearProcForm()">Cancel</button>
-        <button class="bs-btn-save"   onclick="bsSaveBsProc(${editId ? `'${editId}'` : 'null'})">${editId ? 'Save changes' : 'Add process'}</button>
+        <button class="bs-btn-cancel" onclick="bsClearProcForm()">${NL?'Annuleren':'Cancel'}</button>
+        <button class="bs-btn-save"   onclick="bsSaveBsProc(${editId ? `'${editId}'` : 'null'})">${editId ? (NL?'Wijzigingen opslaan':'Save changes') : (NL?'Proces toevoegen':'Add process')}</button>
       </div>
     </div>`;
   document.getElementById('bspf-name')?.focus();
@@ -8508,7 +8547,7 @@ function bsClearProcForm() {
 
 function bsSaveBsProc(editId) {
   const name = document.getElementById('bspf-name')?.value.trim();
-  if (!name) { alert('Please enter a process name.'); return; }
+  if (!name) { alert(currentLang==='nl'?'Voer een procesnaam in.':'Please enter a process name.'); return; }
   const desc = document.getElementById('bspf-desc')?.value.trim() || '';
   const bs   = bsGet();
   if (editId) {
@@ -8523,7 +8562,7 @@ function bsSaveBsProc(editId) {
 }
 
 function bsDeleteBsProc(id) {
-  if (!confirm('Delete this process from the catalogue?')) return;
+  const _NL_dp = currentLang==='nl'; if (!confirm(_NL_dp ? 'Dit proces uit de catalogus verwijderen?' : 'Delete this process from the catalogue?')) return;
   const bs = bsGet();
   bs.bsProcesses = bs.bsProcesses.filter(p => p.id !== id);
   renderBsProcs();
@@ -8577,6 +8616,180 @@ function _bsLandscapeSVG() {
   return out;
 }
 
+
+// ══════════════════════════════════════════════════════════════
+// GENERIC BS CATALOGUE
+// ══════════════════════════════════════════════════════════════
+function saveToCatalogue(type, elemId) {
+  const el = model.elements.find(e => e.id === elemId);
+  if (!el || !el.name) return;
+  const bs  = bsGet();
+  if (!bs.catalogue) bs.catalogue = {};
+  if (!bs.catalogue[type]) bs.catalogue[type] = [];
+  // Check for duplicate
+  const exists = bs.catalogue[type].some(it => (it.name||'').toLowerCase() === el.name.toLowerCase());
+  if (exists) return;
+  bs.catalogue[type].push({ id: bsId(), name: el.name, description: el.documentation || '' });
+  autoSave();
+  // Hide the button and refresh the datalist
+  const btn = document.getElementById('btn-sbs-' + elemId);
+  if (btn) btn.style.display = 'none';
+  // Re-inject the datalist for this type
+  const oldDl = document.getElementById('dl-cat-' + type);
+  if (oldDl) {
+    const items = (bs.catalogue[type]||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+    oldDl.innerHTML = items.map(it => `<option value="${esc(it.name||'')}">`).join('');
+  } else {
+    renderLayer(el.layer);
+  }
+  // Refresh BS catalogue tab if open
+  if (currentMode === 'business-systems') renderBsCatalogue();
+}
+
+function renderBsCatalogue() {
+  const panel = document.getElementById('bs-panel-cat');
+  if (!panel) return;
+  const NL  = currentLang === 'nl';
+  const bs  = bsGet();
+  const cat = bs.catalogue || {};
+  // Group types by layer
+  const LAYERS = [
+    { label: NL ? 'Bedrijfslaag' : 'Business Layer',     color:'#c9a355',
+      types: ['BusinessService','BusinessFunction','BusinessEvent','BusinessInteraction',
+               'BusinessObject','BusinessInterface','BusinessCollaboration','Contract','Representation'] },
+    { label: NL ? 'Applicatielaag' : 'Application Layer', color:'#38bdf8',
+      types: ['ApplicationService','ApplicationFunction','ApplicationProcess','ApplicationEvent',
+               'ApplicationInteraction','ApplicationInterface','DataObject','ApplicationCollaboration'] },
+    { label: NL ? 'Technologielaag' : 'Technology Layer', color:'#4ade80',
+      types: ['Node','SystemSoftware','TechnologyService','TechnologyFunction',
+               'TechnologyProcess','TechnologyInterface','Artifact','Device','CommunicationNetwork','Path'] },
+    { label: NL ? 'Motivatie' : 'Motivation',             color:'#a78bfa',
+      types: ['Stakeholder','Driver','Assessment','Goal','Outcome','Principle',
+               'Requirement','Constraint','Meaning','Value'] },
+    { label: NL ? 'Strategie' : 'Strategy',               color:'#fb923c',
+      types: ['Resource','Capability','CourseOfAction','ValueStream'] },
+  ];
+  let html = `<div class="bs-panel-inner">
+    <div class="bs-list-header">
+      <div>
+        <div class="bs-section-title">${NL ? 'Catalogus' : 'Catalogue'}</div>
+        <div class="bs-section-sub">${NL ? 'Herbruikbare namen voor elk ArchiMate-elementtype.' : 'Reusable names for each ArchiMate element type.'}</div>
+      </div>
+    </div>`;
+
+  // Type selector for adding to any catalogue
+  html += `<div style="display:flex;gap:.6rem;align-items:center;padding:.6rem 1rem;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)">
+    <select id="bs-cat-type-add-sel" class="bs-proc-select" style="max-width:280px">
+      <option value="">${NL ? '— Kies elementtype —' : '— Choose element type —'}</option>`;
+  LAYERS.forEach(lg => {
+    html += `<optgroup label="${lg.label}">`;
+    lg.types.forEach(t => {
+      html += `<option value="${t}">${(window._TYPE_LABELS||{})[t] || t}</option>`;
+    });
+    html += `</optgroup>`;
+  });
+  html += `</select>
+    <button class="btn-save-to-bs" onclick="bsShowCatForm(document.getElementById('bs-cat-type-add-sel').value)"
+            style="padding:.25rem .7rem;font-size:.79rem">+ ${NL ? 'Toevoegen' : 'Add'}</button>
+  </div>
+  <div id="bs-cat-form-area"></div>`;
+
+  // List all types that have entries
+  let hasAny = false;
+  LAYERS.forEach(lg => {
+    const typeData = lg.types.filter(t => (cat[t]||[]).length);
+    if (!typeData.length) return;
+    hasAny = true;
+    html += `<div style="padding:.5rem 1rem .25rem;font-size:.68rem;font-weight:800;letter-spacing:.09em;color:${lg.color};text-transform:uppercase;background:rgba(255,255,255,.02)">${lg.label}</div>`;
+    typeData.forEach(t => {
+      const items = (cat[t]||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+      html += `<div style="border-bottom:1px solid var(--border);padding:.35rem 1rem">
+        <div style="font-size:.72rem;font-weight:700;color:var(--text2);margin-bottom:.25rem">${(window._TYPE_LABELS||{})[t] || t} (${items.length})</div>`;
+      items.forEach(it => {
+        html += `<div class="bs-item" id="bs-cat-item-${it.id}" style="padding:.3rem .5rem">
+          <div class="bs-item-body">
+            <div class="bs-item-name">${escHtml(it.name||'(unnamed)')}</div>
+            ${it.description ? `<div class="bs-item-desc">${escHtml(it.description)}</div>` : ''}
+          </div>
+          <div class="bs-item-actions">
+            <button class="bs-icon-btn" onclick="bsShowCatEditForm('${t}','${it.id}')" title="${NL?'Bewerken':'Edit'}">✏</button>
+            <button class="bs-icon-btn danger" onclick="bsDeleteCatEntry('${t}','${it.id}')" title="${NL?'Verwijderen':'Delete'}">🗑</button>
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+  });
+  if (!hasAny) {
+    html += `<div class="proc-empty" style="padding:2rem;text-align:center">${NL ? 'Nog geen catalogusvermeldingen. Voeg ze toe vanuit ArchiMate (＋ Opslaan in BS) of gebruik de kiezer hierboven.' : 'No catalogue entries yet. Add them from ArchiMate (＋ Save to BS) or use the selector above.'}</div>`;
+  }
+  html += `</div>`;
+  panel.innerHTML = html;
+}
+
+function bsShowCatForm(type) {
+  if (!type) { alert(currentLang==='nl'?'Kies eerst een elementtype.':'Please select an element type first.'); return; }
+  bsShowCatEditForm(type, null);
+}
+
+function bsShowCatEditForm(type, editId) {
+  const bs  = bsGet();
+  const NL  = currentLang === 'nl';
+  if (!bs.catalogue) bs.catalogue = {};
+  if (!bs.catalogue[type]) bs.catalogue[type] = [];
+  const entry = editId ? bs.catalogue[type].find(it => it.id === editId) : null;
+  const area  = document.getElementById('bs-cat-form-area');
+  if (!area) return;
+  area.innerHTML = `
+    <div class="bs-form" style="margin:0 1rem .6rem">
+      <div style="font-size:.72rem;font-weight:700;color:var(--gold);margin-bottom:.5rem">${NL?'Type':'Type'}: ${(window._TYPE_LABELS||{})[type]||type}</div>
+      <div class="bs-form-field">
+        <label class="bs-form-label">${NL?'Naam *':'Name *'}</label>
+        <input id="bscf-name" type="text" value="${escHtml(entry?.name||'')}">
+      </div>
+      <div class="bs-form-field">
+        <label class="bs-form-label">${NL?'Omschrijving (optioneel)':'Description (optional)'}</label>
+        <textarea id="bscf-desc">${escHtml(entry?.description||'')}</textarea>
+      </div>
+      <div class="bs-form-actions">
+        <button class="bs-btn-cancel" onclick="bsClearCatForm()">${NL?'Annuleren':'Cancel'}</button>
+        <button class="bs-btn-save" onclick="bsSaveCatEntry('${type}',${editId?'''+editId+''':'null'})">${editId?(NL?'Wijzigingen opslaan':'Save changes'):(NL?'Toevoegen':'Add')}</button>
+      </div>
+    </div>`;
+  document.getElementById('bscf-name')?.focus();
+}
+
+function bsClearCatForm() {
+  const area = document.getElementById('bs-cat-form-area');
+  if (area) area.innerHTML = '';
+}
+
+function bsSaveCatEntry(type, editId) {
+  const name = document.getElementById('bscf-name')?.value.trim();
+  if (!name) { alert(currentLang==='nl'?'Voer een naam in.':'Please enter a name.'); return; }
+  const desc = document.getElementById('bscf-desc')?.value.trim() || '';
+  const bs   = bsGet();
+  if (!bs.catalogue) bs.catalogue = {};
+  if (!bs.catalogue[type]) bs.catalogue[type] = [];
+  if (editId) {
+    const it = bs.catalogue[type].find(i => i.id === editId);
+    if (it) { it.name = name; it.description = desc; }
+  } else {
+    bs.catalogue[type].push({ id: bsId(), name, description: desc });
+  }
+  bsClearCatForm();
+  renderBsCatalogue();
+  autoSave();
+}
+
+function bsDeleteCatEntry(type, id) {
+  const NL = currentLang === 'nl';
+  if (!confirm(NL ? 'Dit item verwijderen uit de catalogus?' : 'Delete this entry from the catalogue?')) return;
+  const bs = bsGet();
+  if (bs.catalogue?.[type]) bs.catalogue[type] = bs.catalogue[type].filter(it => it.id !== id);
+  renderBsCatalogue();
+  autoSave();
+}
 // Escape helper (reuse existing or define)
 function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -8590,7 +8803,8 @@ function renderBsDepts() {
   const list = document.getElementById('bs-depts-list');
   if (!list) return;
   if (!bs.departments.length) {
-    list.innerHTML = '<div class="bs-empty">No departments added yet.</div>';
+    const NL_d = currentLang==='nl';
+    list.innerHTML = '<div class="bs-empty">' + (NL_d ? 'Nog geen afdelingen toegevoegd.' : 'No departments added yet.') + '</div>';
     return;
   }
   list.innerHTML = bs.departments.map(d => `
@@ -8599,7 +8813,7 @@ function renderBsDepts() {
       <div class="bs-item-body">
         <div class="bs-item-name">${escHtml(d.name||'(unnamed)')}</div>
         ${d.description ? `<div class="bs-item-desc">${escHtml(d.description)}</div>` : ''}
-        <div class="bs-item-meta">${bs.roles.filter(r=>r.departmentId===d.id).length} role(s)</div>
+        <div class="bs-item-meta">${currentLang==='nl'?bs.roles.filter(r=>r.departmentId===d.id).length+' rol(len)':bs.roles.filter(r=>r.departmentId===d.id).length+' role(s)'}</div>
       </div>
       <div class="bs-item-actions">
         <button class="bs-icon-btn" onclick="bsShowDeptForm('${d.id}')" title="Edit">✏</button>
@@ -8613,19 +8827,20 @@ function bsShowDeptForm(editId) {
   const dept = editId ? bs.departments.find(d => d.id === editId) : null;
   const area = document.getElementById('bs-depts-form-area');
   if (!area) return;
+  const NL = currentLang === 'nl';
   area.innerHTML = `
     <div class="bs-form">
       <div class="bs-form-field">
-        <label class="bs-form-label">Name *</label>
-        <input id="bsdf-name" type="text" placeholder="e.g. Finance, HR, IT Operations…" value="${escHtml(dept?.name||'')}">
+        <label class="bs-form-label">${NL?'Naam *':'Name *'}</label>
+        <input id="bsdf-name" type="text" placeholder="${NL?'bijv. Finance, HR, IT Operations…':'e.g. Finance, HR, IT Operations…'}" value="${escHtml(dept?.name||'')}">
       </div>
       <div class="bs-form-field">
-        <label class="bs-form-label">Description (optional)</label>
-        <textarea id="bsdf-desc" placeholder="Short description…">${escHtml(dept?.description||'')}</textarea>
+        <label class="bs-form-label">${NL?'Omschrijving (optioneel)':'Description (optional)'}</label>
+        <textarea id="bsdf-desc" placeholder="${NL?'Korte omschrijving…':'Short description…'}">${escHtml(dept?.description||'')}</textarea>
       </div>
       <div class="bs-form-actions">
-        <button class="bs-btn-cancel" onclick="bsClearDeptForm()">Cancel</button>
-        <button class="bs-btn-save"   onclick="bsSaveDept(${editId ? `'${editId}'` : 'null'})">${editId ? 'Save changes' : 'Add department'}</button>
+        <button class="bs-btn-cancel" onclick="bsClearDeptForm()">${NL?'Annuleren':'Cancel'}</button>
+        <button class="bs-btn-save"   onclick="bsSaveDept(${editId ? `'${editId}'` : 'null'})">${editId ? (NL?'Wijzigingen opslaan':'Save changes') : (NL?'Afdeling toevoegen':'Add department')}</button>
       </div>
     </div>`;
   document.getElementById('bsdf-name')?.focus();
@@ -8654,7 +8869,7 @@ function bsSaveDept(editId) {
 }
 
 function bsDeleteDept(id) {
-  if (!confirm('Delete this department? Roles linked to it will be unlinked.')) return;
+  const _NL_dd = currentLang==='nl'; if (!confirm(_NL_dd ? 'Deze afdeling verwijderen? Rollen die hieraan zijn gekoppeld worden losgekoppeld.' : 'Delete this department? Roles linked to it will be unlinked.')) return;
   const bs = bsGet();
   bs.departments = bs.departments.filter(d => d.id !== id);
   bs.roles.forEach(r => { if (r.departmentId === id) r.departmentId = ''; });
@@ -8673,7 +8888,8 @@ function renderBsRoles() {
   const list = document.getElementById('bs-roles-list');
   if (!list) return;
   if (!bs.roles.length) {
-    list.innerHTML = '<div class="bs-empty">No roles added yet.</div>';
+    const NL_r = currentLang==='nl';
+    list.innerHTML = '<div class="bs-empty">' + (NL_r ? 'Nog geen rollen toegevoegd.' : 'No roles added yet.') + '</div>';
     return;
   }
   const deptMap = {};
@@ -8686,7 +8902,7 @@ function renderBsRoles() {
       <div class="bs-item-body">
         <div class="bs-item-name">${escHtml(r.name||'(unnamed)')}</div>
         ${r.description ? `<div class="bs-item-desc">${escHtml(r.description)}</div>` : ''}
-        <div class="bs-item-meta">Department: ${escHtml(deptName)}</div>
+        <div class="bs-item-meta">${currentLang==='nl'?'Afdeling':'Department'}: ${escHtml(deptName)}</div>
       </div>
       <div class="bs-item-actions">
         <button class="bs-icon-btn" onclick="bsShowRoleForm('${r.id}')" title="Edit">✏</button>
@@ -8701,6 +8917,7 @@ function bsShowRoleForm(editId) {
   const role = editId ? bs.roles.find(r => r.id === editId) : null;
   const area = document.getElementById('bs-roles-form-area');
   if (!area) return;
+  const NL = currentLang === 'nl';
   const deptOptions = bs.departments.map(d =>
     `<option value="${d.id}" ${role?.departmentId === d.id ? 'selected' : ''}>${escHtml(d.name)}</option>`
   ).join('');
@@ -8708,24 +8925,24 @@ function bsShowRoleForm(editId) {
     <div class="bs-form">
       <div class="bs-form-row">
         <div class="bs-form-field" style="flex:2">
-          <label class="bs-form-label">Name *</label>
-          <input id="bsrf-name" type="text" placeholder="e.g. Process Manager, Developer, CFO…" value="${escHtml(role?.name||'')}">
+          <label class="bs-form-label">${NL?'Naam *':'Name *'}</label>
+          <input id="bsrf-name" type="text" placeholder="${NL?'bijv. Procesmanager, Ontwikkelaar, CFO…':'e.g. Process Manager, Developer, CFO…'}" value="${escHtml(role?.name||'')}">
         </div>
         <div class="bs-form-field" style="flex:1">
-          <label class="bs-form-label">Department</label>
+          <label class="bs-form-label">${NL?'Afdeling':'Department'}</label>
           <select id="bsrf-dept">
-            <option value="">— none —</option>
+            <option value="">${NL?'— geen —':'— none —'}</option>
             ${deptOptions}
           </select>
         </div>
       </div>
       <div class="bs-form-field">
-        <label class="bs-form-label">Description (optional)</label>
-        <textarea id="bsrf-desc" placeholder="Short description…">${escHtml(role?.description||'')}</textarea>
+        <label class="bs-form-label">${NL?'Omschrijving (optioneel)':'Description (optional)'}</label>
+        <textarea id="bsrf-desc" placeholder="${NL?'Korte omschrijving…':'Short description…'}">${escHtml(role?.description||'')}</textarea>
       </div>
       <div class="bs-form-actions">
-        <button class="bs-btn-cancel" onclick="bsClearRoleForm()">Cancel</button>
-        <button class="bs-btn-save"   onclick="bsSaveRole(${editId ? `'${editId}'` : 'null'})">${editId ? 'Save changes' : 'Add role'}</button>
+        <button class="bs-btn-cancel" onclick="bsClearRoleForm()">${NL?'Annuleren':'Cancel'}</button>
+        <button class="bs-btn-save"   onclick="bsSaveRole(${editId ? `'${editId}'` : 'null'})">${editId ? (NL?'Wijzigingen opslaan':'Save changes') : (NL?'Rol toevoegen':'Add role')}</button>
       </div>
     </div>`;
   document.getElementById('bsrf-name')?.focus();
@@ -8755,7 +8972,7 @@ function bsSaveRole(editId) {
 }
 
 function bsDeleteRole(id) {
-  if (!confirm('Delete this role?')) return;
+  const _NL_dr = currentLang==='nl'; if (!confirm(_NL_dr ? 'Deze rol verwijderen?' : 'Delete this role?')) return;
   const bs = bsGet();
   bs.roles         = bs.roles.filter(r => r.id !== id);
   bs.roleRelations = bs.roleRelations.filter(r => r.fromId !== id && r.toId !== id);
@@ -9794,7 +10011,16 @@ function _cvUpHandler(evt) {
     svg.style.cursor = 'default';
   }
   _cvDrag = null;
+  // Preserve scroll position — renderCanvas() replaces innerHTML which resets scroll
+  const _cvScrollY = window.scrollY || window.pageYOffset || 0;
+  const _cvPanel   = document.getElementById('tab-canvas');
+  const _cvPanelST = _cvPanel ? _cvPanel.scrollTop : 0;
   renderCanvas();
+  requestAnimationFrame(() => {
+    window.scrollTo(0, _cvScrollY);
+    const p = document.getElementById('tab-canvas');
+    if (p) p.scrollTop = _cvPanelST;
+  });
 }
 
 function cvResetLayout() {
