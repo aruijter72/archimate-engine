@@ -4881,7 +4881,7 @@ function renderLayer(layer) {
       neededLists.forEach(lid => {
         const cfg = Object.values(BS_DATALIST_MAP).find(c => c.listId === lid);
         if (!cfg) return;
-        const items = cfg.src();
+        const items = cfg.src().slice().sort((a,b) => (a.name||'').localeCompare(b.name||''));
         html += `<datalist id="${lid}">${items.map(it => `<option value="${esc(it.name||'')}">`).join('')}</datalist>`;
       });
 
@@ -4899,7 +4899,8 @@ function renderLayer(layer) {
           <td>
             <input type="text" class="elem-input" data-eid="${el.id}"
                    value="${esc(el.name)}" placeholder="${t('ph-name')}"
-                   oninput="setElem('${el.id}','name',this.value)"${listAttr}${bsHint}>
+                   oninput="setElem('${el.id}','name',this.value)"
+                   onfocus="this.select()"${listAttr}${bsHint}>
           </td>
           <td>
             <button class="notes-toggle-btn ${el.documentation?'has-notes':''}"
