@@ -4396,10 +4396,17 @@ function _confirmArchiProcPick(layer, name) {
   const nm = (name||'').trim() || (currentLang==='nl'?'Nieuw Proces':'New Process');
   document.getElementById('archi-proc-picker-panel')?.remove();
   addElement(layer, 'BusinessProcess');
-  // Set the name on the just-added element
+  // Set the name (and auto-fill documentation from BS) on the just-added element
   const els = model.elements.filter(e=>e.type==='BusinessProcess');
   const el = els[els.length-1];
-  if (el) { el.name = nm; renderLayer(layer); }
+  if (el) {
+    el.name = nm;
+    if (!el.documentation) {
+      const bsProc = (bsGet().bsProcesses||[]).find(p => p.name === nm);
+      if (bsProc?.description) el.documentation = bsProc.description;
+    }
+    renderLayer(layer);
+  }
 }
 
 function deleteElement(id) {
