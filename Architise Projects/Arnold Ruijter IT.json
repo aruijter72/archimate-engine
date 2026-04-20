@@ -7,62 +7,411 @@
     "processes": {},
     "views": {}
   },
-  "elements": [],
-  "relationships": [],
-  "processes": [],
+  "elements": [
+    {
+      "id": "id-mo74k7mi22tza",
+      "layer": "business",
+      "type": "BusinessRole",
+      "name": "Customer Service Representative",
+      "documentation": "Taking care of all customer related activities.",
+      "properties": []
+    },
+    {
+      "id": "id-mo74lwz24pd1l",
+      "layer": "business",
+      "type": "BusinessService",
+      "name": "Inventory & Sales check",
+      "documentation": "Check done for the customer to see what may need to be ordered",
+      "properties": []
+    },
+    {
+      "id": "id-mo74mbl05qeq9",
+      "layer": "business",
+      "type": "BusinessProcess",
+      "name": "Place Replenishment order",
+      "documentation": "Create an order on the customer's behalf",
+      "properties": []
+    },
+    {
+      "id": "id-mo74npbz6rkr8",
+      "layer": "business",
+      "type": "BusinessEvent",
+      "name": "Order Send",
+      "documentation": "When the order is created and saved, it is automatically sent to the customer",
+      "properties": []
+    },
+    {
+      "id": "id-mo74oae47fye1",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "SAP S/4",
+      "documentation": "ERP for Finance, Order2Cash, and central repository",
+      "properties": []
+    },
+    {
+      "id": "id-mo74ohrf8vw3h",
+      "layer": "application",
+      "type": "ApplicationComponent",
+      "name": "Boomi",
+      "documentation": "Middleware for routing and mapping messages, including API Management",
+      "properties": []
+    },
+    {
+      "id": "id-mo74ozoe9eu9i",
+      "layer": "application",
+      "type": "ApplicationProcess",
+      "name": "Order sent from ERP",
+      "documentation": "The order is sent from the ERP to middleware for further processing",
+      "properties": []
+    },
+    {
+      "id": "id-mo74pzqaa5pbi",
+      "layer": "application",
+      "type": "ApplicationProcess",
+      "name": "Order received by middleware",
+      "documentation": "Middleware receives the order and routes, translates, and sends it to the destination",
+      "properties": []
+    },
+    {
+      "id": "id-mo74qudfb5urm",
+      "layer": "application",
+      "type": "DataObject",
+      "name": "Order",
+      "documentation": "Generated Order document",
+      "properties": []
+    },
+    {
+      "id": "id-mo74re8fczv6x",
+      "layer": "technology",
+      "type": "Node",
+      "name": "SAP S/4 VM server",
+      "documentation": "Cloud platform",
+      "properties": []
+    },
+    {
+      "id": "id-mo74rpgadkjri",
+      "layer": "technology",
+      "type": "Node",
+      "name": "Middleware VM server",
+      "documentation": "Cloud platform",
+      "properties": []
+    }
+  ],
+  "relationships": [
+    {
+      "id": "id-mo750wvfkmvex",
+      "type": "AssignmentRelationship",
+      "sourceId": "id-mo74oae47fye1",
+      "targetId": "id-mo74ohrf8vw3h",
+      "name": "Order Message",
+      "documentation": "Order message from SAP flows to Boomi",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo751rusl5kqw",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo74ohrf8vw3h",
+      "targetId": "id-mo74npbz6rkr8",
+      "name": "",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo754ygjnpia4",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo74k7mi22tza",
+      "targetId": "id-mo74lwz24pd1l",
+      "name": "",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo755f4jo6z49",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo74k7mi22tza",
+      "targetId": "id-mo74mbl05qeq9",
+      "name": "",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo7572k5pkevq",
+      "type": "TriggeringRelationship",
+      "sourceId": "id-mo74mbl05qeq9",
+      "targetId": "id-mo74ozoe9eu9i",
+      "name": "",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo757mfpqhacv",
+      "type": "AssociationRelationship",
+      "sourceId": "id-mo74ozoe9eu9i",
+      "targetId": "id-mo74npbz6rkr8",
+      "name": "",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    }
+  ],
+  "processes": [
+    {
+      "id": "id-mo75dxvd1ra8c9",
+      "name": "Arnold Ruijter IT — Swimlane",
+      "lanes": [
+        {
+          "id": "id-mo75dxvd1by0gp",
+          "name": "Customer Service Representative",
+          "sourceId": "id-mo74k7mi22tza"
+        },
+        {
+          "id": "id-mo75dxvd1cplij",
+          "name": "SAP S/4",
+          "sourceId": "id-mo74oae47fye1"
+        },
+        {
+          "id": "id-mo75dxvd1d4z0k",
+          "name": "Boomi",
+          "sourceId": "id-mo74ohrf8vw3h"
+        },
+        {
+          "id": "id-mo75dxvd1e5cur",
+          "name": "SAP S/4 server",
+          "sourceId": "id-mo74re8fczv6x"
+        },
+        {
+          "id": "id-mo75dxvd1ft66p",
+          "name": "Middleware VM server",
+          "sourceId": "id-mo74rpgadkjri"
+        },
+        {
+          "id": "id-mo75dxvd1g6ego",
+          "name": "Boomi",
+          "sourceId": "id-mo74sswjeerua"
+        },
+        {
+          "id": "id-mo75dxvd1haixe",
+          "name": "SAP S/4",
+          "sourceId": "id-mo74teuvf07x4"
+        },
+        {
+          "id": "id-mo75dxvd1lkdr4",
+          "name": "Other"
+        }
+      ],
+      "steps": [
+        {
+          "id": "id-mo75dxvd1ixqdp",
+          "laneId": "id-mo75dxvd1by0gp",
+          "columnId": "",
+          "type": "task",
+          "label": "Inventory & Sales check",
+          "sourceId": "id-mo74lwz24pd1l",
+          "sourceType": "BusinessService",
+          "sourceLayer": "business",
+          "documentation": "Check done for the customer to see what may need to be ordered",
+          "properties": []
+        },
+        {
+          "id": "id-mo75dxvd1jq4j0",
+          "laneId": "id-mo75dxvd1by0gp",
+          "columnId": "id-mo7arjur1insz",
+          "type": "task",
+          "label": "Place Replenishment order",
+          "sourceId": "id-mo74mbl05qeq9",
+          "sourceType": "BusinessProcess",
+          "sourceLayer": "business",
+          "documentation": "Create an order on the customer's behalf",
+          "properties": []
+        },
+        {
+          "id": "id-mo75dxvd1k7cf7",
+          "laneId": "id-mo75dxvd1lkdr4",
+          "columnId": "",
+          "type": "task",
+          "label": "Order received by middleware",
+          "sourceId": "id-mo74pzqaa5pbi",
+          "sourceType": "ApplicationProcess",
+          "sourceLayer": "application",
+          "documentation": "Middleware receives the order and routes, translates, and sends it to the destination",
+          "properties": []
+        },
+        {
+          "id": "id-mo75dxvd1mxjjy",
+          "laneId": "id-mo75dxvd1lkdr4",
+          "columnId": "",
+          "type": "document",
+          "label": "Order",
+          "sourceId": "id-mo74qudfb5urm",
+          "sourceType": "DataObject",
+          "sourceLayer": "application",
+          "documentation": "Generated Order document",
+          "properties": []
+        },
+        {
+          "id": "id-mo75dxvd1n01ku",
+          "laneId": "id-mo75dxvd1lkdr4",
+          "columnId": "",
+          "type": "task",
+          "label": "Order sent from ERP",
+          "sourceId": "id-mo74ozoe9eu9i",
+          "sourceType": "ApplicationProcess",
+          "sourceLayer": "application",
+          "documentation": "The order is sent from the ERP to middleware for further processing",
+          "properties": []
+        },
+        {
+          "id": "id-mo75dxvd1o9bgc",
+          "laneId": "id-mo75dxvd1d4z0k",
+          "columnId": "id-mo7arjur0qdjt",
+          "type": "start",
+          "label": "Order Send",
+          "sourceId": "id-mo74npbz6rkr8",
+          "sourceType": "BusinessEvent",
+          "sourceLayer": "business",
+          "documentation": "When the order is created and saved, it is automatically sent to the customer",
+          "properties": []
+        }
+      ],
+      "flows": [
+        {
+          "id": "id-mo75dxvd1pf05a",
+          "from": "id-mo75dxvd1jq4j0",
+          "to": "id-mo75dxvd1n01ku",
+          "label": ""
+        },
+        {
+          "id": "id-mo75dxvd1qmo20",
+          "from": "id-mo75dxvd1n01ku",
+          "to": "id-mo75dxvd1o9bgc",
+          "label": ""
+        }
+      ],
+      "columns": [
+        {
+          "id": "id-mo7arjur0qdjt",
+          "name": "Boomi",
+          "sourceId": "id-mo74ohrf8vw3h"
+        },
+        {
+          "id": "id-mo7arjur1insz",
+          "name": "Order sent from ERP",
+          "sourceId": "id-mo74ozoe9eu9i"
+        }
+      ],
+      "_generatedFromArch": true,
+      "bsProcessId": "bs-mo72y8jw-mn7s6"
+    }
+  ],
   "views": [],
   "snapshots": [],
-  "elementPositions": {},
+  "elementPositions": {
+    "id-mo74k7mi22tza": {
+      "x": 39,
+      "y": 0
+    },
+    "id-mo74lwz24pd1l": {
+      "x": 256,
+      "y": 0
+    },
+    "id-mo74mbl05qeq9": {
+      "x": 39,
+      "y": 109
+    },
+    "id-mo74npbz6rkr8": {
+      "x": 800,
+      "y": 0
+    },
+    "id-mo74oae47fye1": {
+      "x": 551,
+      "y": 246
+    },
+    "id-mo74ohrf8vw3h": {
+      "x": 801,
+      "y": 246
+    },
+    "id-mo74ozoe9eu9i": {
+      "x": 39,
+      "y": 248
+    },
+    "id-mo74pzqaa5pbi": {
+      "x": 40,
+      "y": 334
+    },
+    "id-mo74qudfb5urm": {
+      "x": 343,
+      "y": 335
+    },
+    "id-mo74re8fczv6x": {
+      "x": 460,
+      "y": 462
+    },
+    "id-mo74rpgadkjri": {
+      "x": 34,
+      "y": 466
+    }
+  },
   "businessSystems": {
     "apps": [
       {
         "id": "bs-mo72515d-gmfy4",
         "name": "SAP S/4",
         "description": "ERP for Finance, Order2Cash, and central repository",
-        "x": 20,
-        "y": 40
+        "x": 165,
+        "y": 123
       },
       {
         "id": "bs-mo725dyl-60c98",
         "name": "Boomi",
         "description": "Middleware for routing and mapping messages, including API Management",
-        "x": 210,
-        "y": 40
+        "x": 382,
+        "y": 124
       },
       {
         "id": "bs-mo725zj5-xwmf9",
         "name": "SalesForce",
         "description": "eCom platform for B2C",
-        "x": 400,
-        "y": 40
+        "x": 838,
+        "y": 87
       },
       {
         "id": "bs-mo727hdv-rc2in",
         "name": "New Black",
         "description": "POS (Point Of Sales) platform - central with connections to all till systems in stores",
-        "x": 590,
-        "y": 40
+        "x": 836,
+        "y": 197
       },
       {
         "id": "bs-mo7281l2-v0twv",
         "name": "PIM",
         "description": "Product Information Management - containing user-friendly product information and media",
-        "x": 780,
-        "y": 40
+        "x": 550,
+        "y": 260
       },
       {
         "id": "bs-mo72918a-q05hb",
         "name": "PLM",
         "description": "Product Lifecycle Management - for building products and having manufacturers upload their details + tech-packs",
-        "x": 970,
-        "y": 40
+        "x": 547,
+        "y": 22
       },
       {
         "id": "bs-mo729p7b-sk3gw",
         "name": "SAP WHM",
         "description": "Warehouse Management system",
-        "x": 1160,
-        "y": 40
+        "x": 639,
+        "y": 128
       }
     ],
     "departments": [
@@ -161,11 +510,34 @@
         "name": "Manager IT Integration & ERP Development",
         "description": "Lead of Solution Architects & Developers of middleware, ERP and other modules.",
         "departmentId": "bs-mo72h5px-lfiqs"
+      },
+      {
+        "id": "bs-mo737u9k-t4p1d",
+        "name": "Customer Service Representative",
+        "description": "Taking care of all customer related activities.",
+        "departmentId": "bs-mo72i3d3-ro6ew"
       }
     ],
     "roleRelations": [],
     "appRelations": [],
     "orgName": "Arnold Ruijter IT",
-    "bsProcesses": []
-  }
+    "bsProcesses": [
+      {
+        "id": "bs-mo72y8jw-mn7s6",
+        "name": "Order2Cash Wholesale",
+        "description": "Order process for wholesale customers"
+      },
+      {
+        "id": "bs-mo72z31m-840vo",
+        "name": "Order2Cash Concession & Consignment",
+        "description": "Order process for customers with different contracts than wholesale"
+      },
+      {
+        "id": "bs-mo72znrc-ar8f9",
+        "name": "Order2Cash Digital",
+        "description": "Order process for retail stores & eCom"
+      }
+    ]
+  },
+  "linkedBsProcessId": "bs-mo72y8jw-mn7s6"
 }
