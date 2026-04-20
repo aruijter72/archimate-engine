@@ -8269,7 +8269,14 @@ function applyMode() {
   document.getElementById('swimlane-main').style.display     = isSwim  ? '' : 'none';
   document.getElementById('bs-main').style.display           = isBS    ? 'block' : 'none';
   // Mode-specific init
-  if (isSwim) renderProcTab();
+  if (isSwim) {
+    // Sync active swimlane process from ArchiMate's linked BS process
+    if (model.linkedBsProcessId) {
+      const swimProc = (model.processes||[]).find(p => p.bsProcessId === model.linkedBsProcessId);
+      if (swimProc) _activeProcId = swimProc.id;
+    }
+    renderProcTab();
+  }
   if (isBS)   renderBsPanel();
   // Refresh process context bars for archi + swim modes
   if (isArchi || isSwim) populateBsProcBars();
