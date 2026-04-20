@@ -2269,9 +2269,6 @@
   <div id="bs-header-controls" style="display:none;align-items:center;gap:.5rem">
     <span style="font-size:.8rem;color:rgba(255,255,255,.5);font-style:italic" id="bs-header-hint">Landscape catalogue — source of truth for ArchiMate &amp; Swimlane</span>
   </div>
-  <!-- hidden file inputs referenced by global menu -->
-  <input type="file" id="loadFile-global" accept=".json" style="display:none" onchange="handleLoadFile(event)">
-  <input type="file" id="importArchimateFile-global" accept=".archimate,.xml" style="display:none" onchange="handleImportArchimate(event)">
 </header>
 
 <!-- modelDoc: hidden input keeps model.documentation in sync (used by exports + load logic) -->
@@ -2445,6 +2442,9 @@
   </div>
 </div>
 
+<input type="file" id="loadFile" accept=".json" style="display:none" onchange="handleLoadFile(event)">
+<input type="file" id="importArchimateFile" accept=".archimate,.xml" style="display:none" onchange="handleImportArchimate(event)">
+<input type="file" id="openProjectFile" accept=".json,.archimate,.xml" style="display:none" onchange="handleOpenProject(event)">
 <input type="file" id="procLoadFile" accept=".json,.swimlane.json" style="display:none" onchange="handleLoadProcFile(event)">
 <input type="file" id="importDrawioFile" accept=".xml,.drawio" style="display:none" onchange="handleImportDrawio(event)">
 
