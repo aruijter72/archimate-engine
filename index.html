@@ -11366,11 +11366,68 @@ function getActiveProc() {
 }
 
 // ── Data mutations ────────────────────────────────────────────
-function addProcess() {
+function addProcess(nameOverride) {
+  // If a name was provided directly (from picker), create immediately
+  if (nameOverride) {
+    _snapshot();
+    if (!model.processes) model.processes = [];
+    const id = genId();
+    model.processes.push({ id, name: nameOverride, columns: [], lanes: [], steps: [], flows: [] });
+    _activeProcId = id;
+    renderProcTab();
+    return;
+  }
+  // Show inline process picker — BS processes first, then custom
+  const bsProcs = bsGet().bsProcesses || [];
+  const existing = new Set((model.processes||[]).map(p => p.name));
+  const available = bsProcs.filter(p => !existing.has(p.name));
+  // Show picker UI in the header of the process section
+  _showProcessPicker(available);
+}
+
+function _showProcessPicker(bsProcs) {
+  // Inject a small picker panel at the top of the form pane
+  const container = document.getElementById('tab-process');
+  if (!container) return;
+  // Remove any existing picker
+  document.getElementById('proc-picker-panel')?.remove();
+  const NL = currentLang === 'nl';
+  const bsItems = bsProcs.map(p =>
+    `<button class="pp-bs-btn" onclick="_confirmProcPick(${JSON.stringify(p.name)})" title="${esc(p.description||'')}">
+       <span class="pp-bs-name">${esc(p.name)}</span>
+       ${p.description ? `<span class="pp-bs-desc">${esc(p.description.length>60?p.description.slice(0,59)+'…':p.description)}</span>` : ''}
+     </button>`
+  ).join('');
+  const html = `
+    <div id="proc-picker-panel" class="proc-picker-panel">
+      <div class="proc-picker-hd">
+        <span>${NL ? 'Nieuw proces' : 'New process'}</span>
+        <button class="proc-picker-close" onclick="document.getElementById('proc-picker-panel')?.remove()" title="${NL?'Sluiten':'Close'}">×</button>
+      </div>
+      ${bsProcs.length ? `
+        <div class="proc-picker-section">${NL?'Kies uit Business Systems:':'Pick from Business Systems:'}</div>
+        <div class="pp-bs-list">${bsItems}</div>
+        <div class="proc-picker-sep">${NL?'— of voer een naam in —':'— or enter a custom name —'}</div>
+      ` : ''}
+      <div class="pp-custom-row">
+        <input id="pp-custom-name" class="elem-input" placeholder="${NL?'Procesnaam…':'Process name…'}" style="flex:1;font-size:.88rem" onkeydown="if(event.key==='Enter')_confirmProcPick(this.value)">
+        <button class="bs-btn-save" style="white-space:nowrap" onclick="_confirmProcPick(document.getElementById('pp-custom-name').value)">${NL?'Aanmaken':'Create'}</button>
+      </div>
+    </div>`;
+  // Insert before the proc-layout
+  const layout = container.querySelector('.proc-layout');
+  if (layout) layout.insertAdjacentHTML('beforebegin', html);
+  else container.insertAdjacentHTML('afterbegin', html);
+  setTimeout(() => document.getElementById('pp-custom-name')?.focus(), 50);
+}
+
+function _confirmProcPick(name) {
+  const nm = (name||'').trim() || (currentLang==='nl'?'Nieuw Proces':'New Process');
+  document.getElementById('proc-picker-panel')?.remove();
   _snapshot();
   if (!model.processes) model.processes = [];
   const id = genId();
-  model.processes.push({ id, name: 'New Process', columns: [], lanes: [], steps: [], flows: [] });
+  model.processes.push({ id, name: nm, columns: [], lanes: [], steps: [], flows: [] });
   _activeProcId = id;
   renderProcTab();
 }
