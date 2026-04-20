@@ -2280,12 +2280,14 @@
   </div>
 </header>
 
-<!-- ── Model Description (ArchiMate mode only) ──────────────── -->
-<div class="model-doc-bar" id="archimate-doc-bar">
-  <label id="desc-label">Description:</label>
-  <input type="text" id="modelDoc" class="model-doc-input"
-         placeholder="Describe the purpose and scope of this architecture…"
-         oninput="model.documentation = this.value">
+<!-- ── BS Process context bar (ArchiMate mode) ──────────────── -->
+<div class="bs-proc-bar" id="archimate-doc-bar">
+  <span class="bs-proc-bar-label">Process</span>
+  <select class="bs-proc-select" id="archi-bs-proc-select"
+          onchange="setLinkedBsProc('archi',this.value)">
+    <option value="">— link to a Business Systems process —</option>
+  </select>
+  <span class="bs-proc-desc" id="archi-bs-proc-desc"></span>
 </div>
 
 <!-- ── Stats Bar (ArchiMate mode only) ──────────────────────── -->
