@@ -8000,9 +8000,20 @@ function renderHomeStatic() {
 
 // ── Init ──────────────────────────────────────────────────────
 (function init() {
-  setLang(DEF_LANG);
-  renderSidebarBrand();
-  showPage('home');
+  try {
+    setLang(DEF_LANG);
+    renderSidebarBrand();
+    showPage('home');
+    // Signal that JS ran successfully
+    document.getElementById('js-blocked-notice')?.remove();
+  } catch(err) {
+    console.error('Visual Architise init error:', err);
+    const notice = document.getElementById('js-blocked-notice');
+    if (notice) {
+      notice.style.display = 'block';
+      notice.textContent = '⚠ JavaScript error: ' + err.message + '. Try opening this file in Google Chrome or Firefox.';
+    }
+  }
 })();
 ${'<' + '/script>'}
 </body>
