@@ -2345,14 +2345,12 @@
   <!-- ── BS Process context bar (Swimlane mode — read-only, set via ArchiMate) ── -->
   <div class="bs-proc-bar" id="swim-bs-proc-bar">
     <span class="bs-proc-bar-label">Process</span>
-    <select class="bs-proc-select" id="swim-bs-proc-select" disabled
-            style="opacity:.65;cursor:default">
-      <option value="">— select a process in ArchiMate —</option>
-    </select>
-    <span class="bs-proc-desc" id="swim-bs-proc-desc"
-          style="font-size:.72rem;color:rgba(201,163,85,.55);font-style:normal">
-      Set via ArchiMate
+    <span id="swim-bs-proc-name"
+          style="font-size:.86rem;font-weight:600;color:var(--gold);padding:.18rem .5rem;
+                 border-radius:5px;background:rgba(201,163,85,.1);white-space:nowrap">
+      — select in ArchiMate —
     </span>
+    <span class="bs-proc-desc" id="swim-bs-proc-desc"></span>
   </div>
   <div id="tab-process" class="tab-panel active"></div>
 </div>
@@ -4901,7 +4899,9 @@ function renderLayer(layer) {
             <input type="text" class="elem-input" data-eid="${el.id}"
                    value="${esc(el.name)}" placeholder="${t('ph-name')}"
                    oninput="setElem('${el.id}','name',this.value)"
-                   onfocus="this.select()"${listAttr}${bsHint}>
+                   onfocus="this.dataset.pv=this.value;this.value=''"
+                   onblur="if(!this.value&&this.dataset.pv)this.value=this.dataset.pv"
+                   ${listAttr}${bsHint}>
           </td>
           <td>
             <button class="notes-toggle-btn ${el.documentation?'has-notes':''}"
