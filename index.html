@@ -7335,6 +7335,18 @@ function generateHTMLPlatform() {
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${e(mName)} — Platform</title>
+${'<' + 'script>'}
+// Early error handler — catches parse and runtime errors before init()
+window.onerror = function(msg, src, line, col, err) {
+  var el = document.getElementById('js-blocked-notice');
+  if (el) {
+    el.style.display = 'block';
+    el.style.background = '#c0392b';
+    el.innerHTML = '<strong>⚠ JavaScript Error</strong> — ' + msg + ' (line ' + line + '). '
+      + 'Please re-export the platform from Architise and try again.';
+  }
+};
+${'<' + '/script>'}
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@300;400;600;700;800&amp;display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
