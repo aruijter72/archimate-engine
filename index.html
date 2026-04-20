@@ -2230,45 +2230,6 @@
   </div>
   <!-- ArchiMate-mode buttons -->
   <div id="archimate-header-controls" style="display:flex;align-items:center;gap:.5rem">
-    <!-- ── File menu ───────────────────────────────────────── -->
-    <div class="menu-item" id="menu-file-item">
-      <button class="menu-trigger" id="menu-file-btn" onclick="toggleMenu('file')">
-        📁 <span id="menu-file-label">File</span> <span style="font-size:.62rem;opacity:.65">▾</span>
-      </button>
-      <div class="menu-dropdown" id="menu-file-dd">
-        <button class="mi-btn" id="btn-wizard-el" onclick="showWizard();closeMenus()">🪄 Guided Start</button>
-        <button class="mi-btn" id="btn-templates-el" onclick="showTemplates();closeMenus()">📋 Templates</button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn danger" id="btn-newmodel-el" onclick="newModel();closeMenus()">🆕 New Model</button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn" id="btn-openjson-el" onclick="triggerLoad();closeMenus()">📂 Open JSON…</button>
-        <button class="mi-btn" id="btn-import-archimate-el" onclick="triggerImportArchimate();closeMenus()">📥 Import .archimate…</button>
-        <button class="mi-btn" id="btn-savejson-el" onclick="quickSaveModel();closeMenus()">💾 Save</button>
-        <button class="mi-btn" id="btn-saveas-el" onclick="saveModelAs();closeMenus()">💾 Save As…</button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn gold" id="btn-export-arc-menu-el" onclick="exportArchimate();closeMenus()">⬇ Export .archimate</button>
-        <button class="mi-btn" id="btn-export-ameff-menu-el" onclick="exportAMEFF();closeMenus()" title="Open Group AMEFF XML">⬇ Export AMEFF XML</button>
-        <button class="mi-btn no-print" id="btn-print-el" onclick="printModel();closeMenus()">🖨 <span id="btn-print-lbl">Print / Save as PDF</span></button>
-        <button class="mi-btn" id="btn-html-report-el" onclick="generateHTMLReport();closeMenus()">📄 <span id="btn-html-report-lbl">Export HTML Report…</span></button>
-        <button class="mi-btn" id="btn-platform-exp-el" onclick="generateHTMLPlatform();closeMenus()">🌐 <span id="btn-platform-exp-lbl">Export Visual Architise…</span></button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn" id="btn-save-template-el" onclick="saveAsTemplate();closeMenus()">⭐ <span id="btn-save-template-lbl">Save as template…</span></button>
-        <button class="mi-btn" id="btn-snapshot-el" onclick="saveSnapshot();closeMenus()">📸 Save Snapshot…</button>
-        <button class="mi-btn" id="btn-history-el" onclick="showHistory();closeMenus()">📜 Version History…</button>
-      </div>
-    </div>
-    <!-- ── Tools menu ──────────────────────────────────────── -->
-    <div class="menu-item" id="menu-tools-item">
-      <button class="menu-trigger" id="menu-tools-btn" onclick="toggleMenu('tools')">
-        🔧 <span id="menu-tools-label">Tools</span> <span style="font-size:.62rem;opacity:.65">▾</span>
-      </button>
-      <div class="menu-dropdown" id="menu-tools-dd">
-        <button class="mi-btn" id="btn-gen-flow-arch-el" onclick="showFlowGenModal();closeMenus()">⟳ <span id="btn-gen-flow-arch-lbl">Generate Swimlane…</span></button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn" id="btn-translate-el" onclick="translateModelDocs();closeMenus()">🌐 <span id="btn-translate-lbl">Translate documentation…</span></button>
-        <button class="mi-btn no-print" id="btn-share-el" onclick="showShare();closeMenus()">🔗 <span id="btn-share-lbl">Share (read-only link)</span></button>
-      </div>
-    </div>
     <!-- ── View menu ───────────────────────────────────────── -->
     <div class="menu-item" id="menu-view-item">
       <button class="menu-trigger" id="menu-view-btn" onclick="toggleMenu('view')">
