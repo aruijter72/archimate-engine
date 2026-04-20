@@ -8060,6 +8060,9 @@ function renderBsPanel() {
   // Populate org name input
   const orgInput = document.getElementById('bs-org-name');
   if (orgInput) orgInput.value = bsGet().orgName || '';
+  // Keep header input in sync
+  const hdr = document.getElementById('modelName');
+  if (hdr) hdr.value = bsGet().orgName || model.name || '';
   renderBsApps();
   renderBsDepts();
   renderBsRoles();
