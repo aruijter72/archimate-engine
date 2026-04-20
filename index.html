@@ -195,6 +195,30 @@
     }
     .model-doc-input:focus { border-bottom-color: var(--gold); }
 
+    /* ── BS Process context bar ─────────────────────────────── */
+    .bs-proc-bar {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .42rem 1.5rem; background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .bs-proc-bar-label {
+      font-size: .68rem; font-weight: 800; letter-spacing: .09em;
+      color: var(--gold); text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+    }
+    .bs-proc-select {
+      background: var(--surface); border: 1.5px solid rgba(201,163,85,.5);
+      border-radius: 6px; color: var(--white); font-size: .83rem; font-family: inherit;
+      padding: .22rem .55rem .22rem .6rem; cursor: pointer; outline: none;
+      min-width: 180px; max-width: 340px; flex-shrink: 0;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .bs-proc-select:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(201,163,85,.22); }
+    .bs-proc-select option { background: #1e2334; }
+    .bs-proc-desc {
+      font-size: .77rem; color: var(--text2); font-style: italic;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;
+    }
+
     /* ── Stats bar ───────────────────────────────────────────── */
     .stats-bar {
       display: flex; gap: 2rem; padding: .45rem 1.5rem;
