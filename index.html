@@ -4480,19 +4480,22 @@ function populateBsProcBars() {
       archiDesc.textContent = found?.description || '';
     }
   }
-  // Swimlane bar
+  // Swimlane bar — read-only mirror of ArchiMate's selection
   const swimSel  = document.getElementById('swim-bs-proc-select');
   const swimDesc = document.getElementById('swim-bs-proc-desc');
   if (swimSel) {
-    const activeProc = getActiveProc ? getActiveProc() : null;
-    const curSwim = activeProc?.bsProcessId || '';
-    swimSel.innerHTML = [
-      `<option value="">— ${currentLang==='nl'?'koppel aan een Business Process':'link to a Business Systems process'} —</option>`,
-      ...bsProcs.map(p => `<option value="${esc(p.id||'')}"${(p.id||'')=== curSwim?' selected':''}>${esc(p.name||'(unnamed)')}</option>`)
-    ].join('');
+    const curSwim = model.linkedBsProcessId || '';
+    const noProc  = currentLang === 'nl' ? '— selecteer een process in ArchiMate —' : '— select a process in ArchiMate —';
+    swimSel.innerHTML = curSwim
+      ? bsProcs.map(p => `<option value="${esc(p.id||'')}"${(p.id||'')=== curSwim?' selected':''}>${esc(p.name||'(unnamed)')}</option>`).join('')
+      : `<option value="">${noProc}</option>`;
     if (swimDesc) {
       const found = bsProcs.find(p => p.id === curSwim);
-      swimDesc.textContent = found?.description || '';
+      swimDesc.textContent = found?.description
+        ? found.description
+        : (currentLang === 'nl' ? 'Instellen via ArchiMate' : 'Set via ArchiMate');
+      swimDesc.style.color = found?.description ? 'var(--text2)' : 'rgba(201,163,85,.55)';
+      swimDesc.style.fontStyle = found?.description ? 'italic' : 'normal';
     }
   }
 }
