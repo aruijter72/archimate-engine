@@ -4731,8 +4731,8 @@ function renderLayer(layer) {
       const BS_DATALIST_MAP = {
         BusinessActor:        { listId:'dl-bs-depts',  src: () => bsGet().departments },
         BusinessRole:         { listId:'dl-bs-roles',  src: () => bsGet().roles },
-        ApplicationComponent: { listId:'dl-bs-apps',   src: () => bsGet().apps },
-        BusinessProcess:      { listId:'dl-bs-procs',  src: () => bsGet().bsProcesses }
+        ApplicationComponent: { listId:'dl-bs-apps',   src: () => bsGet().apps }
+        // BusinessProcess intentionally excluded — modal picker handles name selection on creation
       };
       // Inject datalist elements (once per layer render)
       const neededLists = new Set(types.filter(tp => BS_DATALIST_MAP[tp]).map(tp => BS_DATALIST_MAP[tp].listId));
