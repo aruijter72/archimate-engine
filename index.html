@@ -5090,6 +5090,8 @@ function renderAll() {
   renderCanvas();
   // Restore view filter bar if one is active
   _renderViewFilterBar();
+  // Refresh BS process context bars
+  populateBsProcBars();
 }
 
 function updateStats() {
