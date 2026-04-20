@@ -2101,10 +2101,11 @@
         </span>
       </button>
     </div>
-    <!-- Model name — always visible -->
+    <!-- Organisation name — always visible; syncs with Business Systems org name -->
     <input type="text" id="modelName" class="model-name-input"
-           value="My Architecture Model" placeholder="Model name…"
-           oninput="model.name = this.value">
+           placeholder="Organisation name…"
+           oninput="bsSetOrgName(this.value); model.name = this.value"
+           title="Organisation name — edit here or in Business Systems">
   </div>
   <button class="search-trigger" id="btn-search-global" onclick="showSearch()" title="Search elements (⌘K / Ctrl+K)">🔍</button>
   <div class="menu-item" id="menu-help-item" style="position:relative">
