@@ -3216,11 +3216,25 @@ function applyTranslations() {
   for (const [id, txt] of Object.entries(gFileMap)) _g(id, txt);
   // ── BS panel section subtitles ────────────────────────────────
   const bsSubMap = {
-    'bs-header-hint': L === 'nl' ? 'Landschapscatalogus — basis voor ArchiMate & Swimlane' : 'Landscape catalogue — source of truth for ArchiMate & Swimlane',
-    'bs-sub-apps':    L === 'nl' ? 'De basis voor uw ArchiMate-canvas en Swimlane-diagrammen.' : 'These are the foundation for your ArchiMate canvas and Swimlane diagrams.',
-    'bs-sub-depts':   L === 'nl' ? 'Organisatie-eenheden gebruikt in processen en het landschap.' : 'Organisational units used in processes and landscape.',
-    'bs-sub-roles':   L === 'nl' ? 'Rollen kunnen worden gekoppeld aan afdelingen en als Swimlane-banen worden gebruikt.' : 'Roles can be linked to departments and used as Swimlane lanes.',
-    'bs-sub-procs':   L === 'nl' ? 'Definieer hier uw kernprocessen — ze kunnen worden geselecteerd bij het bouwen van ArchiMate-diagrammen en Swimlane-stromen.' : 'Define your key processes here — they can be selected when building ArchiMate diagrams and Swimlane flows.',
+    'bs-header-hint':  L === 'nl' ? 'Landschapscatalogus — basis voor ArchiMate & Swimlane'                   : 'Landscape catalogue — source of truth for ArchiMate & Swimlane',
+    'bs-title-apps':   L === 'nl' ? 'Applicaties, systemen & platformen'                                      : 'Applications, Systems & Platforms',
+    'bs-sub-apps':     L === 'nl' ? 'De basis voor uw ArchiMate-canvas en Swimlane-diagrammen.'               : 'These are the foundation for your ArchiMate canvas and Swimlane diagrams.',
+    'bs-add-apps':     L === 'nl' ? '+ Toevoegen'                                                              : '+ Add',
+    'bs-title-depts':  L === 'nl' ? 'Afdelingen'                                                              : 'Departments',
+    'bs-sub-depts':    L === 'nl' ? 'Organisatie-eenheden gebruikt in processen en het landschap.'            : 'Organisational units used in processes and landscape.',
+    'bs-add-depts':    L === 'nl' ? '+ Toevoegen'                                                              : '+ Add',
+    'bs-title-roles':  L === 'nl' ? 'Rollen'                                                                  : 'Roles',
+    'bs-sub-roles':    L === 'nl' ? 'Rollen kunnen worden gekoppeld aan afdelingen en als Swimlane-banen worden gebruikt.' : 'Roles can be linked to departments and used as Swimlane lanes.',
+    'bs-add-roles':    L === 'nl' ? '+ Toevoegen'                                                              : '+ Add',
+    'bs-title-procs':  L === 'nl' ? 'Bedrijfsprocessen'                                                       : 'Business Processes',
+    'bs-sub-procs':    L === 'nl' ? 'Definieer hier uw kernprocessen — ze kunnen worden geselecteerd bij het bouwen van ArchiMate-diagrammen en Swimlane-stromen.' : 'Define your key processes here — they can be selected when building ArchiMate diagrams and Swimlane flows.',
+    'bs-add-procs':    L === 'nl' ? '+ Toevoegen'                                                              : '+ Add',
+    'bs-lbl-apps':     L === 'nl' ? '🖥 Systemen'                                                             : '🖥 Systems',
+    'bs-lbl-depts':    L === 'nl' ? '🏢 Afdelingen'                                                           : '🏢 Departments',
+    'bs-lbl-roles':    L === 'nl' ? '👤 Rollen'                                                               : '👤 Roles',
+    'bs-lbl-procs':    L === 'nl' ? '⬡ Processen'                                                             : '⬡ Processes',
+    'bs-lbl-canvas':   L === 'nl' ? '🗺 Landschap'                                                            : '🗺 Landscape',
+    'bs-lbl-cat':      L === 'nl' ? '📚 Catalogus'                                                            : '📚 Catalogue',
   };
   for (const [id, txt] of Object.entries(bsSubMap)) _g(id, txt);
   updateHealth();
