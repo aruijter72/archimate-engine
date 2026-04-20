@@ -11429,10 +11429,10 @@ const LICENSE = {
     document.body.appendChild(el);
   }
 
-  if (!LICENSE.key || !LICENSE.domain) {
-    banner('<strong style="color:#f5a050">Architise — unlicensed installation.</strong>');
-    return;
-  }
+  // if (!LICENSE.key || !LICENSE.domain) {
+  //   banner('<strong style="color:#f5a050">Architise — unlicensed installation.</strong>');
+  //   return;
+  // }
   if (host !== LICENSE.domain && !host.endsWith('.' + LICENSE.domain)) {
     banner('<strong style="color:#f5a050">Architise — running on an unlicensed domain.</strong>');
     return;
