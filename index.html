@@ -13325,6 +13325,13 @@ function renderProcTab() {
       <!-- LEFT: Form panels -->
       <div class="proc-form">
 
+        ${!proc ? `
+        <div class="proc-empty" style="padding:2rem 1rem;text-align:center;color:var(--text2)">
+          ${NL
+            ? 'Selecteer een process via het <strong style="color:var(--gold)">ArchiMate</strong>-tabblad om te beginnen.'
+            : 'Select a process via the <strong style="color:var(--gold)">ArchiMate</strong> tab to get started.'}
+        </div>` : ''}
+
         ${proc ? `
         <!-- Columns (optional extra dimension) -->
         <div class="proc-section">
