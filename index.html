@@ -4474,7 +4474,20 @@ function setElem(id, field, val) {
       }
     }
   }
+  // Update "Save to BS" button visibility dynamically when name changes
+  if (field === 'name') {
+    const sbsBtn = document.getElementById(`btn-sbs-${id}`);
+    if (sbsBtn) {
+      const BS_MANAGED = new Set(['BusinessActor','BusinessRole','ApplicationComponent','BusinessProcess']);
+      if (!BS_MANAGED.has(el.type)) {
+        const cat = bsGet().catalogue || {};
+        const catHas = !!val && (cat[el.type]||[]).some(it => (it.name||'').toLowerCase() === val.toLowerCase());
+        sbsBtn.style.display = (val && !catHas) ? 'inline-flex' : 'none';
+      }
+    }
+  }
   scheduleHealthUpdate();
+  autoSave();
 }
 
 // ── BS Process context bars ────────────────────────────────────
@@ -4926,7 +4939,7 @@ function renderLayer(layer) {
                    value="${esc(el.name)}" placeholder="${t('ph-name')}"
                    oninput="setElem('${el.id}','name',this.value)"
                    onfocus="this.dataset.pv=this.value;this.value=''"
-                   onblur="if(!this.value&&this.dataset.pv)this.value=this.dataset.pv"
+                   onblur="if(!this.value&&this.dataset.pv)this.value=this.dataset.pv;setElem('${el.id}','name',this.value)"
                    ${listAttr}${bsHint}>
             <button id="btn-sbs-${el.id}" class="btn-save-to-bs"
                     onclick="saveToCatalogue('${el.type}','${el.id}')"
