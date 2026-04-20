@@ -13325,25 +13325,6 @@ function renderProcTab() {
       <!-- LEFT: Form panels -->
       <div class="proc-form">
 
-        <!-- Process selector -->
-        <div class="proc-section">
-          ${(() => { const bsProcs = bsGet().bsProcesses; return bsProcs.length ? `<datalist id="dl-bs-swim-procs">${bsProcs.map(p => `<option value="${esc(p.name||'')}">`).join('')}</datalist>` : ''; })()}
-          <div class="proc-section-header">
-            <span class="proc-section-title">${NL ? 'Processen' : 'Processes'} <i class="tip-icon" onmouseenter="showTipById(this,'proc-processes')" onmouseleave="hideTip()">?</i></span>
-            <button class="btn-add proc" onclick="addProcess()">+ ${NL ? 'Nieuw Proces' : 'New Process'}</button>
-          </div>
-          ${!model.processes.length
-            ? `<div class="proc-empty">${NL ? 'Nog geen processen — klik op <em>Nieuw Proces</em> om te beginnen.' : 'No processes yet — click <em>New Process</em> to start.'}</div>`
-            : model.processes.map(p => `
-              <div class="proc-row ${p.id === _activeProcId ? 'selected' : ''}">
-                <button class="proc-select-btn" onclick="selectProcess('${p.id}')">${esc(p.name) || '(unnamed process)'}</button>
-                ${p.id === _activeProcId
-                  ? `<input class="elem-input" style="max-width:165px;font-size:.82rem" value="${esc(p.name)}" oninput="updateProcName('${p.id}',this.value)" placeholder="${NL ? 'Procesnaam…' : 'Process name…'}" list="dl-bs-swim-procs">`
-                  : ''}
-                <button class="btn-del-sm" onclick="deleteProcess('${p.id}')" title="${NL ? 'Proces verwijderen' : 'Delete process'}">×</button>
-              </div>`).join('')}
-        </div>
-
         ${proc ? `
         <!-- Columns (optional extra dimension) -->
         <div class="proc-section">
