@@ -7448,9 +7448,12 @@ section{margin-bottom:2rem}
 </style>
 </head>
 <body>
-<!-- JS / browser notice — hidden once JS runs -->
+<!-- Browser notice — visible until JS runs (catches Safari local-file security block) -->
+<div id="js-blocked-notice" style="background:#1a6ea8;color:#fff;padding:.7rem 1.4rem;font-weight:600;font-size:.88rem;text-align:center;display:flex;align-items:center;justify-content:center;gap:.8rem">
+  ℹ If buttons are not working, open this file in <strong>Google Chrome</strong> or <strong>Firefox</strong> — Safari may block local JavaScript.
+  <button onclick="this.parentElement.style.display='none'" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:5px;padding:.18rem .6rem;cursor:pointer;font-size:.8rem">Dismiss</button>
+</div>
 <noscript><div style="background:#d97706;color:#fff;padding:.65rem 1.2rem;font-weight:700;font-size:.9rem;text-align:center">⚠ JavaScript is required for Visual Architise. Please open this file in Google Chrome or Firefox.</div></noscript>
-<div id="js-blocked-notice" style="display:none;background:#d97706;color:#fff;padding:.65rem 1.2rem;font-weight:700;font-size:.85rem;text-align:center"></div>
 <div class="layout">
 
 <!-- Sidebar -->
@@ -8007,8 +8010,8 @@ function renderHomeStatic() {
     setLang(DEF_LANG);
     renderSidebarBrand();
     showPage('home');
-    // Signal that JS ran successfully
-    document.getElementById('js-blocked-notice')?.remove();
+    // JS ran — hide the browser notice after a short delay
+    setTimeout(() => { const n = document.getElementById('js-blocked-notice'); if(n) n.style.display='none'; }, 1200);
   } catch(err) {
     console.error('Visual Architise init error:', err);
     const notice = document.getElementById('js-blocked-notice');
