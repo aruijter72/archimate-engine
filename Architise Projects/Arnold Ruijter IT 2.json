@@ -7,9 +7,27 @@
     "processes": {},
     "views": {}
   },
-  "elements": [],
+  "elements": [
+    {
+      "id": "id-mo7356de1o60l",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Customer Service",
+      "documentation": "Supplier (us) department, local to countries, supporting customers where needed",
+      "properties": []
+    }
+  ],
   "relationships": [],
-  "processes": [],
+  "processes": [
+    {
+      "id": "id-mo7305om0z9tp",
+      "name": "Order2Cash Wholesale",
+      "columns": [],
+      "lanes": [],
+      "steps": [],
+      "flows": []
+    }
+  ],
   "views": [],
   "snapshots": [],
   "elementPositions": {},
@@ -19,50 +37,50 @@
         "id": "bs-mo72515d-gmfy4",
         "name": "SAP S/4",
         "description": "ERP for Finance, Order2Cash, and central repository",
-        "x": 20,
-        "y": 40
+        "x": 165,
+        "y": 123
       },
       {
         "id": "bs-mo725dyl-60c98",
         "name": "Boomi",
         "description": "Middleware for routing and mapping messages, including API Management",
-        "x": 210,
-        "y": 40
+        "x": 382,
+        "y": 124
       },
       {
         "id": "bs-mo725zj5-xwmf9",
         "name": "SalesForce",
         "description": "eCom platform for B2C",
-        "x": 400,
-        "y": 40
+        "x": 838,
+        "y": 87
       },
       {
         "id": "bs-mo727hdv-rc2in",
         "name": "New Black",
         "description": "POS (Point Of Sales) platform - central with connections to all till systems in stores",
-        "x": 590,
-        "y": 40
+        "x": 836,
+        "y": 197
       },
       {
         "id": "bs-mo7281l2-v0twv",
         "name": "PIM",
         "description": "Product Information Management - containing user-friendly product information and media",
-        "x": 780,
-        "y": 40
+        "x": 550,
+        "y": 260
       },
       {
         "id": "bs-mo72918a-q05hb",
         "name": "PLM",
         "description": "Product Lifecycle Management - for building products and having manufacturers upload their details + tech-packs",
-        "x": 970,
-        "y": 40
+        "x": 547,
+        "y": 22
       },
       {
         "id": "bs-mo729p7b-sk3gw",
         "name": "SAP WHM",
         "description": "Warehouse Management system",
-        "x": 1160,
-        "y": 40
+        "x": 639,
+        "y": 128
       }
     ],
     "departments": [
@@ -161,11 +179,33 @@
         "name": "Manager IT Integration & ERP Development",
         "description": "Lead of Solution Architects & Developers of middleware, ERP and other modules.",
         "departmentId": "bs-mo72h5px-lfiqs"
+      },
+      {
+        "id": "bs-mo737u9k-t4p1d",
+        "name": "Customer Service Representative",
+        "description": "Taking care of all customer related activities.",
+        "departmentId": "bs-mo72i3d3-ro6ew"
       }
     ],
     "roleRelations": [],
     "appRelations": [],
     "orgName": "Arnold Ruijter IT",
-    "bsProcesses": []
+    "bsProcesses": [
+      {
+        "id": "bs-mo72y8jw-mn7s6",
+        "name": "Order2Cash Wholesale",
+        "description": "Order process for wholesale customers"
+      },
+      {
+        "id": "bs-mo72z31m-840vo",
+        "name": "Order2Cash Concession & Consignment",
+        "description": "Order process for customers with different contracts than wholesale"
+      },
+      {
+        "id": "bs-mo72znrc-ar8f9",
+        "name": "Order2Cash Digital",
+        "description": "Order process for retail stores & eCom"
+      }
+    ]
   }
 }
