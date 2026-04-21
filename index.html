@@ -7612,7 +7612,9 @@ function generateHTMLPlatform() {
     name: model.name, documentation: model.documentation||'',
     platformIntro: model.platformIntro||'',
     elements: elems, relationships: rels, views, processes: procs,
-    businessSystems: model.businessSystems || { apps:[], departments:[], roles:[], roleRelations:[], appRelations:[] }
+    businessSystems: model.businessSystems || { apps:[], departments:[], roles:[], roleRelations:[], appRelations:[] },
+    // Per-process element models so the VA can show process-scoped Architecture pages
+    processModels: model.processModels || {}
   };
 
   // ── Sidebar: process groups with sub-items ───────────────────
