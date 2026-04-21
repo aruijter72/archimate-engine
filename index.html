@@ -7548,6 +7548,10 @@ function _buildCanvasSVG(elems, pos, viewFilter) {
 
 // ── Hoofdfunctie: genereer het HTML platform ─────────────────
 function generateHTMLPlatform() {
+  // Sync current elements into processModels and fix proc names before export
+  _syncProcessModelFromCurrentElements();
+  _syncProcNames();
+
   if (!model.platformConfig) model.platformConfig = { defaultLang:'en', processes:{}, views:{} };
   const cfg     = model.platformConfig;
   const defLang = cfg.defaultLang || 'en';
@@ -7555,8 +7559,23 @@ function generateHTMLPlatform() {
   const mName  = model.name || 'Architecture Model';
   const nowEN  = new Date().toLocaleDateString('en-GB', {year:'numeric',month:'long',day:'numeric'});
   const nowNL  = new Date().toLocaleDateString('nl-NL', {year:'numeric',month:'long',day:'numeric'});
-  const elems  = model.elements      || [];
-  const rels   = model.relationships || [];
+
+  // Build a merged elements/relationships view from ALL process models for the Layers section
+  const _mergedElems = []; const _mergedIds = new Set();
+  const _mergedRels  = []; const _mergedRelIds = new Set();
+  const _mergedPos   = {};
+  for (const pm of Object.values(model.processModels || {})) {
+    for (const el of (pm.elements || []))      { if (!_mergedIds.has(el.id))    { _mergedElems.push(el);    _mergedIds.add(el.id); } }
+    for (const r  of (pm.relationships || []))  { if (!_mergedRelIds.has(r.id)) { _mergedRels.push(r);      _mergedRelIds.add(r.id); } }
+    Object.assign(_mergedPos, pm.elementPositions || {});
+  }
+  // Also include current active model.elements (not yet flushed to processModels)
+  for (const el of (model.elements || []))      { if (!_mergedIds.has(el.id))    { _mergedElems.push(el);    _mergedIds.add(el.id); } }
+  for (const r  of (model.relationships || []))  { if (!_mergedRelIds.has(r.id)) { _mergedRels.push(r);      _mergedRelIds.add(r.id); } }
+  Object.assign(_mergedPos, model.elementPositions || {});
+
+  const elems  = _mergedElems;
+  const rels   = _mergedRels;
   const allProcs = (model.processes || []).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   const allViews = (model.views     || []).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   const procs  = allProcs.filter(p => (cfg.processes[p.id]?.include) !== false);
@@ -7566,12 +7585,17 @@ function generateHTMLPlatform() {
   const canvasSVG = _platformCanvasSVG(null);
   const bsLandscapeSVG = _bsLandscapeSVG();
   const procSVGs  = {};
-  for (const p of procs) procSVGs[p.id] = _reportProcSVG(p) || '';
+  for (const p of procs) {
+    // Render swimlane SVG using that process's own element context if available
+    const bsPid = p.bsProcessId;
+    const pm = bsPid ? (model.processModels[bsPid] || {}) : {};
+    procSVGs[p.id] = _reportProcSVG(p) || '';
+  }
   const layerSVGs = {};
   for (const lk of ['business','application','technology','motivation','strategy']) {
     const le = elems.filter(el => el.layer === lk);
-    if (le.length && model.elementPositions && Object.keys(model.elementPositions).length)
-      layerSVGs[lk] = _buildCanvasSVG(le, model.elementPositions, null) || '';
+    if (le.length && Object.keys(_mergedPos).length)
+      layerSVGs[lk] = _buildCanvasSVG(le, _mergedPos, null) || '';
   }
   const viewSVGs = {};
   for (const v of views) {
