@@ -13743,6 +13743,7 @@ function renderProcTab() {
             ? `<div class="proc-empty">${NL ? 'Nog geen stappen — voeg taken, beslissingen en start-/eindevents toe.' : 'No steps yet — add tasks, decisions, and start/end events.'}</div>`
             : `<table class="elem-table" style="font-size:.79rem">
                 <thead><tr>
+                  <th style="width:28px"></th>
                   <th style="width:84px">${NL ? 'Type' : 'Type'}</th>
                   <th>${NL ? 'Label' : 'Label'}</th>
                   <th style="width:100px">${NL ? 'Rijstrook' : 'Lane'}</th>
@@ -13750,8 +13751,14 @@ function renderProcTab() {
                   <th style="width:44px"></th>
                 </tr></thead>
                 <tbody>
-                  ${proc.steps.map(s => `
+                  ${proc.steps.map((s, si) => `
                     <tr>
+                      <td style="white-space:nowrap">
+                        <span style="display:flex;flex-direction:column;gap:1px">
+                          <button class="proc-zoom-btn" onclick="moveStep('${s.id}',-1)" title="${NL ? 'Omhoog' : 'Move up'}" style="width:18px;height:16px;font-size:.6rem" ${si===0?'disabled':''}>▲</button>
+                          <button class="proc-zoom-btn" onclick="moveStep('${s.id}',1)"  title="${NL ? 'Omlaag' : 'Move down'}" style="width:18px;height:16px;font-size:.6rem" ${si===proc.steps.length-1?'disabled':''}>▼</button>
+                        </span>
+                      </td>
                       <td style="display:flex;align-items:center;gap:3px">
                         <select class="elem-input" style="font-size:.73rem;padding:.15rem .25rem;flex:1" onchange="updateStepField('${s.id}','type',this.value)">
                           <option value="start"    ${s.type==='start'    ?'selected':''}>▶ ${NL ? 'Start' : 'Start'}</option>
