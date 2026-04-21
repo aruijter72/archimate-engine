@@ -8274,7 +8274,16 @@ function renderLayerPage(layerId) {
     || '<p class="empty-note" style="padding:1rem">' + T('No diagram available for this layer.','Geen diagram beschikbaar voor deze laag.') + '</p>';
   _zoomState['layer-cv'] = 1;
   const svgEl = cvWrap.querySelector('svg'); if (svgEl) svgEl.style.transform = 'scale(1)';
-  const lElems = MODEL.elements.filter(el => el.layer === layerId);
+
+  // If a process is active in the sidebar, show only that process's layer elements
+  let layerElems = MODEL.elements;
+  if (_currentProcId) {
+    const proc = procById[_currentProcId];
+    if (proc?.bsProcessId && MODEL.processModels?.[proc.bsProcessId]) {
+      layerElems = MODEL.processModels[proc.bsProcessId].elements || MODEL.elements;
+    }
+  }
+  const lElems = layerElems.filter(el => el.layer === layerId);
   document.getElementById('lp-elem-count').textContent = lElems.length;
   document.getElementById('lp-elems-grid').innerHTML   = lElems.length
     ? lElems.map(el => buildElemCard(el)).join('')
