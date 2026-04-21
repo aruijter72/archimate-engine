@@ -4597,6 +4597,9 @@ function setLinkedBsProc(ctx, bsProcId) {
       swimProc = { id: genId(), name: bsProc?.name || 'Process',
                    bsProcessId: bsProcId, columns:[], lanes:[], steps:[], flows:[] };
       model.processes.push(swimProc);
+    } else if (bsProc?.name) {
+      // Keep the swimlane process name in sync with the BS process name
+      swimProc.name = bsProc.name;
     }
     _activeProcId = swimProc.id;
   } else {
@@ -4607,8 +4610,8 @@ function setLinkedBsProc(ctx, bsProcId) {
   if (archiDesc) archiDesc.textContent = bsProc?.description || '';
   // Refresh swim bar
   populateBsProcBars();
-  // If currently in swimlane mode, re-render the panel
-  if (currentMode === 'swimlane') renderProcTab();
+  // Always re-render Swimlane panel so it reflects the new process immediately
+  renderProcTab();
   autoSave();
 }
 
