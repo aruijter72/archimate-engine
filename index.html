@@ -2271,8 +2271,6 @@
     <!-- ── Undo / Redo ──────────────────────────────────────── -->
     <button class="undo-btn" id="btn-undo-sw" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↩</button>
     <button class="undo-btn" id="btn-redo-sw" onclick="redo()" title="Redo (Ctrl+Y)" disabled>↪</button>
-    <!-- ── Primary action ──────────────────────────────────── -->
-    <button class="btn btn-primary" id="btn-export-drawio-el" onclick="exportDrawio()">⬇ Export draw.io XML</button>
   </div>
   <!-- ── Business Systems header controls ──────────────────── -->
   <div id="bs-header-controls" style="display:none;align-items:center;gap:.5rem">
@@ -13627,7 +13625,7 @@ function renderProcTab() {
   const NL = currentLang === 'nl';
 
   // Update disabled state of proc-dependent header buttons
-  ['g-proc-save-btn','g-proc-saveas-btn','g-proc-drawio-btn','btn-export-drawio-el'].forEach(id => {
+  ['g-proc-save-btn','g-proc-saveas-btn','g-proc-drawio-btn'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.disabled = !proc;
   });
