@@ -12051,6 +12051,17 @@ function deleteColumn(colId) {
   renderProcTab();
 }
 
+function moveColumn(colId, dir) {
+  _snapshot();
+  const proc = getActiveProc(); if (!proc) return;
+  const idx = proc.columns.findIndex(c => c.id === colId);
+  if (idx < 0) return;
+  const swapIdx = idx + dir;
+  if (swapIdx < 0 || swapIdx >= proc.columns.length) return;
+  [proc.columns[idx], proc.columns[swapIdx]] = [proc.columns[swapIdx], proc.columns[idx]];
+  renderProcTab();
+}
+
 function updateColumnName(colId, val) {
   const proc = getActiveProc(); if (!proc) return;
   const c = proc.columns.find(x => x.id === colId);
@@ -12338,6 +12349,17 @@ function deleteStep(stepId) {
   const proc = getActiveProc(); if (!proc) return;
   proc.steps = proc.steps.filter(s => s.id !== stepId);
   proc.flows = proc.flows.filter(f => f.from !== stepId && f.to !== stepId);
+  renderProcTab();
+}
+
+function moveStep(stepId, dir) {
+  _snapshot();
+  const proc = getActiveProc(); if (!proc) return;
+  const idx = proc.steps.findIndex(s => s.id === stepId);
+  if (idx < 0) return;
+  const swapIdx = idx + dir;
+  if (swapIdx < 0 || swapIdx >= proc.steps.length) return;
+  [proc.steps[idx], proc.steps[swapIdx]] = [proc.steps[swapIdx], proc.steps[idx]];
   renderProcTab();
 }
 
