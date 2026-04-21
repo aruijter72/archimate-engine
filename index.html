@@ -13810,14 +13810,21 @@ function renderProcTab() {
             ? `<div class="proc-empty">${NL ? 'Nog geen verbindingen — verbind stappen om de volgorde te bepalen.' : 'No flows yet — connect steps to define the sequence.'}</div>`
             : `<table class="elem-table" style="font-size:.79rem">
                 <thead><tr>
+                  <th style="width:28px"></th>
                   <th>${NL ? 'Van' : 'From'}</th>
                   <th>${NL ? 'Naar' : 'To'}</th>
                   <th style="width:82px">${NL ? 'Label' : 'Label'}</th>
                   <th style="width:28px"></th>
                 </tr></thead>
                 <tbody>
-                  ${proc.flows.map(f => `
+                  ${proc.flows.map((f, fi) => `
                     <tr>
+                      <td style="white-space:nowrap">
+                        <span style="display:flex;flex-direction:column;gap:1px">
+                          <button class="proc-zoom-btn" onclick="moveFlow('${f.id}',-1)" title="${NL ? 'Omhoog' : 'Move up'}" style="width:18px;height:16px;font-size:.6rem" ${fi===0?'disabled':''}>▲</button>
+                          <button class="proc-zoom-btn" onclick="moveFlow('${f.id}',1)"  title="${NL ? 'Omlaag' : 'Move down'}" style="width:18px;height:16px;font-size:.6rem" ${fi===proc.flows.length-1?'disabled':''}>▼</button>
+                        </span>
+                      </td>
                       <td>
                         <select class="elem-input" style="font-size:.73rem;padding:.15rem .25rem" onchange="updateFlowField('${f.id}','from',this.value)">
                           ${proc.steps.map(s => `<option value="${s.id}" ${f.from===s.id?'selected':''}>${esc(s.label)||s.type}</option>`).join('')}
