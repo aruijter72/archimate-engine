@@ -382,15 +382,15 @@
         "id": "bs-mo725zj5-xwmf9",
         "name": "SalesForce",
         "description": "eCom platform for B2C",
-        "x": 838,
-        "y": 87
+        "x": 756,
+        "y": 42
       },
       {
         "id": "bs-mo727hdv-rc2in",
         "name": "New Black",
         "description": "POS (Point Of Sales) platform - central with connections to all till systems in stores",
-        "x": 836,
-        "y": 197
+        "x": 764,
+        "y": 235
       },
       {
         "id": "bs-mo7281l2-v0twv",
@@ -410,8 +410,8 @@
         "id": "bs-mo729p7b-sk3gw",
         "name": "SAP WHM",
         "description": "Warehouse Management system",
-        "x": 639,
-        "y": 128
+        "x": 709,
+        "y": 124
       }
     ],
     "departments": [
@@ -519,7 +519,44 @@
       }
     ],
     "roleRelations": [],
-    "appRelations": [],
+    "appRelations": [
+      {
+        "id": "bs-mo950yqw-mwhye",
+        "fromId": "bs-mo72515d-gmfy4",
+        "toId": "bs-mo725dyl-60c98",
+        "type": "link"
+      },
+      {
+        "id": "bs-mo95127u-vyys7",
+        "fromId": "bs-mo725dyl-60c98",
+        "toId": "bs-mo72918a-q05hb",
+        "type": "link"
+      },
+      {
+        "id": "bs-mo95163d-sd8dn",
+        "fromId": "bs-mo725dyl-60c98",
+        "toId": "bs-mo7281l2-v0twv",
+        "type": "link"
+      },
+      {
+        "id": "bs-mo951952-tdqif",
+        "fromId": "bs-mo725dyl-60c98",
+        "toId": "bs-mo729p7b-sk3gw",
+        "type": "link"
+      },
+      {
+        "id": "bs-mo951bzl-et1iz",
+        "fromId": "bs-mo725dyl-60c98",
+        "toId": "bs-mo725zj5-xwmf9",
+        "type": "link"
+      },
+      {
+        "id": "bs-mo951fkh-b6x23",
+        "fromId": "bs-mo725dyl-60c98",
+        "toId": "bs-mo727hdv-rc2in",
+        "type": "link"
+      }
+    ],
     "orgName": "Arnold Ruijter IT",
     "bsProcesses": [
       {
@@ -537,7 +574,8 @@
         "name": "Order2Cash Digital",
         "description": "Order process for retail stores & eCom"
       }
-    ]
+    ],
+    "catalogue": {}
   },
   "linkedBsProcessId": "bs-mo72y8jw-mn7s6"
 }
