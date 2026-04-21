@@ -12378,6 +12378,17 @@ function deleteFlow(flowId) {
   renderProcPreview();
 }
 
+function moveFlow(flowId, dir) {
+  _snapshot();
+  const proc = getActiveProc(); if (!proc) return;
+  const idx = proc.flows.findIndex(f => f.id === flowId);
+  if (idx < 0) return;
+  const swapIdx = idx + dir;
+  if (swapIdx < 0 || swapIdx >= proc.flows.length) return;
+  [proc.flows[idx], proc.flows[swapIdx]] = [proc.flows[swapIdx], proc.flows[idx]];
+  renderProcTab();
+}
+
 // ── Save / Load swimlane ──────────────────────────────────────
 // ── Import draw.io XML into Swimlane ───────────────────────────
 function triggerImportDrawio() { document.getElementById('importDrawioFile').click(); }
