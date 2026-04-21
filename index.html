@@ -2559,6 +2559,18 @@ setInterval(() => Storage.save(model), 60000);
   if (!bs.appRelations)  bs.appRelations  = [];
   if (!bs.bsProcesses)   bs.bsProcesses   = [];
   if (!model.platformConfig) model.platformConfig = { defaultLang:'en', processes:{}, views:{} };
+  if (!model.processModels) model.processModels = {};
+  // Migrate existing elements into processModels for the current linked process
+  // (handles models saved before per-process storage was introduced)
+  if (model.linkedBsProcessId && !model.processModels[model.linkedBsProcessId]) {
+    if ((model.elements||[]).length > 0 || (model.relationships||[]).length > 0) {
+      model.processModels[model.linkedBsProcessId] = {
+        elements:         model.elements         || [],
+        relationships:    model.relationships    || [],
+        elementPositions: model.elementPositions || {}
+      };
+    }
+  }
   // Populate header input with org name on load
   setTimeout(() => {
     const orgNm = (model.businessSystems && model.businessSystems.orgName) || model.name || '';
@@ -2566,6 +2578,8 @@ setInterval(() => Storage.save(model), 60000);
     if (hdr) hdr.value = orgNm;
     // Keep model.name in sync with orgName
     if (model.businessSystems && model.businessSystems.orgName) model.name = model.businessSystems.orgName;
+    // Sync swimlane process names from BS processes
+    _syncProcNames();
   }, 0);
   // Sync BS catalogue to ArchiMate elements on load
   setTimeout(syncBsToArchiMate, 0);
