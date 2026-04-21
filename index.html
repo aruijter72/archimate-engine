@@ -2500,6 +2500,7 @@ let model = {
   snapshots:        [],  // { id, name, timestamp, elements:[], relationships:[] }
   elementPositions: {}   // { [elementId]: {x,y} } — canvas positions (Archi pixel coords)
   ,
+  processModels:    {},  // { [bsProcessId]: { elements:[], relationships:[], elementPositions:{} } }
   // ── Business Systems catalogue ────────────────────────────
   businessSystems: {
     apps:          [],  // { id, name, description, x, y }  — apps/systems/platforms
@@ -2533,6 +2534,7 @@ const Storage = (() => {
 // Debounced auto-save — called after every model mutation
 let _autoSaveTimer = null;
 function autoSave() {
+  _syncProcessModelFromCurrentElements();
   clearTimeout(_autoSaveTimer);
   _autoSaveTimer = setTimeout(() => Storage.save(model), 800);
 }
