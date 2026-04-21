@@ -4598,8 +4598,32 @@ function populateBsProcBars() {
   }
 }
 
+// ── Per-process model helpers ─────────────────────────────────
+function _syncProcessModelFromCurrentElements() {
+  const pid = model.linkedBsProcessId;
+  if (!pid) return;
+  if (!model.processModels) model.processModels = {};
+  model.processModels[pid] = {
+    elements:         model.elements         || [],
+    relationships:    model.relationships    || [],
+    elementPositions: model.elementPositions || {}
+  };
+}
+
+function _syncProcNames() {
+  const bsProcs = (bsGet ? bsGet() : model.businessSystems || {}).bsProcesses || [];
+  (model.processes || []).forEach(proc => {
+    if (proc.bsProcessId) {
+      const bs = bsProcs.find(p => p.id === proc.bsProcessId);
+      if (bs?.name) proc.name = bs.name;
+    }
+  });
+}
+
 function setLinkedBsProc(ctx, bsProcId) {
   _snapshot();
+  // Save current elements into the OLD process model before switching
+  _syncProcessModelFromCurrentElements();
   const bsProcs = bsGet().bsProcesses || [];
   const bsProc  = bsProcs.find(p => p.id === bsProcId);
   // Always update the model-level linked process (ArchiMate is the master)
