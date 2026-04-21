@@ -13700,7 +13700,11 @@ function renderProcTab() {
             ? `<div class="proc-empty">${NL ? 'Geen kolommen — stappen lopen automatisch van links naar rechts. Voeg kolommen toe om een fasegrid te maken.' : 'No columns — steps flow left-to-right automatically. Add columns to create a phase grid.'}</div>`
             : proc.columns.map((c, i) => `
               <div class="proc-row">
-                <span style="font-size:.68rem;color:var(--muted);width:16px;text-align:right;flex-shrink:0">${i+1}</span>
+                <span style="display:flex;flex-direction:column;gap:1px;flex-shrink:0">
+                  <button class="proc-zoom-btn" onclick="moveColumn('${c.id}',-1)" title="${NL ? 'Omhoog' : 'Move up'}" style="width:18px;height:16px;font-size:.6rem" ${i===0?'disabled':''}>▲</button>
+                  <button class="proc-zoom-btn" onclick="moveColumn('${c.id}',1)"  title="${NL ? 'Omlaag' : 'Move down'}" style="width:18px;height:16px;font-size:.6rem" ${i===proc.columns.length-1?'disabled':''}>▼</button>
+                </span>
+                <span style="font-size:.68rem;color:var(--muted);width:14px;text-align:right;flex-shrink:0">${i+1}</span>
                 <input class="elem-input" value="${esc(c.name)}" oninput="updateColumnName('${c.id}',this.value)" placeholder="${NL ? 'Kolomnaam (bijv. Fase 1)…' : 'Column name (e.g. Phase 1)…'}" style="flex:1">
                 <button class="btn-del-sm" onclick="deleteColumn('${c.id}')" title="${NL ? 'Kolom verwijderen' : 'Remove column'}">×</button>
               </div>`).join('')}
