@@ -8180,9 +8180,14 @@ function renderProcArchiPage(proc) {
   document.getElementById('pa-doc').textContent  = proc.documentation || T('No documentation.','Geen documentatie.');
   updateTopbar(nm);
 
+  // Use this process's own element set if available; fall back to global elemById
+  const procPm = proc.bsProcessId ? (MODEL.processModels?.[proc.bsProcessId] || {}) : {};
+  const procElemById = {};
+  (procPm.elements || MODEL.elements || []).forEach(el => { procElemById[el.id] = el; });
+
   // Linked elements via step.sourceId
   const linkedIds   = new Set((proc.steps||[]).filter(s=>s.sourceId).map(s=>s.sourceId));
-  const linkedElems = [...linkedIds].map(id=>elemById[id]).filter(Boolean);
+  const linkedElems = [...linkedIds].map(id=>procElemById[id]||elemById[id]).filter(Boolean);
   document.getElementById('pa-elem-count').textContent = linkedElems.length;
   document.getElementById('pa-elems-grid').innerHTML   = linkedElems.length
     ? linkedElems.map(el => buildElemCard(el)).join('')
