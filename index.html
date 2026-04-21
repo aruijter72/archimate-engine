@@ -14053,6 +14053,8 @@ function loadProcTemplate(idx) {
 initTipData();
 applyTranslations();
 applyMode();
+// On startup, if we're in BS mode ensure the Landscape tab is shown
+if (currentMode === 'business-systems') showBsTab('canvas');
 const _sharedLoaded = _loadFromShareHash();
 renderAll();
 renderHelp();
