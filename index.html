@@ -3638,6 +3638,10 @@ function showOnboard() {
 }
 function closeOnboard() {
   document.getElementById('onboardModal').classList.remove('open');
+  // Default landing after dismissing the onboard screen is BS > Landscape.
+  // Specific action buttons call switchMode() immediately after, overriding this.
+  switchMode('business-systems');
+  showBsTab('canvas');
 }
 function setOnboardPref(checked) {
   try { localStorage.setItem('architise-no-onboard', checked ? '1' : '0'); } catch(e) {}
