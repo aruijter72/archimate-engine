@@ -1672,7 +1672,7 @@
         </svg>
         <div class="ob-tile-actions" style="flex-direction:column">
           <div style="display:flex;gap:.4rem">
-            <button class="ob-tile-btn ob-tile-btn-sw" id="ob-sw-scratch" onclick="closeOnboard(); switchMode('swimlane')">
+            <button class="ob-tile-btn ob-tile-btn-sw" id="ob-sw-scratch" onclick="closeOnboard(); _doNewModel(); _activeProcId=null; switchMode('swimlane')">
               <span id="ob-sw-scratch-lbl">Start blank →</span>
             </button>
             <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-tmpl" onclick="closeOnboard(); _postGenMode='swimlane'; showTemplates();">
@@ -1720,7 +1720,7 @@
         </svg>
         <div class="ob-tile-actions" style="flex-direction:column">
           <div style="display:flex;gap:.4rem">
-            <button class="ob-tile-btn ob-tile-btn-ar" id="ob-ar-scratch" onclick="closeOnboard(); switchMode('archimate')">
+            <button class="ob-tile-btn ob-tile-btn-ar" id="ob-ar-scratch" onclick="closeOnboard(); _doNewModel(); switchMode('archimate')">
               <span id="ob-ar-scratch-lbl">Start blank →</span>
             </button>
             <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-tmpl" onclick="closeOnboard(); switchMode('archimate'); showTemplates();">
