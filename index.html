@@ -4628,6 +4628,19 @@ function setLinkedBsProc(ctx, bsProcId) {
   const bsProc  = bsProcs.find(p => p.id === bsProcId);
   // Always update the model-level linked process (ArchiMate is the master)
   model.linkedBsProcessId = bsProcId || null;
+
+  // ── Swap ArchiMate model to the selected process ──────────────
+  if (bsProcId) {
+    if (!model.processModels) model.processModels = {};
+    const pm = model.processModels[bsProcId]
+             || { elements:[], relationships:[], elementPositions:{} };
+    model.processModels[bsProcId] = pm; // ensure entry exists
+    model.elements          = pm.elements;
+    model.relationships     = pm.relationships;
+    model.elementPositions  = pm.elementPositions || {};
+  }
+  // (if bsProcId is cleared, keep current arrays as-is — user stays in last context)
+
   // Sync: find or create a swimlane process for this BS process
   if (bsProcId) {
     if (!model.processes) model.processes = [];
@@ -4648,10 +4661,9 @@ function setLinkedBsProc(ctx, bsProcId) {
   // Update ArchiMate bar description
   const archiDesc = document.getElementById('archi-bs-proc-desc');
   if (archiDesc) archiDesc.textContent = bsProc?.description || '';
-  // Refresh swim bar
+  // Refresh bars and re-render everything with the new process's elements
   populateBsProcBars();
-  // Always re-render Swimlane panel so it reflects the new process immediately
-  renderProcTab();
+  renderAll();
   autoSave();
 }
 
