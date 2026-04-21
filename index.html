@@ -4664,6 +4664,7 @@ function setLinkedBsProc(ctx, bsProcId) {
   // Refresh bars and re-render everything with the new process's elements
   populateBsProcBars();
   renderAll();
+  updateStats(); // Refresh health bar so it reflects the new process's elements
   autoSave();
 }
 
