@@ -9,7 +9,15 @@
   },
   "elements": [
     {
-      "id": "id-mo74k7mi22tza",
+      "id": "id-mo9x7z0n0gdvb",
+      "layer": "business",
+      "type": "BusinessActor",
+      "name": "Customer Service",
+      "documentation": "Responsible for customers, processes (ordering/delivering/invoicing), stock, sales, etc.",
+      "properties": []
+    },
+    {
+      "id": "id-mo9x8mmv1hrl7",
       "layer": "business",
       "type": "BusinessRole",
       "name": "Customer Service Representative",
@@ -17,158 +25,35 @@
       "properties": []
     },
     {
-      "id": "id-mo74lwz24pd1l",
-      "layer": "business",
-      "type": "BusinessService",
-      "name": "Inventory & Sales check",
-      "documentation": "Check done for the customer to see what may need to be ordered",
-      "properties": []
-    },
-    {
-      "id": "id-mo74mbl05qeq9",
-      "layer": "business",
-      "type": "BusinessProcess",
-      "name": "Place Replenishment order",
-      "documentation": "Create an order on the customer's behalf",
-      "properties": []
-    },
-    {
-      "id": "id-mo74npbz6rkr8",
-      "layer": "business",
-      "type": "BusinessEvent",
-      "name": "Order Send",
-      "documentation": "When the order is created and saved, it is automatically sent to the customer",
-      "properties": []
-    },
-    {
-      "id": "id-mo74oae47fye1",
+      "id": "id-mo9x9r8f2db4l",
       "layer": "application",
       "type": "ApplicationComponent",
-      "name": "SAP S/4",
-      "documentation": "ERP for Finance, Order2Cash, and central repository",
+      "name": "SAP WHM",
+      "documentation": "Warehouse Management system",
       "properties": []
     },
     {
-      "id": "id-mo74ohrf8vw3h",
-      "layer": "application",
-      "type": "ApplicationComponent",
-      "name": "Boomi",
-      "documentation": "Middleware for routing and mapping messages, including API Management",
-      "properties": []
-    },
-    {
-      "id": "id-mo74ozoe9eu9i",
+      "id": "id-mo9xap3s36ce2",
       "layer": "application",
       "type": "ApplicationProcess",
-      "name": "Order sent from ERP",
-      "documentation": "The order is sent from the ERP to middleware for further processing",
+      "name": "Goods Issue",
+      "documentation": "When the goods are in the truck and ready to be transported, the pick order is closed and a goods issue is triggered",
       "properties": []
     },
     {
-      "id": "id-mo74pzqaa5pbi",
+      "id": "id-mo9xc49d42mo2",
       "layer": "application",
-      "type": "ApplicationProcess",
-      "name": "Order received by middleware",
-      "documentation": "Middleware receives the order and routes, translates, and sends it to the destination",
-      "properties": []
-    },
-    {
-      "id": "id-mo74qudfb5urm",
-      "layer": "application",
-      "type": "DataObject",
-      "name": "Order",
-      "documentation": "Generated Order document",
-      "properties": []
-    },
-    {
-      "id": "id-mo74re8fczv6x",
-      "layer": "technology",
-      "type": "Node",
-      "name": "SAP S/4 VM server",
-      "documentation": "Cloud platform",
-      "properties": []
-    },
-    {
-      "id": "id-mo74rpgadkjri",
-      "layer": "technology",
-      "type": "Node",
-      "name": "Middleware VM server",
-      "documentation": "Cloud platform",
+      "type": "ApplicationService",
+      "name": "Invoice Generation",
+      "documentation": "When performing Goods Issue, an invoice is automatically generated",
       "properties": []
     }
   ],
-  "relationships": [
-    {
-      "id": "id-mo750wvfkmvex",
-      "type": "AssignmentRelationship",
-      "sourceId": "id-mo74oae47fye1",
-      "targetId": "id-mo74ohrf8vw3h",
-      "name": "Order Message",
-      "documentation": "Order message from SAP flows to Boomi",
-      "directed": false,
-      "accessType": "ReadWrite",
-      "strength": ""
-    },
-    {
-      "id": "id-mo751rusl5kqw",
-      "type": "RealizationRelationship",
-      "sourceId": "id-mo74ohrf8vw3h",
-      "targetId": "id-mo74npbz6rkr8",
-      "name": "",
-      "documentation": "",
-      "directed": false,
-      "accessType": "ReadWrite",
-      "strength": ""
-    },
-    {
-      "id": "id-mo754ygjnpia4",
-      "type": "RealizationRelationship",
-      "sourceId": "id-mo74k7mi22tza",
-      "targetId": "id-mo74lwz24pd1l",
-      "name": "",
-      "documentation": "",
-      "directed": false,
-      "accessType": "ReadWrite",
-      "strength": ""
-    },
-    {
-      "id": "id-mo755f4jo6z49",
-      "type": "RealizationRelationship",
-      "sourceId": "id-mo74k7mi22tza",
-      "targetId": "id-mo74mbl05qeq9",
-      "name": "",
-      "documentation": "",
-      "directed": false,
-      "accessType": "ReadWrite",
-      "strength": ""
-    },
-    {
-      "id": "id-mo7572k5pkevq",
-      "type": "TriggeringRelationship",
-      "sourceId": "id-mo74mbl05qeq9",
-      "targetId": "id-mo74ozoe9eu9i",
-      "name": "",
-      "documentation": "",
-      "directed": false,
-      "accessType": "ReadWrite",
-      "strength": ""
-    },
-    {
-      "id": "id-mo757mfpqhacv",
-      "type": "AssociationRelationship",
-      "sourceId": "id-mo74ozoe9eu9i",
-      "targetId": "id-mo74npbz6rkr8",
-      "name": "",
-      "documentation": "",
-      "directed": false,
-      "accessType": "ReadWrite",
-      "strength": ""
-    }
-  ],
+  "relationships": [],
   "processes": [
     {
       "id": "id-mo75dxvd1ra8c9",
-      "name": "Arnold Ruijter IT — Swimlane",
+      "name": "Order2Cash Wholesale",
       "lanes": [
         {
           "id": "id-mo75dxvd1by0gp",
@@ -312,54 +197,286 @@
       ],
       "_generatedFromArch": true,
       "bsProcessId": "bs-mo72y8jw-mn7s6"
+    },
+    {
+      "id": "id-mo95a7qb0brh5",
+      "name": "eInvoicing process",
+      "bsProcessId": "bs-mo95a2gq-4m77e",
+      "columns": [],
+      "lanes": [],
+      "steps": [],
+      "flows": []
+    },
+    {
+      "id": "id-mo96a6d60a2a2",
+      "name": "Order2Cash Concession & Consignment",
+      "bsProcessId": "bs-mo72z31m-840vo",
+      "columns": [],
+      "lanes": [],
+      "steps": [],
+      "flows": []
     }
   ],
   "views": [],
   "snapshots": [],
-  "elementPositions": {
-    "id-mo74k7mi22tza": {
-      "x": 39,
-      "y": 0
+  "elementPositions": {},
+  "processModels": {
+    "bs-mo72y8jw-mn7s6": {
+      "elements": [
+        {
+          "id": "id-mo74k7mi22tza",
+          "layer": "business",
+          "type": "BusinessRole",
+          "name": "Customer Service Representative",
+          "documentation": "Taking care of all customer related activities.",
+          "properties": []
+        },
+        {
+          "id": "id-mo74lwz24pd1l",
+          "layer": "business",
+          "type": "BusinessService",
+          "name": "Inventory & Sales check",
+          "documentation": "Check done for the customer to see what may need to be ordered",
+          "properties": []
+        },
+        {
+          "id": "id-mo74mbl05qeq9",
+          "layer": "business",
+          "type": "BusinessProcess",
+          "name": "Place Replenishment order",
+          "documentation": "Create an order on the customer's behalf",
+          "properties": []
+        },
+        {
+          "id": "id-mo74npbz6rkr8",
+          "layer": "business",
+          "type": "BusinessEvent",
+          "name": "Order Send",
+          "documentation": "When the order is created and saved, it is automatically sent to the customer",
+          "properties": []
+        },
+        {
+          "id": "id-mo74oae47fye1",
+          "layer": "application",
+          "type": "ApplicationComponent",
+          "name": "SAP S/4",
+          "documentation": "ERP for Finance, Order2Cash, and central repository",
+          "properties": []
+        },
+        {
+          "id": "id-mo74ohrf8vw3h",
+          "layer": "application",
+          "type": "ApplicationComponent",
+          "name": "Boomi",
+          "documentation": "Middleware for routing and mapping messages, including API Management",
+          "properties": []
+        },
+        {
+          "id": "id-mo74ozoe9eu9i",
+          "layer": "application",
+          "type": "ApplicationProcess",
+          "name": "Order sent from ERP",
+          "documentation": "The order is sent from the ERP to middleware for further processing",
+          "properties": []
+        },
+        {
+          "id": "id-mo74pzqaa5pbi",
+          "layer": "application",
+          "type": "ApplicationProcess",
+          "name": "Order received by middleware",
+          "documentation": "Middleware receives the order and routes, translates, and sends it to the destination",
+          "properties": []
+        },
+        {
+          "id": "id-mo74qudfb5urm",
+          "layer": "application",
+          "type": "DataObject",
+          "name": "Order",
+          "documentation": "Generated Order document",
+          "properties": []
+        },
+        {
+          "id": "id-mo74re8fczv6x",
+          "layer": "technology",
+          "type": "Node",
+          "name": "SAP S/4 VM server",
+          "documentation": "Cloud platform",
+          "properties": []
+        },
+        {
+          "id": "id-mo74rpgadkjri",
+          "layer": "technology",
+          "type": "Node",
+          "name": "Middleware VM server",
+          "documentation": "Cloud platform",
+          "properties": []
+        }
+      ],
+      "relationships": [
+        {
+          "id": "id-mo750wvfkmvex",
+          "type": "AssignmentRelationship",
+          "sourceId": "id-mo74oae47fye1",
+          "targetId": "id-mo74ohrf8vw3h",
+          "name": "Order Message",
+          "documentation": "Order message from SAP flows to Boomi",
+          "directed": false,
+          "accessType": "ReadWrite",
+          "strength": ""
+        },
+        {
+          "id": "id-mo751rusl5kqw",
+          "type": "RealizationRelationship",
+          "sourceId": "id-mo74ohrf8vw3h",
+          "targetId": "id-mo74npbz6rkr8",
+          "name": "",
+          "documentation": "",
+          "directed": false,
+          "accessType": "ReadWrite",
+          "strength": ""
+        },
+        {
+          "id": "id-mo754ygjnpia4",
+          "type": "RealizationRelationship",
+          "sourceId": "id-mo74k7mi22tza",
+          "targetId": "id-mo74lwz24pd1l",
+          "name": "",
+          "documentation": "",
+          "directed": false,
+          "accessType": "ReadWrite",
+          "strength": ""
+        },
+        {
+          "id": "id-mo755f4jo6z49",
+          "type": "RealizationRelationship",
+          "sourceId": "id-mo74k7mi22tza",
+          "targetId": "id-mo74mbl05qeq9",
+          "name": "",
+          "documentation": "",
+          "directed": false,
+          "accessType": "ReadWrite",
+          "strength": ""
+        },
+        {
+          "id": "id-mo7572k5pkevq",
+          "type": "TriggeringRelationship",
+          "sourceId": "id-mo74mbl05qeq9",
+          "targetId": "id-mo74ozoe9eu9i",
+          "name": "",
+          "documentation": "",
+          "directed": false,
+          "accessType": "ReadWrite",
+          "strength": ""
+        },
+        {
+          "id": "id-mo757mfpqhacv",
+          "type": "AssociationRelationship",
+          "sourceId": "id-mo74ozoe9eu9i",
+          "targetId": "id-mo74npbz6rkr8",
+          "name": "",
+          "documentation": "",
+          "directed": false,
+          "accessType": "ReadWrite",
+          "strength": ""
+        }
+      ],
+      "elementPositions": {
+        "id-mo74k7mi22tza": {
+          "x": 39,
+          "y": 0
+        },
+        "id-mo74lwz24pd1l": {
+          "x": 256,
+          "y": 0
+        },
+        "id-mo74mbl05qeq9": {
+          "x": 39,
+          "y": 109
+        },
+        "id-mo74npbz6rkr8": {
+          "x": 800,
+          "y": 0
+        },
+        "id-mo74oae47fye1": {
+          "x": 551,
+          "y": 246
+        },
+        "id-mo74ohrf8vw3h": {
+          "x": 801,
+          "y": 246
+        },
+        "id-mo74ozoe9eu9i": {
+          "x": 39,
+          "y": 248
+        },
+        "id-mo74pzqaa5pbi": {
+          "x": 40,
+          "y": 334
+        },
+        "id-mo74qudfb5urm": {
+          "x": 343,
+          "y": 335
+        },
+        "id-mo74re8fczv6x": {
+          "x": 460,
+          "y": 462
+        },
+        "id-mo74rpgadkjri": {
+          "x": 34,
+          "y": 466
+        }
+      }
     },
-    "id-mo74lwz24pd1l": {
-      "x": 256,
-      "y": 0
+    "bs-mo95a2gq-4m77e": {
+      "elements": [
+        {
+          "id": "id-mo9x7z0n0gdvb",
+          "layer": "business",
+          "type": "BusinessActor",
+          "name": "Customer Service",
+          "documentation": "Responsible for customers, processes (ordering/delivering/invoicing), stock, sales, etc.",
+          "properties": []
+        },
+        {
+          "id": "id-mo9x8mmv1hrl7",
+          "layer": "business",
+          "type": "BusinessRole",
+          "name": "Customer Service Representative",
+          "documentation": "Taking care of all customer related activities.",
+          "properties": []
+        },
+        {
+          "id": "id-mo9x9r8f2db4l",
+          "layer": "application",
+          "type": "ApplicationComponent",
+          "name": "SAP WHM",
+          "documentation": "Warehouse Management system",
+          "properties": []
+        },
+        {
+          "id": "id-mo9xap3s36ce2",
+          "layer": "application",
+          "type": "ApplicationProcess",
+          "name": "Goods Issue",
+          "documentation": "When the goods are in the truck and ready to be transported, the pick order is closed and a goods issue is triggered",
+          "properties": []
+        },
+        {
+          "id": "id-mo9xc49d42mo2",
+          "layer": "application",
+          "type": "ApplicationService",
+          "name": "Invoice Generation",
+          "documentation": "When performing Goods Issue, an invoice is automatically generated",
+          "properties": []
+        }
+      ],
+      "relationships": [],
+      "elementPositions": {}
     },
-    "id-mo74mbl05qeq9": {
-      "x": 39,
-      "y": 109
-    },
-    "id-mo74npbz6rkr8": {
-      "x": 800,
-      "y": 0
-    },
-    "id-mo74oae47fye1": {
-      "x": 551,
-      "y": 246
-    },
-    "id-mo74ohrf8vw3h": {
-      "x": 801,
-      "y": 246
-    },
-    "id-mo74ozoe9eu9i": {
-      "x": 39,
-      "y": 248
-    },
-    "id-mo74pzqaa5pbi": {
-      "x": 40,
-      "y": 334
-    },
-    "id-mo74qudfb5urm": {
-      "x": 343,
-      "y": 335
-    },
-    "id-mo74re8fczv6x": {
-      "x": 460,
-      "y": 462
-    },
-    "id-mo74rpgadkjri": {
-      "x": 34,
-      "y": 466
+    "bs-mo72z31m-840vo": {
+      "elements": [],
+      "relationships": [],
+      "elementPositions": {}
     }
   },
   "businessSystems": {
@@ -573,9 +690,29 @@
         "id": "bs-mo72znrc-ar8f9",
         "name": "Order2Cash Digital",
         "description": "Order process for retail stores & eCom"
+      },
+      {
+        "id": "bs-mo95a2gq-4m77e",
+        "name": "eInvoicing process",
+        "description": "Process tot digitally send and receive invoices according to local laws."
       }
     ],
-    "catalogue": {}
+    "catalogue": {
+      "ApplicationProcess": [
+        {
+          "id": "bs-mo9xawni-8dqfx",
+          "name": "Goods Issue",
+          "description": ""
+        }
+      ],
+      "ApplicationService": [
+        {
+          "id": "bs-mo9xeifz-iwzox",
+          "name": "Invoice Generation",
+          "description": "When performing Goods Issue, an invoice is automatically generated"
+        }
+      ]
+    }
   },
-  "linkedBsProcessId": "bs-mo72y8jw-mn7s6"
+  "linkedBsProcessId": "bs-mo95a2gq-4m77e"
 }
