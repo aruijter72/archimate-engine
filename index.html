@@ -8116,6 +8116,8 @@ function toggleProcNav(procId) {
   const grp = document.getElementById('npg-' + procId);
   if (!grp) return;
   grp.classList.toggle('open');
+  // Always set the active process context so Layer pages filter to this process
+  _currentProcId = procId;
 }
 function expandProcNav(procId) {
   const grp = document.getElementById('npg-' + procId);
