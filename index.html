@@ -8135,6 +8135,7 @@ function showPage(pageId) {
   _currentPage = pageId;
 
   if (pageId === 'home') {
+    _currentProcId = null; // no process context on Home — Layers show merged view
     document.getElementById('page-home')?.classList.add('active');
     document.getElementById('nav-home')?.classList.add('active');
     updateTopbar(T('Home','Home'));
