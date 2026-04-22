@@ -8279,13 +8279,20 @@ function renderLayerPage(layerId) {
   _zoomState['layer-cv'] = 1;
   const svgEl = cvWrap.querySelector('svg'); if (svgEl) svgEl.style.transform = 'scale(1)';
 
-  // If a process is active in the sidebar, show only that process's layer elements
-  let layerElems = MODEL.elements;
+  // If a process is active in the sidebar, scope elements to that process only.
+  // When no process is selected (Home), show merged elements from all processes.
+  let layerElems;
   if (_currentProcId) {
     const proc = procById[_currentProcId];
-    if (proc?.bsProcessId && MODEL.processModels?.[proc.bsProcessId]) {
-      layerElems = MODEL.processModels[proc.bsProcessId].elements || MODEL.elements;
+    if (proc?.bsProcessId) {
+      // Use this process's own element set — empty array if nothing defined yet
+      const pm = MODEL.processModels?.[proc.bsProcessId];
+      layerElems = pm ? (pm.elements || []) : [];
+    } else {
+      layerElems = MODEL.elements; // proc exists but no BS link — use global
     }
+  } else {
+    layerElems = MODEL.elements; // global/merged view when no process selected
   }
   const lElems = layerElems.filter(el => el.layer === layerId);
   document.getElementById('lp-elem-count').textContent = lElems.length;
