@@ -49,7 +49,30 @@
       "properties": []
     }
   ],
-  "relationships": [],
+  "relationships": [
+    {
+      "id": "id-mo9xh0hf545w9",
+      "type": "RealizationRelationship",
+      "sourceId": "id-mo9x9r8f2db4l",
+      "targetId": "id-mo9xap3s36ce2",
+      "name": "",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    },
+    {
+      "id": "id-mo9xhgrf6xw2d",
+      "type": "TriggeringRelationship",
+      "sourceId": "id-mo9xap3s36ce2",
+      "targetId": "id-mo9xc49d42mo2",
+      "name": "",
+      "documentation": "",
+      "directed": false,
+      "accessType": "ReadWrite",
+      "strength": ""
+    }
+  ],
   "processes": [
     {
       "id": "id-mo75dxvd1ra8c9",
@@ -491,7 +514,30 @@
           "properties": []
         }
       ],
-      "relationships": [],
+      "relationships": [
+        {
+          "id": "id-mo9xh0hf545w9",
+          "type": "RealizationRelationship",
+          "sourceId": "id-mo9x9r8f2db4l",
+          "targetId": "id-mo9xap3s36ce2",
+          "name": "",
+          "documentation": "",
+          "directed": false,
+          "accessType": "ReadWrite",
+          "strength": ""
+        },
+        {
+          "id": "id-mo9xhgrf6xw2d",
+          "type": "TriggeringRelationship",
+          "sourceId": "id-mo9xap3s36ce2",
+          "targetId": "id-mo9xc49d42mo2",
+          "name": "",
+          "documentation": "",
+          "directed": false,
+          "accessType": "ReadWrite",
+          "strength": ""
+        }
+      ],
       "elementPositions": {
         "id-mo9x7z0n0gdvb": {
           "x": 40,
