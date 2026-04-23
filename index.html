@@ -1805,7 +1805,7 @@
             <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-tmpl" onclick="closeOnboard(); _postGenMode='swimlane'; showTemplates();">
               <span id="ob-sw-tmpl-lbl">From template</span>
             </button>
-            <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-wizard" onclick="closeOnboard(); triggerImportExcelTemplate()">
+            <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-wizard" onclick="closeOnboard(); showQWiz()">
               <span id="ob-sw-wizard-lbl">📊 Questionnaire</span>
             </button>
           </div>
@@ -1853,7 +1853,7 @@
             <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-tmpl" onclick="closeOnboard(); switchMode('archimate'); showTemplates();">
               <span id="ob-ar-tmpl-lbl">From template</span>
             </button>
-            <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-wizard" onclick="closeOnboard(); triggerImportExcelTemplate()">
+            <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-wizard" onclick="closeOnboard(); showQWiz()">
               <span id="ob-ar-wizard-lbl">📊 Questionnaire</span>
             </button>
           </div>
@@ -9687,6 +9687,440 @@ function downloadExcelTemplate() {
   a.href = 'Architise_Process_Questionnaire.xlsx';
   a.download = 'Architise_Process_Questionnaire.xlsx';
   a.click();
+}
+
+// ══════════════════════════════════════════════════════════════
+// IN-APP QUESTIONNAIRE WIZARD
+// ══════════════════════════════════════════════════════════════
+const _QW = {
+  lang:'en', screen:'welcome',
+  procName:'', procDesc:'', procTrigger:'', procEnd:'', procOwner:'',
+  roles:[], steps:[], _si:0, _ss:0, _stepDraft:null,
+  addSystems:[], sysConn:'', infra:''
+};
+
+function showQWiz() {
+  Object.assign(_QW,{
+    lang:currentLang||'en', screen:'welcome',
+    procName:'',procDesc:'',procTrigger:'',procEnd:'',procOwner:'',
+    roles:[],steps:[],_si:0,_ss:0,_stepDraft:null,addSystems:[],sysConn:'',infra:''
+  });
+  document.getElementById('qwizModal').style.display='flex';
+  _renderQWiz();
+}
+
+function hideQWiz(){ document.getElementById('qwizModal').style.display='none'; }
+
+function _qT(en,nl){ return _QW.lang==='nl'?nl:en; }
+function _qEsc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function _qwizProgress(){
+  const BASE=['welcome','procName','procDesc','procTrigger','procEnd','procOwner','roles','stepIntro'];
+  const TAIL=['addSystems','sysConn','infra','review'];
+  const nSteps=Math.max(1,_QW.steps.length+(_QW._stepDraft?1:0));
+  const total=BASE.length+nSteps*6+TAIL.length;
+  let pos=0;
+  const s=_QW.screen;
+  if(BASE.includes(s)) pos=BASE.indexOf(s);
+  else if(s==='stepSub') pos=BASE.length+_QW._si*6+_QW._ss;
+  else if(s==='stepMore') pos=BASE.length+(_QW._si+1)*6;
+  else if(TAIL.includes(s)) pos=BASE.length+nSteps*6+TAIL.indexOf(s)+1;
+  return Math.min(100,Math.round(pos/total*100));
+}
+
+function _renderQWiz(){
+  const NL=_QW.lang==='nl';
+  const bEl=document.getElementById('qwiz-body');
+  const fEl=document.getElementById('qwiz-footer');
+  document.getElementById('qwiz-prog-fill').style.width=_qwizProgress()+'%';
+  const s=_QW.screen;
+  let bodyHtml='', footHtml='', sectionTxt='';
+
+  const backB=`<button class="btn btn-secondary" onclick="_qwizBack()" style="margin-right:auto">${_qT('← Back','← Terug')}</button>`;
+  const nextB=(lbl)=>`<button class="btn" onclick="_qwizNext()">${lbl||_qT('Next →','Volgende →')}</button>`;
+  const skipA=(lbl)=>`<a class="qwiz-skip-link" onclick="_qwizSkip()">${lbl||_qT('Skip','Overslaan')}</a>`;
+
+  if(s==='welcome'){
+    sectionTxt=_qT('Process Questionnaire','Procesvragenlijst');
+    bodyHtml=`<div class="qwiz-welcome">
+      <div class="qwiz-welcome-icon">📋</div>
+      <div class="qwiz-welcome-title">${_qT('Build a process model','Bouw een procesmodel')}</div>
+      <div class="qwiz-welcome-desc">${_qT(
+        'Answer a few questions and Architise will automatically generate your ArchiMate model and swimlane diagram.',
+        'Beantwoord een paar vragen en Architise genereert automatisch je ArchiMate-model en swimlane-diagram.'
+      )}</div>
+      <div style="font-size:.82rem;color:var(--muted)">${_qT('Takes about 5–10 minutes','Duurt ongeveer 5–10 minuten')}</div>
+    </div>`;
+    footHtml=`<button class="qwiz-start-btn" onclick="_qwizNext()">${_qT('Start →','Starten →')}</button>`;
+
+  } else if(s==='procName'){
+    sectionTxt=_qT('1/5 — Process Overview','1/5 — Procesoverzicht');
+    bodyHtml=`<span class="qwiz-step-counter">${_qT('Question 1 of 5','Vraag 1 van 5')}</span>
+      <div class="qwiz-question">${_qT('What is the name of this process?','Wat is de naam van dit proces?')}</div>
+      <div class="qwiz-hint">${_qT('e.g. Order-to-Cash, Invoice Processing, Employee Onboarding','bv. Order-to-Cash, Factuurverwerking, Werknemer Onboarding')}</div>
+      <input class="qwiz-input" id="qw-v" type="text" placeholder="${_qT('Process name…','Procesnaam…')}" value="${_qEsc(_QW.procName)}" onkeydown="if(event.key==='Enter')_qwizNext()">`;
+    footHtml=`${backB}${nextB()}`;
+
+  } else if(s==='procDesc'){
+    sectionTxt=_qT('1/5 — Process Overview','1/5 — Procesoverzicht');
+    bodyHtml=`<span class="qwiz-step-counter">${_qT('Question 2 of 5','Vraag 2 van 5')}</span>
+      <div class="qwiz-question">${_qT('Describe what this process does','Beschrijf wat dit proces doet')}</div>
+      <div class="qwiz-hint">${_qT('A brief description of goal and scope','Een korte beschrijving van het doel en de reikwijdte')}</div>
+      <textarea class="qwiz-input qwiz-textarea" id="qw-v" rows="4" placeholder="${_qT('Description…','Beschrijving…')}">${_qEsc(_QW.procDesc)}</textarea>`;
+    footHtml=`${backB}${skipA()}${nextB()}`;
+
+  } else if(s==='procTrigger'){
+    sectionTxt=_qT('1/5 — Process Overview','1/5 — Procesoverzicht');
+    bodyHtml=`<span class="qwiz-step-counter">${_qT('Question 3 of 5','Vraag 3 van 5')}</span>
+      <div class="qwiz-question">${_qT('What triggers / starts this process?','Wat start of triggert dit proces?')}</div>
+      <div class="qwiz-hint">${_qT('e.g. Customer places an order, Invoice received by email','bv. Klant plaatst bestelling, Factuur ontvangen per e-mail')}</div>
+      <input class="qwiz-input" id="qw-v" type="text" placeholder="${_qT('Trigger event…','Triggergebeurtenis…')}" value="${_qEsc(_QW.procTrigger)}" onkeydown="if(event.key==='Enter')_qwizNext()">`;
+    footHtml=`${backB}${skipA()}${nextB()}`;
+
+  } else if(s==='procEnd'){
+    sectionTxt=_qT('1/5 — Process Overview','1/5 — Procesoverzicht');
+    bodyHtml=`<span class="qwiz-step-counter">${_qT('Question 4 of 5','Vraag 4 van 5')}</span>
+      <div class="qwiz-question">${_qT('What is the end result of this process?','Wat is het eindresultaat van dit proces?')}</div>
+      <div class="qwiz-hint">${_qT('e.g. Payment received, Contract signed, Product shipped','bv. Betaling ontvangen, Contract ondertekend, Product verzonden')}</div>
+      <input class="qwiz-input" id="qw-v" type="text" placeholder="${_qT('End result…','Eindresultaat…')}" value="${_qEsc(_QW.procEnd)}" onkeydown="if(event.key==='Enter')_qwizNext()">`;
+    footHtml=`${backB}${skipA()}${nextB()}`;
+
+  } else if(s==='procOwner'){
+    sectionTxt=_qT('1/5 — Process Overview','1/5 — Procesoverzicht');
+    bodyHtml=`<span class="qwiz-step-counter">${_qT('Question 5 of 5','Vraag 5 van 5')}</span>
+      <div class="qwiz-question">${_qT('Who is the owner of this process?','Wie is de eigenaar van dit proces?')}</div>
+      <div class="qwiz-hint">${_qT('Role or department responsible for this process','Verantwoordelijke rol of afdeling voor dit proces')}</div>
+      <input class="qwiz-input" id="qw-v" type="text" placeholder="${_qT('Process owner…','Proceseigenaar…')}" value="${_qEsc(_QW.procOwner)}" onkeydown="if(event.key==='Enter')_qwizNext()">`;
+    footHtml=`${backB}${skipA()}${nextB()}`;
+
+  } else if(s==='roles'){
+    sectionTxt=_qT('2/5 — Roles','2/5 — Rollen');
+    const rolesHtml=_QW.roles.map((r,i)=>`<div class="qwiz-item"><span>${_qEsc(r)}</span><button class="qwiz-item-del" onclick="_qwizDelRole(${i})">✕</button></div>`).join('');
+    bodyHtml=`<div class="qwiz-question">${_qT('Which roles or people are involved?','Welke rollen of mensen zijn betrokken?')}</div>
+      <div class="qwiz-hint">${_qT('Add each role separately — e.g. Sales Manager, Finance, Customer','Voeg elke rol apart toe — bv. Sales Manager, Finance, Klant')}</div>
+      <div class="qwiz-list-builder">
+        <div class="qwiz-list-add-row">
+          <input class="qwiz-input" id="qw-role-inp" type="text" placeholder="${_qT('Role name…','Rolnaam…')}" onkeydown="if(event.key==='Enter'){event.preventDefault();_qwizAddRole();}">
+          <button class="qwiz-add-btn" onclick="_qwizAddRole()">+ ${_qT('Add','Toevoegen')}</button>
+        </div>
+        <div class="qwiz-items-list">${rolesHtml||`<span style="font-size:.8rem;color:var(--muted)">${_qT('No roles yet — you can also skip','Nog geen rollen — je kunt ook overslaan')}</span>`}</div>
+      </div>`;
+    footHtml=`${backB}${_QW.roles.length===0?skipA(_qT('Skip','Overslaan')):''}${nextB()}`;
+
+  } else if(s==='stepIntro'){
+    sectionTxt=_qT('3/5 — Steps','3/5 — Stappen');
+    bodyHtml=`<div class="qwiz-welcome">
+      <div class="qwiz-welcome-icon">🔢</div>
+      <div class="qwiz-welcome-title">${_qT("Let's walk through each step","Laten we elke stap doorlopen")}</div>
+      <div class="qwiz-welcome-desc">${_qT(
+        "You'll answer a few questions per step. Add as many steps as needed.",
+        "Je beantwoordt een paar vragen per stap. Voeg zoveel stappen toe als nodig."
+      )}</div>
+    </div>`;
+    footHtml=`${backB}<button class="btn" onclick="_qwizStartStep()">${_qT('Add first step →','Eerste stap toevoegen →')}</button>`;
+
+  } else if(s==='stepSub'){
+    const stepNum=_QW._si+1;
+    sectionTxt=_qT(`3/5 — Step ${stepNum}`,`3/5 — Stap ${stepNum}`);
+    const sub=_QW._ss;
+    const dr=_QW._stepDraft||{};
+    const subLbls=NL?['1/6','2/6','3/6','4/6','5/6','6/6','Uitkomsten']:['1/6','2/6','3/6','4/6','5/6','6/6','Outcomes'];
+    bodyHtml=`<span class="qwiz-step-counter">${_qT(`Step ${stepNum}`,`Stap ${stepNum}`)} — ${subLbls[sub]||''}</span>`;
+    if(sub===0){
+      bodyHtml+=`<div class="qwiz-question">${_qT('What happens in this step?','Wat gebeurt er in deze stap?')}</div>
+        <div class="qwiz-hint">${_qT('Short description of the activity','Korte beschrijving van de activiteit')}</div>
+        <input class="qwiz-input" id="qw-v" type="text" placeholder="${_qT('Activity…','Activiteit…')}" value="${_qEsc(dr.what||'')}" onkeydown="if(event.key===\'Enter\')_qwizNext()">`;
+    } else if(sub===1){
+      const opts=_QW.roles.map(r=>`<option value="${_qEsc(r)}"${dr.who===r?' selected':''}>${_qEsc(r)}</option>`).join('');
+      bodyHtml+=`<div class="qwiz-question">${_qT('Who performs this step?','Wie voert deze stap uit?')}</div>
+        <div class="qwiz-hint">${_qT('Select a role or type a new one','Selecteer een rol of typ een nieuwe')}</div>`;
+      if(_QW.roles.length){
+        const hasOther=dr.who&&!_QW.roles.includes(dr.who);
+        bodyHtml+=`<select class="qwiz-input" id="qw-v" style="cursor:pointer;margin-bottom:.5rem">
+          <option value="">${_qT('— select role —','— selecteer rol —')}</option>${opts}
+          <option value="__new__"${hasOther?' selected':''}>${_qT('Other (type below)','Anders (typ hieronder)')}</option>
+        </select>
+        <input class="qwiz-input" id="qw-v2" type="text" placeholder="${_qT('Or type role…','Of typ rol…')}" value="${_qEsc(hasOther?dr.who||'':'')}" onkeydown="if(event.key===\'Enter\')_qwizNext()">`;
+      } else {
+        bodyHtml+=`<input class="qwiz-input" id="qw-v" type="text" placeholder="${_qT('Role name…','Rolnaam…')}" value="${_qEsc(dr.who||'')}" onkeydown="if(event.key===\'Enter\')_qwizNext()">`;
+      }
+    } else if(sub===2){
+      bodyHtml+=`<div class="qwiz-question">${_qT('Which system or application is used?','Welk systeem of applicatie wordt gebruikt?')}</div>
+        <div class="qwiz-hint">${_qT('e.g. SAP, Salesforce, Excel — leave empty if none','bv. SAP, Salesforce, Excel — leeg laten als geen')}</div>
+        <input class="qwiz-input" id="qw-v" type="text" placeholder="${_qT('System…','Systeem…')}" value="${_qEsc(dr.system||'')}" onkeydown="if(event.key===\'Enter\')_qwizNext()">`;
+    } else if(sub===3){
+      bodyHtml+=`<div class="qwiz-question">${_qT('What data or document comes into this step?','Welke data of document komt binnen in deze stap?')}</div>
+        <div class="qwiz-hint">${_qT('e.g. Purchase order, Customer request — leave empty if none','bv. Inkooporder, Klantverzoek — leeg laten als geen')}</div>
+        <input class="qwiz-input" id="qw-v" type="text" placeholder="${_qT('Input data…','Invoerdata…')}" value="${_qEsc(dr.dataIn||'')}" onkeydown="if(event.key===\'Enter\')_qwizNext()">`;
+    } else if(sub===4){
+      bodyHtml+=`<div class="qwiz-question">${_qT('What data or document goes out of this step?','Welke data of document gaat uit deze stap?')}</div>
+        <div class="qwiz-hint">${_qT('e.g. Approved invoice, Signed contract — leave empty if none','bv. Goedgekeurde factuur, Ondertekend contract — leeg laten als geen')}</div>
+        <input class="qwiz-input" id="qw-v" type="text" placeholder="${_qT('Output data…','Uitvoerdata…')}" value="${_qEsc(dr.dataOut||'')}" onkeydown="if(event.key===\'Enter\')_qwizNext()">`;
+    } else if(sub===5){
+      bodyHtml+=`<div class="qwiz-question">${_qT('Does this step involve a decision or approval?','Bevat deze stap een beslissing of goedkeuring?')}</div>
+        <div class="qwiz-hint">${_qT('e.g. "Approve or reject?", "Route A or B?"','bv. "Goedkeuren of afwijzen?", "Route A of B?"')}</div>
+        <div class="qwiz-yn-row">
+          <button class="qwiz-yn-btn ${dr.decision==='Y'?'selected':''}" onclick="_qwizYN('Y')">${_qT('Yes','Ja')}</button>
+          <button class="qwiz-yn-btn ${dr.decision==='N'?'selected':''}" onclick="_qwizYN('N')">${_qT('No','Nee')}</button>
+        </div>`;
+    } else if(sub===6){
+      bodyHtml+=`<div class="qwiz-question">${_qT('What are the possible outcomes of this decision?','Wat zijn de mogelijke uitkomsten van deze beslissing?')}</div>
+        <div class="qwiz-hint">${_qT('e.g. Approved / Rejected, Continue / Return','bv. Goedgekeurd / Afgekeurd, Doorgaan / Terug')}</div>
+        <textarea class="qwiz-input qwiz-textarea" id="qw-v" rows="3" placeholder="${_qT('Outcome 1, Outcome 2…','Uitkomst 1, Uitkomst 2…')}">${_qEsc(dr.outcomes||'')}</textarea>`;
+    }
+    const showDecSkip=sub===5&&!dr.decision;
+    footHtml=`${backB}${showDecSkip?skipA(_qT('No decision','Geen beslissing')):''}${nextB()}`;
+
+  } else if(s==='stepMore'){
+    sectionTxt=_qT('3/5 — Steps','3/5 — Stappen');
+    const listHtml=_QW.steps.map((st,i)=>`<div class="qwiz-item"><span>${i+1}. ${_qEsc(st.what)}${st.who?' ('+_qEsc(st.who)+')':''}</span></div>`).join('');
+    bodyHtml=`<div class="qwiz-question">${_qT('Add another step?','Nog een stap toevoegen?')}</div>
+      <div class="qwiz-hint">${_qT(`You have ${_QW.steps.length} step(s) so far.`,`Je hebt nu ${_QW.steps.length} stap(pen).`)}</div>
+      <div class="qwiz-items-list" style="margin-bottom:1.2rem">${listHtml}</div>
+      <div class="qwiz-yn-row">
+        <button class="qwiz-yn-btn" onclick="_qwizAddMoreStep()">${_qT('Yes, add step','Ja, nog een stap')}</button>
+        <button class="qwiz-yn-btn selected" onclick="_qwizNext()">${_qT('No, continue →','Nee, doorgaan →')}</button>
+      </div>`;
+    footHtml=`${backB}`;
+
+  } else if(s==='addSystems'){
+    sectionTxt=_qT('4/5 — Systems','4/5 — Systemen');
+    const stepSys=[...new Set(_QW.steps.map(st=>st.system).filter(Boolean))];
+    const sysNote=stepSys.length?`<div style="font-size:.8rem;color:var(--muted);margin-bottom:.7rem">${_qT('Already found in steps: ','Al gevonden in stappen: ')}<em>${stepSys.join(', ')}</em></div>`:'';
+    const sysHtml=_QW.addSystems.map((r,i)=>`<div class="qwiz-item"><span>${_qEsc(r)}</span><button class="qwiz-item-del" onclick="_qwizDelSys(${i})">✕</button></div>`).join('');
+    bodyHtml=`<div class="qwiz-question">${_qT('Any additional systems to mention?','Zijn er aanvullende systemen te vermelden?')}</div>
+      ${sysNote}
+      <div class="qwiz-hint">${_qT('Add systems not yet mentioned in steps — leave empty if none','Voeg systemen toe die nog niet zijn vermeld — leeg laten als geen')}</div>
+      <div class="qwiz-list-builder">
+        <div class="qwiz-list-add-row">
+          <input class="qwiz-input" id="qw-sys-inp" type="text" placeholder="${_qT('System…','Systeem…')}" onkeydown="if(event.key==='Enter'){event.preventDefault();_qwizAddSys();}">
+          <button class="qwiz-add-btn" onclick="_qwizAddSys()">+ ${_qT('Add','Toevoegen')}</button>
+        </div>
+        <div class="qwiz-items-list">${sysHtml||`<span style="font-size:.8rem;color:var(--muted)">${_qT('None added','Geen toegevoegd')}</span>`}</div>
+      </div>`;
+    footHtml=`${backB}${skipA()}${nextB()}`;
+
+  } else if(s==='sysConn'){
+    sectionTxt=_qT('4/5 — Systems','4/5 — Systemen');
+    bodyHtml=`<div class="qwiz-question">${_qT('How do the systems connect or exchange data?','Hoe zijn de systemen verbonden of wisselen ze data uit?')}</div>
+      <div class="qwiz-hint">${_qT('e.g. "SAP sends orders to Salesforce", "ERP pushes invoices to portal"','bv. "SAP stuurt orders naar Salesforce", "ERP pusht facturen naar portal"')}</div>
+      <textarea class="qwiz-input qwiz-textarea" id="qw-v" rows="4" placeholder="${_qT('System connections…','Systeemverbindingen…')}">${_qEsc(_QW.sysConn)}</textarea>`;
+    footHtml=`${backB}${skipA()}${nextB()}`;
+
+  } else if(s==='infra'){
+    sectionTxt=_qT('5/5 — Infrastructure','5/5 — Infrastructuur');
+    bodyHtml=`<div class="qwiz-question">${_qT('Any infrastructure or technology notes? (optional)','Zijn er infrastructuur- of technologienotities? (optioneel)')}</div>
+      <div class="qwiz-hint">${_qT('e.g. Cloud provider, servers, databases, network','bv. Cloudprovider, servers, databases, netwerk')}</div>
+      <textarea class="qwiz-input qwiz-textarea" id="qw-v" rows="4" placeholder="${_qT('Infrastructure notes…','Infrastructuurnotities…')}">${_qEsc(_QW.infra)}</textarea>`;
+    footHtml=`${backB}${skipA(_qT('Skip (none)','Overslaan (geen)'))}${nextB(_qT('Review →','Controleren →'))}`;
+
+  } else if(s==='review'){
+    sectionTxt=_qT('Review & Build','Controleren & Bouwen');
+    const allSys=[...new Set([..._QW.steps.map(st=>st.system).filter(Boolean),..._QW.addSystems])];
+    const allRoles=[...new Set([..._QW.roles,..._QW.steps.map(st=>st.who).filter(Boolean)])];
+    const tag=(t)=>`<span style="display:inline-block;background:rgba(201,163,85,.15);border:1px solid rgba(201,163,85,.3);border-radius:4px;padding:.1rem .45rem;font-size:.78rem;color:var(--gold);margin:.1rem">${_qEsc(t)}</span>`;
+    const row=(lbl,val)=>`<div class="qwiz-review-row"><span class="qwiz-review-lbl">${lbl}</span><span class="qwiz-review-val">${val}</span></div>`;
+    const stepsHtml=_QW.steps.map((st,i)=>`<div class="qwiz-review-step">
+      <div class="qwiz-review-step-title">${i+1}. ${_qEsc(st.what)}</div>
+      <div class="qwiz-review-step-detail">${[
+        st.who&&(_qT('Role: ','Rol: ')+_qEsc(st.who)),
+        st.system&&(_qT('System: ','Systeem: ')+_qEsc(st.system)),
+        st.dataIn&&(_qT('In: ','In: ')+_qEsc(st.dataIn)),
+        st.dataOut&&(_qT('Out: ','Uit: ')+_qEsc(st.dataOut)),
+        st.decision==='Y'&&(_qT('Decision: ','Beslissing: ')+(st.outcomes?_qEsc(st.outcomes):'…'))
+      ].filter(Boolean).join(' · ')}</div>
+    </div>`).join('');
+    bodyHtml=`<div style="margin-bottom:1.2rem">
+      ${row(_qT('Process','Proces'),`<strong>${_qEsc(_QW.procName||'—')}</strong>`)}
+      ${_QW.procDesc?`<div style="font-size:.8rem;color:var(--muted);padding:.3rem 0 .3rem 110px;line-height:1.4">${_qEsc(_QW.procDesc)}</div>`:''}
+      ${_QW.procTrigger?row(_qT('Trigger','Trigger'),_qEsc(_QW.procTrigger)):''}
+      ${_QW.procEnd?row(_qT('End result','Eindresultaat'),_qEsc(_QW.procEnd)):''}
+      ${_QW.procOwner?row(_qT('Owner','Eigenaar'),_qEsc(_QW.procOwner)):''}
+    </div>
+    ${allRoles.length?`<div class="qwiz-review-head">${_qT('Roles','Rollen')}</div><div style="margin-bottom:1rem">${allRoles.map(tag).join('')}</div>`:''}
+    <div class="qwiz-review-head">${_qT('Steps','Stappen')} (${_QW.steps.length})</div>
+    <div style="margin-bottom:1rem">${stepsHtml||`<span style="color:var(--muted);font-size:.82rem">${_qT('No steps added','Geen stappen toegevoegd')}</span>`}</div>
+    ${allSys.length?`<div class="qwiz-review-head">${_qT('Systems','Systemen')}</div><div style="margin-bottom:1.2rem">${allSys.map(tag).join('')}</div>`:''}
+    <button class="qwiz-import-btn" onclick="_qwizBuild()">⚡ ${_qT('Build Model','Model Bouwen')}</button>`;
+    footHtml=`${backB}`;
+  }
+
+  bEl.innerHTML=bodyHtml;
+  fEl.innerHTML=footHtml;
+  document.getElementById('qwiz-section-lbl').textContent=sectionTxt;
+  const firstInp=bEl.querySelector('input.qwiz-input, textarea.qwiz-input');
+  if(firstInp) setTimeout(()=>firstInp.focus(),80);
+}
+
+// ── Capture current screen value into _QW ────────────────────
+function _qwizCapture(){
+  const s=_QW.screen;
+  const gv=(id)=>{const el=document.getElementById(id);return el?el.value.trim():'';};
+  if(s==='procName')    _QW.procName    = gv('qw-v');
+  if(s==='procDesc')    _QW.procDesc    = gv('qw-v');
+  if(s==='procTrigger') _QW.procTrigger = gv('qw-v');
+  if(s==='procEnd')     _QW.procEnd     = gv('qw-v');
+  if(s==='procOwner')   _QW.procOwner   = gv('qw-v');
+  if(s==='sysConn')     _QW.sysConn     = gv('qw-v');
+  if(s==='infra')       _QW.infra       = gv('qw-v');
+  if(s==='stepSub'){
+    if(!_QW._stepDraft) _QW._stepDraft={};
+    const ss=_QW._ss;
+    if(ss===0) _QW._stepDraft.what    = gv('qw-v');
+    if(ss===1){
+      const sel=document.getElementById('qw-v');
+      const txt=gv('qw-v2');
+      _QW._stepDraft.who = (sel&&sel.tagName==='SELECT'&&sel.value&&sel.value!=='__new__') ? sel.value : (txt||gv('qw-v'));
+    }
+    if(ss===2) _QW._stepDraft.system  = gv('qw-v');
+    if(ss===3) _QW._stepDraft.dataIn  = gv('qw-v');
+    if(ss===4) _QW._stepDraft.dataOut = gv('qw-v');
+    if(ss===6) _QW._stepDraft.outcomes= gv('qw-v');
+  }
+}
+
+// ── Navigate forward ─────────────────────────────────────────
+function _qwizNext(){
+  _qwizCapture();
+  const s=_QW.screen;
+  const NL=_QW.lang==='nl';
+  if(s==='procName'&&!_QW.procName){
+    showAlert(NL?'Vul een procesnaam in.':'Please enter a process name.'); return;
+  }
+  if(s==='stepSub'&&_QW._ss===0&&!_QW._stepDraft?.what){
+    showAlert(NL?'Beschrijf de activiteit.':'Please describe the step activity.'); return;
+  }
+  if(s==='stepSub'&&_QW._ss===5&&!_QW._stepDraft?.decision){
+    showAlert(NL?'Kies ja of nee.':'Please choose yes or no.'); return;
+  }
+  const BASE=['welcome','procName','procDesc','procTrigger','procEnd','procOwner','roles','stepIntro'];
+  const TAIL=['addSystems','sysConn','infra','review'];
+  if(BASE.includes(s)){
+    const i=BASE.indexOf(s);
+    if(i<BASE.length-1) _QW.screen=BASE[i+1];
+    // stepIntro is handled by the "Add first step" button
+  } else if(s==='stepSub'){
+    const hasDec=_QW._stepDraft?.decision==='Y';
+    const maxSub=hasDec?6:5;
+    if(_QW._ss<maxSub) _QW._ss++;
+    else _qwizSaveStep();
+  } else if(s==='stepMore'){
+    _QW.screen='addSystems';
+  } else if(TAIL.includes(s)){
+    const i=TAIL.indexOf(s);
+    if(i<TAIL.length-1) _QW.screen=TAIL[i+1];
+  }
+  _renderQWiz();
+}
+
+// ── Navigate back ────────────────────────────────────────────
+function _qwizBack(){
+  _qwizCapture();
+  const s=_QW.screen;
+  const BASE=['welcome','procName','procDesc','procTrigger','procEnd','procOwner','roles','stepIntro'];
+  const TAIL=['addSystems','sysConn','infra','review'];
+  if(BASE.includes(s)){
+    const i=BASE.indexOf(s);
+    if(i>0) _QW.screen=BASE[i-1];
+  } else if(s==='stepSub'){
+    if(_QW._ss>0){ _QW._ss--; }
+    else if(_QW._si>0){ _QW._si--; _QW.screen='stepMore'; }
+    else { _QW.screen='stepIntro'; }
+  } else if(s==='stepMore'){
+    const last=_QW.steps[_QW.steps.length-1];
+    if(last){
+      _QW._stepDraft={...last};
+      _QW._si=_QW.steps.length-1;
+      _QW._ss=last.decision==='Y'?6:5;
+      _QW.steps.splice(_QW.steps.length-1,1);
+      _QW.screen='stepSub';
+    } else { _QW.screen='stepIntro'; }
+  } else if(TAIL.includes(s)){
+    const i=TAIL.indexOf(s);
+    _QW.screen=i===0?'stepMore':TAIL[i-1];
+  }
+  _renderQWiz();
+}
+
+// ── Skip optional screen ──────────────────────────────────────
+function _qwizSkip(){
+  const s=_QW.screen;
+  if(s==='stepSub'&&_QW._ss===5){ _QW._stepDraft={..._QW._stepDraft,decision:'N'}; _qwizSaveStep(); return; }
+  const MAP={
+    procDesc:'procTrigger',procTrigger:'procEnd',procEnd:'procOwner',
+    procOwner:'roles',roles:'stepIntro',
+    addSystems:'sysConn',sysConn:'infra',infra:'review'
+  };
+  if(MAP[s]) _QW.screen=MAP[s];
+  _renderQWiz();
+}
+
+// ── Y/N decision button ───────────────────────────────────────
+function _qwizYN(val){
+  if(!_QW._stepDraft) _QW._stepDraft={};
+  _QW._stepDraft.decision=val;
+  _renderQWiz();
+}
+
+// ── Role list management ──────────────────────────────────────
+function _qwizAddRole(){
+  const inp=document.getElementById('qw-role-inp');
+  if(!inp) return;
+  const v=inp.value.trim();
+  if(v&&!_QW.roles.includes(v)){_QW.roles.push(v);_renderQWiz();}
+  else if(v) inp.select();
+}
+function _qwizDelRole(i){_QW.roles.splice(i,1);_renderQWiz();}
+
+// ── System list management ────────────────────────────────────
+function _qwizAddSys(){
+  const inp=document.getElementById('qw-sys-inp');
+  if(!inp) return;
+  const v=inp.value.trim();
+  if(v&&!_QW.addSystems.includes(v)){_QW.addSystems.push(v);_renderQWiz();}
+  else if(v) inp.select();
+}
+function _qwizDelSys(i){_QW.addSystems.splice(i,1);_renderQWiz();}
+
+// ── Step management ───────────────────────────────────────────
+function _qwizStartStep(){
+  _QW._si=0;_QW._ss=0;_QW._stepDraft={};_QW.screen='stepSub';_renderQWiz();
+}
+function _qwizAddMoreStep(){
+  _QW._si=_QW.steps.length;_QW._ss=0;_QW._stepDraft={};_QW.screen='stepSub';_renderQWiz();
+}
+function _qwizSaveStep(){
+  if(_QW._si>=_QW.steps.length) _QW.steps.push({..._QW._stepDraft});
+  else _QW.steps[_QW._si]={..._QW._stepDraft};
+  _QW._stepDraft=null;
+  _QW.screen='stepMore';
+  _renderQWiz();
+}
+
+// ── Final build ───────────────────────────────────────────────
+function _qwizBuild(){
+  const NL=_QW.lang==='nl';
+  if(!_QW.procName){ showAlert(NL?'Procesnaam is vereist.':'Process name is required.'); return; }
+  if(!_QW.steps.length){ showAlert(NL?'Voeg minstens één stap toe.':'Please add at least one step.'); return; }
+  const allSys=[...new Set([..._QW.steps.map(st=>st.system).filter(Boolean),..._QW.addSystems])];
+  const allRoles=[...new Set([..._QW.roles,..._QW.steps.map(st=>st.who).filter(Boolean)])];
+  const payload={
+    procName:_QW.procName, procDesc:_QW.procDesc, procTrigger:_QW.procTrigger,
+    procEnd:_QW.procEnd, procOwner:_QW.procOwner,
+    roles:allRoles, steps:_QW.steps, addSystems:allSys,
+    sysConn:_QW.sysConn, infra:_QW.infra
+  };
+  const msg=NL
+    ?`${_QW.steps.length} stap(pen) gevonden. Dit vervangt het huidige model.`
+    :`${_QW.steps.length} step(s) found. This will replace your current model.`;
+  hideQWiz();
+  showConfirm(
+    NL?`Model bouwen: "${_QW.procName}"?`:`Build model: "${_QW.procName}"?`,
+    msg,
+    NL?'Bouwen':'Build',
+    false,
+    ()=>_buildModelFromTemplate(payload)
+  );
 }
 
 // ══════════════════════════════════════════════════════════════
