@@ -9638,6 +9638,7 @@ function handleImportArchimate(ev) {
       document.getElementById('modelName').value = model.name || '';
       document.getElementById('modelDoc').value  = model.documentation || '';
       renderAll(); updateStats();
+      renderBsPanel(); // Re-render Systems, Departments, Roles, Processes after import
     } catch(err) {
       showAlert((currentLang==='nl' ? 'Kan .archimate bestand niet laden: ' : 'Could not import .archimate file: ') + err.message, currentLang==='nl' ? 'Fout' : 'Error');
     }
