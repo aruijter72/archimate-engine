@@ -1727,8 +1727,8 @@
             <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-tmpl" onclick="closeOnboard(); switchMode('archimate'); showTemplates();">
               <span id="ob-ar-tmpl-lbl">From template</span>
             </button>
-            <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-wizard" onclick="closeOnboard(); switchMode('archimate'); showWizard()">
-              <span id="ob-ar-wizard-lbl">🪄 Guided</span>
+            <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-wizard" onclick="closeOnboard(); triggerImportExcelTemplate()">
+              <span id="ob-ar-wizard-lbl">📊 Questionnaire</span>
             </button>
           </div>
           <button class="ob-tile-btn-open" id="ob-ar-open" onclick="closeOnboard(); triggerOpenProject()">
@@ -2185,7 +2185,8 @@
         <div class="gfile-columns">
           <div class="gfile-col">
             <div class="mi-section-head" id="gfile-sec-archi">Archi</div>
-            <button class="mi-btn" onclick="showWizard();closeMenus()">🪄 <span id="g-wizard-lbl">Guided Start</span></button>
+            <button class="mi-btn gold" onclick="triggerImportExcelTemplate();closeMenus()">📊 <span id="g-excel-import-lbl">Import Excel Questionnaire…</span></button>
+            <button class="mi-btn" onclick="downloadExcelTemplate();closeMenus()">⬇ <span id="g-excel-dl-lbl">Download Excel Template</span></button>
             <button class="mi-btn" onclick="showTemplates();closeMenus()">📋 <span id="g-templates-lbl">Templates</span></button>
             <div class="mi-sep"></div>
             <button class="mi-btn danger" onclick="newModel();closeMenus()">🆕 <span id="g-newmodel-lbl">New Model</span></button>
