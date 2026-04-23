@@ -7600,6 +7600,20 @@ function generateHTMLPlatform() {
     if (le.length && Object.keys(_mergedPos).length)
       layerSVGs[lk] = _buildCanvasSVG(le, _mergedPos, null) || '';
   }
+  // Per-process layer SVGs so the VA can show process-scoped diagrams
+  const procLayerSVGs = {};
+  for (const p of procs) {
+    const bsPid = p.bsProcessId;
+    const pm    = bsPid ? (model.processModels[bsPid] || {}) : {};
+    const pmElems = pm.elements || [];
+    const pmPos   = pm.elementPositions || {};
+    if (!pmElems.length || !Object.keys(pmPos).length) continue;
+    procLayerSVGs[p.id] = {};
+    for (const lk of ['business','application','technology','motivation','strategy']) {
+      const le = pmElems.filter(el => el.layer === lk);
+      if (le.length) procLayerSVGs[p.id][lk] = _buildCanvasSVG(le, pmPos, null) || '';
+    }
+  }
   const viewSVGs = {};
   for (const v of views) {
     if (model.elementPositions && Object.keys(model.elementPositions).length)
@@ -8031,9 +8045,10 @@ section{margin-bottom:2rem}
 ${'<' + 'script>'}
 // ── Embedded data ────────────────────────────────────────────
 const MODEL      = ${J(safeModel)};
-const PROC_SVGS  = ${J(procSVGs)};
-const LAYER_SVGS = ${J(layerSVGs)};
-const VIEW_SVGS  = ${J(viewSVGs)};
+const PROC_SVGS       = ${J(procSVGs)};
+const LAYER_SVGS      = ${J(layerSVGs)};
+const PROC_LAYER_SVGS = ${J(procLayerSVGs)};
+const VIEW_SVGS       = ${J(viewSVGs)};
 const TYPE_LABELS= ${J(TYPE_LABELS)};
 const REL_TYPES  = ${J(REL_TYPES.map(rt=>({id:rt.id,label:rt.label,desc:{en:rt.desc?.en||'',nl:rt.desc?.nl||''}})))};
 const DATE_EN    = ${J(nowEN)};
@@ -8278,7 +8293,11 @@ function renderLayerPage(layerId) {
   document.getElementById('lp-name').textContent = nm;
   updateTopbar(T(cfg.en||layerId, cfg.nl||layerId));
   const cvWrap = document.getElementById('layer-cv');
-  cvWrap.innerHTML = LAYER_SVGS[layerId]
+  // When a process is selected, show its own layer diagram; otherwise show the merged global one
+  const svgToShow = _currentProcId
+    ? (PROC_LAYER_SVGS[_currentProcId]?.[layerId] || null)
+    : LAYER_SVGS[layerId];
+  cvWrap.innerHTML = svgToShow
     || '<p class="empty-note" style="padding:1rem">' + T('No diagram available for this layer.','Geen diagram beschikbaar voor deze laag.') + '</p>';
   _zoomState['layer-cv'] = 1;
   const svgEl = cvWrap.querySelector('svg'); if (svgEl) svgEl.style.transform = 'scale(1)';
