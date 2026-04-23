@@ -9536,6 +9536,424 @@ function handleLoadFile(ev) {
 }
 
 // ══════════════════════════════════════════════════════════════
+// EXCEL QUESTIONNAIRE — DOWNLOAD TEMPLATE
+// ══════════════════════════════════════════════════════════════
+function downloadExcelTemplate() {
+  // The template file is served alongside index.html
+  const a = document.createElement('a');
+  a.href = 'Architise_Process_Questionnaire.xlsx';
+  a.download = 'Architise_Process_Questionnaire.xlsx';
+  a.click();
+}
+
+// ══════════════════════════════════════════════════════════════
+// EXCEL QUESTIONNAIRE — IMPORT & MAPPING
+// ══════════════════════════════════════════════════════════════
+function triggerImportExcelTemplate() {
+  if (typeof XLSX === 'undefined') {
+    showAlert(
+      (currentLang === 'nl'
+        ? 'De SheetJS-bibliotheek is nog niet geladen. Controleer je internetverbinding en probeer het opnieuw.'
+        : 'The SheetJS library has not loaded yet. Check your internet connection and try again.'),
+      currentLang === 'nl' ? 'Fout' : 'Error');
+    return;
+  }
+  document.getElementById('importExcelTemplateFile').click();
+}
+
+function handleImportExcelTemplate(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  const NL = currentLang === 'nl';
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb   = XLSX.read(data, { type: 'array' });
+
+      // Prefer the sheet matching current UI language, then either, then first
+      const sheetName =
+        wb.SheetNames.includes(NL ? 'NL' : 'EN') ? (NL ? 'NL' : 'EN') :
+        wb.SheetNames.includes('EN') ? 'EN' :
+        wb.SheetNames.includes('NL') ? 'NL' :
+        wb.SheetNames[0];
+      const ws = wb.Sheets[sheetName];
+
+      // ── Cell reader ───────────────────────────────────────────
+      const cell = addr => {
+        const c = ws[addr];
+        return c ? String(c.v || '').trim() : '';
+      };
+      const rowVal = (row, col) => cell(`${col}${row}`);
+
+      // ── Section 1 — Process overview (rows 12-16) ─────────────
+      const procName    = cell('B12');
+      const procDesc    = cell('B13');
+      const procTrigger = cell('B14');
+      const procEnd     = cell('B15');
+      const procOwner   = cell('B16');
+
+      if (!procName) {
+        showAlert(
+          NL ? 'Cel B12 (procesnaam) is leeg. Vul in ieder geval de procesnaam in.'
+             : 'Cell B12 (process name) is empty. Please fill in at least the process name.',
+          NL ? 'Leeg sjabloon' : 'Empty template');
+        return;
+      }
+
+      // ── Section 2 — Roles (rows 20-25) ───────────────────────
+      const roles = [];
+      for (let r = 20; r <= 30; r++) {
+        const v = rowVal(r, 'B');
+        if (v && v !== '') roles.push(v);
+      }
+
+      // ── Section 3 — Steps (rows 31-60) ────────────────────────
+      const steps = [];
+      for (let r = 31; r <= 60; r++) {
+        const what = rowVal(r, 'B');
+        if (!what) continue;
+        // Skip if row A looks like our example marker
+        const marker = rowVal(r, 'A');
+        if (marker === 'EX' || marker.toUpperCase() === 'EX') continue;
+        steps.push({
+          what,
+          who:      rowVal(r, 'C'),
+          system:   rowVal(r, 'D'),
+          dataIn:   rowVal(r, 'E'),
+          dataOut:  rowVal(r, 'F'),
+          decision: rowVal(r, 'G').toUpperCase(),   // Y/J or N
+          outcomes: rowVal(r, 'H')
+        });
+      }
+
+      // ── Section 4 — Systems & connections (rows 44-45) ────────
+      const addSystems = cell('B44');
+      const sysConn    = cell('B45');
+
+      // ── Section 5 — Infrastructure (row 49) ───────────────────
+      const infra = cell('B49');
+
+      // ── Confirm & build ───────────────────────────────────────
+      const msg = NL
+        ? `Importeer "${procName}"?\n${steps.length} stappen gevonden.\n\nDit vervangt het huidige model.`
+        : `Import "${procName}"?\n${steps.length} steps found.\n\nThis will replace your current model.`;
+      if (!confirm(msg)) { ev.target.value = ''; return; }
+
+      _buildModelFromTemplate({
+        procName, procDesc, procTrigger, procEnd, procOwner,
+        roles, steps, addSystems, sysConn, infra
+      });
+
+    } catch(err) {
+      showAlert(
+        (NL ? 'Kan Excel-sjabloon niet lezen: ' : 'Could not read Excel template: ') + err.message,
+        NL ? 'Fout' : 'Error');
+    }
+  };
+  reader.readAsArrayBuffer(f);
+  ev.target.value = '';
+}
+
+// ── Core mapping: answers → ArchiMate model + Swimlane ───────
+function _buildModelFromTemplate(d) {
+  _snapshot();
+  const NL = currentLang === 'nl';
+
+  // ── Helpers ───────────────────────────────────────────────────
+  const mkId = () => genId();
+  const newElems = [], newRels = [], newProcs = [];
+
+  const addEl = (layer, type, name, doc = '') => {
+    const el = { id: mkId(), layer, type, name: name.slice(0, 120),
+                 documentation: doc, properties: [] };
+    newElems.push(el);
+    return el;
+  };
+  const addRel = (type, srcId, tgtId, name = '') => {
+    if (!srcId || !tgtId || srcId === tgtId) return null;
+    const r = { id: mkId(), type, sourceId: srcId, targetId: tgtId,
+                name, documentation: '', directed: false };
+    newRels.push(r);
+    return r;
+  };
+
+  // Split a free-text field into individual names on commas/semicolons/slashes
+  const splitNames = str =>
+    (str || '').split(/[,;\/]/).map(s => s.trim()).filter(Boolean);
+
+  // De-duplicate: only create one element per unique name per type
+  const elemCache = {}; // `${layer}|${type}|${name}` → el
+  const getOrCreate = (layer, type, name, doc = '') => {
+    const key = `${layer}|${type}|${name.toLowerCase()}`;
+    if (!elemCache[key]) elemCache[key] = addEl(layer, type, name, doc);
+    return elemCache[key];
+  };
+
+  // ── 1. Main BusinessProcess ───────────────────────────────────
+  const mainProc = addEl('business', 'BusinessProcess', d.procName, d.procDesc);
+
+  // ── 2. Trigger → BusinessEvent ────────────────────────────────
+  let triggerEl = null;
+  if (d.procTrigger) {
+    triggerEl = addEl('business', 'BusinessEvent',
+      d.procTrigger.length > 80 ? d.procTrigger.slice(0, 77) + '…' : d.procTrigger,
+      d.procTrigger);
+    addRel('Triggering', triggerEl.id, mainProc.id);
+  }
+
+  // ── 3. Owner → BusinessActor ──────────────────────────────────
+  let ownerEl = null;
+  if (d.procOwner) {
+    ownerEl = getOrCreate('business', 'BusinessActor', d.procOwner);
+    addRel('Association', ownerEl.id, mainProc.id);
+  }
+
+  // ── 4. Roles ──────────────────────────────────────────────────
+  // Collect all role names from Section 2 + step "who" fields
+  const allRoleNames = new Set(d.roles.filter(Boolean));
+  d.steps.forEach(s => { if (s.who) allRoleNames.add(s.who); });
+  const roleMap = {}; // name → el
+  allRoleNames.forEach(name => {
+    roleMap[name] = getOrCreate('business', 'BusinessRole', name);
+  });
+
+  // ── 5. Application Components ─────────────────────────────────
+  const sysNames = new Set();
+  d.steps.forEach(s => splitNames(s.system).forEach(n => sysNames.add(n)));
+  splitNames(d.addSystems).forEach(n => sysNames.add(n));
+  const sysMap = {}; // name → el
+  sysNames.forEach(name => {
+    sysMap[name] = getOrCreate('application', 'ApplicationComponent', name);
+  });
+
+  // ── 6. Data Objects (shared across steps) ────────────────────
+  const dataMap = {}; // lowercase name → el
+  const getOrCreateData = name => {
+    const key = name.toLowerCase().slice(0, 60);
+    if (!dataMap[key]) dataMap[key] = getOrCreate('application', 'DataObject', name);
+    return dataMap[key];
+  };
+
+  // ── 7. Step elements + relationships ─────────────────────────
+  const stepElems = [];
+  d.steps.forEach((s, i) => {
+    if (!s.what) return;
+
+    // Step as BusinessProcess
+    const stepEl = addEl('business', 'BusinessProcess', s.what);
+    stepElems.push({ el: stepEl, step: s });
+
+    // Link to main process
+    addRel('Composition', mainProc.id, stepEl.id);
+
+    // Sequential flow from previous step
+    if (i > 0 && stepElems[i - 1]) {
+      addRel('Triggering', stepElems[i - 1].el.id, stepEl.id);
+    }
+
+    // Role → step assignment
+    if (s.who && roleMap[s.who]) {
+      addRel('Assignment', roleMap[s.who].id, stepEl.id);
+    }
+
+    // Systems used in this step
+    const stepSysNames = splitNames(s.system);
+    stepSysNames.forEach(sysName => {
+      const sysEl = sysMap[sysName]; if (!sysEl) return;
+      // Create an ApplicationService for this system's role in this step
+      const svcLabel = sysName + ' — ' + s.what.slice(0, 40);
+      const svcEl = addEl('application', 'ApplicationService', svcLabel);
+      addRel('Realization', sysEl.id, svcEl.id);
+      addRel('Serving', svcEl.id, stepEl.id);
+      if (s.who && roleMap[s.who]) addRel('Serving', sysEl.id, roleMap[s.who].id);
+    });
+
+    // Data in → DataObject (read)
+    if (s.dataIn) {
+      splitNames(s.dataIn).slice(0, 3).forEach(name => {
+        const doEl = getOrCreateData(name);
+        addRel('Association', doEl.id, stepEl.id);
+      });
+    }
+
+    // Data out → DataObject (write)
+    if (s.dataOut) {
+      splitNames(s.dataOut).slice(0, 3).forEach(name => {
+        const doEl = getOrCreateData(name);
+        addRel('Association', stepEl.id, doEl.id);
+      });
+    }
+  });
+
+  // ── 8. Cross-step system-to-system (derived from shared DataObjects) ──
+  // If DataObject D is "out" of a step using sysA and "in" to a step using sysB → Triggering A→B
+  const dataOutSys = {}; // dataKey → [sysName]
+  d.steps.forEach(s => {
+    const sysList = splitNames(s.system);
+    if (s.dataOut) splitNames(s.dataOut).forEach(name => {
+      const k = name.toLowerCase().slice(0, 60);
+      if (!dataOutSys[k]) dataOutSys[k] = [];
+      sysList.forEach(sn => dataOutSys[k].push(sn));
+    });
+  });
+  d.steps.forEach(s => {
+    const sysList = splitNames(s.system);
+    if (s.dataIn) splitNames(s.dataIn).forEach(name => {
+      const k = name.toLowerCase().slice(0, 60);
+      (dataOutSys[k] || []).forEach(srcSys => {
+        sysList.forEach(tgtSys => {
+          if (srcSys !== tgtSys && sysMap[srcSys] && sysMap[tgtSys]) {
+            addRel('Triggering', sysMap[srcSys].id, sysMap[tgtSys].id);
+          }
+        });
+      });
+    });
+  });
+
+  // ── 9. Explicit system-to-system from Section 4 ───────────────
+  if (d.sysConn) {
+    const allSysNamesArr = Object.keys(sysMap);
+    const parts = d.sysConn.split(/[,.;]/).map(p => p.trim());
+    parts.forEach(part => {
+      const found = allSysNamesArr.filter(n =>
+        part.toLowerCase().includes(n.toLowerCase()));
+      if (found.length >= 2) {
+        addRel('Triggering', sysMap[found[0]].id, sysMap[found[1]].id);
+      }
+    });
+  }
+
+  // ── 10. Technology layer — only if infra described ───────────
+  if (d.infra) {
+    splitNames(d.infra).forEach(item => {
+      const nodeEl = addEl('technology', 'Node', item);
+      // Link to any system whose name appears in the infra description
+      Object.entries(sysMap).forEach(([sysName, sysEl]) => {
+        if (item.toLowerCase().includes(sysName.toLowerCase()) ||
+            sysName.toLowerCase().includes(item.toLowerCase().split(' ')[0])) {
+          addRel('Serving', nodeEl.id, sysEl.id);
+        }
+      });
+    });
+  }
+
+  // ── 11. Swimlane process ──────────────────────────────────────
+  const colId = mkId();
+  const swimProc = {
+    id: mkId(), name: d.procName,
+    bsProcessId: null,
+    documentation: d.procDesc || '',
+    columns: [{ id: colId, name: NL ? 'Procesverloop' : 'Process Flow' }],
+    lanes: [], steps: [], flows: []
+  };
+
+  // Lanes: one per role (Section 2 + step roles), owner first
+  const laneMap = {}; // roleName → laneId
+  const orderedRoles = [];
+  if (d.procOwner && !orderedRoles.includes(d.procOwner)) orderedRoles.push(d.procOwner);
+  d.roles.forEach(r => { if (r && !orderedRoles.includes(r)) orderedRoles.push(r); });
+  d.steps.forEach(s => { if (s.who && !orderedRoles.includes(s.who)) orderedRoles.push(s.who); });
+  if (orderedRoles.length === 0) orderedRoles.push(d.procOwner || 'Team');
+
+  orderedRoles.forEach(name => {
+    const lane = { id: mkId(), name };
+    swimProc.lanes.push(lane);
+    laneMap[name] = lane.id;
+  });
+  const defaultLaneId = swimProc.lanes[0].id;
+
+  // Steps
+  const swimStepIds = [];
+  stepElems.forEach(({ el: stepEl, step: s }) => {
+    const laneId = (s.who && laneMap[s.who]) || defaultLaneId;
+    const isDecision = s.decision === 'Y' || s.decision === 'J';
+    const swimStep = {
+      id: mkId(), type: isDecision ? 'decision' : 'task',
+      label: s.what, laneId, columnId: colId,
+      documentation: [s.dataIn, s.dataOut].filter(Boolean).join(' → '),
+      sourceId: stepEl.id
+    };
+    swimProc.steps.push(swimStep);
+    swimStepIds.push(swimStep.id);
+
+    // Decision outcomes as child steps
+    if (isDecision && s.outcomes) {
+      s.outcomes.split(/[;,\/]/).map(o => o.trim()).filter(Boolean)
+        .slice(0, 2).forEach(outcome => {
+          const outStep = {
+            id: mkId(), type: 'task', label: outcome,
+            laneId, columnId: colId, documentation: '', sourceId: null
+          };
+          swimProc.steps.push(outStep);
+          swimStepIds.push(outStep.id);
+        });
+    }
+  });
+
+  // Sequential flows
+  for (let i = 0; i < swimStepIds.length - 1; i++) {
+    swimProc.flows.push({
+      id: mkId(), fromStepId: swimStepIds[i],
+      toStepId: swimStepIds[i + 1], label: ''
+    });
+  }
+  newProcs.push(swimProc);
+
+  // ── 12. Wire up Business Systems process entry ────────────────
+  if (!model.businessSystems) model.businessSystems = {
+    orgName: '', apps: [], departments: [], roles: [],
+    roleRelations: [], appRelations: [], bsProcesses: []
+  };
+  if (!model.businessSystems.bsProcesses) model.businessSystems.bsProcesses = [];
+
+  const bsProc = { id: mkId(), name: d.procName, description: d.procDesc || '' };
+  model.businessSystems.bsProcesses.push(bsProc);
+  swimProc.bsProcessId = bsProc.id;
+
+  // ── 13. Commit to model ───────────────────────────────────────
+  model.name            = d.procName;
+  model.documentation   = d.procDesc || '';
+  model.elements        = newElems;
+  model.relationships   = newRels;
+  model.processes       = newProcs;
+  model.elementPositions = {};
+  model.processModels   = {};
+  model.linkedBsProcessId = bsProc.id;
+  model.processModels[bsProc.id] = {
+    elements: newElems, relationships: newRels, elementPositions: {}
+  };
+
+  // ── 14. Auto-layout canvas positions ─────────────────────────
+  _autoLayoutFromTemplate(newElems);
+
+  // ── 15. Update UI ─────────────────────────────────────────────
+  const nameEl = document.getElementById('modelName');
+  if (nameEl) nameEl.value = d.procName;
+  renderAll(); updateStats(); renderBsPanel(); autoSave();
+  switchMode('archimate');
+
+  showAlert(
+    NL ? `"${d.procName}" succesvol geïmporteerd.\n${newElems.length} elementen · ${newRels.length} relaties · ${swimProc.steps.length} swimlane-stappen.`
+       : `"${d.procName}" imported successfully.\n${newElems.length} elements · ${newRels.length} relationships · ${swimProc.steps.length} swimlane steps.`,
+    NL ? 'Import voltooid' : 'Import Complete');
+}
+
+// Auto-layout: place elements in a grid, grouped by layer
+function _autoLayoutFromTemplate(elems) {
+  const LAYER_ORDER = ['business','application','technology','motivation','strategy'];
+  const LAYER_Y     = { business:60, application:380, technology:700, motivation:200, strategy:500 };
+  const COL_W = 210, ROW_H = 140, COLS = 5, PAD_X = 60;
+  const countByLayer = {};
+  elems.forEach(el => {
+    if (!countByLayer[el.layer]) countByLayer[el.layer] = 0;
+    const idx = countByLayer[el.layer]++;
+    const x   = PAD_X + (idx % COLS) * COL_W;
+    const y   = (LAYER_Y[el.layer] || 60) + Math.floor(idx / COLS) * ROW_H;
+    model.elementPositions[el.id] = { x, y };
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
 // IMPORT .archimate (Archi 4.x XML)
 // ══════════════════════════════════════════════════════════════
 function triggerImportArchimate() { document.getElementById('importArchimateFile').click(); }
