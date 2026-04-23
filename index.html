@@ -2326,7 +2326,8 @@
         <div class="gfile-columns">
           <div class="gfile-col">
             <div class="mi-section-head" id="gfile-sec-archi">Archi</div>
-            <button class="mi-btn gold" onclick="triggerImportExcelTemplate();closeMenus()">📊 <span id="g-excel-import-lbl">Import Excel Questionnaire…</span></button>
+            <button class="mi-btn gold" onclick="showQWiz();closeMenus()">🧙 <span id="g-qwiz-lbl">Questionnaire Wizard…</span></button>
+            <button class="mi-btn" onclick="triggerImportExcelTemplate();closeMenus()">📊 <span id="g-excel-import-lbl">Import Excel Questionnaire…</span></button>
             <button class="mi-btn" onclick="downloadExcelTemplate();closeMenus()">⬇ <span id="g-excel-dl-lbl">Download Excel Template</span></button>
             <button class="mi-btn" onclick="showTemplates();closeMenus()">📋 <span id="g-templates-lbl">Templates</span></button>
             <div class="mi-sep"></div>
@@ -3353,6 +3354,7 @@ function applyTranslations() {
     'g-wizard-lbl':            L === 'nl' ? 'Begeleid starten'          : 'Guided Start',
     'g-templates-lbl':         L === 'nl' ? 'Sjablonen'                 : 'Templates',
     'g-newmodel-lbl':          L === 'nl' ? 'Nieuw model'               : 'New Model',
+    'g-qwiz-lbl':              L === 'nl' ? 'Vragenlijstwizard…'           : 'Questionnaire Wizard…',
     'g-excel-import-lbl':      L === 'nl' ? 'Importeer Excel-vragenlijst…' : 'Import Excel Questionnaire…',
     'g-excel-dl-lbl':          L === 'nl' ? 'Download Excel-sjabloon'   : 'Download Excel Template',
     'g-openjson-lbl':          L === 'nl' ? 'JSON openen…'              : 'Open JSON…',
