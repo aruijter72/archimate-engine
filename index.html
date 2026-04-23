@@ -7930,7 +7930,7 @@ section{margin-bottom:2rem}
       </div>
     </div>
     <section>
-      <div class="section-h"><span data-en="Linked Elements" data-nl="Gekoppelde elementen">Linked Elements</span><span class="section-count" id="pa-elem-count"></span></div>
+      <div class="section-h"><span data-en="Elements" data-nl="Elementen">Elements</span><span class="section-count" id="pa-elem-count"></span></div>
       <div class="elem-grid" id="pa-elems-grid"></div>
     </section>
     <section>
@@ -8186,25 +8186,27 @@ function renderProcArchiPage(proc) {
   document.getElementById('pa-doc').textContent  = proc.documentation || T('No documentation.','Geen documentatie.');
   updateTopbar(nm);
 
-  // Use this process's own element set if available; fall back to global elemById
+  // Use this process's own element set if available; fall back to global
   const procPm = proc.bsProcessId ? (MODEL.processModels?.[proc.bsProcessId] || {}) : {};
   const procElemById = {};
   (procPm.elements || MODEL.elements || []).forEach(el => { procElemById[el.id] = el; });
 
-  // Linked elements via step.sourceId
-  const linkedIds   = new Set((proc.steps||[]).filter(s=>s.sourceId).map(s=>s.sourceId));
-  const linkedElems = [...linkedIds].map(id=>procElemById[id]||elemById[id]).filter(Boolean);
-  document.getElementById('pa-elem-count').textContent = linkedElems.length;
-  document.getElementById('pa-elems-grid').innerHTML   = linkedElems.length
-    ? linkedElems.map(el => buildElemCard(el)).join('')
-    : '<p class="empty-note">' + T('No linked elements.','Geen gekoppelde elementen.') + '</p>';
+  // Show ALL elements belonging to this process model
+  const procElems = procPm.elements || MODEL.elements || [];
+  document.getElementById('pa-elem-count').textContent = procElems.length;
+  document.getElementById('pa-elems-grid').innerHTML   = procElems.length
+    ? procElems.map(el => buildElemCard(el)).join('')
+    : '<p class="empty-note">' + T('No elements.','Geen elementen.') + '</p>';
 
-  // Relationships involving linked elements
-  const rels = MODEL.relationships.filter(r => linkedIds.has(r.sourceId) || linkedIds.has(r.targetId));
+  // Relationships from this process's model, involving its elements
+  const procElemIds = new Set(procElems.map(el => el.id));
+  const procRels    = procPm.relationships || MODEL.relationships || [];
+  const rels = procRels.filter(r => procElemIds.has(r.sourceId) || procElemIds.has(r.targetId));
   document.getElementById('pa-rel-count').textContent  = rels.length;
   document.getElementById('pa-rels-body').innerHTML    = rels.length
     ? rels.map(rel => {
-        const src = elemById[rel.sourceId], tgt = elemById[rel.targetId];
+        const src = procElemById[rel.sourceId] || elemById[rel.sourceId];
+        const tgt = procElemById[rel.targetId] || elemById[rel.targetId];
         if (!src || !tgt) return '';
         const rt  = relTypeMap[rel.type] || {label: rel.type, desc:{en:'',nl:''}};
         const desc = _lang === 'nl' ? (rt.desc?.nl || rt.desc?.en || '') : (rt.desc?.en || '');
