@@ -9475,6 +9475,7 @@ function handleOpenProject(ev) {
         const hasSwimlane = model.processes.length > 0;
         const hasArchi    = model.elements.length  > 0;
         renderAll(); updateStats();
+        renderBsPanel(); // Re-render Systems, Departments, Roles, Processes after file load
         if (hasSwimlane && !hasArchi) {
           _activeProcId = model.processes[0].id;
           switchMode('swimlane');
