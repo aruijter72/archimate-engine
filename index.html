@@ -1920,6 +1920,21 @@
   </div>
 </div>
 
+<!-- ── Questionnaire Wizard Modal ──────────────────────────── -->
+<div id="qwizModal" class="modal-overlay" style="z-index:3500;display:none" onclick="if(event.target===this)hideQWiz()">
+  <div class="qwiz-box">
+    <div class="qwiz-header">
+      <div class="qwiz-header-top">
+        <span class="qwiz-title-line" id="qwiz-section-lbl">Process Questionnaire</span>
+        <button class="qwiz-close-btn" onclick="hideQWiz()">×</button>
+      </div>
+      <div class="qwiz-progress-track"><div class="qwiz-progress-fill" id="qwiz-prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="qwiz-body" id="qwiz-body"></div>
+    <div class="qwiz-footer" id="qwiz-footer"></div>
+  </div>
+</div>
+
 <!-- ── Settings Modal ──────────────────────────────────── -->
 <div id="settingsModal" class="modal-overlay" onclick="if(event.target===this)hideSettings()" style="z-index:3000">
   <div class="modal-box" style="max-width:500px">
