@@ -4926,8 +4926,10 @@ function setRel(id, field, val) {
   const r = model.relationships.find(r => r.id === id);
   if (r) {
     r[field] = val;
-    if (field === 'type') renderRelationships();
+    // Re-render the table whenever source, target, or type changes so name/badge update immediately
+    if (field === 'type' || field === 'sourceId' || field === 'targetId') renderRelationships();
     scheduleHealthUpdate();
+    autoSave();
     // Live-update canvas arrows when source/target/type changes
     if (field === 'type' || field === 'sourceId' || field === 'targetId') {
       if (document.getElementById('tab-canvas')?.classList.contains('active')) renderCanvas();
