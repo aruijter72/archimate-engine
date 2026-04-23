@@ -9524,6 +9524,7 @@ function handleLoadFile(ev) {
       document.getElementById('modelName').value = model.name || '';
       document.getElementById('modelDoc').value  = model.documentation || '';
       renderAll(); updateStats();
+      renderBsPanel(); // Re-render Systems, Departments, Roles, Processes after file load
     } catch(err) { showAlert((currentLang==='nl' ? 'Kan bestand niet laden: ' : 'Could not load file: ') + err.message, currentLang==='nl' ? 'Fout' : 'Error'); }
   };
   r.readAsText(f);
