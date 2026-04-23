@@ -1679,8 +1679,8 @@
             <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-tmpl" onclick="closeOnboard(); _postGenMode='swimlane'; showTemplates();">
               <span id="ob-sw-tmpl-lbl">From template</span>
             </button>
-            <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-wizard" onclick="closeOnboard(); _postGenMode='swimlane'; showWizard();">
-              <span id="ob-sw-wizard-lbl">🪄 Guided</span>
+            <button class="ob-tile-btn ob-tile-btn-sw-sec" id="ob-sw-wizard" onclick="closeOnboard(); triggerImportExcelTemplate()">
+              <span id="ob-sw-wizard-lbl">📊 Questionnaire</span>
             </button>
           </div>
           <button class="ob-tile-btn-open" id="ob-sw-open" onclick="closeOnboard(); triggerOpenProject()">
@@ -2725,7 +2725,7 @@ const STRINGS = {
     'ob-tile-sw-desc':  'Draw process flows as swimlane diagrams — who does what, in what order, using which system.',
     'ob-sw-scratch':    'Start blank →',
     'ob-sw-tmpl':       'From template',
-    'ob-sw-wizard':     '🪄 Guided',
+    'ob-sw-wizard':     '📊 Questionnaire',
     'ob-tile-ar-name':  'ArchiMate',
     'ob-tile-ar-badge': 'Full model',
     'ob-tile-ar-desc':  'Build a structured architecture model with business, application and technology layers — export to Archi.',
@@ -2876,7 +2876,7 @@ const STRINGS = {
     'ob-tile-sw-desc':  'Teken processtromen als swimlane-diagrammen — wie doet wat, in welke volgorde en met welk systeem.',
     'ob-sw-scratch':    'Blanco starten →',
     'ob-sw-tmpl':       'Vanuit sjabloon',
-    'ob-sw-wizard':     '🪄 Begeleide start',
+    'ob-sw-wizard':     '📊 Vragenlijst',
     'ob-tile-ar-name':  'ArchiMate',
     'ob-tile-ar-badge': 'Volledig model',
     'ob-tile-ar-desc':  'Bouw een gestructureerd architectuurmodel met bedrijfs-, applicatie- en technologielagen — exporteer naar Archi.',
@@ -9635,16 +9635,19 @@ function handleImportExcelTemplate(ev) {
       // ── Section 5 — Infrastructure (row 49) ───────────────────
       const infra = cell('B49');
 
-      // ── Confirm & build ───────────────────────────────────────
-      const msg = NL
-        ? `Importeer "${procName}"?\n${steps.length} stappen gevonden.\n\nDit vervangt het huidige model.`
-        : `Import "${procName}"?\n${steps.length} steps found.\n\nThis will replace your current model.`;
-      if (!confirm(msg)) { ev.target.value = ''; return; }
-
-      _buildModelFromTemplate({
-        procName, procDesc, procTrigger, procEnd, procOwner,
-        roles, steps, addSystems, sysConn, infra
-      });
+      // ── Confirm & build using standard Architise dialog ───────
+      const payload = { procName, procDesc, procTrigger, procEnd, procOwner,
+                        roles, steps, addSystems, sysConn, infra };
+      const confirmMsg = NL
+        ? `${steps.length} stap(pen) gevonden. Dit vervangt het huidige model.`
+        : `${steps.length} step(s) found. This will replace your current model.`;
+      showConfirm(
+        NL ? `Importeer "${procName}"?` : `Import "${procName}"?`,
+        confirmMsg,
+        NL ? 'Importeren' : 'Import',
+        false,
+        () => _buildModelFromTemplate(payload)
+      );
 
     } catch(err) {
       showAlert(
