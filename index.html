@@ -14054,7 +14054,7 @@ function setLaneHeight(laneId, delta) {
     const current = lane.height || proc.laneH || _autoLaneH(proc);
     lane.height = Math.min(LANE_H_MAX, Math.max(LANE_H_MIN, current + delta));
   }
-  renderProcEditor();
+  renderProcPreview();
 }
 function setColWidth(colId, delta) {
   const proc = getActiveProc(); if (!proc) return;
@@ -14065,7 +14065,7 @@ function setColWidth(colId, delta) {
     const current = col.width || proc.colW || 150;
     col.width = Math.min(COL_W_MAX, Math.max(COL_W_MIN, current + delta));
   }
-  renderProcEditor();
+  renderProcPreview();
 }
 
 function _autoLaneH(proc) {
