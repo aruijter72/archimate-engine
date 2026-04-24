@@ -1850,9 +1850,6 @@
             <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-tmpl" onclick="closeOnboard(); switchMode('archimate'); showTemplates();">
               <span id="ob-ar-tmpl-lbl">From template</span>
             </button>
-            <button class="ob-tile-btn ob-tile-btn-ar-sec" id="ob-ar-wizard" onclick="closeOnboard(); showQWiz()">
-              <span id="ob-ar-wizard-lbl">📊 Questionnaire</span>
-            </button>
           </div>
           <button class="ob-tile-btn-open" id="ob-ar-open" onclick="closeOnboard(); triggerOpenProject()">
             📂 <span id="ob-ar-open-lbl">Open project</span>
@@ -1861,12 +1858,24 @@
       </div>
     </div>
 
+    <!-- ── Shared Questionnaire band ─────────────────────────── -->
+    <div style="margin:.9rem 0 .3rem;padding:.85rem 1.1rem;background:rgba(201,163,85,.07);border:1px solid rgba(201,163,85,.25);border-radius:10px;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+      <div style="flex:1;min-width:160px">
+        <div style="font-size:.85rem;font-weight:700;color:var(--gold);margin-bottom:.2rem" id="ob-qband-title">📋 Build from Questionnaire</div>
+        <div style="font-size:.78rem;color:var(--text2)" id="ob-qband-desc">Answer a few questions — Architise generates both your ArchiMate model and swimlane diagram.</div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn" id="ob-qwiz-btn" onclick="closeOnboard(); showQWiz()" style="font-size:.83rem;padding:.45rem .9rem">🧙 <span id="ob-qwiz-lbl">Wizard</span></button>
+        <button class="btn btn-secondary" id="ob-excel-import-btn" onclick="closeOnboard(); triggerImportExcelTemplate()" style="font-size:.83rem;padding:.45rem .9rem">📊 <span id="ob-excel-import-lbl">Import Excel</span></button>
+        <button class="btn btn-secondary" id="ob-excel-dl-btn" onclick="downloadExcelTemplate()" style="font-size:.83rem;padding:.45rem .9rem">⬇ <span id="ob-excel-dl-lbl2">Download template</span></button>
+      </div>
+    </div>
+
     <div class="onboard-actions" style="padding-top:.6rem;border-top:1px solid var(--border)">
       <label style="font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.4rem;cursor:pointer;margin-right:auto">
         <input type="checkbox" id="onboardNoShow" style="accent-color:var(--gold)" onchange="setOnboardPref(this.checked)">
         <span id="ob-noshow-lbl">Don't show again</span>
       </label>
-      <button class="btn btn-secondary" id="ob-wizard-btn" onclick="closeOnboard(); downloadExcelTemplate()">📊 <span id="ob-wizard-lbl2">Download Questionnaire</span></button>
     </div>
   </div>
 </div>
