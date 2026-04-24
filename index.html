@@ -9741,12 +9741,13 @@ function _qT(en,nl){ return _QW.lang==='nl'?nl:en; }
 function _qEsc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function _qwizProgress(){
+  const s=_QW.screen;
+  if(s==='resume') return 0;
   const BASE=['welcome','procName','procDesc','procTrigger','procEnd','procOwner','roles','stepIntro'];
   const TAIL=['addSystems','sysConn','infra','review'];
   const nSteps=Math.max(1,_QW.steps.length+(_QW._stepDraft?1:0));
   const total=BASE.length+nSteps*6+TAIL.length;
   let pos=0;
-  const s=_QW.screen;
   if(BASE.includes(s)) pos=BASE.indexOf(s);
   else if(s==='stepSub') pos=BASE.length+_QW._si*6+_QW._ss;
   else if(s==='stepMore') pos=BASE.length+(_QW._si+1)*6;
