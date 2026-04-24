@@ -14139,11 +14139,11 @@ function renderProcPreview() {
 
   if (hasColumns) {
     // ── Grid mode: x = column slot, y = lane slot, stack multiple steps per cell ──
-    const COL_W = proc.colW || 150, MARGIN = 14;
+    const defColW = proc.colW || 150;
     const numCols = columns.length;
     const colIdx = {}; columns.forEach((c, i) => colIdx[c.id] = i);
 
-    // Count steps per cell to compute LANE_H (skip steps with no lane assigned)
+    // Count steps per cell (skip steps with no lane assigned)
     const cellCount = {};
     steps.forEach(s => {
       const li = laneIdx[s.laneId]; if (li === undefined) return;
@@ -14153,10 +14153,19 @@ function renderProcPreview() {
     });
     const maxStack = Math.max(1, ...Object.values(cellCount));
     const autoH = Math.max(80, maxStack * (STEP_H + 8) + 24);
-    LANE_H = proc.laneH ? Math.max(STEP_H + 16, proc.laneH) : autoH;
 
-    svgW = LANE_STRIP + numCols * COL_W;
-    svgH = PROC_HDR + COL_HDR_H + numLanes * LANE_H;
+    // Per-column widths + cumulative offsets
+    const colWidths = columns.map(c => c.width || defColW);
+    const colOffsets = []; let xAcc = LANE_STRIP;
+    colWidths.forEach(w => { colOffsets.push(xAcc); xAcc += w; });
+    svgW = xAcc;
+
+    // Per-lane heights + cumulative offsets
+    const defLH = proc.laneH ? Math.max(STEP_H + 16, proc.laneH) : autoH;
+    const laneHeights = lanes.map(l => l.height ? Math.max(STEP_H + 16, l.height) : defLH);
+    const laneOffsets = []; let yAcc = PROC_HDR + COL_HDR_H;
+    laneHeights.forEach(h => { laneOffsets.push(yAcc); yAcc += h; });
+    svgH = yAcc;
 
     // Track per-cell order for stacking (skip steps with no lane assigned)
     const cellOrder = {};
@@ -14167,10 +14176,12 @@ function renderProcPreview() {
       if (!cellOrder[k]) cellOrder[k] = 0;
       const order = cellOrder[k]++;
       const total = cellCount[k] || 1;
-      const cx = LANE_STRIP + ci * COL_W + COL_W / 2;
-      const cellTop = PROC_HDR + COL_HDR_H + li * LANE_H;
+      const cw = colWidths[ci];
+      const cx = colOffsets[ci] + cw / 2;
+      const cellTop = laneOffsets[li];
+      const lh = laneHeights[li];
       const stackH = total * (STEP_H + 8) - 8;
-      const cy = cellTop + (LANE_H - stackH) / 2 + order * (STEP_H + 8) + STEP_H / 2;
+      const cy = cellTop + (lh - stackH) / 2 + order * (STEP_H + 8) + STEP_H / 2;
       sPos[s.id] = { cx, cy };
     });
 
