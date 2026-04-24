@@ -14196,25 +14196,39 @@ function renderProcPreview() {
     // Column header strip
     svg += `<rect x="${LANE_STRIP}" y="${PROC_HDR}" width="${svgW-LANE_STRIP}" height="${COL_HDR_H}" fill="#f0eef8" stroke="#d8d0f0" stroke-width="1"/>`;
     columns.forEach((c, ci) => {
-      const cx = LANE_STRIP + ci * COL_W;
-      svg += `<rect x="${cx}" y="${PROC_HDR}" width="${COL_W}" height="${COL_HDR_H}" fill="#ede7f6" stroke="#d1c4e9" stroke-width="1"/>`;
-      svg += `<text x="${cx+COL_W/2}" y="${PROC_HDR+COL_HDR_H/2+4}" text-anchor="middle" font-size="10" font-weight="700" fill="#5e35b1">${esc(c.name||`Col ${ci+1}`)}</text>`;
+      const cx = colOffsets[ci], cw = colWidths[ci];
+      svg += `<rect x="${cx}" y="${PROC_HDR}" width="${cw}" height="${COL_HDR_H}" fill="#ede7f6" stroke="#d1c4e9" stroke-width="1"/>`;
+      // Column name — shift left to leave room for the ±  buttons
+      svg += `<text x="${cx+Math.max(8,cw/2-14)}" y="${PROC_HDR+COL_HDR_H/2+4}" text-anchor="middle" font-size="10" font-weight="700" fill="#5e35b1">${esc(c.name||`Col ${ci+1}`)}</text>`;
+      // ± width controls on the right edge of each column header
+      const bY = PROC_HDR + 5, bH = 16, bW = 14;
+      svg += `<g onclick="setColWidth('${c.id}',-20)" style="cursor:pointer"><rect x="${cx+cw-31}" y="${bY}" width="${bW}" height="${bH}" rx="2" fill="rgba(255,255,255,.5)" stroke="rgba(94,53,177,.35)" stroke-width="0.8"/><text x="${cx+cw-24}" y="${bY+bH/2+1}" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="700" fill="#5e35b1">−</text></g>`;
+      svg += `<g onclick="setColWidth('${c.id}',+20)" style="cursor:pointer"><rect x="${cx+cw-15}" y="${bY}" width="${bW}" height="${bH}" rx="2" fill="rgba(255,255,255,.5)" stroke="rgba(94,53,177,.35)" stroke-width="0.8"/><text x="${cx+cw-8}" y="${bY+bH/2+1}" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="700" fill="#5e35b1">+</text></g>`;
     });
 
-    // Lane rows + column grid lines
+    // Lane rows
     for (let li = 0; li < numLanes; li++) {
-      const y = PROC_HDR + COL_HDR_H + li * LANE_H;
-      svg += `<rect x="0" y="${y}" width="${svgW}" height="${LANE_H}" fill="${PV_LANE_COLORS[li%PV_LANE_COLORS.length]}" stroke="#e8e8ee" stroke-width="1"/>`;
-      svg += `<rect x="0" y="${y}" width="${LANE_STRIP}" height="${LANE_H}" fill="#f0f0f5" stroke="#dcdce8" stroke-width="1"/>`;
+      const y = laneOffsets[li], h = laneHeights[li];
+      svg += `<rect x="0" y="${y}" width="${svgW}" height="${h}" fill="${PV_LANE_COLORS[li%PV_LANE_COLORS.length]}" stroke="#e8e8ee" stroke-width="1"/>`;
+      svg += `<rect x="0" y="${y}" width="${LANE_STRIP}" height="${h}" fill="#f0f0f5" stroke="#dcdce8" stroke-width="1"/>`;
       const lname = lanes[li]?.name || `Lane ${li+1}`;
       const _ll1 = _svgLaneLines(lname, 18);
-      const _ll1H = 13, _ll1Y = y + LANE_H/2 - (_ll1.length-1)*_ll1H/2;
+      const _ll1H = 13, _ll1Y = y + h/2 - (_ll1.length-1)*_ll1H/2 - 9;
       _ll1.forEach((ln,ii) => { svg += `<text x="${LANE_STRIP/2}" y="${_ll1Y+ii*_ll1H}" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="600" fill="#555">${esc(ln)}</text>`; });
+      // ± height controls at bottom of lane strip
+      const lId = lanes[li]?.id;
+      const hasOvr = !!(lanes[li]?.height);
+      const btnY = y + h - 18, btnH = 14, btnW = 16;
+      const bx1 = Math.round((LANE_STRIP - 38) / 2);
+      const bx2 = bx1 + btnW + 6;
+      svg += `<g onclick="setLaneHeight('${lId}',-20)" style="cursor:pointer"><rect x="${bx1}" y="${btnY}" width="${btnW}" height="${btnH}" rx="2" fill="rgba(0,0,0,.07)" stroke="rgba(0,0,0,.14)" stroke-width="0.7"/><text x="${bx1+btnW/2}" y="${btnY+btnH/2+1}" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="700" fill="#444">−</text></g>`;
+      svg += `<g onclick="setLaneHeight('${lId}',+20)" style="cursor:pointer"><rect x="${bx2}" y="${btnY}" width="${btnW}" height="${btnH}" rx="2" fill="rgba(0,0,0,.07)" stroke="rgba(0,0,0,.14)" stroke-width="0.7"/><text x="${bx2+btnW/2}" y="${btnY+btnH/2+1}" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="700" fill="#444">+</text></g>`;
+      if (hasOvr) svg += `<text x="${bx1+btnW+3}" y="${btnY+btnH/2+1}" text-anchor="middle" dominant-baseline="middle" font-size="8.5" fill="#c9a355" style="cursor:pointer" onclick="setLaneHeight('${lId}',0)">↺</text>`;
     }
     // Vertical column dividers
     svg += `<line x1="${LANE_STRIP}" y1="${PROC_HDR}" x2="${LANE_STRIP}" y2="${svgH}" stroke="#ccc" stroke-width="1"/>`;
     columns.forEach((c, ci) => {
-      const x = LANE_STRIP + (ci+1) * COL_W;
+      const x = colOffsets[ci] + colWidths[ci];
       svg += `<line x1="${x}" y1="${PROC_HDR}" x2="${x}" y2="${svgH}" stroke="#d1c4e9" stroke-width="1" stroke-dasharray="4,3"/>`;
     });
 
@@ -14230,8 +14244,9 @@ function renderProcPreview() {
       ? `<div style="font-size:.73rem;color:var(--muted);margin-top:.4rem;padding:0 .25rem">
            ⚠ ${unassignedG} step${unassignedG>1?'s':''} not shown — assign a lane in the Steps table above.
          </div>` : '') + `</div>`;
-    _procLayout = { hasColumns: true, LANE_H, LANE_STRIP, PROC_HDR, COL_HDR_H,
-      COL_W: 150, laneIds: lanes.map(l=>l.id), colIds: columns.map(c=>c.id),
+    _procLayout = { hasColumns: true, laneHeights, laneOffsets, colWidths, colOffsets,
+      LANE_STRIP, PROC_HDR, COL_HDR_H,
+      laneIds: lanes.map(l=>l.id), colIds: columns.map(c=>c.id),
       sPos, svgW, svgH, procId: proc.id };
     _applyProcZoom();
     _initProcDrag();
