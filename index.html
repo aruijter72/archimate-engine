@@ -14254,19 +14254,24 @@ function renderProcPreview() {
   } else {
     // ── Flow mode: auto-layout via toposort ──────────────────────
     const COL_W = proc.colW || 160, MARGIN = 22;
-    LANE_H = proc.laneH ? Math.max(STEP_H + 16, proc.laneH) : 110;
+
+    // Per-lane heights + cumulative offsets
+    const defLHf = proc.laneH ? Math.max(STEP_H + 16, proc.laneH) : 110;
+    const laneHeights = lanes.map(l => l.height ? Math.max(STEP_H + 16, l.height) : defLHf);
+    const laneOffsets = []; let yAccF = PROC_HDR;
+    laneHeights.forEach(h => { laneOffsets.push(yAccF); yAccF += h; });
+    svgH = yAccF;
 
     const colMap = procColMap(steps, flows);
     const maxCol = steps.length ? Math.max(...steps.map(s => colMap[s.id])) : 0;
     svgW = LANE_STRIP + MARGIN + (maxCol+1)*COL_W + MARGIN;
-    svgH = PROC_HDR + numLanes * LANE_H;
 
     steps.forEach(s => {
-      const li = laneIdx[s.laneId]; if (li === undefined) return; // skip unassigned steps
+      const li = laneIdx[s.laneId]; if (li === undefined) return;
       const col = colMap[s.id];
       sPos[s.id] = {
         cx: LANE_STRIP + MARGIN + col*COL_W + STEP_W/2,
-        cy: PROC_HDR + li*LANE_H + LANE_H/2
+        cy: laneOffsets[li] + laneHeights[li] / 2
       };
     });
 
@@ -14277,14 +14282,22 @@ function renderProcPreview() {
     <rect width="${svgW}" height="${PROC_HDR}" fill="#f5f5f8" stroke="#e0e0e8" stroke-width="1"/>
     <text x="${svgW/2}" y="${PROC_HDR/2+5}" text-anchor="middle" font-size="12" font-weight="700" fill="#3a2a00">${esc(proc.name||'Unnamed Process')}</text>`;
 
-    for (let i = 0; i < numLanes; i++) {
-      const y = PROC_HDR + i*LANE_H;
-      svg += `<rect x="0" y="${y}" width="${svgW}" height="${LANE_H}" fill="${PV_LANE_COLORS2[i%PV_LANE_COLORS2.length]}" stroke="#e8e8ee" stroke-width="1"/>`;
-      svg += `<rect x="0" y="${y}" width="${LANE_STRIP}" height="${LANE_H}" fill="#f0f0f5" stroke="#dcdce8" stroke-width="1"/>`;
-      const lname = lanes[i]?.name || `Lane ${i+1}`;
+    for (let li = 0; li < numLanes; li++) {
+      const y = laneOffsets[li], h = laneHeights[li];
+      svg += `<rect x="0" y="${y}" width="${svgW}" height="${h}" fill="${PV_LANE_COLORS2[li%PV_LANE_COLORS2.length]}" stroke="#e8e8ee" stroke-width="1"/>`;
+      svg += `<rect x="0" y="${y}" width="${LANE_STRIP}" height="${h}" fill="#f0f0f5" stroke="#dcdce8" stroke-width="1"/>`;
+      const lname = lanes[li]?.name || `Lane ${li+1}`;
       const _ll2 = _svgLaneLines(lname, 18);
-      const _ll2H = 13, _ll2Y = y + LANE_H/2 - (_ll2.length-1)*_ll2H/2;
+      const _ll2H = 13, _ll2Y = y + h/2 - (_ll2.length-1)*_ll2H/2 - 9;
       _ll2.forEach((ln,ii) => { svg += `<text x="${LANE_STRIP/2}" y="${_ll2Y+ii*_ll2H}" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="600" fill="#555">${esc(ln)}</text>`; });
+      // ± height controls at bottom of lane strip
+      const lId = lanes[li]?.id, hasOvr = !!(lanes[li]?.height);
+      const btnY = y + h - 18, btnH = 14, btnW = 16;
+      const bx1 = Math.round((LANE_STRIP - 38) / 2);
+      const bx2 = bx1 + btnW + 6;
+      svg += `<g onclick="setLaneHeight('${lId}',-20)" style="cursor:pointer"><rect x="${bx1}" y="${btnY}" width="${btnW}" height="${btnH}" rx="2" fill="rgba(0,0,0,.07)" stroke="rgba(0,0,0,.14)" stroke-width="0.7"/><text x="${bx1+btnW/2}" y="${btnY+btnH/2+1}" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="700" fill="#444">−</text></g>`;
+      svg += `<g onclick="setLaneHeight('${lId}',+20)" style="cursor:pointer"><rect x="${bx2}" y="${btnY}" width="${btnW}" height="${btnH}" rx="2" fill="rgba(0,0,0,.07)" stroke="rgba(0,0,0,.14)" stroke-width="0.7"/><text x="${bx2+btnW/2}" y="${btnY+btnH/2+1}" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="700" fill="#444">+</text></g>`;
+      if (hasOvr) svg += `<text x="${bx1+btnW+3}" y="${btnY+btnH/2+1}" text-anchor="middle" dominant-baseline="middle" font-size="8.5" fill="#c9a355" style="cursor:pointer" onclick="setLaneHeight('${lId}',0)">↺</text>`;
     }
     svg += `<line x1="${LANE_STRIP}" y1="${PROC_HDR}" x2="${LANE_STRIP}" y2="${svgH}" stroke="#ccc" stroke-width="1"/>`;
 
@@ -14297,8 +14310,10 @@ function renderProcPreview() {
       ? `<div style="font-size:.73rem;color:var(--muted);margin-top:.4rem;padding:0 .25rem">
            ⚠ ${unassigned} step${unassigned>1?'s':''} not shown — assign a lane in the Steps table above.
          </div>` : '') + `</div>`;
-    _procLayout = { hasColumns: false, LANE_H, LANE_STRIP, PROC_HDR, COL_HDR_H: 0,
-      COL_W: 160, laneIds: lanes.map(l=>l.id), colIds: [],
+    _procLayout = { hasColumns: false, laneHeights, laneOffsets,
+      colWidths: [], colOffsets: [],
+      LANE_STRIP, PROC_HDR, COL_HDR_H: 0,
+      laneIds: lanes.map(l=>l.id), colIds: [],
       sPos, svgW, svgH, procId: proc.id };
     _applyProcZoom();
     _initProcDrag();
