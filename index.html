@@ -9762,11 +9762,34 @@ function _renderQWiz(){
   const s=_QW.screen;
   let bodyHtml='', footHtml='', sectionTxt='';
 
+  // Auto-save draft (except on welcome/resume/review-complete)
+  if(s!=='welcome'&&s!=='resume') _qwizSaveDraft();
+
+  // Inline error banner (cleared after each render)
+  const errHtml=_QW._err?`<div style="background:rgba(200,60,60,.18);border:1px solid rgba(200,60,60,.5);border-radius:7px;padding:.5rem .8rem;margin-bottom:.8rem;font-size:.83rem;color:#f88;display:flex;align-items:center;gap:.5rem"><span>⚠</span>${_qEsc(_QW._err)}</div>`:'' ;
+  const showErr=(msg)=>{_QW._err=msg;_renderQWiz();};
+  _QW._err=''; // reset for next render
+
   const backB=`<button class="btn btn-secondary" onclick="_qwizBack()" style="margin-right:auto">${_qT('← Back','← Terug')}</button>`;
   const nextB=(lbl)=>`<button class="btn" onclick="_qwizNext()">${lbl||_qT('Next →','Volgende →')}</button>`;
   const skipA=(lbl)=>`<a class="qwiz-skip-link" onclick="_qwizSkip()">${lbl||_qT('Skip','Overslaan')}</a>`;
 
-  if(s==='welcome'){
+  if(s==='resume'){
+    const rd=_QW._resumeData||{};
+    const NLr=rd.lang==='nl';
+    sectionTxt=NLr?'Concept gevonden':'Draft found';
+    bodyHtml=`<div class="qwiz-welcome">
+      <div class="qwiz-welcome-icon">💾</div>
+      <div class="qwiz-welcome-title">${NLr?'Doorgaan met concept?':'Resume your draft?'}</div>
+      <div class="qwiz-welcome-desc">${NLr
+        ?`Je hebt een onvoltooid concept voor <strong style="color:var(--gold)">${_qEsc(rd.procName)}</strong> met ${rd.steps?.length||0} stap(pen). Wil je doorgaan?`
+        :`You have an unfinished draft for <strong style="color:var(--gold)">${_qEsc(rd.procName)}</strong> with ${rd.steps?.length||0} step(s). Resume where you left off?`
+      }</div>
+    </div>`;
+    footHtml=`<button class="btn btn-secondary" onclick="_qwizClearDraft();_qwizOpenFresh()" style="margin-right:auto">${NLr?'Nieuw starten':'Start fresh'}</button>
+      <button class="btn" onclick="_qwizResumeFrom()">${NLr?'Doorgaan →':'Resume →'}</button>`;
+
+  } else if(s==='welcome'){
     sectionTxt=_qT('Process Questionnaire','Procesvragenlijst');
     bodyHtml=`<div class="qwiz-welcome">
       <div class="qwiz-welcome-icon">📋</div>
@@ -9971,7 +9994,7 @@ function _renderQWiz(){
     footHtml=`${backB}`;
   }
 
-  bEl.innerHTML=bodyHtml;
+  bEl.innerHTML=errHtml+bodyHtml;
   fEl.innerHTML=footHtml;
   document.getElementById('qwiz-section-lbl').textContent=sectionTxt;
   const firstInp=bEl.querySelector('input.qwiz-input, textarea.qwiz-input');
