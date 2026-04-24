@@ -9717,27 +9717,10 @@ function _qwizClearDraft(){ try{ localStorage.removeItem(_QW_LS_KEY); }catch(e){
 function showQWiz() {
   const saved = (() => { try{ const s=localStorage.getItem(_QW_LS_KEY); return s?JSON.parse(s):null; }catch(e){return null;} })();
   if(saved && saved.procName) {
-    // Offer to resume
-    showConfirm(
-      saved.lang==='nl'?'Doorgaan met concept?':'Resume draft?',
-      saved.lang==='nl'
-        ?`Je hebt een onvoltooid concept voor "${saved.procName}". Wil je doorgaan?`
-        :`You have an unfinished draft for "${saved.procName}". Resume where you left off?`,
-      saved.lang==='nl'?'Doorgaan':'Resume',
-      false,
-      ()=>{
-        Object.assign(_QW, saved, {_err:''});
-        document.getElementById('qwizModal').style.display='flex';
-        _renderQWiz();
-      }
-    );
-    // Also set up "start fresh" via cancel — override cancel callback temporarily
-    const origCancel = window._confirmCancelCb;
-    window._confirmCancelCb = ()=>{
-      window._confirmCancelCb = origCancel;
-      _qwizClearDraft();
-      _qwizOpenFresh();
-    };
+    // Show resume screen inside the wizard
+    Object.assign(_QW,{lang:currentLang||'en',screen:'resume',_err:'',_resumeData:saved});
+    document.getElementById('qwizModal').style.display='flex';
+    _renderQWiz();
     return;
   }
   _qwizOpenFresh();
