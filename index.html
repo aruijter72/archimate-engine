@@ -14815,12 +14815,11 @@ function _onProcDragMove(e) {
 
     // Highlight target lane
     const li = _laneIdxFromY(pt.y);
-    const { PROC_HDR, COL_HDR_H, LANE_H, LANE_STRIP, svgW, laneIds } = _procLayout;
+    const { LANE_STRIP, svgW, laneIds, laneOffsets, laneHeights } = _procLayout;
     if (li >= 0 && li < laneIds.length) {
-      const hy = PROC_HDR + COL_HDR_H + li * LANE_H;
       const hl = _procDrag.hl;
-      hl.setAttribute('x', LANE_STRIP); hl.setAttribute('y', hy);
-      hl.setAttribute('width', svgW - LANE_STRIP); hl.setAttribute('height', LANE_H);
+      hl.setAttribute('x', LANE_STRIP); hl.setAttribute('y', laneOffsets[li]);
+      hl.setAttribute('width', svgW - LANE_STRIP); hl.setAttribute('height', laneHeights[li]);
       hl.removeAttribute('display');
     } else {
       _procDrag.hl.setAttribute('display','none');
@@ -14882,7 +14881,7 @@ function _onProcDragEnd(e) {
   if (drag.type === 'step') {
     const step = proc.steps.find(s => s.id === drag.id); if (!step) return;
     const pt   = _procSvgPt(e);
-    const { laneIds, colIds, hasColumns, LANE_H, LANE_STRIP, COL_W, PROC_HDR, COL_HDR_H } = _procLayout;
+    const { laneIds, colIds, hasColumns } = _procLayout;
 
     const li = _laneIdxFromY(pt.y);
     if (li >= 0 && li < laneIds.length) step.laneId = laneIds[li];
