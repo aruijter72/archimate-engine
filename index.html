@@ -10306,9 +10306,11 @@ function _buildModelFromTemplate(d) {
     return r;
   };
 
-  // Split a free-text field into individual names on commas/semicolons/slashes
-  const splitNames = str =>
-    (str || '').split(/[,;\/]/).map(s => s.trim()).filter(Boolean);
+  // Split a free-text field (or array) into individual names
+  const splitNames = str => {
+    if (Array.isArray(str)) return str.filter(Boolean);
+    return (str || '').split(/[,;\/]/).map(s => s.trim()).filter(Boolean);
+  };
 
   // De-duplicate: only create one element per unique name per type
   const elemCache = {}; // `${layer}|${type}|${name}` → el
