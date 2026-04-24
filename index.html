@@ -10014,6 +10014,13 @@ function _renderQWiz(){
   bEl.innerHTML=errHtml+bodyHtml;
   fEl.innerHTML=footHtml;
   document.getElementById('qwiz-section-lbl').textContent=sectionTxt;
+  // Suppress password-manager suggestions on every wizard input
+  bEl.querySelectorAll('input, textarea').forEach(el => {
+    el.setAttribute('autocomplete','off');
+    el.setAttribute('data-lpignore','true');
+    el.setAttribute('data-1p-ignore','');
+    el.setAttribute('data-bwignore','true');
+  });
   const firstInp=bEl.querySelector('input.qwiz-input, textarea.qwiz-input');
   if(firstInp) setTimeout(()=>firstInp.focus(),80);
 }
