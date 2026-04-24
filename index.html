@@ -14673,13 +14673,19 @@ function _procSvgPt(e) {
 
 function _laneIdxFromY(y) {
   if (!_procLayout) return -1;
-  const { PROC_HDR, COL_HDR_H, LANE_H } = _procLayout;
-  return Math.floor((y - PROC_HDR - COL_HDR_H) / LANE_H);
+  const { laneOffsets, laneHeights } = _procLayout;
+  for (let i = 0; i < laneOffsets.length; i++) {
+    if (y >= laneOffsets[i] && y < laneOffsets[i] + laneHeights[i]) return i;
+  }
+  return -1;
 }
 function _colIdxFromX(x) {
   if (!_procLayout) return -1;
-  const { LANE_STRIP, COL_W } = _procLayout;
-  return Math.floor((x - LANE_STRIP) / COL_W);
+  const { colOffsets, colWidths } = _procLayout;
+  for (let i = 0; i < colOffsets.length; i++) {
+    if (x >= colOffsets[i] && x < colOffsets[i] + colWidths[i]) return i;
+  }
+  return -1;
 }
 
 // Attach drag listeners after SVG is injected into DOM
