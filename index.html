@@ -10149,8 +10149,8 @@ function _qwizSaveStep(){
 // ── Final build ───────────────────────────────────────────────
 function _qwizBuild(){
   const NL=_QW.lang==='nl';
-  if(!_QW.procName){ showAlert(NL?'Procesnaam is vereist.':'Process name is required.'); return; }
-  if(!_QW.steps.length){ showAlert(NL?'Voeg minstens één stap toe.':'Please add at least one step.'); return; }
+  if(!_QW.procName){ _QW._err=NL?'Procesnaam is vereist.':'Process name is required.'; _renderQWiz(); return; }
+  if(!_QW.steps.length){ _QW._err=NL?'Voeg minstens één stap toe.':'Please add at least one step.'; _renderQWiz(); return; }
   const allSys=[...new Set([..._QW.steps.map(st=>st.system).filter(Boolean),..._QW.addSystems])];
   const allRoles=[...new Set([..._QW.roles,..._QW.steps.map(st=>st.who).filter(Boolean)])];
   const payload={
@@ -10159,17 +10159,17 @@ function _qwizBuild(){
     roles:allRoles, steps:_QW.steps, addSystems:allSys,
     sysConn:_QW.sysConn, infra:_QW.infra
   };
-  const msg=NL
-    ?`${_QW.steps.length} stap(pen) gevonden. Dit vervangt het huidige model.`
-    :`${_QW.steps.length} step(s) found. This will replace your current model.`;
+  _qwizClearDraft(); // draft no longer needed
   hideQWiz();
-  showConfirm(
-    NL?`Model bouwen: "${_QW.procName}"?`:`Build model: "${_QW.procName}"?`,
-    msg,
-    NL?'Bouwen':'Build',
-    false,
-    ()=>_buildModelFromTemplate(payload)
-  );
+  _buildModelFromTemplate(payload); // Review screen IS the confirmation — no double-confirm
+}
+
+// ── Resume from saved draft ───────────────────────────────────
+function _qwizResumeFrom(){
+  const rd=_QW._resumeData;
+  if(!rd) return;
+  Object.assign(_QW, rd, {_err:'', _resumeData:null});
+  _renderQWiz();
 }
 
 // ══════════════════════════════════════════════════════════════
