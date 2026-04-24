@@ -9698,12 +9698,53 @@ const _QW = {
   lang:'en', screen:'welcome',
   procName:'', procDesc:'', procTrigger:'', procEnd:'', procOwner:'',
   roles:[], steps:[], _si:0, _ss:0, _stepDraft:null,
-  addSystems:[], sysConn:'', infra:''
+  addSystems:[], sysConn:'', infra:'', _err:''
 };
+const _QW_LS_KEY = 'architise_qwiz_draft';
+
+function _qwizSaveDraft(){
+  try {
+    const snap={lang:_QW.lang,screen:_QW.screen,procName:_QW.procName,procDesc:_QW.procDesc,
+      procTrigger:_QW.procTrigger,procEnd:_QW.procEnd,procOwner:_QW.procOwner,
+      roles:[..._QW.roles],steps:[..._QW.steps],_si:_QW._si,_ss:_QW._ss,
+      _stepDraft:_QW._stepDraft?{..._QW._stepDraft}:null,
+      addSystems:[..._QW.addSystems],sysConn:_QW.sysConn,infra:_QW.infra};
+    localStorage.setItem(_QW_LS_KEY, JSON.stringify(snap));
+  } catch(e){}
+}
+function _qwizClearDraft(){ try{ localStorage.removeItem(_QW_LS_KEY); }catch(e){} }
 
 function showQWiz() {
+  const saved = (() => { try{ const s=localStorage.getItem(_QW_LS_KEY); return s?JSON.parse(s):null; }catch(e){return null;} })();
+  if(saved && saved.procName) {
+    // Offer to resume
+    showConfirm(
+      saved.lang==='nl'?'Doorgaan met concept?':'Resume draft?',
+      saved.lang==='nl'
+        ?`Je hebt een onvoltooid concept voor "${saved.procName}". Wil je doorgaan?`
+        :`You have an unfinished draft for "${saved.procName}". Resume where you left off?`,
+      saved.lang==='nl'?'Doorgaan':'Resume',
+      false,
+      ()=>{
+        Object.assign(_QW, saved, {_err:''});
+        document.getElementById('qwizModal').style.display='flex';
+        _renderQWiz();
+      }
+    );
+    // Also set up "start fresh" via cancel — override cancel callback temporarily
+    const origCancel = window._confirmCancelCb;
+    window._confirmCancelCb = ()=>{
+      window._confirmCancelCb = origCancel;
+      _qwizClearDraft();
+      _qwizOpenFresh();
+    };
+    return;
+  }
+  _qwizOpenFresh();
+}
+function _qwizOpenFresh(){
   Object.assign(_QW,{
-    lang:currentLang||'en', screen:'welcome',
+    lang:currentLang||'en', screen:'welcome', _err:'',
     procName:'',procDesc:'',procTrigger:'',procEnd:'',procOwner:'',
     roles:[],steps:[],_si:0,_ss:0,_stepDraft:null,addSystems:[],sysConn:'',infra:''
   });
