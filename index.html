@@ -10034,13 +10034,13 @@ function _qwizNext(){
   const s=_QW.screen;
   const NL=_QW.lang==='nl';
   if(s==='procName'&&!_QW.procName){
-    showAlert(NL?'Vul een procesnaam in.':'Please enter a process name.'); return;
+    _QW._err=NL?'Vul een procesnaam in.':'Please enter a process name.'; _renderQWiz(); return;
   }
   if(s==='stepSub'&&_QW._ss===0&&!_QW._stepDraft?.what){
-    showAlert(NL?'Beschrijf de activiteit.':'Please describe the step activity.'); return;
+    _QW._err=NL?'Beschrijf de activiteit.':'Please describe the step activity.'; _renderQWiz(); return;
   }
   if(s==='stepSub'&&_QW._ss===5&&!_QW._stepDraft?.decision){
-    showAlert(NL?'Kies ja of nee.':'Please choose yes or no.'); return;
+    _QW._err=NL?'Kies ja of nee.':'Please choose yes or no.'; _renderQWiz(); return;
   }
   const BASE=['welcome','procName','procDesc','procTrigger','procEnd','procOwner','roles','stepIntro'];
   const TAIL=['addSystems','sysConn','infra','review'];
