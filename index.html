@@ -9766,9 +9766,8 @@ function _renderQWiz(){
   if(s!=='welcome'&&s!=='resume') _qwizSaveDraft();
 
   // Inline error banner (cleared after each render)
-  const errHtml=_QW._err?`<div style="background:rgba(200,60,60,.18);border:1px solid rgba(200,60,60,.5);border-radius:7px;padding:.5rem .8rem;margin-bottom:.8rem;font-size:.83rem;color:#f88;display:flex;align-items:center;gap:.5rem"><span>⚠</span>${_qEsc(_QW._err)}</div>`:'' ;
-  const showErr=(msg)=>{_QW._err=msg;_renderQWiz();};
-  _QW._err=''; // reset for next render
+  const errHtml=_QW._err?`<div style="background:rgba(200,60,60,.18);border:1px solid rgba(200,60,60,.5);border-radius:7px;padding:.5rem .8rem;margin-bottom:.8rem;font-size:.83rem;color:#f88;display:flex;align-items:center;gap:.5rem"><span>⚠</span>${_qEsc(_QW._err)}</div>`:'';
+  _QW._err=''; // reset after capturing for this render
 
   const backB=`<button class="btn btn-secondary" onclick="_qwizBack()" style="margin-right:auto">${_qT('← Back','← Terug')}</button>`;
   const nextB=(lbl)=>`<button class="btn" onclick="_qwizNext()">${lbl||_qT('Next →','Volgende →')}</button>`;
