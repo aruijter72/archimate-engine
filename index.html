@@ -2328,13 +2328,19 @@
       <button class="menu-trigger" id="menu-gfile-btn" onclick="toggleMenu('gfile')">
         📁 <span id="gmenu-file-label">File</span> <span style="font-size:.62rem;opacity:.65">▾</span>
       </button>
-      <div class="menu-dropdown" id="menu-gfile-dd" style="min-width:380px;padding:.25rem 0">
+      <div class="menu-dropdown" id="menu-gfile-dd" style="min-width:400px;padding:.25rem 0">
+        <!-- Questionnaire top section — spans both columns -->
+        <div style="padding:.3rem .55rem .2rem;border-bottom:1px solid var(--border);margin-bottom:.2rem">
+          <div class="mi-section-head" id="gfile-sec-qwiz" style="color:var(--gold)">Questionnaire</div>
+          <div style="display:flex;gap:.3rem;flex-wrap:wrap;padding:.1rem 0 .3rem">
+            <button class="mi-btn gold" style="flex:1;min-width:120px" onclick="showQWiz();closeMenus()">🧙 <span id="g-qwiz-lbl">Wizard…</span></button>
+            <button class="mi-btn" style="flex:1;min-width:120px" onclick="triggerImportExcelTemplate();closeMenus()">📊 <span id="g-excel-import-lbl">Import Excel…</span></button>
+            <button class="mi-btn" style="flex:1;min-width:120px" onclick="downloadExcelTemplate();closeMenus()">⬇ <span id="g-excel-dl-lbl">Download template</span></button>
+          </div>
+        </div>
         <div class="gfile-columns">
           <div class="gfile-col">
-            <div class="mi-section-head" id="gfile-sec-archi">Archi</div>
-            <button class="mi-btn gold" onclick="showQWiz();closeMenus()">🧙 <span id="g-qwiz-lbl">Questionnaire Wizard…</span></button>
-            <button class="mi-btn" onclick="triggerImportExcelTemplate();closeMenus()">📊 <span id="g-excel-import-lbl">Import Excel Questionnaire…</span></button>
-            <button class="mi-btn" onclick="downloadExcelTemplate();closeMenus()">⬇ <span id="g-excel-dl-lbl">Download Excel Template</span></button>
+            <div class="mi-section-head" id="gfile-sec-archi">ArchiMate</div>
             <button class="mi-btn" onclick="showTemplates();closeMenus()">📋 <span id="g-templates-lbl">Templates</span></button>
             <div class="mi-sep"></div>
             <button class="mi-btn danger" onclick="newModel();closeMenus()">🆕 <span id="g-newmodel-lbl">New Model</span></button>
