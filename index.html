@@ -9826,7 +9826,7 @@ function _renderQWiz(){
       <div class="qwiz-question">${_qT('What is the name of this process?','Wat is de naam van dit proces?')}</div>
       <div class="qwiz-hint">${_qT('e.g. Order-to-Cash, Invoice Processing, Employee Onboarding','bv. Order-to-Cash, Factuurverwerking, Werknemer Onboarding')}</div>
       <input class="qwiz-input" id="qw-v" type="text" placeholder="${_qT('Process name…','Procesnaam…')}" value="${_qEsc(_QW.procName)}" onkeydown="if(event.key==='Enter')_qwizNext()">`;
-    footHtml=`${backB}${nextB()}`;
+    footHtml=`${backB}${noSkip}${nextB()}`;
 
   } else if(s==='procDesc'){
     sectionTxt=_qT('1/5 — Process Overview','1/5 — Procesoverzicht');
@@ -9872,7 +9872,7 @@ function _renderQWiz(){
         </div>
         <div class="qwiz-items-list">${rolesHtml||`<span style="font-size:.8rem;color:var(--muted)">${_qT('No roles yet — you can also skip','Nog geen rollen — je kunt ook overslaan')}</span>`}</div>
       </div>`;
-    footHtml=`${backB}${_QW.roles.length===0?skipA(_qT('Skip','Overslaan')):''}${nextB()}`;
+    footHtml=`${backB}${_QW.roles.length===0?skipA(_qT('Skip','Overslaan')):noSkip}${nextB()}`;
 
   } else if(s==='stepIntro'){
     sectionTxt=_qT('3/5 — Steps','3/5 — Stappen');
@@ -9936,7 +9936,7 @@ function _renderQWiz(){
         <textarea class="qwiz-input qwiz-textarea" id="qw-v" rows="3" placeholder="${_qT('Outcome 1, Outcome 2…','Uitkomst 1, Uitkomst 2…')}">${_qEsc(dr.outcomes||'')}</textarea>`;
     }
     const showDecSkip=sub===5&&!dr.decision;
-    footHtml=`${backB}${showDecSkip?skipA(_qT('No decision','Geen beslissing')):''}${nextB()}`;
+    footHtml=`${backB}${showDecSkip?skipA(_qT('No decision','Geen beslissing')):noSkip}${nextB()}`;
 
   } else if(s==='stepMore'){
     sectionTxt=_qT('3/5 — Steps','3/5 — Stappen');
