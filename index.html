@@ -15100,16 +15100,16 @@ function renderProcTab() {
         <div class="proc-preview-header">
           <span class="proc-preview-label">${NL ? 'Voorbeeld' : 'Preview'} ${hasCols ? `<span style="font-size:.65rem;color:var(--proc-text);margin-left:.3rem">${NL ? 'rastermodus' : 'grid mode'}</span>` : ''}</span>
           <div class="proc-zoom-controls" style="gap:.25rem">
-            <span style="font-size:.62rem;color:var(--muted);margin-right:.1rem">${NL ? 'Rijhoogte' : 'Row H'}</span>
-            <button class="proc-zoom-btn" onclick="setProcLaneH(-${LANE_H_STEP})" title="${NL ? 'Rijhoogte verkleinen' : 'Decrease row height'}">−</button>
+            <span style="font-size:.62rem;color:var(--muted);margin-right:.1rem" title="${NL ? 'Standaard rijhoogte (per-rijstrook overschrijfbaar links)' : 'Default row height (overridable per lane on the left)'}">${NL ? 'Rijhoogte ↕' : 'Row H ↕'}</span>
+            <button class="proc-zoom-btn" onclick="setProcLaneH(-${LANE_H_STEP})" title="${NL ? 'Standaard rijhoogte verkleinen' : 'Decrease default row height'}">−</button>
             <span class="proc-zoom-pct" id="proc-laneh-lbl" style="${proc?.laneH ? 'color:var(--gold)' : ''}">${proc?.laneH ? proc.laneH+'px' : 'auto'}</span>
-            <button class="proc-zoom-btn" onclick="setProcLaneH(+${LANE_H_STEP})" title="${NL ? 'Rijhoogte vergroten' : 'Increase row height'}">+</button>
+            <button class="proc-zoom-btn" onclick="setProcLaneH(+${LANE_H_STEP})" title="${NL ? 'Standaard rijhoogte vergroten' : 'Increase default row height'}">+</button>
             <button class="proc-zoom-btn" onclick="resetProcLaneH()" title="${NL ? 'Automatisch' : 'Auto'}" style="width:auto;padding:0 .3rem;font-size:.6rem">⊡</button>
             <span style="color:var(--border);margin:0 .15rem">│</span>
-            <span style="font-size:.62rem;color:var(--muted);margin-right:.1rem">${NL ? 'Kol. breedte' : 'Col W'}</span>
-            <button class="proc-zoom-btn" onclick="setProcColW(-${COL_W_STEP})" title="${NL ? 'Kolombreedte verkleinen' : 'Decrease column width'}">−</button>
+            <span style="font-size:.62rem;color:var(--muted);margin-right:.1rem" title="${NL ? 'Standaard kolombreedte (per-kolom overschrijfbaar links)' : 'Default column width (overridable per column on the left)'}">${NL ? 'Kol. B ↔' : 'Col W ↔'}</span>
+            <button class="proc-zoom-btn" onclick="setProcColW(-${COL_W_STEP})" title="${NL ? 'Standaard kolombreedte verkleinen' : 'Decrease default column width'}">−</button>
             <span class="proc-zoom-pct" id="proc-colw-lbl" style="${proc?.colW ? 'color:var(--gold)' : ''}">${proc?.colW ? proc.colW+'px' : 'auto'}</span>
-            <button class="proc-zoom-btn" onclick="setProcColW(+${COL_W_STEP})" title="${NL ? 'Kolombreedte vergroten' : 'Increase column width'}">+</button>
+            <button class="proc-zoom-btn" onclick="setProcColW(+${COL_W_STEP})" title="${NL ? 'Standaard kolombreedte vergroten' : 'Increase default column width'}">+</button>
             <button class="proc-zoom-btn" onclick="resetProcColW()" title="${NL ? 'Automatisch' : 'Auto'}" style="width:auto;padding:0 .3rem;font-size:.6rem">⊡</button>
             <span style="color:var(--border);margin:0 .2rem">│</span>
             <button class="proc-zoom-btn" onclick="setProcZoom(-0.15)" title="${NL ? 'Uitzoomen' : 'Zoom out'}">−</button>
