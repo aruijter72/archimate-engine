@@ -3364,15 +3364,16 @@ function applyTranslations() {
   const _g = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
   _g('gmenu-file-label',       L === 'nl' ? 'Bestand' : 'File');
   _g('gmenu-tools-label',      'Tools');
-  _g('gfile-sec-archi',        'Archi');
+  _g('gfile-sec-archi',        L === 'nl' ? 'ArchiMate' : 'ArchiMate');
   _g('gfile-sec-swim',         'Swimlane');
+  _g('gfile-sec-qwiz',         L === 'nl' ? 'Vragenlijst' : 'Questionnaire');
   const gFileMap = {
     'g-wizard-lbl':            L === 'nl' ? 'Begeleid starten'          : 'Guided Start',
     'g-templates-lbl':         L === 'nl' ? 'Sjablonen'                 : 'Templates',
     'g-newmodel-lbl':          L === 'nl' ? 'Nieuw model'               : 'New Model',
-    'g-qwiz-lbl':              L === 'nl' ? 'Vragenlijstwizard…'           : 'Questionnaire Wizard…',
-    'g-excel-import-lbl':      L === 'nl' ? 'Importeer Excel-vragenlijst…' : 'Import Excel Questionnaire…',
-    'g-excel-dl-lbl':          L === 'nl' ? 'Download Excel-sjabloon'   : 'Download Excel Template',
+    'g-qwiz-lbl':              L === 'nl' ? 'Wizard…'                   : 'Wizard…',
+    'g-excel-import-lbl':      L === 'nl' ? 'Excel importeren…'         : 'Import Excel…',
+    'g-excel-dl-lbl':          L === 'nl' ? 'Sjabloon downloaden'       : 'Download template',
     'g-openjson-lbl':          L === 'nl' ? 'JSON openen…'              : 'Open JSON…',
     'g-import-am-lbl':         L === 'nl' ? 'Importeer .archimate…'     : 'Import .archimate…',
     'g-savejson-lbl':          L === 'nl' ? 'JSON opslaan'              : 'Save JSON',
