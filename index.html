@@ -14044,6 +14044,30 @@ function resetProcLaneH() {
   renderProcPreview();
   _updateLaneHLabel();
 }
+// ── Per-lane / per-column individual sizing ───────────────────
+function setLaneHeight(laneId, delta) {
+  const proc = getActiveProc(); if (!proc) return;
+  const lane = proc.lanes.find(l => l.id === laneId); if (!lane) return;
+  if (delta === 0) {
+    lane.height = null; // reset to auto
+  } else {
+    const current = lane.height || proc.laneH || _autoLaneH(proc);
+    lane.height = Math.min(LANE_H_MAX, Math.max(LANE_H_MIN, current + delta));
+  }
+  renderProcEditor();
+}
+function setColWidth(colId, delta) {
+  const proc = getActiveProc(); if (!proc) return;
+  const col = proc.columns.find(c => c.id === colId); if (!col) return;
+  if (delta === 0) {
+    col.width = null; // reset to auto
+  } else {
+    const current = col.width || proc.colW || 150;
+    col.width = Math.min(COL_W_MAX, Math.max(COL_W_MIN, current + delta));
+  }
+  renderProcEditor();
+}
+
 function _autoLaneH(proc) {
   // Estimate the auto height without a full render pass
   if (!proc || !proc.steps) return 110;
