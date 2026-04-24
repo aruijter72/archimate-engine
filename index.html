@@ -9787,9 +9787,10 @@ function _renderQWiz(){
   const errHtml=_QW._err?`<div style="background:rgba(200,60,60,.18);border:1px solid rgba(200,60,60,.5);border-radius:7px;padding:.5rem .8rem;margin-bottom:.8rem;font-size:.83rem;color:#f88;display:flex;align-items:center;gap:.5rem"><span>⚠</span>${_qEsc(_QW._err)}</div>`:'';
   _QW._err=''; // reset after capturing for this render
 
-  const backB=`<button class="btn btn-secondary" onclick="_qwizBack()" style="margin-right:auto">${_qT('← Back','← Terug')}</button>`;
+  const backB=`<button class="btn btn-secondary" onclick="_qwizBack()">${_qT('← Back','← Terug')}</button>`;
   const nextB=(lbl)=>`<button class="btn" onclick="_qwizNext()">${lbl||_qT('Next →','Volgende →')}</button>`;
-  const skipA=(lbl)=>`<a class="qwiz-skip-link" onclick="_qwizSkip()">${lbl||_qT('Skip','Overslaan')}</a>`;
+  const skipA=(lbl)=>`<span style="flex:1;text-align:center"><a class="qwiz-skip-link" onclick="_qwizSkip()">${lbl||_qT('Skip','Overslaan')}</a></span>`;
+  const noSkip=`<span style="flex:1"></span>`;
 
   if(s==='resume'){
     const rd=_QW._resumeData||{};
