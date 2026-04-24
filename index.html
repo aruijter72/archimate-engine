@@ -14945,6 +14945,12 @@ function renderProcTab() {
                 </span>
                 <span style="font-size:.68rem;color:var(--muted);width:14px;text-align:right;flex-shrink:0">${i+1}</span>
                 <input class="elem-input" value="${esc(c.name)}" oninput="updateColumnName('${c.id}',this.value)" placeholder="${NL ? 'Kolomnaam (bijv. Fase 1)…' : 'Column name (e.g. Phase 1)…'}" style="flex:1">
+                <span style="display:flex;align-items:center;gap:1px;flex-shrink:0" title="${NL ? 'Kolombreedte' : 'Column width'}">
+                  <button class="proc-zoom-btn" onclick="setColWidth('${c.id}',-${COL_W_STEP})" style="width:16px;height:18px;font-size:.7rem">−</button>
+                  <span style="font-size:.6rem;width:30px;text-align:center;color:${c.width?'var(--gold)':'var(--muted)'}">${c.width?c.width+'px':'auto'}</span>
+                  <button class="proc-zoom-btn" onclick="setColWidth('${c.id}',+${COL_W_STEP})" style="width:16px;height:18px;font-size:.7rem">+</button>
+                  <button class="proc-zoom-btn" onclick="setColWidth('${c.id}',0)" title="${NL ? 'Automatisch' : 'Auto'}" style="width:14px;height:18px;font-size:.55rem;${c.width?'':'opacity:.35'}">⊡</button>
+                </span>
                 <button class="btn-del-sm" onclick="deleteColumn('${c.id}')" title="${NL ? 'Kolom verwijderen' : 'Remove column'}">×</button>
               </div>`).join('')}
         </div>
