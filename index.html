@@ -9936,10 +9936,9 @@ When confirmed, output ONLY this exact block — no other text before or after:
   "procOwner": "string — main responsible role",
   "roles": ["Role A", "Role B"],
   "steps": [
-    {"label": "short step name", "type": "start|task|decision|end|document", "role": "Role A", "column": "Phase (optional)"}
+    {"label": "short step name", "type": "start|task|decision|end|document", "role": "Role A", "system": "Application used at this step (optional, leave empty if none)"}
   ],
-  "addSystems": ["Application or System Name"],
-  "columns": ["Phase 1", "Phase 2"]
+  "addSystems": ["Application or System Name"]
 }
 </ARCHITISE_BUILD>
 
