@@ -976,6 +976,101 @@
       color: var(--gold); border-radius: 20px; font-size: .75rem; font-weight: 700;
       padding: .15rem .6rem; margin-bottom: .6rem;
     }
+    /* ── AI Process Conversation Guide ──────────────────────── */
+    .aipc-modal-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; width: calc(100vw - 2rem); max-width: 660px;
+      height: min(86vh, 700px); display: flex; flex-direction: column;
+      box-shadow: 0 28px 72px rgba(0,0,0,.65); overflow: hidden;
+    }
+    .aipc-header {
+      background: var(--navy,#0d1b2a); padding: .8rem 1.2rem;
+      border-bottom: 2px solid #7c5cbf; flex-shrink: 0;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .aipc-title { flex:1; font-size:.98rem; font-weight:800; color:#a78af5; letter-spacing:.02em; }
+    .aipc-hbtn {
+      background:none; border:none; color:var(--muted); font-size:1.1rem;
+      cursor:pointer; padding:.2rem .45rem; border-radius:5px; transition:all .15s;
+    }
+    .aipc-hbtn:hover { color:#fff; background:rgba(255,255,255,.09); }
+    .aipc-hbtn.active { color:#a78af5; }
+    .aipc-nokey {
+      padding:.65rem 1rem; background:rgba(220,140,30,.11);
+      border-bottom:1px solid rgba(220,140,30,.22);
+      font-size:.78rem; color:#e8a84a; flex-shrink:0;
+    }
+    .aipc-messages {
+      flex:1; overflow-y:auto; padding:1rem 1.1rem;
+      display:flex; flex-direction:column; gap:.65rem;
+    }
+    .aipc-msg { display:flex; gap:.55rem; animation:aipc-in .22s ease; }
+    .aipc-msg.user { flex-direction:row-reverse; }
+    @keyframes aipc-in { from{opacity:0;transform:translateY(7px)} to{opacity:1;transform:none} }
+    .aipc-av {
+      width:26px; height:26px; border-radius:50%; display:flex;
+      align-items:center; justify-content:center; font-size:.78rem;
+      flex-shrink:0; margin-top:3px;
+    }
+    .aipc-msg.ai  .aipc-av { background:rgba(167,138,245,.18); }
+    .aipc-msg.user .aipc-av { background:rgba(201,163,85,.18); }
+    .aipc-bubble {
+      max-width:82%; padding:.55rem .85rem; border-radius:13px;
+      font-size:.87rem; line-height:1.58; white-space:pre-wrap; word-break:break-word;
+    }
+    .aipc-msg.ai  .aipc-bubble {
+      background:rgba(167,138,245,.09); border:1px solid rgba(167,138,245,.22);
+      color:var(--white); border-top-left-radius:3px;
+    }
+    .aipc-msg.user .aipc-bubble {
+      background:rgba(201,163,85,.09); border:1px solid rgba(201,163,85,.24);
+      color:var(--white); border-top-right-radius:3px;
+    }
+    .aipc-typing { display:flex; align-items:center; gap:4px; padding:.3rem .5rem; }
+    .aipc-typing span {
+      width:7px; height:7px; background:#a78af5; border-radius:50%;
+      animation:aipc-bounce .85s infinite;
+    }
+    .aipc-typing span:nth-child(2){animation-delay:.2s}
+    .aipc-typing span:nth-child(3){animation-delay:.4s}
+    @keyframes aipc-bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+    .aipc-build-row {
+      padding:.6rem 1.1rem; background:rgba(50,185,100,.08);
+      border-top:1px solid rgba(50,185,100,.22);
+      display:flex; align-items:center; gap:.65rem; flex-shrink:0;
+    }
+    .aipc-build-lbl { flex:1; font-size:.78rem; color:#6ee7a0; }
+    .aipc-input-row {
+      padding:.65rem .9rem; border-top:1px solid var(--border);
+      display:flex; gap:.45rem; align-items:flex-end; flex-shrink:0;
+    }
+    .aipc-mic {
+      width:36px; height:36px; border-radius:50%; border:1.5px solid var(--border);
+      background:var(--bg); color:var(--text2); font-size:.95rem; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:all .2s; flex-shrink:0;
+    }
+    .aipc-mic:hover { border-color:#a78af5; color:#a78af5; }
+    .aipc-mic.on {
+      background:rgba(220,50,50,.14); border-color:#ef6060; color:#ef6060;
+      animation:aipc-pulse .75s infinite;
+    }
+    @keyframes aipc-pulse{0%,100%{box-shadow:0 0 0 0 rgba(220,50,50,.3)}50%{box-shadow:0 0 0 7px rgba(220,50,50,0)}}
+    .aipc-tinput {
+      flex:1; background:var(--bg); border:1.5px solid var(--border);
+      border-radius:18px; color:var(--white); font-size:.88rem; font-family:inherit;
+      padding:.48rem 1rem; outline:none; transition:border-color .18s;
+      resize:none; min-height:36px; max-height:100px; line-height:1.45; overflow-y:auto;
+    }
+    .aipc-tinput:focus { border-color:#a78af5; }
+    .aipc-sendbtn {
+      width:36px; height:36px; border-radius:50%; border:none; background:#7c5cbf;
+      color:#fff; font-size:1rem; cursor:pointer; display:flex; align-items:center;
+      justify-content:center; transition:all .2s; flex-shrink:0;
+    }
+    .aipc-sendbtn:hover { background:#6b4bae; }
+    .aipc-sendbtn:disabled { background:var(--border); cursor:not-allowed; }
+
     /* ── Onboarding layers visual ────────────────────────────── */
     .onboard-layers { display: flex; flex-direction: column; gap: .5rem; margin: 1.1rem 0 1.25rem; }
     .onboard-layer {
