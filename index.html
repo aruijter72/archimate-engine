@@ -9942,7 +9942,7 @@ When confirmed, output ONLY this exact block — no other text before or after:
 }
 </ARCHITISE_BUILD>
 
-Step rules: first step must use type "start", last step must use type "end", branching points use "decision", regular work uses "task". Every step role must match a name from the roles array exactly. Only use "column" if clear phases exist. Keep step labels short (3-6 words max).
+Step rules: first step must use type "start", last step must use type "end", branching points use "decision", regular work uses "task". Every step role must exactly match a name from the roles array. Add "system" only when a specific application or tool is clearly used at that step — leave it out otherwise. Keep step labels short (3-6 words max). Do NOT include "column" in steps.
 
 Now greet the user warmly and ask them to describe in their own words the process they want to document.`;
 };
