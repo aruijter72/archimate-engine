@@ -2036,6 +2036,34 @@
   </div>
 </div>
 
+<!-- ── AI Process Conversation Guide ──────────────────────── -->
+<div id="aiProcModal" class="modal-overlay" style="z-index:3600;display:none">
+  <div class="aipc-modal-box">
+    <div class="aipc-header">
+      <span style="font-size:1.15rem;flex-shrink:0">🤖</span>
+      <span class="aipc-title" id="aipc-title">AI Process Guide</span>
+      <button class="aipc-hbtn active" id="aipc-tts-btn" onclick="_aipcToggleTTS()" title="Toggle AI voice">🔊</button>
+      <button class="aipc-hbtn" onclick="hideAIProc()" style="font-size:1.35rem;line-height:1;padding:.15rem .4rem">×</button>
+    </div>
+    <div id="aipc-nokey" class="aipc-nokey" style="display:none">
+      ⚠ No API key set. <a onclick="hideAIProc();showSettings()" style="color:var(--gold);cursor:pointer;text-decoration:underline">Add one in Settings →</a>
+    </div>
+    <div class="aipc-messages" id="aipc-messages"></div>
+    <div id="aipc-build-row" class="aipc-build-row" style="display:none">
+      <span class="aipc-build-lbl">✅ Ready to build your diagrams</span>
+      <button class="btn btn-secondary" onclick="_aipcReset()" style="font-size:.73rem;padding:.28rem .65rem">↺ Restart</button>
+      <button class="btn" onclick="_aipcDoBuild()" style="background:rgba(60,190,110,.85);border-color:rgba(60,190,110,.85);font-size:.84rem;padding:.4rem .9rem">⚡ Build now</button>
+    </div>
+    <div class="aipc-input-row" id="aipc-input-row">
+      <button class="aipc-mic" id="aipc-mic" onclick="_aipcToggleMic()" title="Speak your answer (Chrome/Edge)">🎤</button>
+      <textarea class="aipc-tinput" id="aipc-input" placeholder="Type your answer…" rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();_aipcSend()}"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+      <button class="aipc-sendbtn" id="aipc-send" onclick="_aipcSend()" title="Send">➤</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Settings Modal ──────────────────────────────────── -->
 <div id="settingsModal" class="modal-overlay" onclick="if(event.target===this)hideSettings()" style="z-index:3000">
   <div class="modal-box" style="max-width:500px">
