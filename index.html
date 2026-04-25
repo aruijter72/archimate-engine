@@ -10720,24 +10720,17 @@ function handleImportExcelTemplate(ev) {
         });
       }
 
-      // ── Section 4 — Systems & connections (rows 44-45) ────────
-      // Collect addSystems: B44 may be a comma-separated string OR a single name.
-      // Also scan B44-B48 in case the user put multiple systems on separate lines.
-      const addSystemParts = [];
-      for (let r = 44; r <= 48; r++) {
-        const v = rowVal(r, 'B'); if (!v) continue;
-        // Skip rows that look like long free-text connection descriptions
-        if (v.length < 60 && !v.toLowerCase().includes('sends') && !v.toLowerCase().includes('stuurt')) {
-          addSystemParts.push(v);
-        }
-      }
-      const addSystems = addSystemParts.join(', ') || cell('B44');
-      const sysConn    = cell('B45');
+      // ── Section 4 — Systems & connections (rows 44-45+) ──────────
+      // B44 = Q14 answer (extra systems); B45+ = Q15 answer (connection descriptions)
+      const addSystems = cell('B44');
+      const sysConnParts = [];
+      for (let r = 45; r <= 50; r++) { const v = rowVal(r, 'B'); if (v) sysConnParts.push(v); }
+      const sysConn = sysConnParts.join(' ');
 
       // ── Section 5 — Infrastructure (rows 52-60) ───────────────
-      // Scan for infrastructure entries (section header is at row 50, Q header at 51)
+      // Section header is row 50, question header row 51, answers start at row 52
       const infraParts = [];
-      for (let r = 52; r <= 60; r++) {
+      for (let r = 52; r <= 62; r++) {
         const v = rowVal(r, 'B'); if (v) infraParts.push(v);
       }
       const infra = infraParts.join('; ');
