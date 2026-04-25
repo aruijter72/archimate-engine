@@ -1957,10 +1957,11 @@
     <div style="margin:.9rem 0 .3rem;padding:.85rem 1.1rem;background:rgba(201,163,85,.07);border:1px solid rgba(201,163,85,.25);border-radius:10px;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
       <div style="flex:1;min-width:160px">
         <div style="font-size:.85rem;font-weight:700;color:var(--gold);margin-bottom:.2rem" id="ob-qband-title">📋 Build from Questionnaire</div>
-        <div style="font-size:.78rem;color:var(--text2)" id="ob-qband-desc">Answer a few questions — Architise generates both your ArchiMate model and swimlane diagram.</div>
+        <div style="font-size:.78rem;color:var(--text2)" id="ob-qband-desc">Describe your process — Architise generates your ArchiMate model and swimlane diagram.</div>
       </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button class="btn" id="ob-qwiz-btn" onclick="closeOnboard(); showQWiz()" style="font-size:.83rem;padding:.45rem .9rem">🧙 <span id="ob-qwiz-lbl">Wizard</span></button>
+        <button class="btn" id="ob-aiproc-btn" onclick="closeOnboard(); showAIProc()" style="font-size:.83rem;padding:.45rem .9rem">🤖 <span id="ob-aiproc-lbl">AI Guide</span></button>
+        <button class="btn btn-secondary" id="ob-qwiz-btn" onclick="closeOnboard(); showQWiz()" style="font-size:.83rem;padding:.45rem .9rem">🧙 <span id="ob-qwiz-lbl">Wizard</span></button>
         <button class="btn btn-secondary" id="ob-excel-import-btn" onclick="closeOnboard(); triggerImportExcelTemplate()" style="font-size:.83rem;padding:.45rem .9rem">📊 <span id="ob-excel-import-lbl">Import Excel</span></button>
         <button class="btn btn-secondary" id="ob-excel-dl-btn" onclick="downloadExcelTemplate()" style="font-size:.83rem;padding:.45rem .9rem">⬇ <span id="ob-excel-dl-lbl2">Download template</span></button>
       </div>
