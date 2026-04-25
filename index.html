@@ -7347,6 +7347,15 @@ function _reportStepsSVG(steps, sPos, STEP_W, STEP_H, STEP_R, ww, e2) {
       out += `<rect x="${cx-STEP_W/2}" y="${cy-STEP_H/2}" width="${STEP_W}" height="${STEP_H}" rx="5" fill="${c.fill}" stroke="${c.stroke}" stroke-width="1.5"/>`;
       ww(lbl,13).forEach((ln,li,a) => { out += `<text x="${cx}" y="${cy+(li-(a.length-1)/2)*12+4}" text-anchor="middle" font-size="10" font-weight="600" fill="${c.text}">${e2(ln)}</text>`; });
     }
+    // System badge
+    if (s.system) {
+      const sys = s.system.length > 18 ? s.system.slice(0, 16) + '…' : s.system;
+      const pW = Math.min(STEP_W - 4, sys.length * 5.8 + 14);
+      const shapeBottom = (s.type === 'start' || s.type === 'end') ? cy + STEP_R : cy + STEP_H / 2;
+      const pY = shapeBottom + 3, pX = cx - pW / 2;
+      out += `<rect x="${pX}" y="${pY}" width="${pW}" height="13" rx="6" fill="rgba(201,163,85,0.25)" stroke="rgba(201,163,85,0.7)" stroke-width="0.8"/>`;
+      out += `<text x="${cx}" y="${pY + 9}" text-anchor="middle" font-size="7.5" font-weight="600" fill="#7A5C00">${e2(sys)}</text>`;
+    }
     out += `</g>`;
   }
   return out;
