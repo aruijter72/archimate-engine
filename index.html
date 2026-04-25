@@ -10773,180 +10773,73 @@ function _buildModelFromTemplate(d) {
     return (str || '').split(/[,;\/]/).map(s => s.trim()).filter(Boolean);
   };
 
-  // De-duplicate: only create one element per unique name per type
-  const elemCache = {}; // `${layer}|${type}|${name}` → el
+  // Accept both AI format (label/role) and wizard format (what/who)
+  const stepLabel = s => (s.label || s.what || '').trim();
+  const stepRole  = s => (s.role  || s.who  || '').trim();
+  const stepSys   = s => (s.system || '').trim();
+  const stepType  = s => s.type || (s.decision === 'Y' || s.decision === 'J' ? 'decision' : 'task');
+
+  // De-duplicate elements by name
+  const elemCache = {};
   const getOrCreate = (layer, type, name, doc = '') => {
     const key = `${layer}|${type}|${name.toLowerCase()}`;
-    if (!elemCache[key]) elemCache[key] = addEl(layer, type, name, doc);
+    if (!elemCache[key]) {
+      const el = { id: mkId(), layer, type, name: name.slice(0, 120), documentation: doc, properties: [] };
+      newElems.push(el);
+      elemCache[key] = el;
+    }
     return elemCache[key];
   };
 
-  // ── 1. Main BusinessProcess ───────────────────────────────────
-  const mainProc = addEl('business', 'BusinessProcess', d.procName, d.procDesc);
+  // ── 1. Collect valid steps ────────────────────────────────────
+  const validSteps = (d.steps || []).filter(s => stepLabel(s));
 
-  // ── 2. Trigger → BusinessEvent ────────────────────────────────
-  let triggerEl = null;
-  if (d.procTrigger) {
-    triggerEl = addEl('business', 'BusinessEvent',
-      d.procTrigger.length > 80 ? d.procTrigger.slice(0, 77) + '…' : d.procTrigger,
-      d.procTrigger);
-    addRel('Triggering', triggerEl.id, mainProc.id);
-  }
+  // ── 2. Collect roles (from roles array + step roles) ─────────
+  const allRoleNames = new Set();
+  (d.roles || []).filter(Boolean).forEach(r => allRoleNames.add(r));
+  validSteps.forEach(s => { const r = stepRole(s); if (r) allRoleNames.add(r); });
+  if (d.procOwner && !allRoleNames.has(d.procOwner)) allRoleNames.add(d.procOwner);
 
-  // ── 3. Owner → BusinessActor ──────────────────────────────────
-  let ownerEl = null;
-  if (d.procOwner) {
-    ownerEl = getOrCreate('business', 'BusinessActor', d.procOwner);
-    addRel('Association', ownerEl.id, mainProc.id);
-  }
+  // ── 3. Collect systems ────────────────────────────────────────
+  const allSysNames = new Set();
+  splitNames(d.addSystems).forEach(n => allSysNames.add(n));
+  validSteps.forEach(s => { const sys = stepSys(s); if (sys) allSysNames.add(sys); });
 
-  // ── 4. Roles ──────────────────────────────────────────────────
-  // Collect all role names from Section 2 + step "who" fields
-  const allRoleNames = new Set(d.roles.filter(Boolean));
-  d.steps.forEach(s => { if (s.who) allRoleNames.add(s.who); });
-  const roleMap = {}; // name → el
+  // ── 4. Simple ArchiMate model: Process + Roles + Systems ─────
+  //   Goal: clean, readable — no per-step processes, no services, no data objects
+  const mainProc = addEl('business', 'BusinessProcess', d.procName || 'Process', d.procDesc || '');
+
+  const roleEls = {}; // name → el
   allRoleNames.forEach(name => {
-    roleMap[name] = getOrCreate('business', 'BusinessRole', name);
+    const el = getOrCreate('business', 'BusinessRole', name);
+    roleEls[name] = el;
+    addRel('AssignmentRelationship', el.id, mainProc.id);
   });
 
-  // ── 5. Application Components ─────────────────────────────────
-  const sysNames = new Set();
-  d.steps.forEach(s => splitNames(s.system).forEach(n => sysNames.add(n)));
-  splitNames(d.addSystems).forEach(n => sysNames.add(n));
-  const sysMap = {}; // name → el
-  sysNames.forEach(name => {
-    sysMap[name] = getOrCreate('application', 'ApplicationComponent', name);
+  const sysEls = {}; // name → el
+  allSysNames.forEach(name => {
+    const el = getOrCreate('application', 'ApplicationComponent', name);
+    sysEls[name] = el;
+    addRel('ServingRelationship', el.id, mainProc.id);
   });
 
-  // ── 6. Data Objects (shared across steps) ────────────────────
-  const dataMap = {}; // lowercase name → el
-  const getOrCreateData = name => {
-    const key = name.toLowerCase().slice(0, 60);
-    if (!dataMap[key]) dataMap[key] = getOrCreate('application', 'DataObject', name);
-    return dataMap[key];
-  };
-
-  // ── 7. Step elements + relationships ─────────────────────────
-  const stepElems = [];
-  d.steps.forEach((s, i) => {
-    if (!s.what) return;
-
-    // Step as BusinessProcess
-    const stepEl = addEl('business', 'BusinessProcess', s.what);
-    stepElems.push({ el: stepEl, step: s });
-
-    // Link to main process
-    addRel('Composition', mainProc.id, stepEl.id);
-
-    // Sequential flow from previous step
-    if (i > 0 && stepElems[i - 1]) {
-      addRel('Triggering', stepElems[i - 1].el.id, stepEl.id);
-    }
-
-    // Role → step assignment
-    if (s.who && roleMap[s.who]) {
-      addRel('Assignment', roleMap[s.who].id, stepEl.id);
-    }
-
-    // Systems used in this step
-    const stepSysNames = splitNames(s.system);
-    stepSysNames.forEach(sysName => {
-      const sysEl = sysMap[sysName]; if (!sysEl) return;
-      // Create an ApplicationService for this system's role in this step
-      const svcLabel = sysName + ' — ' + s.what.slice(0, 40);
-      const svcEl = addEl('application', 'ApplicationService', svcLabel);
-      addRel('Realization', sysEl.id, svcEl.id);
-      addRel('Serving', svcEl.id, stepEl.id);
-      if (s.who && roleMap[s.who]) addRel('Serving', sysEl.id, roleMap[s.who].id);
-    });
-
-    // Data in → DataObject (read)
-    if (s.dataIn) {
-      splitNames(s.dataIn).slice(0, 3).forEach(name => {
-        const doEl = getOrCreateData(name);
-        addRel('Association', doEl.id, stepEl.id);
-      });
-    }
-
-    // Data out → DataObject (write)
-    if (s.dataOut) {
-      splitNames(s.dataOut).slice(0, 3).forEach(name => {
-        const doEl = getOrCreateData(name);
-        addRel('Association', stepEl.id, doEl.id);
-      });
-    }
-  });
-
-  // ── 8. Cross-step system-to-system (derived from shared DataObjects) ──
-  // If DataObject D is "out" of a step using sysA and "in" to a step using sysB → Triggering A→B
-  const dataOutSys = {}; // dataKey → [sysName]
-  d.steps.forEach(s => {
-    const sysList = splitNames(s.system);
-    if (s.dataOut) splitNames(s.dataOut).forEach(name => {
-      const k = name.toLowerCase().slice(0, 60);
-      if (!dataOutSys[k]) dataOutSys[k] = [];
-      sysList.forEach(sn => dataOutSys[k].push(sn));
-    });
-  });
-  d.steps.forEach(s => {
-    const sysList = splitNames(s.system);
-    if (s.dataIn) splitNames(s.dataIn).forEach(name => {
-      const k = name.toLowerCase().slice(0, 60);
-      (dataOutSys[k] || []).forEach(srcSys => {
-        sysList.forEach(tgtSys => {
-          if (srcSys !== tgtSys && sysMap[srcSys] && sysMap[tgtSys]) {
-            addRel('Triggering', sysMap[srcSys].id, sysMap[tgtSys].id);
-          }
-        });
-      });
-    });
-  });
-
-  // ── 9. Explicit system-to-system from Section 4 ───────────────
-  if (d.sysConn) {
-    const allSysNamesArr = Object.keys(sysMap);
-    const parts = d.sysConn.split(/[,.;]/).map(p => p.trim());
-    parts.forEach(part => {
-      const found = allSysNamesArr.filter(n =>
-        part.toLowerCase().includes(n.toLowerCase()));
-      if (found.length >= 2) {
-        addRel('Triggering', sysMap[found[0]].id, sysMap[found[1]].id);
-      }
-    });
-  }
-
-  // ── 10. Technology layer — only if infra described ───────────
-  if (d.infra) {
-    splitNames(d.infra).forEach(item => {
-      const nodeEl = addEl('technology', 'Node', item);
-      // Link to any system whose name appears in the infra description
-      Object.entries(sysMap).forEach(([sysName, sysEl]) => {
-        if (item.toLowerCase().includes(sysName.toLowerCase()) ||
-            sysName.toLowerCase().includes(item.toLowerCase().split(' ')[0])) {
-          addRel('Serving', nodeEl.id, sysEl.id);
-        }
-      });
-    });
-  }
-
-  // ── 11. Swimlane process ──────────────────────────────────────
-  const colId = mkId();
+  // ── 5. Swimlane — flow mode (no columns = left-to-right auto-layout) ──
   const swimProc = {
-    id: mkId(), name: d.procName,
+    id: mkId(), name: d.procName || 'Process',
     bsProcessId: null,
     documentation: d.procDesc || '',
-    columns: [{ id: colId, name: NL ? 'Procesverloop' : 'Process Flow' }],
+    columns: [],   // empty = flow mode; procColMap drives left-to-right layout
     lanes: [], steps: [], flows: []
   };
 
-  // Lanes: one per role (Section 2 + step roles), owner first
-  const laneMap = {}; // roleName → laneId
+  // Lanes: owner first, then roles, then any extra roles from steps
   const orderedRoles = [];
   if (d.procOwner && !orderedRoles.includes(d.procOwner)) orderedRoles.push(d.procOwner);
-  d.roles.forEach(r => { if (r && !orderedRoles.includes(r)) orderedRoles.push(r); });
-  d.steps.forEach(s => { if (s.who && !orderedRoles.includes(s.who)) orderedRoles.push(s.who); });
-  if (orderedRoles.length === 0) orderedRoles.push(d.procOwner || 'Team');
+  (d.roles || []).forEach(r => { if (r && !orderedRoles.includes(r)) orderedRoles.push(r); });
+  validSteps.forEach(s => { const r = stepRole(s); if (r && !orderedRoles.includes(r)) orderedRoles.push(r); });
+  if (orderedRoles.length === 0) orderedRoles.push(d.procOwner || (NL ? 'Team' : 'Team'));
 
+  const laneMap = {}; // roleName → laneId
   orderedRoles.forEach(name => {
     const lane = { id: mkId(), name };
     swimProc.lanes.push(lane);
@@ -10954,40 +10847,39 @@ function _buildModelFromTemplate(d) {
   });
   const defaultLaneId = swimProc.lanes[0].id;
 
-  // Steps
-  const swimStepIds = [];
-  stepElems.forEach(({ el: stepEl, step: s }) => {
-    const laneId = (s.who && laneMap[s.who]) || defaultLaneId;
-    const isDecision = s.decision === 'Y' || s.decision === 'J';
+  // Steps — one swimlane step per valid step, preserving order
+  const swimIds = [];
+  validSteps.forEach(s => {
+    const lbl  = stepLabel(s);
+    const role = stepRole(s);
+    const type = stepType(s);
+    const sys  = stepSys(s);
+    const laneId = (role && laneMap[role]) || defaultLaneId;
+
     const swimStep = {
-      id: mkId(), type: isDecision ? 'decision' : 'task',
-      label: s.what, laneId, columnId: colId,
-      documentation: [s.dataIn, s.dataOut].filter(Boolean).join(' → '),
-      sourceId: stepEl.id
+      id: mkId(),
+      type: ['start','end','decision','task','document','label'].includes(type) ? type : 'task',
+      label: lbl,
+      laneId,
+      // NO columnId — flow mode positions steps via procColMap
+      documentation: sys ? (NL ? `Systeem: ${sys}` : `System: ${sys}`) : '',
+      system: sys || '',       // stored for rendering
+      sourceId: null
     };
     swimProc.steps.push(swimStep);
-    swimStepIds.push(swimStep.id);
-
-    // Decision outcomes as child steps
-    if (isDecision && s.outcomes) {
-      s.outcomes.split(/[;,\/]/).map(o => o.trim()).filter(Boolean)
-        .slice(0, 2).forEach(outcome => {
-          const outStep = {
-            id: mkId(), type: 'task', label: outcome,
-            laneId, columnId: colId, documentation: '', sourceId: null
-          };
-          swimProc.steps.push(outStep);
-          swimStepIds.push(outStep.id);
-        });
-    }
+    swimIds.push(swimStep.id);
   });
 
-  // Sequential flows
-  for (let i = 0; i < swimStepIds.length - 1; i++) {
-    swimProc.flows.push({
-      id: mkId(), fromStepId: swimStepIds[i],
-      toStepId: swimStepIds[i + 1], label: ''
-    });
+  // Ensure first step is "start" type and last is "end" type
+  if (swimProc.steps.length > 0) {
+    if (swimProc.steps[0].type !== 'start') swimProc.steps[0].type = 'start';
+    if (swimProc.steps[swimProc.steps.length-1].type !== 'end')
+      swimProc.steps[swimProc.steps.length-1].type = 'end';
+  }
+
+  // Sequential flows connecting all steps
+  for (let i = 0; i < swimIds.length - 1; i++) {
+    swimProc.flows.push({ id: mkId(), from: swimIds[i], to: swimIds[i+1], label: '' });
   }
   newProcs.push(swimProc);
 
