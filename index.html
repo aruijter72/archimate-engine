@@ -9886,6 +9886,308 @@ function _qwizOpenFresh(){
 
 function hideQWiz(){ document.getElementById('qwizModal').style.display='none'; }
 
+// ════════════════════════════════════════════════════════════════
+// AI PROCESS CONVERSATION GUIDE
+// ════════════════════════════════════════════════════════════════
+
+const _AIPC = {
+  messages: [],      // [{role:'user'|'assistant', content:'...'}]
+  ttsOn:    true,
+  micOn:    false,
+  loading:  false,
+  buildJson: null,   // set when AI outputs <ARCHITISE_BUILD> block
+  _recog:   null,
+  _lastUtter: null,
+};
+
+// System prompt — instructs the AI to interview the user conversationally
+const _AIPC_SYS = () => {
+  const NL = currentLang === 'nl';
+  return `You are a warm, friendly business process consultant helping someone document their process${NL?' (please speak Dutch — respond in Dutch at all times)':''}.
+
+Your goal: conduct a natural conversation to discover:
+• Process name and what it achieves
+• What triggers/starts the process
+• Who participates (roles, departments, actors) — each becomes a swimlane
+• The steps taken in sequence, and which role performs each step
+• Any systems or applications involved
+• How and when the process ends
+• Optional: clear phases or stages (these become column headers in the diagram)
+
+Conversation rules:
+- Ask ONE focused question at a time — never multiple questions in one message
+- If an answer is vague or incomplete, ask a follow-up to clarify before moving on
+- Be concise: 1-3 sentences + your next question
+- Avoid technical jargon unless the user uses it first
+- After gathering enough info (usually 5-10 exchanges), write a short bullet-point summary of what you understood and ask: "Does this capture it correctly?"
+- Wait for their confirmation before generating the build JSON
+- If they say yes/correct/looks good/ja/goed, output the build JSON immediately
+
+When confirmed, output ONLY this exact block — no other text before or after:
+
+<ARCHITISE_BUILD>
+{
+  "procName": "string — short process name",
+  "procDesc": "string — one sentence description",
+  "procTrigger": "string — what starts this process",
+  "procEnd": "string — how/when the process ends",
+  "procOwner": "string — main responsible role",
+  "roles": ["Role A", "Role B"],
+  "steps": [
+    {"label": "short step name", "type": "start|task|decision|end|document", "role": "Role A", "column": "Phase (optional)"}
+  ],
+  "addSystems": ["Application or System Name"],
+  "columns": ["Phase 1", "Phase 2"]
+}
+</ARCHITISE_BUILD>
+
+Step rules: first step must use type "start", last step must use type "end", branching points use "decision", regular work uses "task". Every step role must match a name from the roles array exactly. Only use "column" if clear phases exist. Keep step labels short (3-6 words max).
+
+Now greet the user warmly and ask them to describe in their own words the process they want to document.`;
+};
+
+// ── Open / close ──────────────────────────────────────────────
+function showAIProc() {
+  const modal = document.getElementById('aiProcModal');
+  if (!modal) return;
+  // Update no-key warning
+  const nokEl = document.getElementById('aipc-nokey');
+  if (nokEl) nokEl.style.display = getActiveKey() ? 'none' : '';
+  // Update title language
+  const ttl = document.getElementById('aipc-title');
+  if (ttl) ttl.textContent = currentLang==='nl' ? 'AI Procesbegeleider' : 'AI Process Guide';
+  // Start fresh if no conversation yet
+  if (_AIPC.messages.length === 0) _aipcStart();
+  modal.style.display = 'flex';
+  setTimeout(() => document.getElementById('aipc-input')?.focus(), 120);
+}
+
+function hideAIProc() {
+  const m = document.getElementById('aiProcModal');
+  if (m) m.style.display = 'none';
+  _aipcStopMic();
+  window.speechSynthesis?.cancel();
+}
+
+// ── Conversation lifecycle ────────────────────────────────────
+async function _aipcStart() {
+  _AIPC.messages = [];
+  _AIPC.buildJson = null;
+  _aipcRender();
+  _aipcSetBuildRow(false);
+  _aipcSetInputRow(true);
+  _aipcShowTyping(true);
+  // Kick off with a silent opener so the AI produces the greeting
+  const opener = currentLang==='nl'
+    ? 'Hallo, ik wil mijn bedrijfsproces documenteren.'
+    : 'Hi, I want to document my business process.';
+  try {
+    const reply = await _aipcCall([{ role:'user', content: opener }]);
+    _aipcShowTyping(false);
+    _AIPC.messages.push({ role:'user', content: opener });
+    _aipcAddMsg('assistant', reply);
+    _aipcSpeak(reply);
+  } catch(e) {
+    _aipcShowTyping(false);
+    const fallback = currentLang==='nl'
+      ? 'Hallo! Ik help je graag je proces in kaart te brengen. Kun je in je eigen woorden beschrijven welk proces je wilt vastleggen?'
+      : 'Hello! I\'m here to help you document your process. Could you describe, in your own words, what process you\'d like to capture?';
+    _AIPC.messages.push({ role:'assistant', content: fallback });
+    _aipcRender();
+    _aipcSpeak(fallback);
+  }
+}
+
+function _aipcReset() {
+  _AIPC.messages = [];
+  _AIPC.buildJson = null;
+  _AIPC.loading = false;
+  _aipcSetBuildRow(false);
+  _aipcSetInputRow(true);
+  _aipcStart();
+}
+
+// ── Send a user message ───────────────────────────────────────
+async function _aipcSend() {
+  const inputEl = document.getElementById('aipc-input');
+  const text = (inputEl?.value||'').trim();
+  if (!text || _AIPC.loading) return;
+  _aipcStopMic();
+  inputEl.value = ''; inputEl.style.height = 'auto';
+  _aipcAddMsg('user', text);
+  if (!getActiveKey()) {
+    _aipcAddMsg('assistant', currentLang==='nl'
+      ? '⚠ Geen API-sleutel gevonden. Voeg er een toe via ⚙ Instellingen.'
+      : '⚠ No API key configured. Please add one via ⚙ Settings.');
+    return;
+  }
+  _AIPC.loading = true;
+  _aipcShowTyping(true);
+  document.getElementById('aipc-send').disabled = true;
+  try {
+    const reply = await _aipcCall(_AIPC.messages);
+    _aipcShowTyping(false);
+    _AIPC.loading = false;
+    document.getElementById('aipc-send').disabled = false;
+    // Check for build tag
+    const m = reply.match(/<ARCHITISE_BUILD>([\s\S]*?)<\/ARCHITISE_BUILD>/);
+    if (m) {
+      try {
+        _AIPC.buildJson = JSON.parse(m[1].trim());
+        const clean = reply.replace(/<ARCHITISE_BUILD>[\s\S]*?<\/ARCHITISE_BUILD>/,'').trim()
+          || (currentLang==='nl' ? '✅ Ik heb genoeg informatie. Klik op "Bouwen" hieronder!' : '✅ I have all I need. Click "Build now" below!');
+        _aipcAddMsg('assistant', clean);
+        _aipcSpeak(clean);
+        _aipcSetBuildRow(true);
+        _aipcSetInputRow(false);
+      } catch(e) {
+        _aipcAddMsg('assistant', reply);
+      }
+    } else {
+      _aipcAddMsg('assistant', reply);
+      _aipcSpeak(reply);
+    }
+  } catch(e) {
+    _aipcShowTyping(false);
+    _AIPC.loading = false;
+    document.getElementById('aipc-send').disabled = false;
+    _aipcAddMsg('assistant', `⚠ ${e.message}`);
+  }
+}
+
+// ── API call ──────────────────────────────────────────────────
+async function _aipcCall(messages) {
+  const key = getActiveKey(); if (!key) throw new Error('No API key');
+  const prov = getProvider();
+  const sys = _AIPC_SYS();
+  if (prov === 'openai') {
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method:'POST',
+      headers:{ 'Authorization':`Bearer ${key}`, 'Content-Type':'application/json' },
+      body: JSON.stringify({ model:'gpt-4o-mini', max_tokens:600,
+        messages:[{ role:'system', content:sys }, ...messages] })
+    });
+    if (!r.ok) { const e=await r.json().catch(()=>({})); throw new Error(`OpenAI ${r.status}: ${e.error?.message||r.statusText}`); }
+    const d = await r.json(); return d.choices?.[0]?.message?.content||'';
+  } else {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'x-api-key':key, 'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true', 'content-type':'application/json' },
+      body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:600,
+        system:sys, messages })
+    });
+    if (!r.ok) { const e=await r.json().catch(()=>({})); throw new Error(`Anthropic ${r.status}: ${e.error?.message||r.statusText}`); }
+    const d = await r.json(); return d.content?.[0]?.text||'';
+  }
+}
+
+// ── Render ────────────────────────────────────────────────────
+function _aipcAddMsg(role, content) {
+  _AIPC.messages.push({ role, content });
+  _aipcRender();
+}
+
+function _aipcRender() {
+  const c = document.getElementById('aipc-messages'); if (!c) return;
+  c.innerHTML = _AIPC.messages.map(m => `
+    <div class="aipc-msg ${m.role==='user'?'user':'ai'}">
+      <div class="aipc-av">${m.role==='user'?'👤':'🤖'}</div>
+      <div class="aipc-bubble">${_aipcEsc(m.content)}</div>
+    </div>`).join('');
+  setTimeout(() => { c.scrollTop = c.scrollHeight; }, 40);
+}
+
+function _aipcShowTyping(show) {
+  const c = document.getElementById('aipc-messages'); if (!c) return;
+  const ex = c.querySelector('.aipc-typing-row');
+  if (show && !ex) {
+    const d = document.createElement('div');
+    d.className = 'aipc-msg ai aipc-typing-row';
+    d.innerHTML = '<div class="aipc-av">🤖</div><div class="aipc-bubble aipc-typing"><span></span><span></span><span></span></div>';
+    c.appendChild(d); c.scrollTop = c.scrollHeight;
+  } else if (!show && ex) { ex.remove(); }
+}
+
+function _aipcEsc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function _aipcSetBuildRow(show) {
+  const el = document.getElementById('aipc-build-row'); if (el) el.style.display = show ? '' : 'none';
+}
+function _aipcSetInputRow(show) {
+  const el = document.getElementById('aipc-input-row'); if (el) el.style.display = show ? '' : 'none';
+}
+
+// ── TTS ───────────────────────────────────────────────────────
+function _aipcSpeak(text) {
+  if (!_AIPC.ttsOn || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const clean = text.replace(/<br>/g,' ').replace(/[*_`#<>]/g,'').replace(/[\u{1F000}-\u{1FFFF}]/gu,'').replace(/\s+/g,' ').trim();
+  if (!clean) return;
+  const u = new SpeechSynthesisUtterance(clean);
+  u.rate = 1.05; u.pitch = 1.0; u.volume = 0.92;
+  const voices = window.speechSynthesis.getVoices();
+  const lang = currentLang === 'nl' ? 'nl' : 'en';
+  u.voice = voices.find(v => v.lang.startsWith(lang) && v.localService && !v.name.includes('Compact'))
+    || voices.find(v => v.lang.startsWith(lang))
+    || voices[0];
+  _AIPC._lastUtter = u;
+  window.speechSynthesis.speak(u);
+}
+
+function _aipcToggleTTS() {
+  _AIPC.ttsOn = !_AIPC.ttsOn;
+  const btn = document.getElementById('aipc-tts-btn');
+  if (btn) { btn.textContent = _AIPC.ttsOn ? '🔊' : '🔇'; btn.classList.toggle('active', _AIPC.ttsOn); }
+  if (!_AIPC.ttsOn) window.speechSynthesis?.cancel();
+}
+
+// ── STT ───────────────────────────────────────────────────────
+function _aipcToggleMic() { _AIPC.micOn ? _aipcStopMic() : _aipcStartMic(); }
+
+function _aipcStartMic() {
+  const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!R) { alert(currentLang==='nl'?'Spraakherkenning werkt alleen in Chrome of Edge.':'Speech recognition only works in Chrome or Edge.'); return; }
+  window.speechSynthesis?.cancel(); // stop AI speaking when user starts
+  const recog = new R();
+  recog.lang = currentLang === 'nl' ? 'nl-NL' : 'en-US';
+  recog.continuous = false; recog.interimResults = true;
+  const inp = document.getElementById('aipc-input');
+  const micBtn = document.getElementById('aipc-mic');
+  recog.onresult = e => {
+    let t = ''; for (const r of e.results) t += r[0].transcript;
+    if (inp) inp.value = t;
+  };
+  recog.onend = () => {
+    _AIPC.micOn = false; _AIPC._recog = null;
+    if (micBtn) micBtn.classList.remove('on');
+    const val = (inp?.value||'').trim();
+    if (val) _aipcSend();
+  };
+  recog.onerror = () => { _AIPC.micOn = false; _AIPC._recog = null; if (micBtn) micBtn.classList.remove('on'); };
+  recog.start();
+  _AIPC._recog = recog; _AIPC.micOn = true;
+  if (micBtn) micBtn.classList.add('on');
+}
+
+function _aipcStopMic() {
+  if (_AIPC._recog) { try { _AIPC._recog.stop(); } catch(e){} _AIPC._recog = null; }
+  _AIPC.micOn = false;
+  const btn = document.getElementById('aipc-mic'); if (btn) btn.classList.remove('on');
+}
+
+// ── Build model from AI result ────────────────────────────────
+function _aipcDoBuild() {
+  if (!_AIPC.buildJson) return;
+  const payload = _AIPC.buildJson;
+  hideAIProc();
+  _buildModelFromTemplate(payload);
+  // Reset for next session
+  _AIPC.messages = []; _AIPC.buildJson = null;
+}
+
 function _qT(en,nl){ return _QW.lang==='nl'?nl:en; }
 function _qEsc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
