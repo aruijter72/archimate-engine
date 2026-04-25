@@ -10724,7 +10724,7 @@ function handleImportExcelTemplate(ev) {
       // B44 = Q14 answer (extra systems); B45+ = Q15 answer (connection descriptions)
       const addSystems = cell('B44');
       const sysConnParts = [];
-      for (let r = 45; r <= 50; r++) { const v = rowVal(r, 'B'); if (v) sysConnParts.push(v); }
+      for (let r = 45; r <= 49; r++) { const v = rowVal(r, 'B'); if (v) sysConnParts.push(v); }
       const sysConn = sysConnParts.join(' ');
 
       // ── Section 5 — Infrastructure (rows 52-60) ───────────────
