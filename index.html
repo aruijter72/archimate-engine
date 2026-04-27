@@ -5918,11 +5918,15 @@ function toggleMenu(name) {
 function closeMenus() {
   document.querySelectorAll('.menu-dropdown.open').forEach(d => d.classList.remove('open'));
   document.querySelectorAll('.menu-trigger.open').forEach(b => b.classList.remove('open'));
-  // Reset export submenu to closed state
+  // Reset import/export submenus to closed state
   const exportSub = document.getElementById('gfile-export-sub');
   if (exportSub) exportSub.style.display = 'none';
   const exportArrow = document.getElementById('g-export-arrow');
   if (exportArrow) exportArrow.textContent = '▾';
+  const importSub = document.getElementById('gfile-import-sub');
+  if (importSub) importSub.style.display = 'none';
+  const importArrow = document.getElementById('g-import-arrow');
+  if (importArrow) importArrow.textContent = '▾';
 }
 document.addEventListener('click', e => { if (!e.target.closest('.menu-item')) closeMenus(); });
 
@@ -14112,6 +14116,14 @@ function toggleExportSubmenu(e) {
   if (e) e.stopPropagation();
   const sub = document.getElementById('gfile-export-sub');
   const arrow = document.getElementById('g-export-arrow');
+  const open = sub.style.display !== 'none';
+  sub.style.display = open ? 'none' : 'block';
+  if (arrow) arrow.textContent = open ? '▾' : '▴';
+}
+function toggleImportSubmenu(e) {
+  if (e) e.stopPropagation();
+  const sub = document.getElementById('gfile-import-sub');
+  const arrow = document.getElementById('g-import-arrow');
   const open = sub.style.display !== 'none';
   sub.style.display = open ? 'none' : 'block';
   if (arrow) arrow.textContent = open ? '▾' : '▴';
