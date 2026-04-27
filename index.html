@@ -2510,14 +2510,16 @@
         🔧 <span id="gmenu-tools-label">Tools</span> <span style="font-size:.62rem;opacity:.65">▾</span>
       </button>
       <div class="menu-dropdown" id="menu-gtools-dd" style="min-width:240px">
-        <button class="mi-btn" onclick="showFlowGenModal();closeMenus()">⟳ <span id="g-gen-swimlane-lbl">Generate Swimlane from Archi…</span></button>
-        <button class="mi-btn" onclick="generateArchFromSwimlane();closeMenus()">⬡ <span id="g-gen-arch-lbl">Generate Archi from Swimlane…</span></button>
+        <button class="mi-btn" onclick="saveAsTemplate();closeMenus()">⭐ <span id="g-save-tmpl-archi-lbl">Save as template…</span></button>
+        <button class="mi-btn" onclick="saveSnapshot();closeMenus()">📸 <span id="g-snapshot-lbl">Save Snapshot…</span></button>
+        <button class="mi-btn" onclick="showHistory();closeMenus()">📜 <span id="g-history-lbl">Version History…</span></button>
         <div class="mi-sep"></div>
-        <button class="mi-btn" id="g-refresh-swim-btn" onclick="refreshSwimlaneFromArch();closeMenus()" disabled title="Only available when this swimlane was generated from ArchiMate">↺ <span id="g-refresh-swim-lbl">Refresh from Archi</span></button>
-        <div class="mi-sep"></div>
-        <button class="mi-btn" onclick="translateModelDocs();closeMenus()">🌐 <span id="g-translate-lbl">Translate Archi Documentation…</span></button>
+        <button class="mi-btn gold" onclick="generateHTMLReport();closeMenus()">📄 <span id="g-html-report-lbl2">Export HTML Report…</span></button>
+        <button class="mi-btn gold" onclick="generateHTMLPlatform();closeMenus()">🌐 <span id="g-platform-exp-lbl2">Export Visual Architise…</span></button>
         <div class="mi-sep"></div>
         <button class="mi-btn" onclick="showSettings();closeMenus()">⚙ <span id="g-settings-lbl">Set AI Provider &amp; API Key</span></button>
+        <!-- kept for toolbar enable/disable logic — hidden -->
+        <span id="g-refresh-swim-btn" style="display:none"></span>
       </div>
     </div>
   </div>
@@ -14092,6 +14094,32 @@ function applyQuickFlow() {
     ? `⚡ Quick Flow toegevoegd: ${steps.length} stap${steps.length !== 1 ? 'pen' : ''}, ${laneNames.length} rijstrook${laneNames.length !== 1 ? 'en' : ''}.`
     : `⚡ Quick Flow applied: ${steps.length} step${steps.length !== 1 ? 's' : ''}, ${laneNames.length} lane${laneNames.length !== 1 ? 's' : ''}.`;
   showToast(msg, 'proc');
+}
+
+// ── Unified menu helpers ──────────────────────────────────────
+function unifiedSave() {
+  if (currentMode === 'swimlane') quickSaveProcJSON();
+  else quickSaveModel();
+}
+function unifiedSaveAs() {
+  if (currentMode === 'swimlane') saveProcJSONAs();
+  else saveModelAs();
+}
+function unifiedOpen() {
+  if (currentMode === 'swimlane') triggerLoadProc();
+  else triggerLoad();
+}
+function unifiedTemplates() {
+  if (currentMode === 'swimlane') showProcTemplates();
+  else showTemplates();
+}
+function toggleExportSubmenu(e) {
+  if (e) e.stopPropagation();
+  const sub = document.getElementById('gfile-export-sub');
+  const arrow = document.getElementById('g-export-arrow');
+  const open = sub.style.display !== 'none';
+  sub.style.display = open ? 'none' : 'block';
+  if (arrow) arrow.textContent = open ? '▾' : '▴';
 }
 
 function deleteFlow(flowId) {
