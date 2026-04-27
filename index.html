@@ -14090,19 +14090,14 @@ function applyQuickFlow() {
 }
 
 // ── Unified menu helpers ──────────────────────────────────────
-function unifiedSave() {
-  if (currentMode === 'swimlane') quickSaveProcJSON();
-  else quickSaveModel();
-}
-function unifiedSaveAs() {
-  if (currentMode === 'swimlane') saveProcJSONAs();
-  else saveModelAs();
-}
-function unifiedOpen() {
-  if (currentMode === 'swimlane') triggerLoadProc();
-  else triggerLoad();
-}
+// Save/Open always operates on the full model (ArchiMate + Swimlane together).
+// The per-process swimlane save was a subset format; it is no longer exposed
+// in the main menu. Both modes read/write the same JSON file.
+function unifiedSave()   { quickSaveModel(); }
+function unifiedSaveAs() { saveModelAs(); }
+function unifiedOpen()   { triggerLoad(); }
 function unifiedTemplates() {
+  // ArchiMate and Swimlane templates are genuinely different catalogues
   if (currentMode === 'swimlane') showProcTemplates();
   else showTemplates();
 }
