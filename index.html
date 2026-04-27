@@ -13940,6 +13940,177 @@ function addFlow() {
   renderProcTab();
 }
 
+// ── Quick Flow ────────────────────────────────────────────────
+function showQuickFlowModal() {
+  const proc = getActiveProc();
+  const NL = currentLang === 'nl';
+  if (!proc) {
+    showAlert(NL ? 'Selecteer eerst een proces.' : 'Select a process first.', 'Quick Flow');
+    return;
+  }
+  document.getElementById('quickFlowModal').classList.add('open');
+  const ta = document.getElementById('qf-textarea');
+  ta.value = '';
+  document.getElementById('qf-preview').innerHTML = '';
+  setTimeout(() => ta.focus(), 80);
+}
+
+function hideQuickFlowModal() {
+  document.getElementById('quickFlowModal').classList.remove('open');
+}
+
+function _parseQuickFlowText(text) {
+  const lines = text.split('\n');
+  const steps = [];
+  const laneNames = [];
+  const errors = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i].trim();
+    if (!raw || raw.startsWith('#')) continue;
+
+    const colonIdx = raw.indexOf(':');
+    if (colonIdx < 0) {
+      errors.push(`Line ${i + 1}: missing colon — expected "Lane: Step label"`);
+      continue;
+    }
+
+    const laneName = raw.slice(0, colonIdx).trim();
+    if (!laneName) { errors.push(`Line ${i + 1}: lane name is empty`); continue; }
+
+    let labelRaw = raw.slice(colonIdx + 1).trim();
+    if (!labelRaw) { errors.push(`Line ${i + 1}: step label is empty`); continue; }
+
+    // Extract optional [System] tag from end of label
+    let system = '';
+    const sysMatch = labelRaw.match(/\[([^\]]+)\]\s*$/);
+    if (sysMatch) {
+      system = sysMatch[1].trim();
+      labelRaw = labelRaw.slice(0, sysMatch.index).trim();
+    }
+
+    // Detect step type from prefix
+    let type = 'task';
+    let label = labelRaw;
+
+    if (labelRaw.startsWith('?')) {
+      type = 'decision';
+      label = labelRaw.slice(1).trim() || 'Decision';
+    } else if (labelRaw.toLowerCase().startsWith('!end')) {
+      type = 'end';
+      label = labelRaw.slice(4).trim() || 'End';
+    } else if (labelRaw.startsWith('!')) {
+      type = 'start';
+      label = labelRaw.slice(1).trim() || 'Start';
+    } else if (labelRaw.toLowerCase().startsWith('[doc]')) {
+      type = 'document';
+      label = labelRaw.slice(5).trim() || 'Document';
+    }
+
+    if (!laneNames.includes(laneName)) laneNames.push(laneName);
+    steps.push({ laneName, type, label, system });
+  }
+
+  return { steps, laneNames, errors };
+}
+
+function previewQuickFlow() {
+  const text = document.getElementById('qf-textarea').value;
+  const NL = currentLang === 'nl';
+  const preview = document.getElementById('qf-preview');
+
+  if (!text.trim()) { preview.innerHTML = ''; return; }
+
+  const { steps, laneNames, errors } = _parseQuickFlowText(text);
+  const typeIcon = { start: '▶', end: '⏹', decision: '◆', task: '□', document: '▤' };
+
+  let html = '';
+  if (errors.length) {
+    html += errors.map(e =>
+      `<div style="color:#ef8888;font-size:.77rem;margin-bottom:.2rem">⚠ ${e}</div>`
+    ).join('');
+  }
+  if (steps.length) {
+    const flowCount = Math.max(0, steps.length - 1);
+    html += `<div style="font-size:.75rem;color:var(--muted);margin:.6rem 0 .5rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em">`
+          + `${steps.length} ${NL ? 'stappen' : 'steps'} · ${laneNames.length} ${NL ? 'rijstroken' : 'lanes'} · ${flowCount} ${NL ? 'verbindingen' : 'flows'}</div>`;
+    laneNames.forEach(ln => {
+      const laneSteps = steps.filter(s => s.laneName === ln);
+      html += `<div style="margin-bottom:.45rem">`;
+      html += `<div style="font-size:.75rem;font-weight:700;color:var(--proc-text,#a78af5);margin-bottom:.15rem">${ln}</div>`;
+      laneSteps.forEach(s => {
+        const icon = typeIcon[s.type] || '□';
+        const sysTag = s.system
+          ? ` <span style="font-size:.7rem;color:var(--muted);background:rgba(255,255,255,.07);padding:.05rem .3rem;border-radius:4px">${s.system}</span>`
+          : '';
+        html += `<div style="font-size:.79rem;color:var(--text2);padding:.1rem 0 .1rem .55rem;border-left:2px solid rgba(167,138,245,.3)">${icon} ${s.label}${sysTag}</div>`;
+      });
+      html += `</div>`;
+    });
+  }
+  preview.innerHTML = html;
+}
+
+function applyQuickFlow() {
+  const text = document.getElementById('qf-textarea').value;
+  const NL = currentLang === 'nl';
+
+  if (!text.trim()) { hideQuickFlowModal(); return; }
+
+  const { steps, laneNames, errors } = _parseQuickFlowText(text);
+  if (!steps.length) {
+    showAlert(errors.length ? errors.join('\n') : (NL ? 'Geen geldige stappen gevonden.' : 'No valid steps found.'), 'Quick Flow');
+    return;
+  }
+
+  _snapshot();
+  const proc = getActiveProc();
+  if (!proc) return;
+
+  // Resolve or create lanes — exact match (case-insensitive)
+  const laneMap = {};
+  laneNames.forEach(name => {
+    const existing = proc.lanes.find(l => l.name.trim().toLowerCase() === name.trim().toLowerCase());
+    if (existing) {
+      laneMap[name] = existing.id;
+    } else {
+      const id = genId();
+      proc.lanes.push({ id, name });
+      laneMap[name] = id;
+    }
+  });
+
+  // Create steps
+  const newStepIds = [];
+  steps.forEach(s => {
+    const stepObj = {
+      id: genId(),
+      laneId: laneMap[s.laneName] || '',
+      columnId: '',
+      type: s.type,
+      label: s.label,
+      documentation: '',
+      properties: []
+    };
+    if (s.system) stepObj.system = s.system;
+    proc.steps.push(stepObj);
+    newStepIds.push(stepObj.id);
+  });
+
+  // Wire sequential flows between all new steps
+  for (let i = 0; i < newStepIds.length - 1; i++) {
+    proc.flows.push({ id: genId(), from: newStepIds[i], to: newStepIds[i + 1], label: '' });
+  }
+
+  hideQuickFlowModal();
+  renderProcTab();
+
+  const msg = NL
+    ? `⚡ Quick Flow toegevoegd: ${steps.length} stap${steps.length !== 1 ? 'pen' : ''}, ${laneNames.length} rijstrook${laneNames.length !== 1 ? 'en' : ''}.`
+    : `⚡ Quick Flow applied: ${steps.length} step${steps.length !== 1 ? 's' : ''}, ${laneNames.length} lane${laneNames.length !== 1 ? 's' : ''}.`;
+  showToast(msg, 'proc');
+}
+
 function deleteFlow(flowId) {
   _snapshot();
   const proc = getActiveProc(); if (!proc) return;
