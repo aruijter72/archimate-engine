@@ -2274,6 +2274,26 @@
   </div>
 </div>
 
+<!-- ── Quick Flow modal ──────────────────────────────────────── -->
+<div id="quickFlowModal" class="modal-overlay" onclick="if(event.target===this)hideQuickFlowModal()" style="z-index:2500">
+  <div class="modal-box" style="max-width:580px">
+    <div class="modal-header">
+      <div class="modal-title">⚡ Quick Flow</div>
+      <button class="modal-close" onclick="hideQuickFlowModal()">×</button>
+    </div>
+    <p class="modal-sub" id="qf-sub">Type one step per line using <code style="font-family:monospace;font-size:.8rem;background:rgba(255,255,255,.08);padding:.1rem .35rem;border-radius:4px">Lane: Step label [System]</code>. Use <code style="font-family:monospace;font-size:.8rem;background:rgba(255,255,255,.08);padding:.1rem .35rem;border-radius:4px">!</code> for start/end events, <code style="font-family:monospace;font-size:.8rem;background:rgba(255,255,255,.08);padding:.1rem .35rem;border-radius:4px">?</code> for decisions. Steps are connected sequentially.</p>
+    <textarea id="qf-textarea" class="elem-input" rows="10"
+      style="width:100%;font-family:monospace;font-size:.84rem;line-height:1.7;resize:vertical;margin-bottom:.75rem"
+      placeholder="Consumer: !Start&#10;Store Employee: POS sends return order to ERP [POS]&#10;Customer Service Rep: ?Return Order Validation [ERP]&#10;Store Employee: Return Order Validation Receipt [POS]&#10;Warehouse Employee: Create Return Order Receipt [WHMS]&#10;Warehouse Employee: !End"
+      oninput="previewQuickFlow()"></textarea>
+    <div id="qf-preview" style="margin-bottom:1rem;min-height:1rem"></div>
+    <div style="display:flex;gap:.6rem;justify-content:flex-end">
+      <button class="btn btn-secondary" onclick="hideQuickFlowModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="applyQuickFlow()">⚡ Apply</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Step Info modal ───────────────────────────────────────── -->
 <div id="stepInfoModal" class="modal-overlay" onclick="if(event.target===this)hideStepInfo()" style="z-index:2600">
   <div class="modal-box" style="max-width:480px">
