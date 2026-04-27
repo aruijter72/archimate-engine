@@ -5911,6 +5911,11 @@ function toggleMenu(name) {
 function closeMenus() {
   document.querySelectorAll('.menu-dropdown.open').forEach(d => d.classList.remove('open'));
   document.querySelectorAll('.menu-trigger.open').forEach(b => b.classList.remove('open'));
+  // Reset export submenu to closed state
+  const exportSub = document.getElementById('gfile-export-sub');
+  if (exportSub) exportSub.style.display = 'none';
+  const exportArrow = document.getElementById('g-export-arrow');
+  if (exportArrow) exportArrow.textContent = '▾';
 }
 document.addEventListener('click', e => { if (!e.target.closest('.menu-item')) closeMenus(); });
 
