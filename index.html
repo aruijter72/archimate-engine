@@ -15370,6 +15370,7 @@ function renderProcTab() {
             <span class="proc-section-title">${NL ? 'Rijstroken' : 'Lanes'} <i class="tip-icon" onmouseenter="showTipById(this,'proc-lanes')" onmouseleave="hideTip()">?</i></span>
             <div class="add-buttons">
               ${hasArchiBiz ? `<button class="btn-add proc" onclick="showRolePicker()" title="${NL ? 'Importeer uit Bedrijfslaag' : 'Import from Business layer'}">+ ${NL ? 'Uit Architectuur' : 'From Architecture'}</button>` : ''}
+              <button class="btn-add proc" onclick="showQuickFlowModal()" title="${NL ? 'Snel een flow typen via tekstinvoer' : 'Quickly type a flow from text'}">⚡ ${NL ? 'Quick Flow' : 'Quick Flow'}</button>
               <button class="btn-add" onclick="addLane()">+ ${NL ? 'Rijstrook toevoegen' : 'Add Lane'}</button>
             </div>
           </div>
