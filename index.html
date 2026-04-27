@@ -15488,11 +15488,9 @@ function renderProcTab() {
   const hasCols = proc && proc.columns && proc.columns.length > 0;
   const NL = currentLang === 'nl';
 
-  // Update disabled state of proc-dependent header buttons
-  ['g-proc-save-btn','g-proc-saveas-btn','g-proc-drawio-btn'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.disabled = !proc;
-  });
+  // draw.io export needs an active process; Save/SaveAs always available
+  const drawioBtn = document.getElementById('g-proc-drawio-btn');
+  if (drawioBtn) drawioBtn.disabled = !proc;
   // Enable/disable Refresh menu item (only for arch-generated processes)
   const refreshBtn = document.getElementById('g-refresh-swim-btn');
   if (refreshBtn) refreshBtn.disabled = !(proc?._generatedFromArch);
