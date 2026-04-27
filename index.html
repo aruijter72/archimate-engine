@@ -2470,22 +2470,32 @@
         📁 <span id="gmenu-file-label">File</span> <span style="font-size:.62rem;opacity:.65">▾</span>
       </button>
       <div class="menu-dropdown" id="menu-gfile-dd" style="min-width:260px;padding:.25rem 0">
-        <!-- Questionnaire -->
-        <button class="mi-btn gold" onclick="showAIProc();closeMenus()">🤖 <span id="g-aiproc-lbl">AI Guide…</span></button>
-        <button class="mi-btn" onclick="showQWiz();closeMenus()">🧙 <span id="g-qwiz-lbl">Wizard…</span></button>
-        <button class="mi-btn" onclick="downloadExcelTemplate();closeMenus()">⬇ <span id="g-excel-dl-lbl">Download Excel Template</span></button>
-        <button class="mi-btn" onclick="triggerImportExcelTemplate();closeMenus()">📊 <span id="g-excel-import-lbl">Import Excel Template</span></button>
-        <div class="mi-sep"></div>
-        <!-- Model operations -->
-        <button class="mi-btn" onclick="unifiedTemplates();closeMenus()">📋 <span id="g-templates-lbl">Templates</span></button>
+        <!-- New / Open -->
         <button class="mi-btn danger" onclick="newModel();closeMenus()">🆕 <span id="g-newmodel-lbl">New</span></button>
         <button class="mi-btn" onclick="unifiedOpen();closeMenus()">📂 <span id="g-openjson-lbl">Open…</span></button>
-        <button class="mi-btn" onclick="triggerImportArchimate();closeMenus()">📥 <span id="g-import-am-lbl">Import Archi .archimate</span></button>
-        <button class="mi-btn" onclick="triggerImportDrawio();closeMenus()">📥 <span id="g-proc-import-drawio-lbl">Import Swimlane draw.io XML</span></button>
-        <button class="mi-btn" id="g-proc-save-btn" onclick="unifiedSave();closeMenus()">💾 <span id="g-savejson-lbl">Save</span></button>
-        <button class="mi-btn" id="g-proc-saveas-btn" onclick="unifiedSaveAs();closeMenus()">💾 <span id="g-saveas-archi-lbl">Save As…</span></button>
+        <div class="mi-sep"></div>
+        <!-- Create -->
+        <button class="mi-btn gold" onclick="showAIProc();closeMenus()">🤖 <span id="g-aiproc-lbl">AI Guide…</span></button>
+        <button class="mi-btn" onclick="showQWiz();closeMenus()">🧙 <span id="g-qwiz-lbl">Wizard…</span></button>
+        <button class="mi-btn" onclick="unifiedTemplates();closeMenus()">📋 <span id="g-templates-lbl">Templates</span></button>
+        <button class="mi-btn" onclick="downloadExcelTemplate();closeMenus()">⬇ <span id="g-excel-dl-lbl">Download Excel Template</span></button>
+        <!-- Import accordion -->
+        <button class="mi-btn" onclick="toggleImportSubmenu(event)" style="display:flex;align-items:center;justify-content:space-between">
+          <span>⬇ <span id="g-import-lbl">Import</span></span>
+          <span id="g-import-arrow" style="font-size:.62rem;opacity:.65;margin-left:auto">▾</span>
+        </button>
+        <div id="gfile-import-sub" style="display:none">
+          <button class="mi-btn" style="padding-left:1.6rem" onclick="triggerImportArchimate();closeMenus()"><span id="g-import-am-lbl">Archi .archimate</span></button>
+          <button class="mi-btn" style="padding-left:1.6rem" onclick="triggerImportDrawio();closeMenus()"><span id="g-proc-import-drawio-lbl">Swimlane draw.io XML</span></button>
+          <button class="mi-btn" style="padding-left:1.6rem" onclick="triggerImportExcelTemplate();closeMenus()"><span id="g-excel-import-lbl">Excel Template</span></button>
+        </div>
+        <div class="mi-sep"></div>
+        <!-- Save -->
+        <button class="mi-btn" onclick="unifiedSave();closeMenus()">💾 <span id="g-savejson-lbl">Save</span></button>
+        <button class="mi-btn" onclick="unifiedSaveAs();closeMenus()">💾 <span id="g-saveas-archi-lbl">Save As…</span></button>
         <button class="mi-btn no-print" onclick="printModel();closeMenus()">🖨 <span id="g-print-lbl">Print / Save as PDF</span></button>
-        <!-- Export submenu (inline accordion) -->
+        <div class="mi-sep"></div>
+        <!-- Export accordion -->
         <button class="mi-btn" onclick="toggleExportSubmenu(event)" style="display:flex;align-items:center;justify-content:space-between">
           <span>⬇ <span id="g-export-lbl">Export</span></span>
           <span id="g-export-arrow" style="font-size:.62rem;opacity:.65;margin-left:auto">▾</span>
@@ -2494,12 +2504,9 @@
           <button class="mi-btn" style="padding-left:1.6rem" onclick="exportArchimate();closeMenus()"><span id="g-export-arc-lbl">Archi .archimate</span></button>
           <button class="mi-btn" style="padding-left:1.6rem" onclick="exportAMEFF();closeMenus()"><span id="g-export-ameff-lbl">Archi AMEFF XML</span></button>
           <button class="mi-btn" style="padding-left:1.6rem" id="g-proc-drawio-btn" onclick="exportDrawio();closeMenus()"><span id="g-proc-drawio-lbl">Swimlane draw.io XML</span></button>
-          <button class="mi-btn" style="padding-left:1.6rem" onclick="exportSwimlaneImage('svg');closeMenus()"><span id="g-proc-svg-lbl">SVG…</span></button>
-          <button class="mi-btn" style="padding-left:1.6rem" onclick="exportSwimlaneImage('png');closeMenus()"><span id="g-proc-png-lbl">Export PNG…</span></button>
+          <button class="mi-btn" style="padding-left:1.6rem" onclick="exportSwimlaneImage('svg');closeMenus()"><span id="g-proc-svg-lbl">SVG</span></button>
+          <button class="mi-btn" style="padding-left:1.6rem" onclick="exportSwimlaneImage('png');closeMenus()"><span id="g-proc-png-lbl">PNG</span></button>
         </div>
-        <div class="mi-sep"></div>
-        <button class="mi-btn gold" onclick="generateHTMLReport();closeMenus()">📄 <span id="g-html-report-lbl">HTML Report…</span></button>
-        <button class="mi-btn gold" onclick="generateHTMLPlatform();closeMenus()">🌐 <span id="g-platform-exp-lbl">Visual Architise…</span></button>
       </div>
     </div>
     <div class="menu-item" id="gmenu-tools-item">
