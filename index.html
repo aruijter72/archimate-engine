@@ -5961,7 +5961,19 @@ document.addEventListener('click', e => { if (!e.target.closest('.menu-item')) c
 // ══════════════════════════════════════════════════════════════
 function newModel() {
   const NL = currentLang === 'nl';
-  if (model.elements.length === 0 && model.relationships.length === 0) { _doNewModel(); return; }
+  // Check ALL model data, not just the currently-active element arrays
+  // (model.elements may be a process-specific sub-array that is legitimately empty)
+  const bs = model.businessSystems || {};
+  const hasData = model.elements.length > 0
+    || model.relationships.length > 0
+    || (model.processes      && model.processes.length > 0)
+    || (model.linkedBsProcessId)
+    || (bs.apps              && bs.apps.length > 0)
+    || (bs.departments       && bs.departments.length > 0)
+    || (bs.roles             && bs.roles.length > 0)
+    || (bs.bsProcesses       && bs.bsProcesses.length > 0)
+    || Object.keys(model.processModels || {}).length > 0;
+  if (!hasData) { _doNewModel(); return; }
   showConfirm(
     NL ? '🆕 Nieuw model' : '🆕 New Model',
     NL ? 'Niet-opgeslagen wijzigingen gaan verloren. Wilt u doorgaan?'
