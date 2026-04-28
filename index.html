@@ -8976,7 +8976,223 @@ const _INDUSTRY_PRESETS = {
       { name: 'E-Commerce Order Fulfilment',              description: 'Picking, packing and shipping of online orders from warehouse or store' },
       { name: 'Financial Reporting & Period Close',       description: 'Month-end and year-end financial close, consolidation and reporting' },
       { name: 'Master Data Management',                   description: 'Creation, maintenance and governance of product, customer and supplier master data' },
-    ]
+
+    ],
+    swimlaneTemplates: {
+      'Order2Cash — Wholesale': {
+        lanes: ['Sales & Wholesale','Customer Service','Finance & Control','Warehouse & Logistics'],
+        steps: [
+          {lane:'Sales & Wholesale',     type:'start',    label:'Order Window Opens'},
+          {lane:'Customer Service',      type:'task',     label:'Receive Order',             system:'CRM'},
+          {lane:'Finance & Control',     type:'task',     label:'Credit Check',              system:'ERP'},
+          {lane:'Finance & Control',     type:'decision', label:'Credit OK?'},
+          {lane:'Customer Service',      type:'task',     label:'Enter Sales Order',         system:'ERP'},
+          {lane:'Customer Service',      type:'document', label:'Order Confirmation',        system:'ERP'},
+          {lane:'Warehouse & Logistics', type:'task',     label:'Allocate & Pick',           system:'WMS'},
+          {lane:'Warehouse & Logistics', type:'task',     label:'Pack & Ship',               system:'WMS'},
+          {lane:'Warehouse & Logistics', type:'document', label:'Delivery Note',             system:'WMS'},
+          {lane:'Finance & Control',     type:'task',     label:'Send Invoice',              system:'ERP'},
+          {lane:'Finance & Control',     type:'document', label:'Invoice',                   system:'ERP'},
+          {lane:'Finance & Control',     type:'task',     label:'Receive & Match Payment',   system:'ERP'},
+          {lane:'Finance & Control',     type:'end',      label:'Order Closed'},
+        ]
+      },
+      'Order2Cash — Direct to Consumer (D2C)': {
+        lanes: ['Customer','E-Commerce','Warehouse & Logistics','Finance & Control'],
+        steps: [
+          {lane:'Customer',              type:'start',    label:'Customer Places Order'},
+          {lane:'E-Commerce',            type:'task',     label:'Receive Online Order',      system:'E-Commerce Platform'},
+          {lane:'Finance & Control',     type:'task',     label:'Authorise Payment',         system:'ERP'},
+          {lane:'E-Commerce',            type:'task',     label:'Route to Fulfilment',       system:'OMS'},
+          {lane:'Warehouse & Logistics', type:'task',     label:'Pick & Pack',               system:'WMS'},
+          {lane:'Warehouse & Logistics', type:'task',     label:'Ship Parcel',               system:'WMS'},
+          {lane:'Customer',              type:'task',     label:'Receive Delivery'},
+          {lane:'Finance & Control',     type:'task',     label:'Capture Payment',           system:'ERP'},
+          {lane:'Finance & Control',     type:'end',      label:'Order Complete'},
+        ]
+      },
+      'Order2Cash — Concession & Consignment': {
+        lanes: ['Sales & Wholesale','Customer Service','Finance & Control','Warehouse & Logistics'],
+        steps: [
+          {lane:'Sales & Wholesale',     type:'start',    label:'Season Allocation Agreed'},
+          {lane:'Customer Service',      type:'task',     label:'Create Consignment Order',  system:'ERP'},
+          {lane:'Warehouse & Logistics', type:'task',     label:'Ship Stock to Location',    system:'WMS'},
+          {lane:'Warehouse & Logistics', type:'document', label:'Delivery Note',             system:'WMS'},
+          {lane:'Sales & Wholesale',     type:'task',     label:'Receive Sales Report',      system:'EDI / Supply Chain'},
+          {lane:'Finance & Control',     type:'task',     label:'Invoice Sold Quantities',   system:'ERP'},
+          {lane:'Finance & Control',     type:'document', label:'Invoice',                   system:'ERP'},
+          {lane:'Finance & Control',     type:'task',     label:'Receive Payment',           system:'ERP'},
+          {lane:'Finance & Control',     type:'end',      label:'Settlement Complete'},
+        ]
+      },
+      'Procure2Pay — Purchase Orders': {
+        lanes: ['Merchandising & Buying','Finance & Control','Warehouse & Logistics','IT Integration & ERP'],
+        steps: [
+          {lane:'Merchandising & Buying',  type:'start',    label:'Buying Decision Made'},
+          {lane:'Merchandising & Buying',  type:'task',     label:'Create Purchase Order',   system:'ERP'},
+          {lane:'Finance & Control',       type:'task',     label:'Approve Purchase Order',  system:'ERP'},
+          {lane:'IT Integration & ERP',    type:'task',     label:'Send PO to Supplier',     system:'EDI / Supply Chain'},
+          {lane:'IT Integration & ERP',    type:'document', label:'PO Confirmation',         system:'EDI / Supply Chain'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Receive Goods',           system:'WMS'},
+          {lane:'Warehouse & Logistics',   type:'document', label:'Goods Receipt Note',      system:'WMS'},
+          {lane:'Finance & Control',       type:'task',     label:'Receive Supplier Invoice',system:'ERP'},
+          {lane:'Finance & Control',       type:'task',     label:'3-Way Match',             system:'ERP'},
+          {lane:'Finance & Control',       type:'decision', label:'Match OK?'},
+          {lane:'Finance & Control',       type:'task',     label:'Post & Schedule Payment', system:'ERP'},
+          {lane:'Finance & Control',       type:'end',      label:'Invoice Paid'},
+        ]
+      },
+      'Product Development & Sampling': {
+        lanes: ['Merchandising & Buying','Planning & Supply Chain'],
+        steps: [
+          {lane:'Merchandising & Buying',  type:'start',    label:'Season Brief Issued'},
+          {lane:'Merchandising & Buying',  type:'task',     label:'Design & Concept',        system:'PLM'},
+          {lane:'Merchandising & Buying',  type:'task',     label:'Create Tech Pack',        system:'PLM'},
+          {lane:'Planning & Supply Chain', type:'task',     label:'Send Sample Request',     system:'EDI / Supply Chain'},
+          {lane:'Planning & Supply Chain', type:'task',     label:'Receive Proto Sample'},
+          {lane:'Merchandising & Buying',  type:'task',     label:'Review & Fit Session',    system:'PLM'},
+          {lane:'Merchandising & Buying',  type:'decision', label:'Sample Approved?'},
+          {lane:'Planning & Supply Chain', type:'task',     label:'Issue Production Order',  system:'ERP'},
+          {lane:'Merchandising & Buying',  type:'end',      label:'Style Approved for Production'},
+        ]
+      },
+      'Season Planning & Buying': {
+        lanes: ['Finance & Control','Planning & Supply Chain','Merchandising & Buying'],
+        steps: [
+          {lane:'Finance & Control',       type:'start',    label:'Budget Set'},
+          {lane:'Planning & Supply Chain', type:'task',     label:'Demand Forecast',         system:'BI & Analytics'},
+          {lane:'Planning & Supply Chain', type:'task',     label:'OTB Calculation',         system:'ERP'},
+          {lane:'Merchandising & Buying',  type:'task',     label:'Range Planning',          system:'PLM'},
+          {lane:'Merchandising & Buying',  type:'task',     label:'Supplier Negotiation'},
+          {lane:'Merchandising & Buying',  type:'task',     label:'Confirm Range & Prices',  system:'PLM'},
+          {lane:'Finance & Control',       type:'task',     label:'Approve OTB',             system:'ERP'},
+          {lane:'Merchandising & Buying',  type:'task',     label:'Place Buying Orders',     system:'ERP'},
+          {lane:'Merchandising & Buying',  type:'end',      label:'Season Bought'},
+        ]
+      },
+      'Goods Receipt & Inbound Logistics': {
+        lanes: ['IT Integration & ERP','Warehouse & Logistics','Finance & Control'],
+        steps: [
+          {lane:'IT Integration & ERP',    type:'start',    label:'ASN Received',            system:'EDI / Supply Chain'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Book Inbound Slot',       system:'WMS'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Unload & Count',          system:'WMS'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Quality Inspection'},
+          {lane:'Warehouse & Logistics',   type:'decision', label:'Quality OK?'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Put Away',                system:'WMS'},
+          {lane:'IT Integration & ERP',    type:'task',     label:'Update Stock Levels',     system:'ERP'},
+          {lane:'Finance & Control',       type:'task',     label:'Post Goods Receipt',      system:'ERP'},
+          {lane:'Finance & Control',       type:'end',      label:'Stock Available'},
+        ]
+      },
+      'Warehouse Picking & Outbound': {
+        lanes: ['Customer Service','Warehouse & Logistics'],
+        steps: [
+          {lane:'Customer Service',        type:'start',    label:'Shipment Triggered'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Wave Planning',           system:'WMS'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Pick to Order',           system:'WMS'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Pack & Label',            system:'WMS'},
+          {lane:'Warehouse & Logistics',   type:'document', label:'Packing List',            system:'WMS'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Load & Despatch',         system:'WMS'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Send Shipment Notice',    system:'EDI / Supply Chain'},
+          {lane:'Customer Service',        type:'end',      label:'Shipment Despatched'},
+        ]
+      },
+      'Returns & Reverse Logistics': {
+        lanes: ['Customer Service','Warehouse & Logistics','Finance & Control'],
+        steps: [
+          {lane:'Customer Service',        type:'start',    label:'Return Request Received'},
+          {lane:'Customer Service',        type:'task',     label:'Authorise Return',        system:'OMS'},
+          {lane:'Customer Service',        type:'document', label:'Return Label / RMA',      system:'OMS'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Receive Returned Goods',  system:'WMS'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Quality Check'},
+          {lane:'Warehouse & Logistics',   type:'decision', label:'Resaleable?'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Restock or Dispose',      system:'WMS'},
+          {lane:'Finance & Control',       type:'task',     label:'Process Refund / Credit', system:'ERP'},
+          {lane:'Finance & Control',       type:'end',      label:'Return Settled'},
+        ]
+      },
+      'eInvoicing': {
+        lanes: ['Finance & Control','IT Integration & ERP'],
+        steps: [
+          {lane:'Finance & Control',       type:'start',    label:'Invoice Created',         system:'ERP'},
+          {lane:'IT Integration & ERP',    type:'task',     label:'Transform to eInvoice Format', system:'Middleware / Integration'},
+          {lane:'IT Integration & ERP',    type:'task',     label:'Validate Invoice Data',   system:'Middleware / Integration'},
+          {lane:'IT Integration & ERP',    type:'decision', label:'Validation OK?'},
+          {lane:'IT Integration & ERP',    type:'task',     label:'Submit to Peppol / Portal',system:'Middleware / Integration'},
+          {lane:'IT Integration & ERP',    type:'document', label:'eInvoice Sent',           system:'Middleware / Integration'},
+          {lane:'Finance & Control',       type:'task',     label:'Receive Acknowledgement', system:'ERP'},
+          {lane:'Finance & Control',       type:'end',      label:'Invoice Legally Delivered'},
+        ]
+      },
+      'Inventory Management & Replenishment': {
+        lanes: ['IT Integration & ERP','Planning & Supply Chain','Warehouse & Logistics'],
+        steps: [
+          {lane:'IT Integration & ERP',    type:'start',    label:'Stock Level Trigger'},
+          {lane:'Planning & Supply Chain', type:'task',     label:'Review Replenishment Signal', system:'BI & Analytics'},
+          {lane:'Planning & Supply Chain', type:'decision', label:'Replenishment Needed?'},
+          {lane:'Planning & Supply Chain', type:'task',     label:'Create Replenishment Order',  system:'ERP'},
+          {lane:'IT Integration & ERP',    type:'task',     label:'Send to Warehouse / Supplier',system:'Middleware / Integration'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Pick & Transfer',         system:'WMS'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Update Location',         system:'WMS'},
+          {lane:'IT Integration & ERP',    type:'task',     label:'Update Stock Records',    system:'ERP'},
+          {lane:'IT Integration & ERP',    type:'end',      label:'Stock Replenished'},
+        ]
+      },
+      'Retail Store Operations': {
+        lanes: ['Retail Operations','Finance & Control'],
+        steps: [
+          {lane:'Retail Operations',       type:'start',    label:'Store Opens'},
+          {lane:'Retail Operations',       type:'task',     label:'Receive Stock Delivery'},
+          {lane:'Retail Operations',       type:'task',     label:'Floor Replenishment'},
+          {lane:'Retail Operations',       type:'task',     label:'Serve Customer',          system:'POS'},
+          {lane:'Finance & Control',       type:'task',     label:'Process Transaction',     system:'POS'},
+          {lane:'Retail Operations',       type:'task',     label:'End of Day Reconciliation',system:'POS'},
+          {lane:'Finance & Control',       type:'task',     label:'Cash-Up & Z-Read',        system:'POS'},
+          {lane:'Finance & Control',       type:'task',     label:'Post Daily Sales',        system:'ERP'},
+          {lane:'Retail Operations',       type:'end',      label:'Store Closes'},
+        ]
+      },
+      'E-Commerce Order Fulfilment': {
+        lanes: ['E-Commerce','Warehouse & Logistics','Finance & Control'],
+        steps: [
+          {lane:'E-Commerce',              type:'start',    label:'Online Order Confirmed',  system:'E-Commerce Platform'},
+          {lane:'E-Commerce',              type:'task',     label:'Route Order to Warehouse',system:'OMS'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Pick & Pack',             system:'WMS'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Generate Shipping Label', system:'WMS'},
+          {lane:'Warehouse & Logistics',   type:'task',     label:'Hand to Carrier'},
+          {lane:'E-Commerce',              type:'task',     label:'Send Tracking Notification', system:'E-Commerce Platform'},
+          {lane:'Finance & Control',       type:'task',     label:'Capture Payment',         system:'ERP'},
+          {lane:'Finance & Control',       type:'end',      label:'Order Fulfilled'},
+        ]
+      },
+      'Financial Reporting & Period Close': {
+        lanes: ['Finance & Control','IT Integration & ERP'],
+        steps: [
+          {lane:'Finance & Control',       type:'start',    label:'Period End Triggered'},
+          {lane:'IT Integration & ERP',    type:'task',     label:'Run Interface Jobs',      system:'Middleware / Integration'},
+          {lane:'Finance & Control',       type:'task',     label:'Post Accruals & Journals',system:'ERP'},
+          {lane:'Finance & Control',       type:'task',     label:'Reconcile Sub-Ledgers',   system:'ERP'},
+          {lane:'Finance & Control',       type:'decision', label:'Reconciled?'},
+          {lane:'Finance & Control',       type:'task',     label:'Consolidate P&L & Balance Sheet', system:'BI & Analytics'},
+          {lane:'Finance & Control',       type:'document', label:'Management Accounts',     system:'BI & Analytics'},
+          {lane:'Finance & Control',       type:'task',     label:'Review & Sign-Off'},
+          {lane:'Finance & Control',       type:'end',      label:'Period Closed'},
+        ]
+      },
+      'Master Data Management': {
+        lanes: ['Merchandising & Buying','IT & Digital','IT Integration & ERP'],
+        steps: [
+          {lane:'Merchandising & Buying',  type:'start',    label:'New Record Request'},
+          {lane:'IT & Digital',            type:'task',     label:'Validate Completeness'},
+          {lane:'IT & Digital',            type:'decision', label:'Data Complete?'},
+          {lane:'IT Integration & ERP',    type:'task',     label:'Create in ERP Master',    system:'ERP'},
+          {lane:'IT Integration & ERP',    type:'task',     label:'Distribute to PIM / WMS', system:'Middleware / Integration'},
+          {lane:'IT Integration & ERP',    type:'task',     label:'Validate in Target Systems', system:'Middleware / Integration'},
+          {lane:'IT & Digital',            type:'document', label:'MDM Record Published'},
+          {lane:'Merchandising & Buying',  type:'end',      label:'Record Active'},
+        ]
+      },
+    }
   }
 };
 
@@ -9058,22 +9274,24 @@ function applyIndustryPreset() {
   const preset   = _INDUSTRY_PRESETS[industry];
   if (!preset) return;
   const bs = bsGet();
+  _snapshot();
 
-  let added = { apps: 0, depts: 0, roles: 0, procs: 0 };
-
-  // Helper: is name already in array?
+  let added = { apps: 0, depts: 0, roles: 0, procs: 0, swimlanes: 0 };
+  const newAppIds = [], newDeptIds_arr = [], newProcItems = [];
+  const newDeptIds = {}; // name → id (role linking)
   const has = (arr, name) => arr.some(x => x.name.toLowerCase() === name.toLowerCase());
 
   // ── Apps ──
   document.querySelectorAll('.ip-cb-apps:checked').forEach(cb => {
     const item = preset.apps.find(a => a.name === cb.dataset.name);
     if (!item || has(bs.apps, item.name)) return;
-    bs.apps.push({ id: bsId(), name: item.name, description: item.description, x: 20 + bs.apps.length * 190, y: 40 });
+    const id = bsId();
+    bs.apps.push({ id, name: item.name, description: item.description, x: 20 + bs.apps.length * 190, y: 40 });
+    newAppIds.push(id);
     added.apps++;
   });
 
   // ── Departments ──
-  const newDeptIds = {}; // name → id (for role linking)
   document.querySelectorAll('.ip-cb-depts:checked').forEach(cb => {
     const item = preset.departments.find(d => d.name === cb.dataset.name);
     if (!item) return;
@@ -9082,6 +9300,7 @@ function applyIndustryPreset() {
     const id = bsId();
     bs.departments.push({ id, name: item.name, description: item.description });
     newDeptIds[item.name] = id;
+    newDeptIds_arr.push(id);
     added.depts++;
   });
 
@@ -9089,7 +9308,6 @@ function applyIndustryPreset() {
   document.querySelectorAll('.ip-cb-roles:checked').forEach(cb => {
     const item = preset.roles.find(r => r.name === cb.dataset.name);
     if (!item || has(bs.roles, item.name)) return;
-    // resolve departmentId — use newly added or already existing
     let deptId = newDeptIds[item.department] || '';
     if (!deptId) {
       const existDept = bs.departments.find(d => d.name.toLowerCase() === (item.department||'').toLowerCase());
@@ -9099,13 +9317,80 @@ function applyIndustryPreset() {
     added.roles++;
   });
 
-  // ── Processes ──
+  // ── Business Processes (catalogue) ──
   if (!bs.bsProcesses) bs.bsProcesses = [];
   document.querySelectorAll('.ip-cb-procs:checked').forEach(cb => {
     const item = preset.processes.find(p => p.name === cb.dataset.name);
     if (!item || has(bs.bsProcesses, item.name)) return;
-    bs.bsProcesses.push({ id: bsId(), name: item.name, description: item.description });
+    const id = bsId();
+    bs.bsProcesses.push({ id, name: item.name, description: item.description });
+    newProcItems.push({ id, name: item.name });
     added.procs++;
+  });
+
+  // ── ArchiMate canvas auto-population ──────────────────────────
+  if (!model.elementPositions) model.elementPositions = {};
+  const EW = 160, EH = 70, GX = 20, GY = 20;
+  const COLS = 4;
+  function _gridPos(idx, baseX, baseY) {
+    return { x: baseX + (idx % COLS) * (EW + GX), y: baseY + Math.floor(idx / COLS) * (EH + GY) };
+  }
+
+  // Apps → ApplicationComponent  (y=620)
+  const appBase = model.elements.filter(e => e.type === 'ApplicationComponent').length;
+  newAppIds.forEach((id, i) => {
+    const app = bs.apps.find(a => a.id === id);
+    if (!app || model.elements.find(e => e.id === id)) return;
+    model.elements.push({ id, layer:'application', type:'ApplicationComponent', name:app.name, documentation:app.description||'', properties:[], _bs:true });
+    model.elementPositions[id] = _gridPos(appBase + i, 40, 620);
+  });
+
+  // Departments → BusinessActor  (y=370)
+  const deptBase = model.elements.filter(e => e.type === 'BusinessActor').length;
+  newDeptIds_arr.forEach((id, i) => {
+    const dept = bs.departments.find(d => d.id === id);
+    if (!dept || model.elements.find(e => e.id === id)) return;
+    model.elements.push({ id, layer:'business', type:'BusinessActor', name:dept.name, documentation:dept.description||'', properties:[], _bs:true });
+    model.elementPositions[id] = _gridPos(deptBase + i, 40, 370);
+  });
+
+  // Processes → BusinessProcess  (y=50)
+  const procBase = model.elements.filter(e => e.type === 'BusinessProcess').length;
+  newProcItems.forEach((proc, i) => {
+    if (model.elements.find(e => e.id === proc.id)) return;
+    model.elements.push({ id:proc.id, layer:'business', type:'BusinessProcess', name:proc.name, documentation:'', properties:[], _bs:true });
+    model.elementPositions[proc.id] = _gridPos(procBase + i, 40, 50);
+  });
+
+  // ── Swimlane processes ────────────────────────────────────────
+  if (!model.processes) model.processes = [];
+  const tpls = (preset.swimlaneTemplates) || {};
+  newProcItems.forEach(proc => {
+    const tpl = tpls[proc.name];
+    if (!tpl) return;
+    if (model.processes.find(p => p.name.toLowerCase() === proc.name.toLowerCase())) return;
+    // Build lanes
+    const laneMap = {};
+    const lanes = tpl.lanes.map(lname => {
+      const id = genId(); laneMap[lname] = id;
+      return { id, name: lname };
+    });
+    // Build steps
+    const stepIds = [];
+    const steps = tpl.steps.map(s => {
+      const sid = genId();
+      stepIds.push(sid);
+      const obj = { id:sid, laneId:laneMap[s.lane] || lanes[0].id, columnId:'', type:s.type, label:s.label, documentation:'', properties:[] };
+      if (s.system) obj.system = s.system;
+      return obj;
+    });
+    // Sequential flows (happy path)
+    const flows = [];
+    for (let i = 0; i < stepIds.length - 1; i++) {
+      flows.push({ id:genId(), from:stepIds[i], to:stepIds[i+1], label:'' });
+    }
+    model.processes.push({ id:genId(), name:proc.name, bsSourceId:proc.id, lanes, steps, flows, columns:[] });
+    added.swimlanes++;
   });
 
   syncBsToArchiMate();
@@ -9113,9 +9398,10 @@ function applyIndustryPreset() {
   hideIndustryPreset();
 
   const total = added.apps + added.depts + added.roles + added.procs;
-  const NL = currentLang === 'nl';
-  const msg = total
-    ? `🏭 ${total} item${total !== 1 ? 's' : ''} added — ${added.apps} system${added.apps!==1?'s':''}, ${added.depts} dept${added.depts!==1?'s':''}, ${added.roles} role${added.roles!==1?'s':''}, ${added.procs} process${added.procs!==1?'es':''}.`
+  const NL    = currentLang === 'nl';
+  const swMsg = added.swimlanes ? ` + ${added.swimlanes} swimlane${added.swimlanes !== 1 ? 's' : ''}` : '';
+  const msg   = total
+    ? `\u{1F3ED} ${total} item${total !== 1 ? 's' : ''} added — ${added.apps} system${added.apps!==1?'s':''}, ${added.depts} dept${added.depts!==1?'s':''}, ${added.roles} role${added.roles!==1?'s':''}, ${added.procs} process${added.procs!==1?'es':''}${swMsg}.`
     : (NL ? 'Niets toegevoegd — alles was al aanwezig.' : 'Nothing added — all items already present.');
   showToast(msg, total ? 'proc' : '');
   if (total) showBsTab('apps');
