@@ -2291,6 +2291,30 @@
   </div>
 </div>
 
+<!-- ── Industry Preset modal ────────────────────────────────── -->
+<div id="industryPresetModal" class="modal-overlay" onclick="if(event.target===this)hideIndustryPreset()" style="z-index:2500">
+  <div class="modal-box" style="max-width:640px;max-height:88vh;display:flex;flex-direction:column;padding:0;overflow:hidden">
+    <div style="padding:1.5rem 1.75rem 1rem;flex-shrink:0">
+      <div class="modal-header" style="margin-bottom:.4rem">
+        <div class="modal-title">🏭 Industry Preset</div>
+        <button class="modal-close" onclick="hideIndustryPreset()">×</button>
+      </div>
+      <p class="modal-sub" style="margin-bottom:.85rem">Choose what to add to your Business Systems. Existing items with the same name are skipped automatically.</p>
+      <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+        <select id="ip-industry-select" class="elem-input" style="font-size:.83rem;flex:1;min-width:180px" onchange="renderPresetChecklist()">
+          <option value="fashion">Fashion &amp; Apparel Retail</option>
+        </select>
+        <span id="ip-selected-count" style="font-size:.78rem;color:var(--muted);white-space:nowrap"></span>
+      </div>
+    </div>
+    <div id="ip-checklist" style="flex:1;overflow-y:auto;padding:0 1.75rem 1rem;border-top:1px solid var(--border)"></div>
+    <div style="padding:.85rem 1.75rem;border-top:1px solid var(--border);display:flex;gap:.6rem;justify-content:flex-end;flex-shrink:0">
+      <button class="btn btn-secondary" onclick="hideIndustryPreset()">Cancel</button>
+      <button class="btn btn-primary" onclick="applyIndustryPreset()">Add to Business Systems</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Step Info modal ───────────────────────────────────────── -->
 <div id="stepInfoModal" class="modal-overlay" onclick="if(event.target===this)hideStepInfo()" style="z-index:2600">
   <div class="modal-box" style="max-width:480px">
