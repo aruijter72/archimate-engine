@@ -8052,6 +8052,8 @@ function generateHTMLPlatform() {
   }
   // Per-process layer SVGs so the VA can show process-scoped diagrams
   const procLayerSVGs = {};
+  // Combined (all-layer) ArchiMate canvas SVG per process
+  const procArchiSVGs = {};
   for (const p of procs) {
     const bsPid = p.bsProcessId;
     const pm    = bsPid ? (model.processModels[bsPid] || {}) : {};
@@ -8063,6 +8065,8 @@ function generateHTMLPlatform() {
       const le = pmElems.filter(el => el.layer === lk);
       if (le.length) procLayerSVGs[p.id][lk] = _buildCanvasSVG(le, pmPos, null) || '';
     }
+    // Combined canvas — all elements together (business + application layers)
+    procArchiSVGs[p.id] = _buildCanvasSVG(pmElems, pmPos, null) || '';
   }
   const viewSVGs = {};
   for (const v of views) {
@@ -8393,6 +8397,20 @@ section{margin-bottom:2rem}
         <button class="proc-switch-btn" id="pa-switch-swim" onclick="switchToSwim()">🌊 <span data-en="View Swimlane" data-nl="Bekijk Swimlane">View Swimlane</span></button>
       </div>
     </div>
+    <section id="pa-canvas-section" style="display:none">
+      <div class="section-h">
+        <span data-en="Architecture Canvas" data-nl="Architectuurcanvas">Architecture Canvas</span>
+      </div>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <span data-en="Use +/− to zoom" data-nl="Gebruik +/− om te zoomen">Use +/− to zoom</span>
+          <button class="cv-btn" onclick="cvZoom('pa-cv',-1)">−</button>
+          <button class="cv-btn" onclick="cvReset('pa-cv')">⊡</button>
+          <button class="cv-btn" onclick="cvZoom('pa-cv',1)">+</button>
+        </div>
+        <div class="canvas-inner" id="pa-cv"></div>
+      </div>
+    </section>
     <section>
       <div class="section-h"><span data-en="Elements" data-nl="Elementen">Elements</span><span class="section-count" id="pa-elem-count"></span></div>
       <div class="elem-grid" id="pa-elems-grid"></div>
@@ -8498,6 +8516,7 @@ const MODEL      = ${J(safeModel)};
 const PROC_SVGS       = ${J(procSVGs)};
 const LAYER_SVGS      = ${J(layerSVGs)};
 const PROC_LAYER_SVGS = ${J(procLayerSVGs)};
+const PROC_ARCHI_SVGS = ${J(procArchiSVGs)};
 const VIEW_SVGS       = ${J(viewSVGs)};
 const TYPE_LABELS= ${J(TYPE_LABELS)};
 const REL_TYPES  = ${J(REL_TYPES.map(rt=>({id:rt.id,label:rt.label,desc:{en:rt.desc?.en||'',nl:rt.desc?.nl||''}})))};
@@ -8650,6 +8669,22 @@ function renderProcArchiPage(proc) {
   document.getElementById('pa-name').textContent = nm;
   document.getElementById('pa-doc').textContent  = proc.documentation || T('No documentation.','Geen documentatie.');
   updateTopbar(nm);
+
+  // ── ArchiMate canvas ────────────────────────────────────────
+  const archiSvg     = PROC_ARCHI_SVGS?.[proc.id] || '';
+  const canvasSec    = document.getElementById('pa-canvas-section');
+  const canvasInner  = document.getElementById('pa-cv');
+  if (canvasSec && canvasInner) {
+    if (archiSvg) {
+      canvasSec.style.display = '';
+      canvasInner.innerHTML   = archiSvg;
+      _zoomState['pa-cv']     = 1;
+      const svgEl = canvasInner.querySelector('svg');
+      if (svgEl) svgEl.style.transform = 'scale(1)';
+    } else {
+      canvasSec.style.display = 'none';
+    }
+  }
 
   // Use this process's own element set if available; fall back to global
   const procPm = proc.bsProcessId ? (MODEL.processModels?.[proc.bsProcessId] || {}) : {};
