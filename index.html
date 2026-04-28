@@ -8772,8 +8772,6 @@ function renderProcSwimPage(proc) {
     : '<p class="empty-note" style="padding:1rem">' + T('No swimlane diagram available for this process.','Geen swimlane-diagram beschikbaar voor dit proces.') + '</p>';
   // Reset zoom
   _zoomState['swim-cv'] = 1;
-  const svgEl = cvWrap.querySelector('svg');
-  if (svgEl) svgEl.style.transform = 'scale(1)';
 }
 
 // ── View page ─────────────────────────────────────────────────
