@@ -5042,6 +5042,24 @@ function _seedArchFromSwimlane(proc) {
       newRelationships.push({ id: genId(), type: 'TriggeringRelationship', sourceId: fromEid, targetId: toEid, name: f.label || '', documentation: '', directed: true, accessType: 'ReadWrite', strength: '' });
   });
 
+  // step.system → ApplicationComponent (application layer)
+  // One element per unique system name; re-use any existing AppComponent with that name.
+  const sysElemIds = {}; // system name → element id
+  (proc.steps || []).forEach(s => {
+    if (!s.system || sysElemIds[s.system]) return;
+    const already = (model.elements || []).find(e => e.type === 'ApplicationComponent' && e.name.toLowerCase() === s.system.toLowerCase());
+    sysElemIds[s.system] = already ? already.id : genId();
+    if (!already)
+      newElements.push({ id: sysElemIds[s.system], layer: 'application', type: 'ApplicationComponent', name: s.system, documentation: '', properties: [] });
+  });
+  // ServingRelationship: ApplicationComponent → each step it serves
+  (proc.steps || []).forEach(s => {
+    const sysEid  = s.system ? sysElemIds[s.system] : null;
+    const stepEid = stepElemIds[s.id];
+    if (sysEid && stepEid)
+      newRelationships.push({ id: genId(), type: 'ServingRelationship', sourceId: sysEid, targetId: stepEid, name: '', documentation: '', directed: false, accessType: 'ReadWrite', strength: '' });
+  });
+
   // Merge into the current (process-specific) model arrays
   if (!model.elements)      model.elements      = [];
   if (!model.relationships) model.relationships = [];
@@ -14204,6 +14222,11 @@ function deleteProcess(id) {
   renderProcTab();
 }
 
+function renameProcInline(id, name) {
+  const proc = (model.processes || []).find(p => p.id === id);
+  if (proc) { proc.name = name; autoSave(); }
+}
+
 function selectProcess(id) {
   _activeProcId = id;
   renderProcTab();
@@ -16164,12 +16187,28 @@ function renderProcTab() {
       <!-- LEFT: Form panels -->
       <div class="proc-form">
 
-        ${!proc ? `
-        <div class="proc-empty" style="padding:2rem 1rem;text-align:center;color:var(--text2)">
-          ${NL
-            ? 'Selecteer een process via het <strong style="color:var(--gold)">ArchiMate</strong>-tabblad om te beginnen.'
-            : 'Select a process via the <strong style="color:var(--gold)">ArchiMate</strong> tab to get started.'}
-        </div>` : ''}
+        <!-- ── Process Switcher (always visible) ── -->
+        <div class="proc-section" style="padding-bottom:.6rem">
+          <div class="proc-section-header">
+            <span class="proc-section-title" style="font-size:.72rem">${NL ? 'Processen' : 'Processes'}</span>
+            <button class="btn-add proc" onclick="addProcess()" style="font-size:.7rem;padding:.18rem .5rem">+ ${NL ? 'Nieuw' : 'New'}</button>
+          </div>
+          ${!(model.processes||[]).length
+            ? `<div class="proc-empty" style="font-size:.78rem">${NL ? 'Nog geen processen — maak er een aan met + Nieuw.' : 'No processes yet — click + New to create one.'}</div>`
+            : `<div style="display:flex;flex-direction:column;gap:.15rem;max-height:160px;overflow-y:auto">
+                ${(model.processes||[]).map(p => `
+                  <div class="proc-row${p.id === _activeProcId ? ' selected' : ''}" onclick="selectProcess('${p.id}')" style="cursor:pointer;gap:.35rem;padding:.28rem .4rem">
+                    <span style="font-size:.65rem;color:${p.bsProcessId ? 'var(--gold)' : 'var(--muted)'};flex-shrink:0" title="${p.bsProcessId ? (NL?'Gekoppeld aan Business Systems':'Linked to Business Systems') : ''}">⬡</span>
+                    <input class="elem-input" value="${esc(p.name)}"
+                      oninput="renameProcInline('${p.id}',this.value)"
+                      onclick="event.stopPropagation()"
+                      placeholder="${NL ? 'Naam…' : 'Name…'}"
+                      style="flex:1;padding:.18rem .4rem;font-size:.8rem;background:transparent;border-color:${p.id === _activeProcId ? 'var(--proc)' : 'transparent'}">
+                    <span style="font-size:.64rem;color:var(--muted);flex-shrink:0">${(p.steps||[]).length}s</span>
+                    <button class="btn-del-sm" onclick="event.stopPropagation();deleteProcess('${p.id}')" title="${NL ? 'Verwijderen' : 'Delete'}" style="flex-shrink:0">×</button>
+                  </div>`).join('')}
+              </div>`}
+        </div>
 
         ${proc ? `
         <!-- Columns (optional extra dimension) -->
