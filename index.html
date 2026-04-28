@@ -8705,8 +8705,6 @@ function renderProcArchiPage(proc) {
       canvasSec.style.display = '';
       canvasInner.innerHTML   = archiSvg;
       _zoomState['pa-cv']     = 1;
-      const svgEl = canvasInner.querySelector('svg');
-      if (svgEl) svgEl.style.transform = 'scale(1)';
     } else {
       canvasSec.style.display = 'none';
     }
