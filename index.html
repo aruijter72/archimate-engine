@@ -10238,11 +10238,15 @@ function renderBsCanvas() {
     const x1 = (src.x||20) + BS_BOX_W/2, y1 = (src.y||20) + BS_BOX_H/2;
     const x2 = (tgt.x||20) + BS_BOX_W/2, y2 = (tgt.y||20) + BS_BOX_H/2;
     const isSelRel = _bsSelRelId === rel.id;
+    // Visible line
+    out += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+      stroke="${isSelRel ? '#C9A355' : '#adb5c7'}" stroke-width="${isSelRel ? 2.5 : 1.8}"
+      marker-end="url(#bsArr)" style="pointer-events:none"/>`;
+    // Wide invisible hit-zone on top for easy clicking
     out += `<line data-rel="${rel.id}"
       x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
-      stroke="${isSelRel ? '#C9A355' : '#adb5c7'}" stroke-width="${isSelRel ? 2.5 : 1.8}"
-      marker-end="url(#bsArr)" style="cursor:pointer"
-      onclick="bsRelClick(event,'${rel.id}')"/>`;
+      stroke="transparent" stroke-width="14"
+      style="cursor:pointer" onclick="bsRelClick(event,'${rel.id}')" fill="none"/>`;
   }
 
   // App elements
