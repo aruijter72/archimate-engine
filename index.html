@@ -8877,6 +8877,249 @@ function applyMode() {
 function bsId() {
   return 'bs-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
 }
+
+// ══════════════════════════════════════════════════════════════
+// INDUSTRY PRESETS
+// ══════════════════════════════════════════════════════════════
+const _INDUSTRY_PRESETS = {
+  fashion: {
+    label: 'Fashion & Apparel Retail',
+    apps: [
+      { name: 'ERP',                       description: 'Enterprise Resource Planning — Finance, Order2Cash, central data repository (e.g. SAP S/4HANA, Microsoft Dynamics 365, NetSuite)' },
+      { name: 'WMS',                        description: 'Warehouse Management System — inbound, picking, outbound and stock control (e.g. Manhattan WMS, Blue Yonder, SAP EWM)' },
+      { name: 'PIM',                        description: 'Product Information Management — product content, images and attributes for all channels (e.g. Akeneo, inRiver, Contentserv)' },
+      { name: 'PLM',                        description: 'Product Lifecycle Management — design, sampling and tech-pack management (e.g. Centric PLM, Lectra, Gerber)' },
+      { name: 'POS',                        description: 'Point of Sale — in-store retail transactions and till systems (e.g. New Black, Lightspeed, Oracle Retail)' },
+      { name: 'E-Commerce Platform',        description: 'Online store and D2C sales channel (e.g. Salesforce Commerce Cloud, Shopify Plus, Magento)' },
+      { name: 'Middleware / Integration',   description: 'Integration platform for routing and mapping messages between systems (e.g. Boomi, MuleSoft, Azure Integration Services)' },
+      { name: 'CRM',                        description: 'Customer Relationship Management — accounts, contacts and wholesale account management (e.g. Salesforce CRM, Microsoft Dynamics)' },
+      { name: 'BI & Analytics',             description: 'Business Intelligence and reporting (e.g. Power BI, Tableau, SAP Analytics Cloud)' },
+      { name: 'OMS',                        description: 'Order Management System — omnichannel order routing and fulfilment (e.g. Manhattan OMS, Salesforce OMS)' },
+      { name: 'EDI / Supply Chain',         description: 'Electronic Data Interchange with suppliers, carriers and retail partners (e.g. SPS Commerce, TrueCommerce)' },
+      { name: 'HRM',                        description: 'Human Resource Management — personnel, payroll and recruitment (e.g. Workday, SAP SuccessFactors, AFAS)' },
+    ],
+    departments: [
+      { name: 'Customer Service',         description: 'Manages all customer-facing activities including order intake, query handling and returns' },
+      { name: 'Finance & Control',        description: 'End-to-end financial management including AP/AR, reporting and compliance' },
+      { name: 'IT & Digital',             description: 'Technology strategy, digital platforms and IT support' },
+      { name: 'IT Integration & ERP',     description: 'Middleware development, ERP functional management and solution architecture' },
+      { name: 'Warehouse & Logistics',    description: 'Inbound goods receipt, picking, packing and outbound shipment' },
+      { name: 'Merchandising & Buying',   description: 'Range planning, supplier selection, product development and buying' },
+      { name: 'Sales & Wholesale',        description: 'B2B sales to wholesale accounts, department stores and key accounts' },
+      { name: 'Retail Operations',        description: 'In-store operations, visual merchandising and store management' },
+      { name: 'E-Commerce',               description: 'Online sales channel, D2C fulfilment and digital customer experience' },
+      { name: 'HR & People',              description: 'Recruitment, personnel management, payroll and organisational development' },
+      { name: 'Marketing & Brand',        description: 'Brand management, campaigns, content and trade marketing' },
+      { name: 'Planning & Supply Chain',  description: 'Demand planning, supply chain coordination and inventory optimisation' },
+    ],
+    roles: [
+      // Customer Service
+      { name: 'Customer Service Manager',       description: 'Leads the customer service team and is responsible for service levels and processes',  department: 'Customer Service' },
+      { name: 'Customer Service Representative',description: 'Handles customer orders, queries, complaints and returns day-to-day',                   department: 'Customer Service' },
+      { name: 'Order Management Specialist',    description: 'Manages order intake, status tracking and exception handling',                           department: 'Customer Service' },
+      // Finance
+      { name: 'Finance Director',               description: 'Leads financial strategy, reporting and compliance',                                     department: 'Finance & Control' },
+      { name: 'Financial Controller',           description: 'Responsible for financial reporting, period close and internal controls',                 department: 'Finance & Control' },
+      { name: 'AP/AR Specialist',               description: 'Manages accounts payable and receivable, invoice processing and reconciliation',         department: 'Finance & Control' },
+      // IT & Digital
+      { name: 'IT Director / CTO',              description: 'Responsible for technology strategy, infrastructure and digital transformation',          department: 'IT & Digital' },
+      { name: 'Solution Architect',             description: 'Designs end-to-end technical solutions and integration architecture',                    department: 'IT & Digital' },
+      { name: 'Business Systems Analyst',       description: 'Bridges business requirements and IT implementations across applications',               department: 'IT & Digital' },
+      // IT Integration & ERP
+      { name: 'ERP Consultant — Order2Cash',    description: 'Functional specialist for Order2Cash processes in the ERP',                             department: 'IT Integration & ERP' },
+      { name: 'ERP Consultant — Finance',       description: 'Functional specialist for Finance and Controlling in the ERP',                          department: 'IT Integration & ERP' },
+      { name: 'ERP Consultant — Logistics',     description: 'Functional specialist for Warehouse and Logistics processes in the ERP',                department: 'IT Integration & ERP' },
+      { name: 'Integration Developer',          description: 'Develops and maintains integration flows between systems',                               department: 'IT Integration & ERP' },
+      { name: 'Middleware Developer',           description: 'Builds and manages middleware mappings, APIs and routing logic',                         department: 'IT Integration & ERP' },
+      // Warehouse
+      { name: 'Warehouse Manager',              description: 'Leads warehouse operations and is accountable for accuracy and throughput',              department: 'Warehouse & Logistics' },
+      { name: 'Logistics Coordinator',          description: 'Coordinates inbound and outbound shipments and carrier relationships',                   department: 'Warehouse & Logistics' },
+      { name: 'Inventory Controller',           description: 'Manages stock accuracy, cycle counts and replenishment triggers',                        department: 'Warehouse & Logistics' },
+      // Merchandising
+      { name: 'Head of Buying',                 description: 'Leads the buying team and is responsible for the product range and supplier strategy',   department: 'Merchandising & Buying' },
+      { name: 'Buyer',                          description: 'Selects and negotiates products and manages supplier relationships for a category',      department: 'Merchandising & Buying' },
+      { name: 'Merchandise Planner',            description: 'Plans intake, OTB and phasing to optimise stock and sell-through',                      department: 'Merchandising & Buying' },
+      // Sales
+      { name: 'Sales Director',                 description: 'Leads wholesale sales strategy and key account relationships',                           department: 'Sales & Wholesale' },
+      { name: 'Account Manager',                description: 'Manages day-to-day relationships with wholesale accounts and drives sell-in',            department: 'Sales & Wholesale' },
+      { name: 'Sales Support Coordinator',      description: 'Handles order processing, order confirmations and account administration',               department: 'Sales & Wholesale' },
+      // Retail
+      { name: 'Store Manager',                  description: 'Responsible for store operations, team and commercial performance',                      department: 'Retail Operations' },
+      { name: 'Visual Merchandiser',            description: 'Creates in-store product presentations and manages visual standards',                    department: 'Retail Operations' },
+      // E-Commerce
+      { name: 'E-Commerce Manager',             description: 'Owns the online sales channel, UX and D2C performance',                                 department: 'E-Commerce' },
+      { name: 'Digital Specialist',             description: 'Manages digital content, SEO/SEA and online merchandising',                             department: 'E-Commerce' },
+      // HR
+      { name: 'HR Director',                    description: 'Leads people strategy, organisational development and HR policy',                       department: 'HR & People' },
+      { name: 'HR Business Partner',            description: 'Partners with business units on talent, performance and organisational change',          department: 'HR & People' },
+      // Marketing
+      { name: 'Marketing Director',             description: 'Responsible for brand strategy, campaigns and marketing budget',                        department: 'Marketing & Brand' },
+      { name: 'Brand Manager',                  description: 'Manages brand identity, seasonal campaigns and trade marketing',                         department: 'Marketing & Brand' },
+      // Planning
+      { name: 'Head of Planning',               description: 'Leads demand planning, supply chain and inventory strategy',                            department: 'Planning & Supply Chain' },
+      { name: 'Demand Planner',                 description: 'Forecasts demand by category and channel and feeds procurement',                        department: 'Planning & Supply Chain' },
+      { name: 'Supply Chain Coordinator',       description: 'Coordinates supplier lead times, inbound logistics and stock availability',              department: 'Planning & Supply Chain' },
+    ],
+    processes: [
+      { name: 'Order2Cash — Wholesale',                   description: 'End-to-end process from wholesale order intake to payment receipt' },
+      { name: 'Order2Cash — Direct to Consumer (D2C)',    description: 'Online order placement through to delivery and payment for end consumers' },
+      { name: 'Order2Cash — Concession & Consignment',    description: 'Order process for customers with concession or consignment contract models' },
+      { name: 'Procure2Pay — Purchase Orders',            description: 'Purchase order creation through to supplier invoice payment' },
+      { name: 'Product Development & Sampling',           description: 'New product design, tech-pack creation and sample approval process' },
+      { name: 'Season Planning & Buying',                 description: 'Range planning, OTB setting, supplier negotiation and range finalisation' },
+      { name: 'Goods Receipt & Inbound Logistics',        description: 'Receiving, inspection and put-away of inbound stock from suppliers' },
+      { name: 'Warehouse Picking & Outbound',             description: 'Pick, pack and despatch of orders to customers and stores' },
+      { name: 'Returns & Reverse Logistics',              description: 'Customer and store returns, inspection, restock or write-off handling' },
+      { name: 'eInvoicing',                               description: 'Digital sending and receiving of invoices in compliance with local regulations' },
+      { name: 'Inventory Management & Replenishment',     description: 'Stock monitoring, cycle counting and replenishment to stores and DCs' },
+      { name: 'Retail Store Operations',                  description: 'Day-to-day in-store processes including opening, sales and closing' },
+      { name: 'E-Commerce Order Fulfilment',              description: 'Picking, packing and shipping of online orders from warehouse or store' },
+      { name: 'Financial Reporting & Period Close',       description: 'Month-end and year-end financial close, consolidation and reporting' },
+      { name: 'Master Data Management',                   description: 'Creation, maintenance and governance of product, customer and supplier master data' },
+    ]
+  }
+};
+
+function showIndustryPreset() {
+  document.getElementById('industryPresetModal').classList.add('open');
+  renderPresetChecklist();
+}
+
+function hideIndustryPreset() {
+  document.getElementById('industryPresetModal').classList.remove('open');
+}
+
+function renderPresetChecklist() {
+  const industry = document.getElementById('ip-industry-select').value;
+  const preset   = _INDUSTRY_PRESETS[industry];
+  if (!preset) return;
+  const bs       = bsGet();
+  const NL       = currentLang === 'nl';
+
+  // Build name sets for dedup display
+  const existingApps  = new Set(bs.apps.map(a => a.name.toLowerCase()));
+  const existingDepts = new Set(bs.departments.map(d => d.name.toLowerCase()));
+  const existingRoles = new Set(bs.roles.map(r => r.name.toLowerCase()));
+  const existingProcs = new Set((bs.bsProcesses||[]).map(p => p.name.toLowerCase()));
+
+  function section(id, icon, label, items, existingSet) {
+    const allNew = items.filter(i => !existingSet.has(i.name.toLowerCase()));
+    if (!allNew.length) return `<div style="margin-top:1rem;font-size:.8rem;color:var(--muted);">${icon} ${label} — <em>all already present</em></div>`;
+    return `
+      <div class="ip-section" style="margin-top:1.1rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem">
+          <span style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">${icon} ${label} <span class="ip-sec-count" id="ip-count-${id}" style="color:var(--gold)"></span></span>
+          <span style="font-size:.72rem;color:var(--muted);display:flex;gap:.75rem">
+            <a href="#" onclick="ipToggleSection('${id}',true);return false">All</a>
+            <a href="#" onclick="ipToggleSection('${id}',false);return false">None</a>
+          </span>
+        </div>
+        <div id="ip-sec-${id}" style="display:flex;flex-direction:column;gap:.2rem">
+          ${allNew.map((item, i) => `
+            <label style="display:flex;align-items:flex-start;gap:.55rem;cursor:pointer;padding:.25rem .35rem;border-radius:5px;transition:background .1s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background=''">
+              <input type="checkbox" checked class="ip-cb ip-cb-${id}" data-name="${item.name.replace(/"/g,'&quot;')}" style="margin-top:.25rem;accent-color:var(--gold);flex-shrink:0" onchange="ipUpdateCount()">
+              <span>
+                <span style="font-size:.83rem;color:var(--white)">${item.name}</span>
+                ${item.description ? `<span style="display:block;font-size:.72rem;color:var(--muted);line-height:1.5">${item.description}</span>` : ''}
+              </span>
+            </label>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  document.getElementById('ip-checklist').innerHTML =
+    section('apps',  '🖥', 'Systems & Applications', preset.apps,        existingApps) +
+    section('depts', '🏢', 'Departments',             preset.departments, existingDepts) +
+    section('roles', '👤', 'Roles',                   preset.roles,       existingRoles) +
+    section('procs', '⬡', 'Business Processes',      preset.processes,   existingProcs);
+
+  ipUpdateCount();
+}
+
+function ipToggleSection(id, checked) {
+  document.querySelectorAll(`.ip-cb-${id}`).forEach(cb => cb.checked = checked);
+  ipUpdateCount();
+}
+
+function ipUpdateCount() {
+  const total = document.querySelectorAll('.ip-cb:checked').length;
+  const el    = document.getElementById('ip-selected-count');
+  if (el) el.textContent = total ? `${total} item${total !== 1 ? 's' : ''} selected` : 'Nothing selected';
+  // Per-section counts
+  ['apps','depts','roles','procs'].forEach(id => {
+    const n = document.querySelectorAll(`.ip-cb-${id}:checked`).length;
+    const c = document.getElementById(`ip-count-${id}`);
+    if (c) c.textContent = n ? `(${n})` : '';
+  });
+}
+
+function applyIndustryPreset() {
+  const industry = document.getElementById('ip-industry-select').value;
+  const preset   = _INDUSTRY_PRESETS[industry];
+  if (!preset) return;
+  const bs = bsGet();
+
+  let added = { apps: 0, depts: 0, roles: 0, procs: 0 };
+
+  // Helper: is name already in array?
+  const has = (arr, name) => arr.some(x => x.name.toLowerCase() === name.toLowerCase());
+
+  // ── Apps ──
+  document.querySelectorAll('.ip-cb-apps:checked').forEach(cb => {
+    const item = preset.apps.find(a => a.name === cb.dataset.name);
+    if (!item || has(bs.apps, item.name)) return;
+    bs.apps.push({ id: bsId(), name: item.name, description: item.description, x: 20 + bs.apps.length * 190, y: 40 });
+    added.apps++;
+  });
+
+  // ── Departments ──
+  const newDeptIds = {}; // name → id (for role linking)
+  document.querySelectorAll('.ip-cb-depts:checked').forEach(cb => {
+    const item = preset.departments.find(d => d.name === cb.dataset.name);
+    if (!item) return;
+    let existing = bs.departments.find(d => d.name.toLowerCase() === item.name.toLowerCase());
+    if (existing) { newDeptIds[item.name] = existing.id; return; }
+    const id = bsId();
+    bs.departments.push({ id, name: item.name, description: item.description });
+    newDeptIds[item.name] = id;
+    added.depts++;
+  });
+
+  // ── Roles ──
+  document.querySelectorAll('.ip-cb-roles:checked').forEach(cb => {
+    const item = preset.roles.find(r => r.name === cb.dataset.name);
+    if (!item || has(bs.roles, item.name)) return;
+    // resolve departmentId — use newly added or already existing
+    let deptId = newDeptIds[item.department] || '';
+    if (!deptId) {
+      const existDept = bs.departments.find(d => d.name.toLowerCase() === (item.department||'').toLowerCase());
+      if (existDept) deptId = existDept.id;
+    }
+    bs.roles.push({ id: bsId(), name: item.name, description: item.description, departmentId: deptId });
+    added.roles++;
+  });
+
+  // ── Processes ──
+  if (!bs.bsProcesses) bs.bsProcesses = [];
+  document.querySelectorAll('.ip-cb-procs:checked').forEach(cb => {
+    const item = preset.processes.find(p => p.name === cb.dataset.name);
+    if (!item || has(bs.bsProcesses, item.name)) return;
+    bs.bsProcesses.push({ id: bsId(), name: item.name, description: item.description });
+    added.procs++;
+  });
+
+  syncBsToArchiMate();
+  renderBsPanel();
+  hideIndustryPreset();
+
+  const total = added.apps + added.depts + added.roles + added.procs;
+  const NL = currentLang === 'nl';
+  const msg = total
+    ? `🏭 ${total} item${total !== 1 ? 's' : ''} added — ${added.apps} system${added.apps!==1?'s':''}, ${added.depts} dept${added.depts!==1?'s':''}, ${added.roles} role${added.roles!==1?'s':''}, ${added.procs} process${added.procs!==1?'es':''}.`
+    : (NL ? 'Niets toegevoegd — alles was al aanwezig.' : 'Nothing added — all items already present.');
+  showToast(msg, total ? 'proc' : '');
+  if (total) showBsTab('apps');
+}
 function bsGet() {
   if (!model.businessSystems) model.businessSystems = { orgName:'', apps:[], departments:[], roles:[], roleRelations:[], appRelations:[], bsProcesses:[], catalogue:{} };
   const bs = model.businessSystems;
