@@ -4958,9 +4958,10 @@ function setLinkedBsProc(ctx, bsProcId) {
   // (if bsProcId is cleared, keep current arrays as-is — user stays in last context)
 
   // Sync: find or create a swimlane process for this BS process
+  let swimProc = null;
   if (bsProcId) {
     if (!model.processes) model.processes = [];
-    let swimProc = model.processes.find(p => p.bsProcessId === bsProcId);
+    swimProc = model.processes.find(p => p.bsProcessId === bsProcId);
     if (!swimProc) {
       // Create a new swimlane process linked to this BS process
       swimProc = { id: genId(), name: bsProc?.name || 'Process',
@@ -4974,14 +4975,79 @@ function setLinkedBsProc(ctx, bsProcId) {
   } else {
     _activeProcId = null;
   }
+
+  // ── Auto-seed ArchiMate from swimlane when process model is empty ──
+  // If the process model has no ArchiMate elements yet but the linked swimlane
+  // already has steps (e.g. from Industry Preset), generate them silently so
+  // the ArchiMate canvas is not blank on first open.
+  if (bsProcId && model.elements.length === 0 && swimProc && (swimProc.steps || []).length > 0) {
+    _seedArchFromSwimlane(swimProc);
+  }
+
   // Update ArchiMate bar description
   const archiDesc = document.getElementById('archi-bs-proc-desc');
   if (archiDesc) archiDesc.textContent = bsProc?.description || '';
   // Refresh bars and re-render everything with the new process's elements
   populateBsProcBars();
   renderAll();
-  updateStats(); // Refresh health bar so it reflects the new process's elements
+  updateStats();
   autoSave();
+}
+
+// Silent version of _doGenerateArchFromSwimlane used when auto-seeding a fresh
+// process model.  No confirm dialog, no snapshot (caller already snapshotted),
+// no mode-switch, no toast.
+function _seedArchFromSwimlane(proc) {
+  const existingBySourceId = {};
+  (model.elements || []).forEach(e => { if (e.id) existingBySourceId[e.id] = e; });
+
+  const newElements      = [];
+  const newRelationships = [];
+  const laneElemIds      = {};
+  const stepElemIds      = {};
+
+  // Lanes → BusinessActors
+  (proc.lanes || []).forEach(l => {
+    if (l.sourceId && existingBySourceId[l.sourceId]) { laneElemIds[l.id] = l.sourceId; return; }
+    const eid = l.sourceId || genId();
+    newElements.push({ id: eid, layer: 'business', type: 'BusinessActor', name: l.name || 'Lane', documentation: '', properties: [] });
+    laneElemIds[l.id] = eid;
+  });
+
+  // Steps → BusinessProcess / BusinessEvent / BusinessFunction
+  (proc.steps || []).forEach(s => {
+    if (s.sourceId && existingBySourceId[s.sourceId]) { stepElemIds[s.id] = s.sourceId; return; }
+    const eid = s.sourceId || genId();
+    const archType = s.sourceType ||
+      (s.type === 'start' || s.type === 'end' ? 'BusinessEvent'
+      : s.type === 'decision'                 ? 'BusinessFunction'
+      : s.sourceLayer === 'application'       ? 'ApplicationService'
+      : 'BusinessProcess');
+    const layer = s.sourceLayer || (archType.startsWith('Application') ? 'application' : 'business');
+    newElements.push({ id: eid, layer, type: archType, name: s.label || s.type, documentation: s.documentation || '', properties: s.properties || [] });
+    stepElemIds[s.id] = eid;
+  });
+
+  // Lane → Step: AssignmentRelationship
+  (proc.steps || []).forEach(s => {
+    const laneEid = laneElemIds[s.laneId], stepEid = stepElemIds[s.id];
+    if (laneEid && stepEid)
+      newRelationships.push({ id: genId(), type: 'AssignmentRelationship', sourceId: laneEid, targetId: stepEid, name: '', documentation: '', directed: false, accessType: 'ReadWrite', strength: '' });
+  });
+
+  // Flows → TriggeringRelationship
+  (proc.flows || []).forEach(f => {
+    const fromEid = stepElemIds[f.from], toEid = stepElemIds[f.to];
+    if (fromEid && toEid)
+      newRelationships.push({ id: genId(), type: 'TriggeringRelationship', sourceId: fromEid, targetId: toEid, name: f.label || '', documentation: '', directed: true, accessType: 'ReadWrite', strength: '' });
+  });
+
+  // Merge into the current (process-specific) model arrays
+  if (!model.elements)      model.elements      = [];
+  if (!model.relationships) model.relationships = [];
+  const existingIds = new Set(model.elements.map(e => e.id));
+  newElements.forEach(e => { if (!existingIds.has(e.id)) model.elements.push(e); });
+  model.relationships.push(...newRelationships);
 }
 
 function addProp(elemId) {
