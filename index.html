@@ -9389,7 +9389,7 @@ function applyIndustryPreset() {
     for (let i = 0; i < stepIds.length - 1; i++) {
       flows.push({ id:genId(), from:stepIds[i], to:stepIds[i+1], label:'' });
     }
-    model.processes.push({ id:genId(), name:proc.name, bsSourceId:proc.id, lanes, steps, flows, columns:[] });
+    model.processes.push({ id:genId(), name:proc.name, bsProcessId:proc.id, lanes, steps, flows, columns:[] });
     added.swimlanes++;
   });
 
