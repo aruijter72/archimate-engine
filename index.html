@@ -5985,11 +5985,22 @@ function newModel() {
 }
 function _doNewModel() {
   const NL = currentLang === 'nl';
-  model = { name: NL ? 'Nieuw Model' : 'New Model', documentation: '', platformIntro: '', elements: [], relationships: [], views: [], snapshots: [], elementPositions: {} };
+  model = {
+    name: NL ? 'Nieuw Model' : 'New Model',
+    documentation: '', platformIntro: '',
+    elements: [], relationships: [], views: [], snapshots: [], elementPositions: {},
+    processes: [], processModels: {}, linkedBsProcessId: null,
+    businessSystems: { orgName:'', apps:[], departments:[], roles:[], roleRelations:[], appRelations:[], bsProcesses:[], catalogue:{} }
+  };
   document.getElementById('modelName').value = model.name;
   document.getElementById('modelDoc').value  = '';
   _modelSaveHandle = null; _modelSavedOnce = false;
-  renderAll(); updateStats();
+  // Reset process + BS canvas state
+  _activeProcId  = null;
+  try { _bsSelId = null; _bsConnMode = false; _bsConnSrcId = null; } catch(e) {}
+  renderAll();
+  renderBsPanel();
+  updateStats();
   showToast(NL ? '🆕 Nieuw model aangemaakt' : '🆕 New model created');
 }
 
