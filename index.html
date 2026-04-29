@@ -9362,7 +9362,35 @@ const _INDUSTRY_PRESETS = {
           {lane:'Merchandising & Buying',  type:'end',      label:'Record Active'},
         ]
       },
-    }
+    },
+    catalogue: [
+      { type:'BusinessService',     name:'Wholesale Order Service',           description:'Service enabling wholesale partners to place and track orders' },
+      { type:'BusinessService',     name:'D2C Fulfilment Service',            description:'Direct-to-consumer order fulfilment from placement to delivery' },
+      { type:'BusinessService',     name:'Returns Service',                   description:'Customer and store returns processing and refund handling' },
+      { type:'BusinessService',     name:'Retail Sales Service',              description:'In-store point-of-sale and customer sales service' },
+      { type:'BusinessService',     name:'Product Information Service',       description:'Provision of product content, specs and imagery to all channels' },
+      { type:'BusinessFunction',    name:'Order Processing',                  description:'Receiving, validating and routing customer orders' },
+      { type:'BusinessFunction',    name:'Inventory Management',              description:'Monitoring stock levels, cycle counts and replenishment' },
+      { type:'BusinessFunction',    name:'Buying & Sourcing',                 description:'Supplier selection, negotiation and purchase order placement' },
+      { type:'BusinessFunction',    name:'Financial Control',                 description:'Invoice matching, period close and financial reporting' },
+      { type:'BusinessFunction',    name:'Master Data Governance',            description:'Creation and maintenance of product, supplier and customer master data' },
+      { type:'BusinessEvent',       name:'Order Received',                    description:'A new customer or wholesale order has been accepted into the system' },
+      { type:'BusinessEvent',       name:'Goods Received',                    description:'Inbound shipment has been received and counted at the warehouse' },
+      { type:'BusinessEvent',       name:'Invoice Created',                   description:'A sales invoice has been generated and is ready for sending' },
+      { type:'BusinessEvent',       name:'Return Initiated',                  description:'A customer or store has requested a return or refund' },
+      { type:'BusinessEvent',       name:'Season Kicked Off',                 description:'A new buying season has been opened and budgets approved' },
+      { type:'ApplicationService',  name:'Order Management Service',          description:'Service exposed by the OMS for order intake and routing' },
+      { type:'ApplicationService',  name:'Warehouse Execution Service',       description:'Service exposed by the WMS for pick, pack and shipment' },
+      { type:'ApplicationService',  name:'E-Commerce Storefront Service',     description:'Customer-facing online shopping and checkout service' },
+      { type:'ApplicationService',  name:'Finance Posting Service',           description:'Service for posting transactions and invoices in the ERP' },
+      { type:'ApplicationFunction', name:'Demand Forecasting',                description:'Calculates future demand based on sales history and trends' },
+      { type:'ApplicationFunction', name:'EDI Message Processing',            description:'Transforms and routes EDI messages to and from trading partners' },
+      { type:'DataObject',          name:'Sales Order',                       description:'Confirmed customer order with lines, quantities and prices' },
+      { type:'DataObject',          name:'Purchase Order',                    description:'Order placed with a supplier including terms and quantities' },
+      { type:'DataObject',          name:'Product Record',                    description:'Master data entity holding product attributes, pricing and imagery' },
+      { type:'DataObject',          name:'Stock Record',                      description:'Real-time inventory position per SKU and location' },
+      { type:'DataObject',          name:'Invoice',                           description:'Financial document issued to a customer or received from a supplier' },
+    ]
   },
 
   municipal: {
