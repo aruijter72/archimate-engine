@@ -9788,6 +9788,10 @@ function bsShowProcForm(editId) {
         <input id="bspf-name" type="text" placeholder="${NL?'bijv. Order to Cash, Hire to Retire, Inkoop tot Betaling…':'e.g. Order to Cash, Hire to Retire, Procure to Pay…'}" value="${escHtml(proc?.name||'')}">
       </div>
       <div class="bs-form-field">
+        <label class="bs-form-label">${NL?'Sectie / Categorie (optioneel)':'Section / Category (optional)'}</label>
+        <input id="bspf-section" type="text" placeholder="${NL?'bijv. Order to Cash, Finance…':'e.g. Order to Cash, Finance…'}" value="${escHtml(proc?.section||'')}">
+      </div>
+      <div class="bs-form-field">
         <label class="bs-form-label">${NL?'Omschrijving (optioneel)':'Description (optional)'}</label>
         <textarea id="bspf-desc" placeholder="${NL?'Korte omschrijving van dit proces…':'Brief description of what this process covers…'}">${escHtml(proc?.description||'')}</textarea>
       </div>
