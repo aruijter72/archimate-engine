@@ -9931,18 +9931,33 @@ function renderBsCatalogue() {
   </div>
   <div id="bs-cat-form-area"></div>`;
 
-  // List all types that have entries
+  // Build a lookup of model elements by type for virtual merge
+  const modelElemsByType = {};
+  (model.elements || []).forEach(el => {
+    if (!el.name) return;
+    if (!modelElemsByType[el.type]) modelElemsByType[el.type] = [];
+    modelElemsByType[el.type].push(el);
+  });
+
+  // List all types that have either catalogue entries or model elements
   let hasAny = false;
   LAYERS.forEach(lg => {
-    const typeData = lg.types.filter(t => (cat[t]||[]).length);
+    const typeData = lg.types.filter(t => (cat[t]||[]).length || (modelElemsByType[t]||[]).length);
     if (!typeData.length) return;
     hasAny = true;
     html += `<div style="padding:.5rem 1rem .25rem;font-size:.68rem;font-weight:800;letter-spacing:.09em;color:${lg.color};text-transform:uppercase;background:rgba(255,255,255,.02)">${lg.label}</div>`;
     typeData.forEach(t => {
-      const items = (cat[t]||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+      const catItems = (cat[t]||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+      const catNames = new Set(catItems.map(it => (it.name||'').toLowerCase()));
+      // Model elements not yet in the explicit catalogue
+      const modelItems = (modelElemsByType[t]||[])
+        .filter(el => !catNames.has((el.name||'').toLowerCase()))
+        .sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+      const total = catItems.length + modelItems.length;
       html += `<div style="border-bottom:1px solid var(--border);padding:.35rem 1rem">
-        <div style="font-size:.72rem;font-weight:700;color:var(--text2);margin-bottom:.25rem">${(window._TYPE_LABELS||{})[t] || t} (${items.length})</div>`;
-      items.forEach(it => {
+        <div style="font-size:.72rem;font-weight:700;color:var(--text2);margin-bottom:.25rem">${(window._TYPE_LABELS||{})[t] || t} (${total})</div>`;
+      // Explicit catalogue entries (editable)
+      catItems.forEach(it => {
         html += `<div class="bs-item" id="bs-cat-item-${it.id}" style="padding:.3rem .5rem">
           <div class="bs-item-body">
             <div class="bs-item-name">${escHtml(it.name||'(unnamed)')}</div>
@@ -9954,11 +9969,26 @@ function renderBsCatalogue() {
           </div>
         </div>`;
       });
+      // Model elements not yet saved to catalogue — shown read-only with an ArchiMate badge
+      modelItems.forEach(el => {
+        html += `<div class="bs-item" style="padding:.3rem .5rem;opacity:.78">
+          <div class="bs-item-body">
+            <div class="bs-item-name" style="display:flex;align-items:center;gap:.4rem">
+              ${escHtml(el.name)}
+              <span style="font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,163,85,.4);border-radius:3px;padding:.05rem .28rem">ArchiMate</span>
+            </div>
+            ${el.documentation ? `<div class="bs-item-desc">${escHtml(el.documentation.slice(0,80))}${el.documentation.length>80?'…':''}</div>` : ''}
+          </div>
+          <div class="bs-item-actions">
+            <button class="bs-icon-btn" onclick="saveToCatalogue('${t}','${el.id}')" title="${NL?'Opslaan in catalogus':'Save to catalogue'}">＋</button>
+          </div>
+        </div>`;
+      });
       html += `</div>`;
     });
   });
   if (!hasAny) {
-    html += `<div class="proc-empty" style="padding:2rem;text-align:center">${NL ? 'Nog geen catalogusvermeldingen. Voeg ze toe vanuit ArchiMate (＋ Opslaan in BS) of gebruik de kiezer hierboven.' : 'No catalogue entries yet. Add them from ArchiMate (＋ Save to BS) or use the selector above.'}</div>`;
+    html += `<div class="proc-empty" style="padding:2rem;text-align:center">${NL ? 'Nog geen elementen. Voeg ze toe in ArchiMate of gebruik de kiezer hierboven.' : 'No elements yet. Add them in ArchiMate or use the selector above.'}</div>`;
   }
   html += `</div>`;
   panel.innerHTML = html;
