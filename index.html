@@ -9738,12 +9738,20 @@ function renderBsProcs() {
   const bs   = bsGet();
   const list = document.getElementById('bs-procs-list');
   if (!list) return;
+  const NL_p = currentLang === 'nl';
   if (!bs.bsProcesses.length) {
-    const NL_p = currentLang==='nl';
     list.innerHTML = '<div class="bs-empty">' + (NL_p ? 'Nog geen processen toegevoegd. Klik + Toevoegen om te beginnen.' : 'No processes added yet. Click + Add to get started.') + '</div>';
     return;
   }
-  list.innerHTML = bs.bsProcesses.map(p => `
+  // Group by section; processes without a section go into a '' bucket
+  const groups = {};
+  const order  = [];
+  bs.bsProcesses.forEach(p => {
+    const s = p.section || '';
+    if (!groups[s]) { groups[s] = []; order.push(s); }
+    groups[s].push(p);
+  });
+  const procRow = p => `
     <div class="bs-item" id="bs-proc-item-${p.id}">
       <div class="bs-item-icon">⬡</div>
       <div class="bs-item-body">
@@ -9751,10 +9759,20 @@ function renderBsProcs() {
         ${p.description ? `<div class="bs-item-desc">${escHtml(p.description)}</div>` : ''}
       </div>
       <div class="bs-item-actions">
-        <button class="bs-icon-btn" onclick="bsShowProcForm('${p.id}')" title="Edit">✏</button>
-        <button class="bs-icon-btn danger" onclick="bsDeleteBsProc('${p.id}')" title="Delete">🗑</button>
+        <button class="bs-icon-btn" onclick="bsShowProcForm('${p.id}')" title="${NL_p?'Bewerken':'Edit'}">✏</button>
+        <button class="bs-icon-btn danger" onclick="bsDeleteBsProc('${p.id}')" title="${NL_p?'Verwijderen':'Delete'}">🗑</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  const hasSections = order.some(s => s !== '');
+  let html = '';
+  order.forEach(s => {
+    if (hasSections && s) {
+      html += `<div style="padding:.45rem 0 .2rem;font-size:.68rem;font-weight:800;letter-spacing:.08em;color:var(--gold);text-transform:uppercase;border-bottom:1px solid var(--border);margin-bottom:.35rem">${escHtml(s)}</div>`;
+    }
+    html += groups[s].map(procRow).join('');
+    if (hasSections) html += `<div style="height:.5rem"></div>`;
+  });
+  list.innerHTML = html;
 }
 
 function bsShowProcForm(editId) {
