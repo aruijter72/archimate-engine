@@ -1771,6 +1771,10 @@
   font-size:.82rem; cursor:pointer; color:#666; transition:background .1s; }
 .bs-icon-btn:hover { background:#f4f5f7; color:#1a1f2e; }
 .bs-icon-btn.danger:hover { background:#fdecea; color:#c0392b; border-color:#f5c6c2; }
+/* Catalogue collapsible dropdowns */
+.bs-cat-details summary::-webkit-details-marker { display:none; }
+.bs-cat-details summary::marker { display:none; }
+.bs-cat-details[open] .bs-cat-chev { transform:rotate(180deg); }
 /* Inline add/edit form */
 .bs-form { background:#f8f9fc; border:1.5px solid #C9A355; border-radius:10px;
   padding:.9rem 1rem; display:flex; flex-direction:column; gap:.55rem; margin-bottom:.55rem; }
@@ -9932,12 +9936,18 @@ function renderBsCatalogue() {
   <div id="bs-cat-form-area"></div>`;
 
   // Build a lookup of model elements by type for virtual merge
+  // Collect from model.elements AND all processModels, deduped by id
   const modelElemsByType = {};
-  (model.elements || []).forEach(el => {
-    if (!el.name) return;
+  const _seenElIds = new Set();
+  const _addEl = el => {
+    if (!el.name || !el.type) return;
+    if (_seenElIds.has(el.id)) return;
+    _seenElIds.add(el.id);
     if (!modelElemsByType[el.type]) modelElemsByType[el.type] = [];
     modelElemsByType[el.type].push(el);
-  });
+  };
+  (model.elements || []).forEach(_addEl);
+  Object.values(model.processModels || {}).forEach(pm => (pm.elements || []).forEach(_addEl));
 
   // List all types that have either catalogue entries or model elements
   let hasAny = false;
@@ -9954,8 +9964,14 @@ function renderBsCatalogue() {
         .filter(el => !catNames.has((el.name||'').toLowerCase()))
         .sort((a,b)=>(a.name||'').localeCompare(b.name||''));
       const total = catItems.length + modelItems.length;
-      html += `<div style="border-bottom:1px solid var(--border);padding:.35rem 1rem">
-        <div style="font-size:.72rem;font-weight:700;color:var(--text2);margin-bottom:.25rem">${(window._TYPE_LABELS||{})[t] || t} (${total})</div>`;
+      // Collapsible dropdown per element type
+      html += `<details class="bs-cat-details" style="border-bottom:1px solid var(--border)">
+        <summary style="display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;cursor:pointer;list-style:none;-webkit-appearance:none;user-select:none">
+          <span style="flex:1;font-size:.75rem;font-weight:700;color:var(--text2)">${(window._TYPE_LABELS||{})[t] || t}</span>
+          <span style="font-size:.7rem;color:var(--text3);font-weight:400">${total}</span>
+          <span class="bs-cat-chev" style="font-size:.65rem;color:var(--text3);transition:transform .15s">▾</span>
+        </summary>
+        <div style="padding:.25rem .75rem .5rem">`;
       // Explicit catalogue entries (editable)
       catItems.forEach(it => {
         html += `<div class="bs-item" id="bs-cat-item-${it.id}" style="padding:.3rem .5rem">
@@ -9984,7 +10000,7 @@ function renderBsCatalogue() {
           </div>
         </div>`;
       });
-      html += `</div>`;
+      html += `</div></details>`;
     });
   });
   if (!hasAny) {
