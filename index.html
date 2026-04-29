@@ -9493,7 +9493,7 @@ function applyIndustryPreset() {
     const item = preset.processes.find(p => p.name === cb.dataset.name);
     if (!item || has(bs.bsProcesses, item.name)) return;
     const id = bsId();
-    bs.bsProcesses.push({ id, name: item.name, description: item.description });
+    bs.bsProcesses.push({ id, name: item.name, description: item.description, section: item.section || '' });
     newProcItems.push({ id, name: item.name });
     added.procs++;
   });
