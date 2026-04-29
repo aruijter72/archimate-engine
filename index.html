@@ -9809,15 +9809,16 @@ function bsClearProcForm() {
 }
 
 function bsSaveBsProc(editId) {
-  const name = document.getElementById('bspf-name')?.value.trim();
+  const name    = document.getElementById('bspf-name')?.value.trim();
   if (!name) { alert(currentLang==='nl'?'Voer een procesnaam in.':'Please enter a process name.'); return; }
-  const desc = document.getElementById('bspf-desc')?.value.trim() || '';
-  const bs   = bsGet();
+  const desc    = document.getElementById('bspf-desc')?.value.trim() || '';
+  const section = document.getElementById('bspf-section')?.value.trim() || '';
+  const bs      = bsGet();
   if (editId) {
     const p = bs.bsProcesses.find(p => p.id === editId);
-    if (p) { p.name = name; p.description = desc; }
+    if (p) { p.name = name; p.description = desc; p.section = section; }
   } else {
-    bs.bsProcesses.push({ id: bsId(), name, description: desc });
+    bs.bsProcesses.push({ id: bsId(), name, description: desc, section });
   }
   bsClearProcForm();
   renderBsProcs();
