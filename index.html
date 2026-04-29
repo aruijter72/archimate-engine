@@ -5443,9 +5443,9 @@ function renderLayer(layer) {
         const catItems = !BS_MANAGED_TYPES.has(el.type) && (cat[el.type]||[]).length ? (cat[el.type]||[]) : [];
         const listAttr = dlCfg ? ` list="${dlCfg.listId}"` : (catItems.length ? ` list="dl-cat-${el.type}"` : '');
         const bsHint   = el._bs ? ' title="Linked to Business Systems — edit name there"' : (dlCfg ? ' title="Tip: names are suggested from your Business Systems catalogue"' : (catItems.length ? ' title="Tip: kies uit eerder opgeslagen namen"' : ''));
-        // Show "Save to BS" button if name exists and is NOT yet in catalogue (and type is not BS-managed)
-        const _catHas  = !BS_MANAGED_TYPES.has(el.type) && !!el.name && (cat[el.type]||[]).some(it => (it.name||'').toLowerCase() === el.name.toLowerCase());
-        const _showSBS = !!el.name && !BS_MANAGED_TYPES.has(el.type) && !_catHas;
+        // Show "Save to BS" button for any element with a name not yet in catalogue, unless it's already BS-sourced
+        const _catHas  = !!el.name && (cat[el.type]||[]).some(it => (it.name||'').toLowerCase() === el.name.toLowerCase());
+        const _showSBS = !!el.name && !el._bs && !_catHas;
         html += `
         <tr data-elem-id="${el.id}" class="${rowCls}" onclick="_elemRowClick('${el.id}',event)">
           <td><span class="type-badge ${cc}">${TYPE_LABELS[el.type]}</span>${el._bs ? ' <span title="Sourced from Business Systems" style="font-size:.65rem;color:var(--gold);opacity:.7">●</span>' : ''}</td>
@@ -16250,29 +16250,6 @@ function renderProcTab() {
 
       <!-- LEFT: Form panels -->
       <div class="proc-form">
-
-        <!-- ── Process Switcher (always visible) ── -->
-        <div class="proc-section" style="padding-bottom:.6rem">
-          <div class="proc-section-header">
-            <span class="proc-section-title" style="font-size:.72rem">${NL ? 'Processen' : 'Processes'}</span>
-            <button class="btn-add proc" onclick="addProcess()" style="font-size:.7rem;padding:.18rem .5rem">+ ${NL ? 'Nieuw' : 'New'}</button>
-          </div>
-          ${!(model.processes||[]).length
-            ? `<div class="proc-empty" style="font-size:.78rem">${NL ? 'Nog geen processen — maak er een aan met + Nieuw.' : 'No processes yet — click + New to create one.'}</div>`
-            : `<div style="display:flex;flex-direction:column;gap:.15rem;max-height:160px;overflow-y:auto">
-                ${(model.processes||[]).map(p => `
-                  <div class="proc-row${p.id === _activeProcId ? ' selected' : ''}" onclick="selectProcess('${p.id}')" style="cursor:pointer;gap:.35rem;padding:.28rem .4rem">
-                    <span style="font-size:.65rem;color:${p.bsProcessId ? 'var(--gold)' : 'var(--muted)'};flex-shrink:0" title="${p.bsProcessId ? (NL?'Gekoppeld aan Business Systems':'Linked to Business Systems') : ''}">⬡</span>
-                    <input class="elem-input" value="${esc(p.name)}"
-                      oninput="renameProcInline('${p.id}',this.value)"
-                      onclick="event.stopPropagation()"
-                      placeholder="${NL ? 'Naam…' : 'Name…'}"
-                      style="flex:1;padding:.18rem .4rem;font-size:.8rem;background:transparent;border-color:${p.id === _activeProcId ? 'var(--proc)' : 'transparent'}">
-                    <span style="font-size:.64rem;color:var(--muted);flex-shrink:0">${(p.steps||[]).length}s</span>
-                    <button class="btn-del-sm" onclick="event.stopPropagation();deleteProcess('${p.id}')" title="${NL ? 'Verwijderen' : 'Delete'}" style="flex-shrink:0">×</button>
-                  </div>`).join('')}
-              </div>`}
-        </div>
 
         ${proc ? `
         <!-- Columns (optional extra dimension) -->
