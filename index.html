@@ -4867,8 +4867,7 @@ function setElem(id, field, val) {
   if (field === 'name') {
     const sbsBtn = document.getElementById(`btn-sbs-${id}`);
     if (sbsBtn) {
-      const BS_MANAGED = new Set(['BusinessActor','BusinessRole','ApplicationComponent','BusinessProcess']);
-      if (!BS_MANAGED.has(el.type)) {
+      if (!el._bs) {
         const cat = bsGet().catalogue || {};
         const catHas = !!val && (cat[el.type]||[]).some(it => (it.name||'').toLowerCase() === val.toLowerCase());
         sbsBtn.style.display = (val && !catHas) ? 'inline-flex' : 'none';
