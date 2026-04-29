@@ -9362,6 +9362,200 @@ const _INDUSTRY_PRESETS = {
         ]
       },
     }
+  },
+
+  municipal: {
+    label: 'Municipal Government',
+    apps: [
+      { name: 'ERP',                          description: 'Enterprise Resource Planning for finance, HR and procurement (e.g. Unit4, AFAS, SAP S/4HANA Public Sector)' },
+      { name: 'Document Management (DMS)',    description: 'Digital archiving and management of municipal correspondence and dossiers (e.g. Corsa, OpenText, Decos)' },
+      { name: 'Case Management System',       description: 'End-to-end case handling for permits, complaints and citizen requests (e.g. Decos JOIN, Rx.Mission, OpenZaak)' },
+      { name: 'Citizen Portal',               description: 'Online self-service portal for submitting requests, tracking status and receiving decisions (e.g. e-Suite, MijnGemeente)' },
+      { name: 'Key Registries Platform',      description: 'Municipal basis registries — BRP (persons), BAG (addresses), WOZ (property values) and BGT (geo) (e.g. Centric, PinkRoccade)' },
+      { name: 'HRM',                          description: 'Human Resource Management covering personnel, payroll and recruitment (e.g. AFAS HR, Visma, SD Worx)' },
+      { name: 'Financial System',             description: 'Core municipal accounting and budgeting platform (e.g. Decade, Unit4 Finance, Coda)' },
+      { name: 'GIS / Geo-information',        description: 'Geographic information and mapping system for spatial planning and public works (e.g. ArcGIS, QGIS, GIS4PUBLIC)' },
+      { name: 'BI & Reporting',               description: 'Business intelligence, dashboards and management reporting (e.g. Power BI, Cognos, Tableau)' },
+      { name: 'Procurement Platform',         description: 'Digital tendering and contracting platform (e.g. Negometrix, TenderNed, Mercell)' },
+      { name: 'Integration Platform',         description: 'Middleware for connecting municipal back-office systems and national registers (e.g. MuleSoft, Azure Integration, StUF-adapters)' },
+      { name: 'Work Order System',            description: 'Planning and tracking of maintenance tasks for public space and infrastructure (e.g. TOPdesk, Ultimo, Ibis)' },
+    ],
+    departments: [
+      { name: 'Finance & Control',                    description: 'Municipal financial management, budget cycle, accounting and treasury' },
+      { name: 'IT & Digital',                         description: 'ICT infrastructure, application management and digital transformation' },
+      { name: 'HR & Organisation',                    description: 'Personnel, payroll, recruitment and organisational development' },
+      { name: 'Public Services',                      description: 'Front-office counter services, citizen registration, permits and identity documents' },
+      { name: 'Social Domain',                        description: 'WMO care assessments, youth services, social assistance and debt counselling' },
+      { name: 'Spatial Planning & Environment',       description: 'Environmental permits, land use planning, zoning and sustainability' },
+      { name: 'Public Works & Maintenance',           description: 'Maintenance of roads, green spaces, drainage, lighting and public infrastructure' },
+      { name: 'Safety & Enforcement',                 description: 'Public order, enforcement of local by-laws, permits inspection and crisis management' },
+      { name: 'Legal & Compliance',                   description: 'Legal advice, objections and appeals, compliance and privacy (AVG/GDPR)' },
+      { name: 'Communication & Participation',        description: 'Municipal communications, press relations, citizen participation and campaigns' },
+    ],
+    roles: [
+      // Finance
+      { name: 'Finance Director (CFO)',               description: 'Leads municipal financial strategy, budget cycle and treasury',                              department: 'Finance & Control' },
+      { name: 'Financial Controller',                 description: 'Responsible for financial reporting, period close and internal controls',                    department: 'Finance & Control' },
+      { name: 'Budget Advisor',                       description: 'Supports budget preparation, monitoring and forecasting per department',                     department: 'Finance & Control' },
+      // IT
+      { name: 'IT Manager / CIO',                    description: 'Leads ICT strategy, infrastructure and digital services',                                    department: 'IT & Digital' },
+      { name: 'Application Manager',                  description: 'Manages and maintains municipal software applications and integrations',                     department: 'IT & Digital' },
+      { name: 'Information Security Officer (CISO)',  description: 'Responsible for information security policy and GDPR compliance',                           department: 'IT & Digital' },
+      // HR
+      { name: 'HR Manager',                           description: 'Leads HR strategy, personnel policy and organisational development',                        department: 'HR & Organisation' },
+      { name: 'HR Advisor',                           description: 'Advises management and employees on HR matters, performance and absence',                   department: 'HR & Organisation' },
+      // Public Services
+      { name: 'Department Manager — Public Services', description: 'Responsible for front-office operations, counter services and service levels',              department: 'Public Services' },
+      { name: 'Case Handler',                         description: 'Processes citizen requests, applications and correspondence end-to-end',                    department: 'Public Services' },
+      { name: 'Counter Employee (KCC)',               description: 'First-line contact for citizens at the counter or by phone/digital',                        department: 'Public Services' },
+      // Social Domain
+      { name: 'Social Domain Manager',                description: 'Leads WMO, youth care and social assistance services',                                     department: 'Social Domain' },
+      { name: 'WMO Consultant',                       description: 'Assesses care needs and arranges support under the Social Support Act (WMO)',               department: 'Social Domain' },
+      { name: 'Social Worker',                        description: 'Supports citizens with complex multi-domain issues including debt, housing and wellbeing',  department: 'Social Domain' },
+      // Spatial
+      { name: 'Spatial Planner',                      description: 'Develops and reviews land use plans, zoning and environmental policies',                   department: 'Spatial Planning & Environment' },
+      { name: 'Permit Coordinator',                   description: 'Handles environmental and building permit applications end-to-end',                         department: 'Spatial Planning & Environment' },
+      // Public Works
+      { name: 'Public Works Manager',                 description: 'Responsible for maintenance programmes and management of public space',                     department: 'Public Works & Maintenance' },
+      { name: 'Asset Manager',                        description: 'Plans and monitors life-cycle management of roads, bridges and infrastructure assets',      department: 'Public Works & Maintenance' },
+      // Safety
+      { name: 'Enforcement Officer (BOA)',            description: 'Enforces local by-laws and regulations in public space',                                    department: 'Safety & Enforcement' },
+      // Legal
+      { name: 'Legal Advisor',                        description: 'Provides legal advice, handles objections/appeals and ensures regulatory compliance',       department: 'Legal & Compliance' },
+      { name: 'Privacy Officer (FG)',                 description: 'Data Protection Officer responsible for GDPR compliance and privacy assessments',           department: 'Legal & Compliance' },
+    ],
+    processes: [
+      // Public Services
+      { name: 'Permit Application (Omgevingsvergunning)',  description: 'Citizens and businesses apply for environmental or building permits; assessment, advice and decision',   section: 'Public Services' },
+      { name: 'Citizen Registration (BRP)',                description: 'Registration, mutation and deregistration of persons in the Municipal Personal Records Database',        section: 'Public Services' },
+      { name: 'Report & Complaint Handling',               description: 'Receipt, triage, routing, resolution and feedback of public-space reports and complaints',               section: 'Public Services' },
+      { name: 'Identity Document Application',             description: 'Application and issuance of passports, identity cards and travel documents at the counter',             section: 'Public Services' },
+      { name: 'Objection & Appeal (Bezwaar)',              description: 'Processing of formal objections against municipal decisions including legal review and ruling',          section: 'Public Services' },
+      // Social Domain
+      { name: 'WMO Care Assessment',                       description: 'Intake, assessment of care needs and arranging WMO support (home care, aids, transport)',               section: 'Social Domain' },
+      { name: 'Youth Care Referral',                       description: 'Intake, assessment and referral for youth support services under the Youth Act (Jeugdwet)',             section: 'Social Domain' },
+      { name: 'Social Assistance Application (Bijstand)',  description: 'Application, means test, decision and payment of social assistance benefits',                           section: 'Social Domain' },
+      { name: 'Debt Assistance (Schuldhulpverlening)',     description: 'Intake and guidance for citizens in problem debt — stabilisation, restructuring and monitoring',        section: 'Social Domain' },
+      // Finance & Procurement
+      { name: 'Budget Cycle (Begrotingscyclus)',           description: 'Annual budget preparation, council submission, approval and monitoring throughout the year',            section: 'Finance & Procurement' },
+      { name: 'Procurement & Tendering',                   description: 'Need definition, market consultation, tender publication, award and contract management',              section: 'Finance & Procurement' },
+      { name: 'Accounts Payable (Crediteuren)',            description: 'Receiving and matching supplier invoices, approval, posting and payment run',                          section: 'Finance & Procurement' },
+      { name: 'Financial Reporting & Annual Accounts',     description: 'Period-end close, year-end consolidation, management accounts and submission to council',              section: 'Finance & Procurement' },
+      // Spatial & Infrastructure
+      { name: 'Spatial Plan & Zoning (Omgevingsplan)',     description: 'Development, consultation, publication and maintenance of local environmental and zoning plans',       section: 'Spatial & Infrastructure' },
+      { name: 'Public Works & Maintenance Planning',       description: 'Multi-year asset management planning, work-order creation and progress monitoring',                    section: 'Spatial & Infrastructure' },
+      // HR & Organisation
+      { name: 'Recruitment & Onboarding',                  description: 'Vacancy publication, selection, job offer, contract and onboarding of new municipal staff',           section: 'HR & Organisation' },
+      { name: 'HR & Payroll',                              description: 'Monthly payroll processing, salary mutations, leave administration and HR record maintenance',         section: 'HR & Organisation' },
+      { name: 'Performance & Development Cycle',           description: 'Annual planning, mid-year and final performance reviews and personal development agreements',          section: 'HR & Organisation' },
+    ],
+    swimlaneTemplates: {
+      'Permit Application (Omgevingsvergunning)': {
+        lanes: ['Citizen', 'Public Services', 'Spatial Planning & Environment', 'Legal & Compliance'],
+        steps: [
+          { lane: 'Citizen',                         type: 'start',    label: 'Application Submitted',      system: 'Citizen Portal' },
+          { lane: 'Public Services',                 type: 'task',     label: 'Intake & Completeness Check',system: 'Case Management System' },
+          { lane: 'Public Services',                 type: 'decision', label: 'Application Complete?' },
+          { lane: 'Spatial Planning & Environment',  type: 'task',     label: 'Technical Assessment',       system: 'Case Management System' },
+          { lane: 'Legal & Compliance',              type: 'task',     label: 'Legal Advice',               system: 'Document Management (DMS)' },
+          { lane: 'Spatial Planning & Environment',  type: 'task',     label: 'Draft Decision',             system: 'Case Management System' },
+          { lane: 'Public Services',                 type: 'task',     label: 'Publish Draft Decision',     system: 'Citizen Portal' },
+          { lane: 'Public Services',                 type: 'task',     label: 'Issue Final Decision',       system: 'Document Management (DMS)' },
+          { lane: 'Citizen',                         type: 'end',      label: 'Permit Received' },
+        ]
+      },
+      'Citizen Registration (BRP)': {
+        lanes: ['Citizen', 'Public Services', 'IT & Digital'],
+        steps: [
+          { lane: 'Citizen',          type: 'start',    label: 'Request Submitted',          system: 'Citizen Portal' },
+          { lane: 'Public Services',  type: 'task',     label: 'Verify Identity Documents' },
+          { lane: 'Public Services',  type: 'task',     label: 'Record Data',                system: 'Key Registries Platform' },
+          { lane: 'IT & Digital',     type: 'task',     label: 'Validate in BRP',            system: 'Key Registries Platform' },
+          { lane: 'IT & Digital',     type: 'decision', label: 'Data Valid?' },
+          { lane: 'IT & Digital',     type: 'task',     label: 'Distribute to Linked Registries', system: 'Integration Platform' },
+          { lane: 'Public Services',  type: 'task',     label: 'Send Confirmation',          system: 'Document Management (DMS)' },
+          { lane: 'Citizen',          type: 'end',      label: 'Registration Confirmed' },
+        ]
+      },
+      'Report & Complaint Handling': {
+        lanes: ['Citizen', 'Public Services', 'Public Works & Maintenance'],
+        steps: [
+          { lane: 'Citizen',                   type: 'start',    label: 'Report Submitted',           system: 'Citizen Portal' },
+          { lane: 'Public Services',           type: 'task',     label: 'Triage & Categorise',        system: 'Case Management System' },
+          { lane: 'Public Services',           type: 'task',     label: 'Assign to Department',       system: 'Case Management System' },
+          { lane: 'Public Works & Maintenance',type: 'task',     label: 'Inspect Issue',              system: 'Work Order System' },
+          { lane: 'Public Works & Maintenance',type: 'task',     label: 'Plan & Execute Repair',      system: 'Work Order System' },
+          { lane: 'Public Works & Maintenance',type: 'task',     label: 'Mark Resolved',              system: 'Work Order System' },
+          { lane: 'Public Services',           type: 'task',     label: 'Notify Citizen',             system: 'Citizen Portal' },
+          { lane: 'Citizen',                   type: 'end',      label: 'Report Closed' },
+        ]
+      },
+      'Budget Cycle (Begrotingscyclus)': {
+        lanes: ['Finance & Control', 'Department Managers', 'Municipal Secretary'],
+        steps: [
+          { lane: 'Finance & Control',     type: 'start',    label: 'Issue Budget Guidelines',    system: 'Financial System' },
+          { lane: 'Department Managers',   type: 'task',     label: 'Draft Departmental Budget',  system: 'Financial System' },
+          { lane: 'Finance & Control',     type: 'task',     label: 'Consolidate & Review',       system: 'BI & Reporting' },
+          { lane: 'Municipal Secretary',   type: 'task',     label: 'Review with Management',     system: 'Document Management (DMS)' },
+          { lane: 'Finance & Control',     type: 'task',     label: 'Finalise Draft Budget',      system: 'Financial System' },
+          { lane: 'Finance & Control',     type: 'document', label: 'Budget Proposal',            system: 'Document Management (DMS)' },
+          { lane: 'Municipal Secretary',   type: 'task',     label: 'Submit to Council' },
+          { lane: 'Municipal Secretary',   type: 'end',      label: 'Budget Approved' },
+        ]
+      },
+      'Accounts Payable (Crediteuren)': {
+        lanes: ['Finance & Control', 'Department', 'IT & Digital'],
+        steps: [
+          { lane: 'Finance & Control', type: 'start',    label: 'Invoice Received',           system: 'ERP' },
+          { lane: 'IT & Digital',      type: 'task',     label: 'Scan & Index Invoice',       system: 'Document Management (DMS)' },
+          { lane: 'Finance & Control', type: 'task',     label: '3-Way Match',                system: 'ERP' },
+          { lane: 'Finance & Control', type: 'decision', label: 'Match OK?' },
+          { lane: 'Department',        type: 'task',     label: 'Department Approval',        system: 'ERP' },
+          { lane: 'Finance & Control', type: 'task',     label: 'Post & Schedule Payment',    system: 'ERP' },
+          { lane: 'Finance & Control', type: 'task',     label: 'Payment Run',                system: 'ERP' },
+          { lane: 'Finance & Control', type: 'end',      label: 'Invoice Paid' },
+        ]
+      },
+      'Recruitment & Onboarding': {
+        lanes: ['HR & Organisation', 'Department Managers', 'IT & Digital'],
+        steps: [
+          { lane: 'Department Managers',  type: 'start',    label: 'Vacancy Request' },
+          { lane: 'HR & Organisation',    type: 'task',     label: 'Publish Vacancy',            system: 'HRM' },
+          { lane: 'HR & Organisation',    type: 'task',     label: 'Screen Applications',        system: 'HRM' },
+          { lane: 'Department Managers',  type: 'task',     label: 'Interviews & Selection' },
+          { lane: 'HR & Organisation',    type: 'task',     label: 'Issue Job Offer & Contract',  system: 'HRM' },
+          { lane: 'IT & Digital',         type: 'task',     label: 'Create Accounts & Access',   system: 'Integration Platform' },
+          { lane: 'HR & Organisation',    type: 'task',     label: 'Onboarding Programme' },
+          { lane: 'Department Managers',  type: 'end',      label: 'Employee Active' },
+        ]
+      },
+      'WMO Care Assessment': {
+        lanes: ['Citizen', 'Social Domain', 'Finance & Control'],
+        steps: [
+          { lane: 'Citizen',          type: 'start',    label: 'Care Request Submitted',     system: 'Citizen Portal' },
+          { lane: 'Social Domain',    type: 'task',     label: 'Intake Conversation',        system: 'Case Management System' },
+          { lane: 'Social Domain',    type: 'task',     label: 'Needs Assessment',           system: 'Case Management System' },
+          { lane: 'Social Domain',    type: 'decision', label: 'WMO Entitlement?' },
+          { lane: 'Social Domain',    type: 'task',     label: 'Draft Decision (Beschikking)',system: 'Case Management System' },
+          { lane: 'Legal & Compliance', type: 'task',   label: 'Legal Review',               system: 'Document Management (DMS)' },
+          { lane: 'Finance & Control', type: 'task',    label: 'Arrange Provider & Budget',  system: 'ERP' },
+          { lane: 'Citizen',          type: 'end',      label: 'Support Arranged' },
+        ]
+      },
+      'Procurement & Tendering': {
+        lanes: ['Finance & Control', 'Department', 'Legal & Compliance'],
+        steps: [
+          { lane: 'Department',         type: 'start',    label: 'Procurement Need Identified' },
+          { lane: 'Finance & Control',  type: 'task',     label: 'Budget Check & Approval',    system: 'Financial System' },
+          { lane: 'Legal & Compliance', type: 'task',     label: 'Determine Tender Route',     system: 'Procurement Platform' },
+          { lane: 'Finance & Control',  type: 'task',     label: 'Publish Tender',             system: 'Procurement Platform' },
+          { lane: 'Department',         type: 'task',     label: 'Evaluate Bids' },
+          { lane: 'Legal & Compliance', type: 'task',     label: 'Award Decision & Notice',    system: 'Procurement Platform' },
+          { lane: 'Finance & Control',  type: 'task',     label: 'Sign Contract',              system: 'Document Management (DMS)' },
+          { lane: 'Department',         type: 'end',      label: 'Contract Active' },
+        ]
+      },
+    }
   }
 };
 
