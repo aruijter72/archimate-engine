@@ -8787,6 +8787,7 @@ function renderViewPage(view) {
   cvWrap.innerHTML = VIEW_SVGS[view.id]
     || '<p class="empty-note" style="padding:1rem">' + T('No diagram available.','Geen diagram beschikbaar.') + '</p>';
   _zoomState['view-cv'] = 1;
+  cvWrap.style.width = ''; cvWrap.style.height = '';
   const vIds   = new Set(view.elementIds||[]);
   const vElems = MODEL.elements.filter(el => vIds.has(el.id));
   document.getElementById('vp-elem-count').textContent = vElems.length;
@@ -8809,6 +8810,7 @@ function renderLayerPage(layerId) {
   cvWrap.innerHTML = svgToShow
     || '<p class="empty-note" style="padding:1rem">' + T('No diagram available for this layer.','Geen diagram beschikbaar voor deze laag.') + '</p>';
   _zoomState['layer-cv'] = 1;
+  cvWrap.style.width = ''; cvWrap.style.height = '';
 
   // If a process is active in the sidebar, scope elements to that process only.
   // When no process is selected (Home), show merged elements from all processes.
